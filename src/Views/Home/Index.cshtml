@@ -1,0 +1,21 @@
+﻿<!-- Copyright (c) Microsoft Corporation. All rights reserved.
+     Licensed under the MIT License. -->
+
+@using EctWebApp.CommonMethods 
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+@using EctWebApp
+
+<div class="jumbotron">
+    <h1>ASP.NET Core</h1>
+    @if (User.Identity.IsAuthenticated)
+    {
+        <h4>Welcome @User.GetUserGraphDisplayName()!</h4>
+    }
+    else
+    {
+        <a class="btn btn-primary btn-large" asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignIn">Click here to sign in</a>
+    }
+</div>
