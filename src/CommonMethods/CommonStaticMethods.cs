@@ -18,7 +18,7 @@
 
         public static string GetReceivedMailDateRangeQueryString(DateTime fromDate, DateTime toDate)
         {
-            string filterString = $"ReceivedDateTime ge {fromDate.Date:yyyy-MM-dd} and ReceivedDateTime le {toDate:o}";
+            string filterString = $"ReceivedDateTime ge {fromDate.Date:yyyy-MM-dd} and ReceivedDateTime le {toDate:o}";     // Queries with DateTime arguments passed in as date are seen as 12:00am on that date.
             return filterString;
         }
         public static string GetSentMailDateRangeQueryString(DateTime fromDate, DateTime toDate)

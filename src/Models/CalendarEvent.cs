@@ -1,5 +1,4 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT license.
+// Code adapted from https://github.com/microsoftgraph/msgraph-training-aspnet-core/blob/master/demo/GraphTutorial/Controllers/CalendarController.cs
 
 using Microsoft.Graph;
 using System;
@@ -77,7 +76,6 @@ namespace EctWebApp.Models
                     e.Start,
                     e.Subject
                 })
-                //.OrderBy("start/dateTime")                                                          // Order results chronologically
                 .GetAsync();
             return calendarPages;
         }

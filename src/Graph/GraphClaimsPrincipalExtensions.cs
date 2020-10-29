@@ -1,6 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
+// Source: https://github.com/microsoftgraph/msgraph-training-aspnet-core/blob/master/demo/GraphTutorial/
+
 // <GraphClaimsExtensionsSnippet>
 using Microsoft.Graph;
 using System;

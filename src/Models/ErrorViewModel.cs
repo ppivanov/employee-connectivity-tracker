@@ -1,4 +1,4 @@
-using System;
+// Source: https://github.com/microsoftgraph/msgraph-training-aspnet-core/blob/master/demo/GraphTutorial/
 
 namespace EctWebApp.Models
 {

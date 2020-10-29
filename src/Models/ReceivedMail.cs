@@ -51,7 +51,7 @@ namespace EctWebApp.Models
         {
             IMailFolderMessagesCollectionPage messagePages =
                 await graphClient.Me
-                .MailFolders["Inbox"]                                                               // String can be refactored to be passed in as a parm
+                .MailFolders["Inbox"]
                 .Messages
                 .Request()
                 .Filter(queryString)
@@ -64,7 +64,6 @@ namespace EctWebApp.Models
                     m.Subject
                 })
                 .Top(50)
-                //.OrderBy("receivedDateTime DESC")
                 .GetAsync();
 
             return messagePages;

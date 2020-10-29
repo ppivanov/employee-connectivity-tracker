@@ -68,7 +68,6 @@ namespace EctWebApp.Models
                     m.Subject
                 })
                 .Top(50)
-                //.OrderBy("sentDateTime DESC")
                 .GetAsync();
 
             return messagePages;

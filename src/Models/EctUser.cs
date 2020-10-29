@@ -35,15 +35,16 @@ namespace EctWebApp.Models
         }
         public string UserFullName
         {
-            get 
-            { 
-                return _userFullName; 
+            get
+            {
+                return _userFullName;
             }
-            private set 
+            private set
             {
                 if (string.IsNullOrEmpty(value))
                     throw new ArgumentException("A user cannot exist without specifying a full name.");
-                _userFullName = value; }
+                _userFullName = value;
+            }
         }
 
         public EctUser(string userEmail, string userFullName, DateTime lastSignOn, List<EctTeam> leaderOfTeams, EctTeam memberOfTeam)

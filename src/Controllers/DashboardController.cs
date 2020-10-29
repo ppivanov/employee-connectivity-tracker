@@ -1,3 +1,5 @@
+// Code adapted from https://github.com/microsoftgraph/msgraph-training-aspnet-core/blob/master/demo/GraphTutorial/Controllers/CalendarController.cs
+
 using EctWebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -13,11 +15,11 @@ namespace EctWebApp.Controllers
     public class DashboardController : Controller
     {
         private readonly GraphServiceClient _graphClient;
-        private readonly ILogger<HomeController> _logger;
+        private readonly ILogger<DashboardController> _logger;
 
         public DashboardController(
             GraphServiceClient graphClient,
-            ILogger<HomeController> logger)
+            ILogger<DashboardController> logger)
         {
             _graphClient = graphClient;
             _logger = logger;

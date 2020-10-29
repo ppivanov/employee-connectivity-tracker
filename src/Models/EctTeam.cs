@@ -6,7 +6,8 @@ namespace EctWebApp.Models
     public class EctTeam
     {
         private string _name;
-        private EctUser _leader; 
+        private EctUser _leader;
+
         public string Name
         {
             get 
@@ -20,7 +21,7 @@ namespace EctWebApp.Models
                 _name = value;
             }
         }
-        public EctUser Leader 
+        public EctUser Leader
         {
             get 
             {
