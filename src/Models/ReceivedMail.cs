@@ -9,7 +9,6 @@ namespace EctWebApp.Models
     public class ReceivedMail : Mail
     {
         public string From { get; private set; }
-        public bool? IsRead { get; private set; }                                                   // Nullable
         public DateTimeOffset? ReceivedDateTime { get; private set; }                               // Nullable
 
         public ReceivedMail(Message outlookMail)
@@ -17,7 +16,6 @@ namespace EctWebApp.Models
         {
             From = FormatNameAndEmailAddressParms(outlookMail.From.EmailAddress.Name,
                                                   outlookMail.From.EmailAddress.Address);
-            IsRead = outlookMail.IsRead;
             ReceivedDateTime = outlookMail.ReceivedDateTime;
         }
 
@@ -58,7 +56,6 @@ namespace EctWebApp.Models
                 .Select(m => new
                 {
                     m.From,
-                    m.IsRead,
                     m.Importance,
                     m.ReceivedDateTime,
                     m.Subject
