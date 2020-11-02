@@ -3,14 +3,8 @@
 
 // Source https://github.com/microsoftgraph/msgraph-training-aspnet-core/blob/master/demo/GraphTutorial/
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
 namespace EctWebApp
 {
