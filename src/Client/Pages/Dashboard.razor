@@ -1,0 +1,75 @@
+@page "/"
+@page "/dashboard"
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using EctBlazorApp.Shared
+@*@attribute [Authorize]*@
+@inject HttpClient Http
+@inject IAccessTokenProvider TokenProvider
+@inject IJSRuntime jsRuntime
+
+<AuthorizeView>
+    <Authorized>
+        <h1 class="navigation">Dashboard</h1>
+        @if (forecasts == null)
+        {
+            <p><em>Loading...</em></p>
+        }
+        else
+        {
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Temp. (C)</th>
+                        <th>Temp. (F)</th>
+                        <th>Summary</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var forecast in forecasts)
+                    {
+                        <tr>
+                            <td>@forecast.Date.ToShortDateString()</td>
+                            <td>@forecast.TemperatureC</td>
+                            <td>@forecast.TemperatureF</td>
+                            <td>@forecast.Summary</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </Authorized>
+    <NotAuthorized>
+        <h2>Welcome to Employee Connectivity Tracker</h2>
+        <p>Please, <a href="authentication/login">Log in</a> to continue</p>
+    </NotAuthorized>
+</AuthorizeView>
+
+
+@code {
+    private WeatherForecast[] forecasts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await jsRuntime.InvokeAsync<string>("setPageTitle", "Dashboard");
+
+        var tokenResult = await TokenProvider.RequestAccessToken(
+        new AccessTokenRequestOptions
+        {
+            Scopes = new[] { "api://5f468f03-5a1f-4571-9e1e-9606014e5728/API.Access" }
+        });
+        if (tokenResult.TryGetToken(out var token))
+        {
+            try
+            {
+                Http.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token.Value);
+                forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("WeatherForecast");
+            }
+            catch (AccessTokenNotAvailableException exception)
+            {
+                exception.Redirect();
+            }
+        }
+    }
+
+}

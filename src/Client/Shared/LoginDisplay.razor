@@ -6,11 +6,36 @@
 
 <AuthorizeView>
     <Authorized>
-        Hello, @context.User.Identity.Name!
-        <button class="nav-link btn btn-link" @onclick="BeginLogout">Log out</button>
+        <div class="logout-display unselectable">
+            <p onclick="toggleUserDropdown()">
+                @context.User.GetUserEmail()
+                <i class="arrow down"></i>
+            </p>
+            <div id="dropdown" class="display-none">
+                @for (int i = 0; i < GetSplitUserDisplayName(context).Length; i++)
+                {
+                    <div class="navbar-name">
+                        @GetSplitUserDisplayName(context)[i]
+                    </div>
+                    @if (i != GetSplitUserDisplayName(context).Length - 1)
+                    {
+                        <hr />
+                    }
+                }
+                <button class="logout-button" @onclick="BeginLogout">
+                    Log
+                    out
+                </button>
+            </div>
+        </div>
     </Authorized>
     <NotAuthorized>
-        <a href="authentication/login">Log in</a>
+        <div class="login-display">
+            <button class="login-button" @onclick="BeginLogin">
+                Log
+                in
+            </button>
+        </div>
     </NotAuthorized>
 </AuthorizeView>
 
@@ -20,4 +45,18 @@
         await SignOutManager.SetSignOutState();
         Navigation.NavigateTo("authentication/logout");
     }
+
+    private void BeginLogin()
+    {
+        Navigation.NavigateTo("authentication/login");
+    }
+
+    private string[] GetSplitUserDisplayName(AuthenticationState context)
+    {
+        var splitDisplayName = context.User.GetUserDisplayName().Split(" ");
+
+        return splitDisplayName;
+    }
 }
+
+

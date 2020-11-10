@@ -28,7 +28,8 @@ namespace EctBlazorApp.Client
             {
                 builder.Configuration.Bind("AzureAd", options.ProviderOptions.Authentication);
                 options.ProviderOptions.DefaultAccessTokenScopes.Add("api://5f468f03-5a1f-4571-9e1e-9606014e5728/API.Access");
-                //options.ProviderOptions.AdditionalScopesToConsent.Add("");
+                options.ProviderOptions.AdditionalScopesToConsent.Add("https://graph.microsoft.com/User.Read");
+
             });
 
             await builder.Build().RunAsync();
