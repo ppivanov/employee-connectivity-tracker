@@ -6,6 +6,7 @@
 @inject HttpClient Http
 @inject IAccessTokenProvider TokenProvider
 @inject IJSRuntime jsRuntime
+@inject ICalendarEventsProvider eventsProvider
 
 <AuthorizeView>
     <Authorized>
@@ -38,6 +39,7 @@
                 </tbody>
             </table>
         }
+        <button @onclick="SyncEventsFromExternalProviderToCalendar"></button>
     </Authorized>
     <NotAuthorized>
         <h2>Welcome to Employee Connectivity Tracker</h2>
@@ -72,4 +74,50 @@
         }
     }
 
+
+
+    @*async Task SelectYear(ChangeEventArgs e)
+        {
+            _year = Convert.ToInt32(e.Value.ToString());
+        }
+
+        async Task SelectMonth(ChangeEventArgs e)
+        {
+            _month = Convert.ToInt32(e.Value.ToString());
+
+            await SyncEventsFromExternalProviderToCalendar();
+        }*@
+
+    void UpdateDashboard()
+    {
+        // TODO
+    }
+
+    async Task SyncEventsFromExternalProviderToCalendar()
+    {
+        DateTime fromDate = DateTime.Now;
+        DateTime toDate = fromDate.AddDays(1);
+
+
+        var events = await eventsProvider.GetEventsInDateRangeAsync(fromDate, toDate);
+
+            foreach (var item in events)
+            {
+                Console.WriteLine($"Subject: {item.Subject}, Organiser: {item.Organizer}, {item.AttendeesAsString}");
+            }
+
+        @*var msevents = await eventsProvider.RequestDataFromMicrosoftGraph(fromDate, toDate);
+
+            Console.WriteLine("----------------");
+            foreach (var item in msevents)
+            {
+                string str = "";
+                foreach (var s in item.Attendees)
+                {
+                    str += s + " | ";
+                }
+
+                Console.WriteLine($"Subject: {item.Subject}, Organiser: {item.Organizer}, {str}");
+            }*@
+    }
 }

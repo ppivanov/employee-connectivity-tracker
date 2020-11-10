@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using EctBlazorApp.Client.Graph;
 
 namespace EctBlazorApp.Client
 {
@@ -34,7 +35,7 @@ namespace EctBlazorApp.Client
                 options.ProviderOptions.AdditionalScopesToConsent.Add("https://graph.microsoft.com/Chat.Read.All");
                 options.ProviderOptions.AdditionalScopesToConsent.Add("https://graph.microsoft.com/Mail.Read");
             });
-
+            builder.Services.AddScoped<ICalendarEventsProvider, MicrosoftCalendarEventsProvider>();
             await builder.Build().RunAsync();
         }
     }

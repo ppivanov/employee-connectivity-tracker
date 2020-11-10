@@ -26,11 +26,11 @@ namespace EctBlazorApp.Shared
         {
             get
             {
-                return string.Join("|", _attendees);
+                return string.Join(" | ", _attendees);
             }
             set
             {
-                _attendees = value.Split("|").ToList();
+                _attendees = value.Split(" | ").ToList();
             }
         }
     }
