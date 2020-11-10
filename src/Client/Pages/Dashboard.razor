@@ -2,6 +2,7 @@
 @page "/dashboard"
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @using EctBlazorApp.Shared
+@using System.Net.Http.Headers
 @*@attribute [Authorize]*@
 @inject HttpClient Http
 @inject IAccessTokenProvider TokenProvider
@@ -11,35 +12,8 @@
 <AuthorizeView>
     <Authorized>
         <h1 class="navigation">Dashboard</h1>
-        @if (forecasts == null)
-        {
-            <p><em>Loading...</em></p>
-        }
-        else
-        {
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Temp. (C)</th>
-                        <th>Temp. (F)</th>
-                        <th>Summary</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var forecast in forecasts)
-                    {
-                        <tr>
-                            <td>@forecast.Date.ToShortDateString()</td>
-                            <td>@forecast.TemperatureC</td>
-                            <td>@forecast.TemperatureF</td>
-                            <td>@forecast.Summary</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        }
         <button @onclick="SyncWithMicrosoftGraph">Sync</button>
+        <button @onclick="GetCalendarEventsInDateRange">Retrieve</button>
     </Authorized>
     <NotAuthorized>
         <h2>Welcome to Employee Connectivity Tracker</h2>
@@ -49,14 +23,20 @@
 
 
 @code {
-    private WeatherForecast[] forecasts;
-
     protected override async Task OnInitializedAsync()
     {
         await jsRuntime.InvokeAsync<string>("setPageTitle", "Dashboard");
+    }
+
+    protected async Task GetCalendarEventsInDateRange()
+    {
+        DateTime fromDate = DateTime.Now.AddDays(1);
+        DateTime toDate = fromDate.AddDays(2);
+
+        string queryString = $"fromDate={fromDate.ToString("yyyy-MM-dd")}&toDate={toDate.ToString("yyyy-MM-dd")}";
 
         var tokenResult = await TokenProvider.RequestAccessToken(
-        new AccessTokenRequestOptions
+            new AccessTokenRequestOptions
         {
             Scopes = new[] { "api://5f468f03-5a1f-4571-9e1e-9606014e5728/API.Access" }
         });
@@ -64,8 +44,12 @@
         {
             try
             {
-                Http.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token.Value);
-                forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("WeatherForecast");
+                Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.Value);
+                var response = await Http.GetFromJsonAsync<CalendarEvent[]>($"api/calendar/get-calendar-events?{queryString}");
+                if (response.Length < 1)
+                {
+                    // TODO
+                }
             }
             catch (AccessTokenNotAvailableException exception)
             {
@@ -74,7 +58,6 @@
             }
         }
     }
-
 
     void UpdateDashboard()
     {
@@ -89,18 +72,24 @@
 
         var events = await eventsProvider.GetEventsInDateRangeAsync(fromDate, toDate);
 
+        @* TODO - token request, authorization header *@
+        @* assignment and requests can be extracted *@
         var tokenResult = await TokenProvider.RequestAccessToken(
             new AccessTokenRequestOptions
-            {
-                Scopes = new[] { "api://5f468f03-5a1f-4571-9e1e-9606014e5728/API.Access" }
-            });
+        {
+            Scopes = new[] { "api://5f468f03-5a1f-4571-9e1e-9606014e5728/API.Access" }
+
+        });
 
         if (tokenResult.TryGetToken(out var token))
         {
             try
             {
-                Http.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token.Value);
-                var response = await Http.PostAsJsonAsync<CalendarEvent[]>("api/calendar/post-calendar-events", events.ToArray());
+                Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.Value);
+                var response = await Http.PostAsJsonAsync<CalendarEvent[]>(
+                    "api/calendar/post-calendar-events",
+                    events.ToArray()
+                    );
 
                 if (!response.IsSuccessStatusCode)
                 {

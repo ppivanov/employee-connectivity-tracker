@@ -4,7 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 using System.Threading.Tasks;
+using Microsoft.Graph;
+using static EctBlazorApp.Server.CommonMethods.CommonDateMethods;
 
 namespace EctBlazorApp.Server.Controllers
 {
@@ -20,16 +23,14 @@ namespace EctBlazorApp.Server.Controllers
             _dbContext = context;
         }
 
-        // GET: api/CalendarEvents
+        [Route("get-calendar-events")]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CalendarEvent>>> GetCalendarEvents()
+        public async Task<ActionResult<IEnumerable<CalendarEvent>>> GetCalendarEvents([FromQuery] string fromDate, [FromQuery] string toDate)
         {
-            return await _dbContext.CalendarEvents.ToListAsync();
+            var calendarEvents = await _dbContext.CalendarEvents.Where(c => c.Start >= NewDateTimeFromString(fromDate) && c.End < NewDateTimeFromString(toDate)).ToListAsync();
+            return calendarEvents;
         }
 
-        // POST: api/CalendarEvents
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [Route("post-calendar-events")]
         [HttpPost]
         public async Task<ActionResult<CalendarEvent>> PostCalendarEvents(CalendarEvent[] calendarEvents)
@@ -37,14 +38,15 @@ namespace EctBlazorApp.Server.Controllers
             try
             {
                 _dbContext.CalendarEvents.AddRange(calendarEvents);
-                _dbContext.SaveChanges();
-            } catch (DbUpdateException ex)
+                await _dbContext.SaveChangesAsync();
+            }
+            catch (DbUpdateException ex)
             {
                 // TODO - log
-                return BadRequest();
+                return BadRequest(ex.Message);
             }
 
-            return Ok("Success");
+            return Ok();
         }
 
         private bool CalendarEventExists(int id)
