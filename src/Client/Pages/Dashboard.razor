@@ -39,7 +39,7 @@
                 </tbody>
             </table>
         }
-        <button @onclick="SyncEventsFromExternalProviderToCalendar"></button>
+        <button @onclick="SyncWithMicrosoftGraph">Sync</button>
     </Authorized>
     <NotAuthorized>
         <h2>Welcome to Employee Connectivity Tracker</h2>
@@ -69,31 +69,19 @@
             }
             catch (AccessTokenNotAvailableException exception)
             {
+                // TODO - log
                 exception.Redirect();
             }
         }
     }
 
 
-
-    @*async Task SelectYear(ChangeEventArgs e)
-        {
-            _year = Convert.ToInt32(e.Value.ToString());
-        }
-
-        async Task SelectMonth(ChangeEventArgs e)
-        {
-            _month = Convert.ToInt32(e.Value.ToString());
-
-            await SyncEventsFromExternalProviderToCalendar();
-        }*@
-
     void UpdateDashboard()
     {
         // TODO
     }
 
-    async Task SyncEventsFromExternalProviderToCalendar()
+    async Task SyncWithMicrosoftGraph()
     {
         DateTime fromDate = DateTime.Now;
         DateTime toDate = fromDate.AddDays(1);
@@ -101,23 +89,30 @@
 
         var events = await eventsProvider.GetEventsInDateRangeAsync(fromDate, toDate);
 
-            foreach (var item in events)
+        var tokenResult = await TokenProvider.RequestAccessToken(
+            new AccessTokenRequestOptions
             {
-                Console.WriteLine($"Subject: {item.Subject}, Organiser: {item.Organizer}, {item.AttendeesAsString}");
-            }
+                Scopes = new[] { "api://5f468f03-5a1f-4571-9e1e-9606014e5728/API.Access" }
+            });
 
-        @*var msevents = await eventsProvider.RequestDataFromMicrosoftGraph(fromDate, toDate);
-
-            Console.WriteLine("----------------");
-            foreach (var item in msevents)
+        if (tokenResult.TryGetToken(out var token))
+        {
+            try
             {
-                string str = "";
-                foreach (var s in item.Attendees)
+                Http.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token.Value);
+                var response = await Http.PostAsJsonAsync<CalendarEvent[]>("api/calendar/post-calendar-events", events.ToArray());
+
+                if (!response.IsSuccessStatusCode)
                 {
-                    str += s + " | ";
+                    // TODO - log
+                    // Show error?
                 }
-
-                Console.WriteLine($"Subject: {item.Subject}, Organiser: {item.Organizer}, {str}");
-            }*@
+            }
+            catch (AccessTokenNotAvailableException exception)
+            {
+                // TODO - log
+                exception.Redirect();
+            }
+        }
     }
 }
