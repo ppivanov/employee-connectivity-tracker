@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Graph;
 using System.Text;
 
 namespace EctBlazorApp.Shared
@@ -32,6 +33,24 @@ namespace EctBlazorApp.Shared
             {
                 _attendees = value.Split(" | ").ToList();
             }
+        }
+
+        public CalendarEvent()
+        {
+
+        }
+
+        public CalendarEvent(Event graphEvent)
+        {
+            Attendees = new List<string>();
+            foreach (Attendee attendee in graphEvent.Attendees)
+            {
+                Attendees.Add($"{attendee.EmailAddress.Name} <{attendee.EmailAddress.Address}>");
+            }
+            End = DateTime.Parse(graphEvent.End.DateTime);
+            Organizer = graphEvent.Organizer.EmailAddress.Name;
+            Start = DateTime.Parse(graphEvent.Start.DateTime);
+            Subject = graphEvent.Subject;
         }
     }
 }

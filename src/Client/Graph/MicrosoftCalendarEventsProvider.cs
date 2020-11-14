@@ -41,6 +41,22 @@ namespace EctBlazorApp.Client.Graph
             return events;
         }
 
+        public async Task<string> GetCalendarEventsForEmail(string userEmail)
+        {
+            var accessToken = await GetAccessTokenAsync();
+            if (accessToken == null)
+                return "Token missing";
+
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", await GetAPITokenAsync());
+            var response = await _httpClient.GetAsync($"api/calendar/get-calendar-events-api?graphToken={accessToken}&userId={userEmail}");
+
+            if (!response.IsSuccessStatusCode)
+                return "Request unsuccessful";
+
+            var contentAsString = await response.Content.ReadAsStringAsync();
+            return contentAsString;
+        }
+
         private async Task<string> GetAccessTokenAsync()
         {
             var tokenRequest = await _accessTokenProvider.RequestAccessToken(new AccessTokenRequestOptions
@@ -52,6 +68,23 @@ namespace EctBlazorApp.Client.Graph
                     // "https://graph.microsoft.com/CallRecords.Read.All",
                     "https://graph.microsoft.com/Chat.Read.All",
                     "https://graph.microsoft.com/Mail.Read"
+                }
+            });
+
+            if (tokenRequest.TryGetToken(out var token))
+            {
+                if (token != null)
+                    return token.Value;
+            }
+            return null;
+        }
+        private async Task<string> GetAPITokenAsync()
+        {
+            var tokenRequest = await _accessTokenProvider.RequestAccessToken(new AccessTokenRequestOptions
+            {
+                Scopes = new[]
+                {
+                    "api://5f468f03-5a1f-4571-9e1e-9606014e5728/API.Access"
                 }
             });
 

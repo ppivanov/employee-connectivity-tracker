@@ -14,6 +14,7 @@
         <h1 class="navigation">Dashboard</h1>
         <button @onclick="SyncWithMicrosoftGraph">Sync</button>
         <button @onclick="GetCalendarEventsInDateRange">Retrieve</button>
+        <button @onclick="(e=> GetUserDetails(context.User.GetUserEmail()))">UserDetails</button>
     </Authorized>
     <NotAuthorized>
         <h2>Welcome to Employee Connectivity Tracker</h2>
@@ -37,9 +38,9 @@
 
         var tokenResult = await TokenProvider.RequestAccessToken(
             new AccessTokenRequestOptions
-        {
-            Scopes = new[] { "api://5f468f03-5a1f-4571-9e1e-9606014e5728/API.Access" }
-        });
+            {
+                Scopes = new[] { "api://5f468f03-5a1f-4571-9e1e-9606014e5728/API.Access" }
+            });
         if (tokenResult.TryGetToken(out var token))
         {
             try
@@ -74,34 +75,70 @@
 
         @* TODO - token request, authorization header *@
         @* assignment and requests can be extracted *@
-        var tokenResult = await TokenProvider.RequestAccessToken(
-            new AccessTokenRequestOptions
+    var tokenResult = await TokenProvider.RequestAccessToken(
+        new AccessTokenRequestOptions
         {
             Scopes = new[] { "api://5f468f03-5a1f-4571-9e1e-9606014e5728/API.Access" }
 
         });
 
-        if (tokenResult.TryGetToken(out var token))
+    if (tokenResult.TryGetToken(out var token))
+    {
+        try
         {
-            try
-            {
-                Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.Value);
-                var response = await Http.PostAsJsonAsync<CalendarEvent[]>(
-                    "api/calendar/post-calendar-events",
-                    events.ToArray()
-                    );
+            Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.Value);
+            var response = await Http.PostAsJsonAsync<CalendarEvent[]>(
+                "api/calendar/post-calendar-events",
+                events.ToArray()
+                );
 
-                if (!response.IsSuccessStatusCode)
-                {
-                    // TODO - log
-                    // Show error?
-                }
-            }
-            catch (AccessTokenNotAvailableException exception)
+            if (!response.IsSuccessStatusCode)
             {
                 // TODO - log
-                exception.Redirect();
+                // Show error?
             }
         }
+        catch (AccessTokenNotAvailableException exception)
+        {
+            // TODO - log
+            exception.Redirect();
+        }
+    }
+}
+
+async Task GetUserDetails(string userEmail)
+{
+    Console.WriteLine(await eventsProvider.GetCalendarEventsForEmail(userEmail));
+
+        @*var tokenResult = await TokenProvider.RequestAccessToken(
+                new AccessTokenRequestOptions
+                {
+                    Scopes = new[] {
+                        "api://5f468f03-5a1f-4571-9e1e-9606014e5728/API.Access",
+                        "https://graph.microsoft.com/User.Read",
+                        "https://graph.microsoft.com/Calendars.Read",
+                        // "https://graph.microsoft.com/CallRecords.Read.All",
+                        "https://graph.microsoft.com/Chat.Read.All",
+                        "https://graph.microsoft.com/Mail.Read"
+                        }
+                });
+            if (tokenResult.TryGetToken(out var token))
+            {
+                try
+                {
+                    Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.Value);
+                    var response = await Http.GetFromJsonAsync<CalendarEvent[]>($"api/calendar/get-calendar-events-api?token={token.Value}");
+                    if (response.Length < 1)
+                    {
+                        // TODO
+                    }
+                }
+                catch (AccessTokenNotAvailableException exception)
+                {
+                    // TODO - log
+                    exception.Redirect();
+                }
+            }*@
+
     }
 }

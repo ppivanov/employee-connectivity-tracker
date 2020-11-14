@@ -9,5 +9,7 @@ namespace EctBlazorApp.Client.Graph
     public interface ICalendarEventsProvider
     {
         Task<IEnumerable<CalendarEvent>> GetEventsInDateRangeAsync(DateTime fromDate, DateTime toDate);
+
+        Task<string> GetCalendarEventsForEmail(string userEmail);
     }
 }
