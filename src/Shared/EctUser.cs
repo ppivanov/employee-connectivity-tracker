@@ -16,6 +16,16 @@ namespace EctBlazorApp.Shared
         public EctTeam MemberOf { get; set; }
         public ICollection<ReceivedMail> ReceivedEmails { get; set; }
         public ICollection<SentMail> SentEmails { get; set; }
-        
+
+        public EctUser()
+        {
+
+        }
+        public EctUser(GraphUserResponse graphUser)
+        {
+            Email = graphUser.UserPrincipalName;
+            FullName = graphUser.DisplayName;
+            //GraphId = graphUser.Id;
+        }
     }
 }
