@@ -28,25 +28,30 @@ namespace EctBlazorApp.Server.Controllers
         {
             using var client = new HttpClient();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", graphToken);
-            EctUser userForParms = await GetExistingEctUserOrNew( userId, client);
+            EctUser userForParms = await GetExistingEctUserOrNew(userId, client, _dbContext);
             // update calendarEvents
             // update receivedMail
             // update sentMail
             return BadRequest();
         }
 
-        private async Task<EctUser> GetExistingEctUserOrNew( string userId, HttpClient client)
+        private static async Task<EctUser> GetExistingEctUserOrNew(string userId, HttpClient client, EctDbContext dbContext)
         {
             try
             {
-                EctUser userForUserIdParm = _dbContext.Users.First(user => user.Email.Equals(userId));
+                EctUser userForUserIdParm = dbContext.Users.First(user => user.Email.Equals(userId));
                 return userForUserIdParm;
             }
             catch (Exception)
             {
-                var addUserResult = await AddUser(userId, client, _dbContext);
+                EctUser addUserResult = await dbContext.AddUser(userId, client);
                 return addUserResult;
             }
+        }
+
+        public static Task<EctUser> GetExistingEctUserOrNewWrapper(string userId, HttpClient client, EctDbContext dbContext)
+        {
+            return GetExistingEctUserOrNew(userId, client, dbContext);
         }
 
     }

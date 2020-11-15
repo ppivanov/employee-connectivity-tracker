@@ -1,9 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using EctBlazorApp.Shared;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Net.Http;
+using EctBlazorApp.Server.CommonMethods;
 
 namespace EctBlazorApp.Server
 {
@@ -42,6 +43,22 @@ namespace EctBlazorApp.Server
             modelBuilder.Entity<EctTeam>()
                 .HasOne(p => p.Leader)
                 .WithMany(p => p.LeaderOf);
+        }
+
+        public async Task<EctUser> AddUser(string userId, HttpClient client)
+        {
+            GraphUserResponse graphUser = await client.GetGraphUser(userId);
+            try
+            {
+                EctUser newUser = new EctUser(graphUser);
+                Users.Add(newUser);
+                await SaveChangesAsync();
+                return newUser;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
     }
 

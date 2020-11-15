@@ -5,12 +5,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace EctBlazorApp.Server.CommonMethods
 {
-    public static class GraphMethods
+    public class GraphMethods : ITestableExtensionMethods
     {
         private const string baseGraphUrl = "https://graph.microsoft.com/v1.0";
         public async static Task<bool> UpdateCalendarEventRecordsForUser(EctUser user, HttpClient client, EctDbContext dbContext)
@@ -56,9 +55,7 @@ namespace EctBlazorApp.Server.CommonMethods
             return false;
         }
 
-
-        // TODO REFACTOR
-        public static async Task<EctUser> AddUser(string userId, HttpClient client, EctDbContext dbContext)
+        public async Task<GraphUserResponse> GetGraphUser(HttpClient client, string userId)
         {
             string userInfoUrl = ConstructGraphUrlForUser(userId);
 
@@ -67,18 +64,9 @@ namespace EctBlazorApp.Server.CommonMethods
                 return null;
 
             string contentAsString = await graphResponse.Content.ReadAsStringAsync();
-            var graphUser = JsonConvert.DeserializeObject<GraphUserResponse>(contentAsString);
-            try
-            {
-                EctUser newUser = new EctUser(graphUser);
-                dbContext.Users.Add(newUser);
-                await dbContext.SaveChangesAsync();
-                return newUser;
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            GraphUserResponse graphUser = JsonConvert.DeserializeObject<GraphUserResponse>(contentAsString);
+
+            return graphUser;
         }
 
         private static string ConstructGraphUrlForUser(string userId)
