@@ -5,6 +5,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Net.Http;
 using EctBlazorApp.Server.CommonMethods;
+using EctBlazorApp.Shared.GraphModels;
+using System.Collections.Generic;
 
 namespace EctBlazorApp.Server
 {
@@ -25,15 +27,6 @@ namespace EctBlazorApp.Server
             : base(options)
         {
         }
-
-        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        //{
-        //    if (!optionsBuilder.IsConfigured)
-        //    {
-        //        //#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-        //        //optionsBuilder.UseSqlServer("Server=tcp:ect.database.windows.net,1433;Initial Catalog=EctDb;Persist Security Info=False;User ID=geologistsnooze;Password={PASSWORD};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
-        //    }
-        //}
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -58,6 +51,23 @@ namespace EctBlazorApp.Server
             catch (Exception)
             {
                 return null;
+            }
+        }
+
+        public async Task<bool> UpdateCalendarEventRecordsForUser(EctUser user, HttpClient client)
+        {
+            try
+            {
+                GraphEventsResponse graphEvents = await client.GetMissingCalendarEvents(user);
+                var calendarEvents = CalendarEvent.CastGraphEventsToCalendarEvents(graphEvents.Value);
+                CalendarEvents.AddRange(calendarEvents);
+                await SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
             }
         }
     }

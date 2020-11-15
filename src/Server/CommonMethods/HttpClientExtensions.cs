@@ -1,7 +1,5 @@
 ﻿using EctBlazorApp.Shared;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using EctBlazorApp.Shared.GraphModels;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -20,6 +18,11 @@ namespace EctBlazorApp.Server.CommonMethods
         public static Task<GraphUserResponse> GetGraphUser(this HttpClient client, string userId)
         {
             return Implementation.GetGraphUser(client, userId);
+        }
+
+        public static Task<GraphEventsResponse> GetMissingCalendarEvents(this HttpClient client, EctUser user)
+        {
+            return Implementation.GetMissingCalendarEvents(user, client);
         }
     }
 }

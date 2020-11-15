@@ -1,4 +1,4 @@
-﻿using EctBlazorApp.Server.GraphModels;
+﻿using EctBlazorApp.Shared.GraphModels;
 using EctBlazorApp.Shared;
 using Newtonsoft.Json;
 using System;
@@ -12,49 +12,21 @@ namespace EctBlazorApp.Server.CommonMethods
     public class GraphMethods : ITestableExtensionMethods
     {
         private const string baseGraphUrl = "https://graph.microsoft.com/v1.0";
-        public async static Task<bool> UpdateCalendarEventRecordsForUser(EctUser user, HttpClient client, EctDbContext dbContext)
+        private static string ConstructGraphUrlForEvents(EctUser user)
         {
-            try
-            {
-                string eventsUrl = ConstructGraphUrlForEvents(user);
-                var response = await client.GetAsync(eventsUrl);
+            string formattedFromDate = user.LastSignIn.ToString("yyyy-MM-dd");          // TODO - this must include the time so we don't pull in duplicate events
+            string formattedToDate = DateTime.Now.ToString("yyyy-MM-dd");
+            string eventsEndpoint = $"{baseGraphUrl}/users/{user.Email}/events$filter=start/datetime ge '{formattedFromDate}' " +
+                $"and end/datetime lt '{formattedToDate}'&$select=subject,organizer,attendees,start,end";
 
-                string contentAsString = await response.Content.ReadAsStringAsync();
-                var graphEvents = JsonConvert.DeserializeObject<GraphEventsResponse>(contentAsString);
-
-                int attendeesLimit = 20;
-
-                foreach (var graphEvent in graphEvents.Value)
-                {
-                    CalendarEvent calendarEvent = new CalendarEvent
-                    {
-                        Subject = graphEvent.Subject,
-                        Start = graphEvent.Start.ConvertToLocalDateTime(),
-                        End = graphEvent.End.ConvertToLocalDateTime(),
-                        Organizer = graphEvent.Organizer.ToString(),
-                        Attendees = new List<string>()
-                    };
-                    // TODO -> find a solution or remove the limit
-                    //for (int i = 0; i < Math.Min(attendeesLimit, graphEvent.Attendees.Length); i++)         // if the graphEvent is a large group meeting,
-                    //    calendarEvent.Attendees.Add(graphEvent.Attendees[i].ToString());                    // then perhaps we don't want to waste the resourses 
-                    //                                                                                        // transferring them over to the database
-                    calendarEvent.Attendees.AddRange(
-                        graphEvent.Attendees.Take(attendeesLimit)
-                            .Select(a => a.ToString()));
-                    ; dbContext.CalendarEvents.Add(calendarEvent);
-                }
-
-                await dbContext.SaveChangesAsync();
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-
-            // Save to DB
-            return false;
+            return eventsEndpoint;
         }
+        private static string ConstructGraphUrlForUser(string userId)
+        {
+            string userEndpoint = $"{baseGraphUrl}/users/{userId}?$select=displayName,id,userPrincipalName";
 
+            return userEndpoint;
+        }
         public async Task<GraphUserResponse> GetGraphUser(HttpClient client, string userId)
         {
             string userInfoUrl = ConstructGraphUrlForUser(userId);
@@ -68,22 +40,15 @@ namespace EctBlazorApp.Server.CommonMethods
 
             return graphUser;
         }
-
-        private static string ConstructGraphUrlForUser(string userId)
+        public async Task<GraphEventsResponse> GetMissingCalendarEvents(EctUser user, HttpClient client)
         {
-            string userEndpoint = $"{baseGraphUrl}/users/{userId}?$select=displayName,id,userPrincipalName";
+            string eventsUrl = ConstructGraphUrlForEvents(user);
+            var response = await client.GetAsync(eventsUrl);
 
-            return userEndpoint;
-        }
+            string contentAsString = await response.Content.ReadAsStringAsync();
+            GraphEventsResponse graphEvents = JsonConvert.DeserializeObject<GraphEventsResponse>(contentAsString);
 
-        private static string ConstructGraphUrlForEvents(EctUser user)
-        {
-            string formattedFromDate = user.LastSignIn.ToString("yyyy-MM-dd");
-            string formattedToDate = DateTime.Now.ToString("yyyy-MM-dd");
-            string eventsEndpoint = $"{baseGraphUrl}/users/{user.Email}/events$filter=start/datetime ge '{formattedFromDate}' " +
-                $"and end/datetime lt '{formattedToDate}'&$select=subject,organizer,attendees,start,end";
-
-            return eventsEndpoint;
-        }
+            return graphEvents;
+        } // TODO - unit tests
     }
 }

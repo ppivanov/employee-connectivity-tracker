@@ -1,4 +1,4 @@
-﻿namespace EctBlazorApp.Shared
+﻿namespace EctBlazorApp.Shared.GraphModels
 {
     public class GraphUserResponse
     {

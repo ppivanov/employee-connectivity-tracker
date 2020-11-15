@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Graph;
 using System.Text;
+using EctBlazorApp.Shared.GraphModels;
 
 namespace EctBlazorApp.Shared
 {
@@ -40,17 +41,31 @@ namespace EctBlazorApp.Shared
 
         }
 
-        public CalendarEvent(Event graphEvent)
+        public CalendarEvent(MicrosoftGraphEvent graphEvent)
         {
-            Attendees = new List<string>();
-            foreach (Attendee attendee in graphEvent.Attendees)
-            {
-                Attendees.Add($"{attendee.EmailAddress.Name} <{attendee.EmailAddress.Address}>");
-            }
-            End = DateTime.Parse(graphEvent.End.DateTime);
-            Organizer = graphEvent.Organizer.EmailAddress.Name;
-            Start = DateTime.Parse(graphEvent.Start.DateTime);
+            const int attendeesLimit = 20;
+
             Subject = graphEvent.Subject;
+            Start = graphEvent.Start.ConvertToLocalDateTime();
+            End = graphEvent.End.ConvertToLocalDateTime();
+            Organizer = graphEvent.Organizer.ToString();
+            Attendees = new List<string>();
+            // TODO -> find a solution or remove the limit???
+            Attendees.AddRange(
+                graphEvent.Attendees.Take(attendeesLimit)
+                    .Select(a => a.ToString()));
+        }
+
+        public static List<CalendarEvent> CastGraphEventsToCalendarEvents(MicrosoftGraphEvent[] graphEvents)
+        {
+            List<CalendarEvent> calendarEvents = new List<CalendarEvent>();
+            foreach (var graphEvent in graphEvents)
+            {
+                CalendarEvent calendarEvent = new CalendarEvent(graphEvent);
+                calendarEvents.Add(calendarEvent);
+            }
+
+            return calendarEvents;
         }
     }
 }

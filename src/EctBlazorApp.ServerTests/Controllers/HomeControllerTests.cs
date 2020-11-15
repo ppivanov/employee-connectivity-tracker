@@ -1,6 +1,7 @@
 ﻿using EctBlazorApp.Server.CommonMethods;
 using EctBlazorApp.ServerTests;
 using EctBlazorApp.Shared;
+using EctBlazorApp.Shared.GraphModels;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System;
