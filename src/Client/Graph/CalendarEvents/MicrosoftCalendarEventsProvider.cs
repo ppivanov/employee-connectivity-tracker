@@ -57,6 +57,19 @@ namespace EctBlazorApp.Client.Graph
             return contentAsString;
         }
 
+        public async Task<string> UpdateDatabaseRecords(string userEmail)
+        {
+            var accessToken = await GetAccessTokenAsync();
+            if (accessToken == null)
+                return "Token missing";
+
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", await GetAPITokenAsync());
+            var response = await _httpClient.GetAsync($"api/main/update-records?graphToken={accessToken}&userId={userEmail}");
+
+
+            return await response.Content.ReadAsStringAsync();
+        }
+
         private async Task<string> GetAccessTokenAsync()
         {
             var tokenRequest = await _accessTokenProvider.RequestAccessToken(new AccessTokenRequestOptions

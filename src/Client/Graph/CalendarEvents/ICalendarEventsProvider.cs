@@ -11,5 +11,7 @@ namespace EctBlazorApp.Client.Graph
         Task<IEnumerable<CalendarEvent>> GetEventsInDateRangeAsync(DateTime fromDate, DateTime toDate);
 
         Task<string> GetCalendarEventsForEmail(string userEmail);
+
+        Task<string> UpdateDatabaseRecords(string userEmail);
     }
 }

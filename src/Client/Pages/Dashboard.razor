@@ -108,7 +108,8 @@
 
 async Task GetUserDetails(string userEmail)
 {
-    Console.WriteLine(await eventsProvider.GetCalendarEventsForEmail(userEmail));
+    @*Console.WriteLine(await eventsProvider.GetCalendarEventsForEmail(userEmail));*@
+    Console.WriteLine(await eventsProvider.UpdateDatabaseRecords(userEmail));
 
         @*var tokenResult = await TokenProvider.RequestAccessToken(
                 new AccessTokenRequestOptions

@@ -21,11 +21,13 @@ namespace EctBlazorApp.Shared
         {
 
         }
+
         public EctUser(GraphUserResponse graphUser)
         {
             Email = graphUser.UserPrincipalName;
             FullName = graphUser.DisplayName;
-            //GraphId = graphUser.Id;
+            LastSignIn = new DateTime(2020, 10, 1); // 1st Oct 2020
+            //MicrosoftId = graphUser.Id;
         }
     }
 }
