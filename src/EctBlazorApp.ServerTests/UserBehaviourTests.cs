@@ -1,4 +1,5 @@
-﻿using EctBlazorApp.Server.CommonMethods;
+﻿using EctBlazorApp.Server.Behaviour;
+using EctBlazorApp.Server.CommonMethods;
 using EctBlazorApp.ServerTests;
 using EctBlazorApp.Shared;
 using EctBlazorApp.Shared.GraphModels;
@@ -9,14 +10,14 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace EctBlazorApp.Server.Controllers.Tests
+namespace EctBlazorApp.Server.Tests
 {
     [TestClass()]
-    public class HomeControllerTests : IDisposable
+    public class UserBehaviourTests : IDisposable
     {
         private readonly EctDbContext _dbContext;
 
-        public HomeControllerTests()
+        public UserBehaviourTests()
         {
             _dbContext = InMemoryDb.InitInMemoryDbContext();
         }
@@ -31,7 +32,7 @@ namespace EctBlazorApp.Server.Controllers.Tests
         {
             string userEmail = "alice@ect.ie";
             EctUser expectedUser = _dbContext.Users.First(user => user.Email == userEmail);
-            EctUser actualUser = await HomeController.GetExistingEctUserOrNewWrapper(userEmail, new HttpClient(), _dbContext);
+            EctUser actualUser = await UserBehaviour.GetExistingEctUserOrNewWrapper(userEmail, new HttpClient(), _dbContext);
             
             Assert.AreSame(expectedUser, actualUser);
         }
@@ -49,7 +50,7 @@ namespace EctBlazorApp.Server.Controllers.Tests
 
             HttpClientExtensions.Implementation = mock.Object;
 
-            EctUser actualUser = await HomeController.GetExistingEctUserOrNewWrapper(mockGraphResponse.UserPrincipalName, new HttpClient(), _dbContext);
+            EctUser actualUser = await UserBehaviour.GetExistingEctUserOrNewWrapper(mockGraphResponse.UserPrincipalName, new HttpClient(), _dbContext);
 
             Assert.AreEqual(mockGraphResponse.UserPrincipalName, actualUser.Email);
             Assert.AreEqual(mockGraphResponse.DisplayName, actualUser.FullName);

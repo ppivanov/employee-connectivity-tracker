@@ -54,12 +54,15 @@ namespace EctBlazorApp.Server
             }
         }
 
-        public async Task<bool> UpdateCalendarEventRecordsForUser(EctUser user, HttpClient client)
+        public async Task<bool> UpdateCalendarEventRecordsForUser(EctUser user, HttpClient client) // TODO - tests && this method shouldn't live here
         {
             try
             {
                 GraphEventsResponse graphEvents = await client.GetMissingCalendarEvents(user);
                 var calendarEvents = CalendarEvent.CastGraphEventsToCalendarEvents(graphEvents.Value);
+                if (calendarEvents.Count < 1)
+                    return false;
+
                 CalendarEvents.AddRange(calendarEvents);
                 await SaveChangesAsync();
 

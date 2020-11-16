@@ -1,9 +1,7 @@
-﻿using EctBlazorApp.Shared.GraphModels;
-using EctBlazorApp.Shared;
+﻿using EctBlazorApp.Shared;
+using EctBlazorApp.Shared.GraphModels;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -21,12 +19,14 @@ namespace EctBlazorApp.Server.CommonMethods
 
             return eventsEndpoint;
         }
+
         private static string ConstructGraphUrlForUser(string userId)
         {
             string userEndpoint = $"{baseGraphUrl}/users/{userId}?$select=displayName,id,userPrincipalName";
 
             return userEndpoint;
         }
+
         public async Task<GraphUserResponse> GetGraphUser(HttpClient client, string userId)
         {
             string userInfoUrl = ConstructGraphUrlForUser(userId);
@@ -40,6 +40,7 @@ namespace EctBlazorApp.Server.CommonMethods
 
             return graphUser;
         }
+
         public async Task<GraphEventsResponse> GetMissingCalendarEvents(EctUser user, HttpClient client)
         {
             string eventsUrl = ConstructGraphUrlForEvents(user);
@@ -49,6 +50,6 @@ namespace EctBlazorApp.Server.CommonMethods
             GraphEventsResponse graphEvents = JsonConvert.DeserializeObject<GraphEventsResponse>(contentAsString);
 
             return graphEvents;
-        } // TODO - unit tests
+        }
     }
 }
