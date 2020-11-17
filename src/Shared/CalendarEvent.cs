@@ -1,9 +1,7 @@
-﻿using System;
+﻿using EctBlazorApp.Shared.GraphModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Graph;
-using System.Text;
-using EctBlazorApp.Shared.GraphModels;
 
 namespace EctBlazorApp.Shared
 {
@@ -17,8 +15,8 @@ namespace EctBlazorApp.Shared
         public string Organizer { get; set; }
 
 
-        private List<String> _attendees;
-        public List<String> Attendees
+        private List<string> _attendees;
+        public List<string> Attendees
         {
             get { return _attendees; }
             set { _attendees = value; }
@@ -28,17 +26,23 @@ namespace EctBlazorApp.Shared
         {
             get
             {
-                return string.Join(" | ", _attendees);
+                if (Attendees.Count < 1) 
+                    return "";
+
+                return string.Join(" | ", Attendees);
             }
             set
             {
-                _attendees = value.Split(" | ").ToList();
+                if (value.Length < 1) 
+                    Attendees = new List<string>();
+
+                Attendees = value.Split(" | ").ToList();
             }
         }
 
         public CalendarEvent()
         {
-
+            Attendees = new List<string>();
         }
 
         public CalendarEvent(MicrosoftGraphEvent graphEvent)

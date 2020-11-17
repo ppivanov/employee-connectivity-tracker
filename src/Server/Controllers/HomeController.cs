@@ -28,8 +28,8 @@ namespace EctBlazorApp.Server.Controllers
         {
             using var client = new HttpClient();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", graphToken);
-            EctUser userForParms = await GetExistingEctUserOrNewWrapper(userId, client, _dbContext);
-            // update calendarEvents
+            EctUser userForParms = await GetExistingEctUserOrNewWrapperAsync(userId, client, _dbContext);
+            bool eventsSaved = await userForParms.UpdateCalendarEventRecordsWrapperAsync(client, _dbContext);
             // update receivedMail
             // update sentMail
             return BadRequest();

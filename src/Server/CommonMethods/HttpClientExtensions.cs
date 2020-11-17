@@ -22,7 +22,7 @@ namespace EctBlazorApp.Server.CommonMethods
 
         public static Task<GraphEventsResponse> GetMissingCalendarEvents(this HttpClient client, EctUser user)
         {
-            return Implementation.GetMissingCalendarEvents(user, client);
+            return Implementation.GetMissingCalendarEvents(client, user);
         }
     }
 }

@@ -41,7 +41,7 @@ namespace EctBlazorApp.Server.CommonMethods
             return graphUser;
         }
 
-        public async Task<GraphEventsResponse> GetMissingCalendarEvents(EctUser user, HttpClient client)
+        public async Task<GraphEventsResponse> GetMissingCalendarEvents(HttpClient client, EctUser user)
         {
             string eventsUrl = ConstructGraphUrlForEvents(user);
             var response = await client.GetAsync(eventsUrl);

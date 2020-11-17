@@ -7,7 +7,7 @@ using System.Linq;
 using System;
 using System.Threading.Tasks;
 using Microsoft.Graph;
-using static EctBlazorApp.Server.CommonMethods.CommonDateMethods;
+using static EctBlazorApp.Shared.SharedCommonMethods;
 using Newtonsoft.Json;
 using System.Net.Http;
 using EctBlazorApp.Client.Models;

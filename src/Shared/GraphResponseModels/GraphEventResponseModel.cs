@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using static EctBlazorApp.Shared.SharedCommonMethods;
 
 namespace EctBlazorApp.Shared.GraphModels
 {
@@ -26,7 +24,7 @@ namespace EctBlazorApp.Shared.GraphModels
 
         public override string ToString()
         {
-            return $"{emailAddress.Name} <{emailAddress.Address}>";
+            return FormatFullNameAndEmail(emailAddress.Name, emailAddress.Address);
         }
     }
 
