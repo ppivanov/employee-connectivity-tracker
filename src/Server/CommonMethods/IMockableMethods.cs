@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace EctBlazorApp.Server.CommonMethods
 {
-    public interface ITestableExtensionMethods
+    public interface IMockableMethods
     {
         Task<GraphUserResponse> GetGraphUser(HttpClient client, string userId);
 

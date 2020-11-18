@@ -33,7 +33,7 @@ namespace EctBlazorApp.Server.Behaviour
         {
             return UpdateCalendarEventRecordsAsync(user, client, dbContext);
         }
-        private static async Task<bool> UpdateCalendarEventRecordsAsync(EctUser user, HttpClient client, EctDbContext dbContext) // TODO - tests
+        private static async Task<bool> UpdateCalendarEventRecordsAsync(EctUser user, HttpClient client, EctDbContext dbContext)
         {
             try
             {
@@ -42,12 +42,16 @@ namespace EctBlazorApp.Server.Behaviour
                 if (calendarEvents.Count < 1)
                     return false;
 
-                dbContext.CalendarEvents.AddRange(calendarEvents);
+                if (user.CalendarEvents == null) user.CalendarEvents = new List<CalendarEvent>();
+                foreach (var calendarEvent in calendarEvents)
+                {
+                    user.CalendarEvents.Add(calendarEvent);
+                }
                 await dbContext.SaveChangesAsync();
 
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return false;
             }

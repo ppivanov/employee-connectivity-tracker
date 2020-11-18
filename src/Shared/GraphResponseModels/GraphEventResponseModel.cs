@@ -24,7 +24,7 @@ namespace EctBlazorApp.Shared.GraphModels
 
         public override string ToString()
         {
-            return FormatFullNameAndEmail(emailAddress.Name, emailAddress.Address);
+            return emailAddress.ToString();
         }
     }
 
@@ -32,6 +32,11 @@ namespace EctBlazorApp.Shared.GraphModels
     {
         public string Name { get; set; }
         public string Address { get; set; }
+
+        public override string ToString()
+        {
+            return FormatFullNameAndEmail(Name, Address);
+        }
     }
 
     public class DateTimeZone

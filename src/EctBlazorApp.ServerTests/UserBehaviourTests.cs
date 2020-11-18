@@ -44,7 +44,7 @@ namespace EctBlazorApp.Server.Tests
         {
             DateTime expectedLastSignIn = new DateTime(2020, 10, 1);
             GraphUserResponse mockGraphResponse = GetMockGraphUserResponse("Bob BobS");
-            Mock<ITestableExtensionMethods> mock = new Mock<ITestableExtensionMethods>
+            Mock<IMockableMethods> mock = new Mock<IMockableMethods>
             {
                 CallBase = true
             };
@@ -60,11 +60,13 @@ namespace EctBlazorApp.Server.Tests
         }
 
         [TestMethod()]
-        public async Task UpdateCalendarEventRecordsWrapperAsyncTest()
+        public async Task UpdateCalendarEventRecordsWrapperAsync_OneMissingEvent_EventSavedSuccessfully()
         {
             EctUser contextUser = _dbContext.Users.First(user => user.Email.Equals("alice@ect.ie"));
-            GraphEventsResponse mockEvent = GetMockGraphEventResponseOneDayAfterLastLogin(contextUser, "Roger RogerS");
-            Mock<ITestableExtensionMethods> mock = new Mock<ITestableExtensionMethods>
+            EventEmailAddress orgraniserDetails = GetTestUser("Roger RogerS");
+
+            GraphEventsResponse mockEvent = GetMockGraphEventResponseOneDayAfterLastLogin(contextUser, orgraniserDetails);
+            Mock<IMockableMethods> mock = new Mock<IMockableMethods>
             {
                 CallBase = true
             };
@@ -73,13 +75,7 @@ namespace EctBlazorApp.Server.Tests
             HttpClientExtensions.Implementation = mock.Object;
 
             bool actualValue = await contextUser.UpdateCalendarEventRecordsWrapperAsync(new HttpClient(), _dbContext);
-            MicrosoftGraphEvent graphEvent = mockEvent.Value[0];
-            var eventAddedToDb = 
-                //_dbContext.CalendarEvents.Where(
-                //e => e.Organizer.Equals(graphEvent.Organizer));
-                _dbContext.CalendarEvents.Where(e => e.Attendees.Contains(
-                    FormatFullNameAndEmail(contextUser.FullName, contextUser.Email)
-                )).Any();                                                              // TODO - Fix this part -- Calendar events not connected to a user???
+            bool eventAddedToDb = contextUser.CalendarEvents.Any(e => e.Organizer.Contains(orgraniserDetails.ToString()));
 
             Assert.IsTrue(actualValue);
             Assert.IsTrue(eventAddedToDb);

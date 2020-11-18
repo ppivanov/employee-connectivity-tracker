@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace EctBlazorApp.Server.CommonMethods
 {
-    public class GraphMethods : ITestableExtensionMethods
+    public class GraphMethods : IMockableMethods
     {
         private const string baseGraphUrl = "https://graph.microsoft.com/v1.0";
         private static string ConstructGraphUrlForEvents(EctUser user)
         {
-            string formattedFromDate = user.LastSignIn.ToString("yyyy-MM-dd");          // TODO - this must include the time so we don't pull in duplicate events
+            string formattedFromDate = user.LastSignIn.ToString("O");          // TODO - this must include the time so we don't pull in duplicate events
             string formattedToDate = DateTime.Now.ToString("yyyy-MM-dd");
             string eventsEndpoint = $"{baseGraphUrl}/users/{user.Email}/events$filter=start/datetime ge '{formattedFromDate}' " +
                 $"and end/datetime lt '{formattedToDate}'&$select=subject,organizer,attendees,start,end";

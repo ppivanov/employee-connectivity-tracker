@@ -7,7 +7,7 @@ namespace EctBlazorApp.ServerTests
 {
     public static class MockObjects
     {
-        public static GraphEventsResponse GetMockGraphEventResponseOneDayAfterLastLogin(EctUser contextUser, string organiserFullName)
+        public static GraphEventsResponse GetMockGraphEventResponseOneDayAfterLastLogin(EctUser contextUser, EventEmailAddress organiserDetails)
         {
             return new GraphEventsResponse
             {
@@ -28,21 +28,13 @@ namespace EctBlazorApp.ServerTests
                         },
                         Organizer = new EventAttendee
                         {
-                            emailAddress = new EventEmailAddress
-                            {
-                                Name = organiserFullName,
-                                Address = GetEmailFromFullName(organiserFullName)
-                            }
+                            emailAddress = organiserDetails
                         },
                         Attendees = new EventAttendee[]
                         {
                             new EventAttendee
                             {
-                                emailAddress = new EventEmailAddress
-                                {
-                                    Name = organiserFullName,
-                                    Address = GetEmailFromFullName(organiserFullName)
-                                }
+                                emailAddress = organiserDetails
                             },
                             new EventAttendee
                             {
@@ -57,10 +49,10 @@ namespace EctBlazorApp.ServerTests
                 }
             };
         }
-    
+
         public static GraphUserResponse GetMockGraphUserResponse(string fullName)
         {
-            return new GraphUserResponse() 
+            return new GraphUserResponse()
             {
                 DisplayName = fullName,
                 Id = RandomString(),
@@ -68,11 +60,6 @@ namespace EctBlazorApp.ServerTests
             };
         }
 
-        private static string GetEmailFromFullName(string fullName)
-        {
-            return $"{fullName.Split(" ")[0].ToLower()}@ect.ie";
-        }
-        
         private static string RandomString()
         {
             const int length = 16;
@@ -81,6 +68,19 @@ namespace EctBlazorApp.ServerTests
 
             return new string(Enumerable.Repeat(chars, length)
               .Select(s => s[random.Next(s.Length)]).ToArray());
+        }
+
+        public static EventEmailAddress GetTestUser(string fullName)
+        {
+            return new EventEmailAddress
+            {
+                Name = fullName,
+                Address = GetEmailFromFullName(fullName)
+            };
+        }
+        private static string GetEmailFromFullName(string fullName)
+        {
+            return $"{fullName.Split(" ")[0].ToLower()}@ect.ie";
         }
     }
 }

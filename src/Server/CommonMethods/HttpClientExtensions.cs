@@ -7,8 +7,8 @@ namespace EctBlazorApp.Server.CommonMethods
 {
     public static class HttpClientExtensions
     {
-        private static ITestableExtensionMethods defaultImplementation = new GraphMethods();
-        public static ITestableExtensionMethods Implementation { private get; set; }
+        private static IMockableMethods defaultImplementation = new GraphMethods();
+        public static IMockableMethods Implementation { private get; set; }
           = defaultImplementation;
         public static void RevertToDefaultImplementation()
         {
