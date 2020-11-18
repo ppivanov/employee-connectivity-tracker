@@ -63,7 +63,7 @@ namespace EctBlazorApp.Server.Tests
         public async Task UpdateCalendarEventRecordsWrapperAsync_OneMissingEvent_EventSavedSuccessfully()
         {
             EctUser contextUser = _dbContext.Users.First(user => user.Email.Equals("alice@ect.ie"));
-            EventEmailAddress orgraniserDetails = GetTestUser("Roger RogerS");
+            EventEmailAddress[] orgraniserDetails = { GetTestUser("Roger RogerS"), GetTestUser("Jessica JessicaS") };
 
             GraphEventsResponse mockEvent = GetMockGraphEventResponseOneDayAfterLastLogin(contextUser, orgraniserDetails);
             Mock<IMockableMethods> mock = new Mock<IMockableMethods>
@@ -75,7 +75,12 @@ namespace EctBlazorApp.Server.Tests
             HttpClientExtensions.Implementation = mock.Object;
 
             bool actualValue = await contextUser.UpdateCalendarEventRecordsWrapperAsync(new HttpClient(), _dbContext);
-            bool eventAddedToDb = contextUser.CalendarEvents.Any(e => e.Organizer.Contains(orgraniserDetails.ToString()));
+            bool eventAddedToDb = true;
+            foreach(var orgraniser in orgraniserDetails)
+            {
+                if (contextUser.CalendarEvents.Any(e => e.Organizer.Contains(orgraniser.ToString())) == false)
+                    eventAddedToDb = false;
+            }
 
             Assert.IsTrue(actualValue);
             Assert.IsTrue(eventAddedToDb);

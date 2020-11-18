@@ -1,52 +1,57 @@
 ﻿using EctBlazorApp.Shared;
 using EctBlazorApp.Shared.GraphModels;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace EctBlazorApp.ServerTests
 {
     public static class MockObjects
     {
-        public static GraphEventsResponse GetMockGraphEventResponseOneDayAfterLastLogin(EctUser contextUser, EventEmailAddress organiserDetails)
+        public static GraphEventsResponse GetMockGraphEventResponseOneDayAfterLastLogin(EctUser contextUser, EventEmailAddress[] organiserDetails)
         {
-            return new GraphEventsResponse
+            MicrosoftGraphEvent[] graphEvents = new MicrosoftGraphEvent[organiserDetails.Length];
+            for (int i = 0; i < graphEvents.Length; i++)
             {
-                Value = new MicrosoftGraphEvent[]
+                var eventOrganiser = organiserDetails[i];
+                graphEvents[i] = new MicrosoftGraphEvent
                 {
-                    new MicrosoftGraphEvent
+                    Subject = "Short project meeting",
+                    Start = new DateTimeZone
                     {
-                        Subject = "Short project meeting",
-                        Start = new DateTimeZone
+                        DateTime = contextUser.LastSignIn.AddDays(3).ToString("o"),
+                        TimeZone = "UTC"
+                    },
+                    End = new DateTimeZone
+                    {
+                        DateTime = contextUser.LastSignIn.AddDays(3).ToString("o"),
+                        TimeZone = "UTC"
+                    },
+                    Organizer = new EventAttendee
+                    {
+                        emailAddress = eventOrganiser
+                    },
+                    Attendees = new EventAttendee[]
+                    {
+                        new EventAttendee
                         {
-                            DateTime = contextUser.LastSignIn.AddDays(3).ToString("o"),
-                            TimeZone = "UTC"
+                            emailAddress = eventOrganiser
                         },
-                        End = new DateTimeZone
+                        new EventAttendee
                         {
-                            DateTime = contextUser.LastSignIn.AddDays(3).ToString("o"),
-                            TimeZone = "UTC"
-                        },
-                        Organizer = new EventAttendee
-                        {
-                            emailAddress = organiserDetails
-                        },
-                        Attendees = new EventAttendee[]
-                        {
-                            new EventAttendee
+                            emailAddress = new EventEmailAddress
                             {
-                                emailAddress = organiserDetails
-                            },
-                            new EventAttendee
-                            {
-                                emailAddress = new EventEmailAddress
-                                {
-                                    Name = contextUser.FullName,
-                                    Address = contextUser.Email
-                                }
+                                Name = contextUser.FullName,
+                                Address = contextUser.Email
                             }
                         }
                     }
-                }
+                };
+            }
+
+            return new GraphEventsResponse
+            {
+                Value = graphEvents
             };
         }
 
