@@ -1,0 +1,31 @@
+trigger:
+  branches:
+    include:
+    - main
+
+variables:
+  buildConfiguration: 'Release'
+  vmImageName: 'ubuntu-latest'
+
+stages:
+- stage: Build
+  displayName: Build stage
+
+  jobs:
+  - job: Build
+    displayName: Build
+
+    pool:
+      vmImage: $(vmImageName)
+
+    steps:
+    - task: DotNetCoreCLI@2
+      displayName: Build Server
+      inputs:
+        command: 'build'
+        projects: '**/EctBlazorApp.Server.csproj'
+    - task: DotNetCoreCLI@2
+      displayName: Run Tests
+      inputs:
+        command: 'test'
+        projects: '**/EctBlazorApp.ServerTests.csproj'
