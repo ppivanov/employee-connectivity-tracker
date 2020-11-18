@@ -6,11 +6,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using System.Threading.Tasks;
-using Microsoft.Graph;
 using static EctBlazorApp.Shared.SharedCommonMethods;
 using Newtonsoft.Json;
 using System.Net.Http;
-using EctBlazorApp.Client.Models;
+using EctBlazorApp.Shared.GraphModels;
 using System.Net.Http.Headers;
 
 namespace EctBlazorApp.Server.Controllers

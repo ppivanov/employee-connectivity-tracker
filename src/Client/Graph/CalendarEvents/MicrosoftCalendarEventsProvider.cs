@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using EctBlazorApp.Client.Models;
+using EctBlazorApp.Shared.GraphModels;
 using EctBlazorApp.Shared;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Newtonsoft.Json;
+using System.Net.Http.Json;
+using System.Text;
 
 namespace EctBlazorApp.Client.Graph
 {
@@ -36,7 +38,7 @@ namespace EctBlazorApp.Client.Graph
             var contentAsString = await response.Content.ReadAsStringAsync();
             var microsoftEvents = JsonConvert.DeserializeObject<GraphEventsResponse>(contentAsString);
 
-            var events = CastMicrosoftGraphEventsToCalendarEvents(microsoftEvents.Value);
+            var events = CalendarEvent.CastGraphEventsToCalendarEvents(microsoftEvents.Value);
 
             return events;
         }
@@ -63,9 +65,20 @@ namespace EctBlazorApp.Client.Graph
             if (accessToken == null)
                 return "Token missing";
 
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", await GetAPITokenAsync());
-            var response = await _httpClient.GetAsync($"api/main/update-records?graphToken={accessToken}&userId={userEmail}");
+            var userDetails = new GraphUserRequestDetails
+            {
+                UserId = userEmail,
+                GraphToken = accessToken
+            };
 
+            using var client = new HttpClient();
+
+            var json = JsonConvert.SerializeObject(userDetails);
+            var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+            
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", await GetAPITokenAsync());
+            var response = await _httpClient.PutAsync($"api/main/update-records", data);
 
             return await response.Content.ReadAsStringAsync();
         }
@@ -116,30 +129,6 @@ namespace EctBlazorApp.Client.Graph
             string graphUrl = $"https://graph.microsoft.com/v1.0/me/events?$filter=start/datetime ge '{formattedFromDate}' " +
                 $"and end/datetime lt '{formattedToDate}'&$select=subject,organizer,attendees,start,end";
             return graphUrl;
-        }
-
-        private List<CalendarEvent> CastMicrosoftGraphEventsToCalendarEvents(MicrosoftGraphEvent[] graphEvents)
-        {
-            const int attendeesLimit = 20;
-            var events = new List<CalendarEvent>();
-
-            foreach (var graphEvent in graphEvents)
-            {
-                CalendarEvent calendarEvent = new CalendarEvent
-                {
-                    Subject = graphEvent.Subject,
-                    Start = graphEvent.Start.ConvertToLocalDateTime(),
-                    End = graphEvent.End.ConvertToLocalDateTime(),
-                    Organizer = graphEvent.Organizer.ToString(),
-                    Attendees = new List<string>()
-                };
-                // TODO -> find a solution or remove the limit
-                for (int i = 0; i < Math.Min(attendeesLimit, graphEvent.Attendees.Length); i++)         // if the graphEvent is a large group meeting,
-                    calendarEvent.Attendees.Add(graphEvent.Attendees[i].ToString());                    // then perhaps we don't want to waste the resourses 
-                                                                                                        // transferring them over to the database
-                events.Add(calendarEvent);
-            }
-            return events;
         }
     }
 }

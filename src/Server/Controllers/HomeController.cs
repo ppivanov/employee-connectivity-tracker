@@ -1,8 +1,6 @@
 ﻿using EctBlazorApp.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -23,16 +21,21 @@ namespace EctBlazorApp.Server.Controllers
         }
 
         [Route("update-records")]
-        [HttpGet]
-        public async Task<ActionResult> UpdateDatabaseRecordsForUser([FromQuery] string graphToken, [FromQuery] string userId)
+        [HttpPut]
+        public async Task<ActionResult> UpdateDatabaseRecordsForUser(GraphUserRequestDetails userDetails)
         {
             using var client = new HttpClient();
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", graphToken);
-            EctUser userForParms = await GetExistingEctUserOrNewWrapperAsync(userId, client, _dbContext);
+            if (userDetails == null || userDetails.GraphToken == null || userDetails.UserId == null)
+                return BadRequest("No inputs");
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", userDetails.GraphToken);
+            EctUser userForParms = await GetExistingEctUserOrNewWrapperAsync(userDetails.UserId, client, _dbContext);
             bool eventsSaved = await userForParms.UpdateCalendarEventRecordsWrapperAsync(client, _dbContext);
+            if (!eventsSaved)
+                return BadRequest("Failure trying to update records");
+
             // update receivedMail
             // update sentMail
-            return BadRequest();
+            return Ok("Records up to date");
         }
     }
 }

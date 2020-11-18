@@ -38,6 +38,8 @@ namespace EctBlazorApp.Server.Behaviour
             try
             {
                 GraphEventsResponse graphEvents = await client.GetMissingCalendarEvents(user);
+                if (graphEvents.Value.Length < 1)
+                    return false;
                 var calendarEvents = CalendarEvent.CastGraphEventsToCalendarEvents(graphEvents.Value);
                 if (calendarEvents.Count < 1)
                     return false;

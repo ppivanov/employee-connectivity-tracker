@@ -60,7 +60,7 @@ namespace EctBlazorApp.Server.Tests
         }
 
         [TestMethod()]
-        public async Task UpdateCalendarEventRecordsWrapperAsync_OneMissingEvent_EventSavedSuccessfully()
+        public async Task UpdateCalendarEventRecordsWrapperAsync_TwoMissingEvents_EventsSavedSuccessfully()
         {
             EctUser contextUser = _dbContext.Users.First(user => user.Email.Equals("alice@ect.ie"));
             EventEmailAddress[] orgraniserDetails = { GetTestUser("Roger RogerS"), GetTestUser("Jessica JessicaS") };
@@ -75,15 +75,15 @@ namespace EctBlazorApp.Server.Tests
             HttpClientExtensions.Implementation = mock.Object;
 
             bool actualValue = await contextUser.UpdateCalendarEventRecordsWrapperAsync(new HttpClient(), _dbContext);
-            bool eventAddedToDb = true;
+            bool eventsAddedToDb = true;
             foreach(var orgraniser in orgraniserDetails)
             {
                 if (contextUser.CalendarEvents.Any(e => e.Organizer.Contains(orgraniser.ToString())) == false)
-                    eventAddedToDb = false;
+                    eventsAddedToDb = false;
             }
 
             Assert.IsTrue(actualValue);
-            Assert.IsTrue(eventAddedToDb);
+            Assert.IsTrue(eventsAddedToDb);
         }
     }
 }
