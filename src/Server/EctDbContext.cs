@@ -1,9 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using EctBlazorApp.Shared;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Net.Http;
+using EctBlazorApp.Server.CommonMethods;
+using EctBlazorApp.Shared.GraphModels;
+using System.Collections.Generic;
 
 namespace EctBlazorApp.Server
 {
@@ -25,15 +28,6 @@ namespace EctBlazorApp.Server
         {
         }
 
-        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        //{
-        //    if (!optionsBuilder.IsConfigured)
-        //    {
-        //        //#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-        //        //optionsBuilder.UseSqlServer("Server=tcp:ect.database.windows.net,1433;Initial Catalog=EctDb;Persist Security Info=False;User ID=geologistsnooze;Password={PASSWORD};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
-        //    }
-        //}
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<CalendarEvent>().Ignore(e => e.Attendees);
@@ -42,6 +36,22 @@ namespace EctBlazorApp.Server
             modelBuilder.Entity<EctTeam>()
                 .HasOne(p => p.Leader)
                 .WithMany(p => p.LeaderOf);
+        }
+
+        public async Task<EctUser> AddUser(string userId, HttpClient client)
+        {
+            GraphUserResponse graphUser = await client.GetGraphUser(userId);
+            try
+            {
+                EctUser newUser = new EctUser(graphUser);
+                Users.Add(newUser);
+                await SaveChangesAsync();
+                return newUser;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
     }
 

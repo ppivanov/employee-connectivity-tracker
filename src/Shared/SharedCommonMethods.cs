@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace EctBlazorApp.Server.CommonMethods
+namespace EctBlazorApp.Shared
 {
-    public static class CommonDateMethods
+    public static class SharedCommonMethods
     {
         public static DateTime NewDateTimeFromString(string dateString)                             // Expects the string to be in yyyy-MM-dd format
         {
@@ -17,6 +14,11 @@ namespace EctBlazorApp.Server.CommonMethods
                 int.Parse(dateArray[2]));
 
             return newDate;
+        }
+
+        public static string FormatFullNameAndEmail(string fullName, string email)
+        {
+            return $"{fullName} <{email}>";
         }
     }
 }

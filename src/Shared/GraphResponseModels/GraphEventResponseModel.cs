@@ -1,7 +1,9 @@
 ﻿using System;
+using static EctBlazorApp.Shared.SharedCommonMethods;
 
-namespace EctBlazorApp.Client.Models
+namespace EctBlazorApp.Shared.GraphModels
 {
+
     public class GraphEventsResponse
     {
         public MicrosoftGraphEvent[] Value { get; set; }
@@ -22,14 +24,19 @@ namespace EctBlazorApp.Client.Models
 
         public override string ToString()
         {
-            return $"{emailAddress.Name} <{emailAddress.Address}>"; 
+            return emailAddress.ToString();
         }
     }
 
     public class EventEmailAddress
     {
         public string Name { get; set; }
-        public string Address{ get; set; }
+        public string Address { get; set; }
+
+        public override string ToString()
+        {
+            return FormatFullNameAndEmail(Name, Address);
+        }
     }
 
     public class DateTimeZone

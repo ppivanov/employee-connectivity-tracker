@@ -1,7 +1,7 @@
-﻿using System;
+﻿using EctBlazorApp.Shared.GraphModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace EctBlazorApp.Shared
 {
@@ -15,8 +15,8 @@ namespace EctBlazorApp.Shared
         public string Organizer { get; set; }
 
 
-        private List<String> _attendees;
-        public List<String> Attendees
+        private List<string> _attendees;
+        public List<string> Attendees
         {
             get { return _attendees; }
             set { _attendees = value; }
@@ -26,12 +26,50 @@ namespace EctBlazorApp.Shared
         {
             get
             {
-                return string.Join(" | ", _attendees);
+                if (Attendees.Count < 1) 
+                    return "";
+
+                return string.Join(" | ", Attendees);
             }
             set
             {
-                _attendees = value.Split(" | ").ToList();
+                if (value.Length < 1) 
+                    Attendees = new List<string>();
+
+                Attendees = value.Split(" | ").ToList();
             }
+        }
+
+        public CalendarEvent()
+        {
+            Attendees = new List<string>();
+        }
+
+        public CalendarEvent(MicrosoftGraphEvent graphEvent)
+        {
+            const int attendeesLimit = 20;
+
+            Subject = graphEvent.Subject;
+            Start = graphEvent.Start.ConvertToLocalDateTime();
+            End = graphEvent.End.ConvertToLocalDateTime();
+            Organizer = graphEvent.Organizer.ToString();
+            Attendees = new List<string>();
+            // TODO -> find a solution or remove the limit???
+            Attendees.AddRange(
+                graphEvent.Attendees.Take(attendeesLimit)
+                    .Select(a => a.ToString()));
+        }
+
+        public static List<CalendarEvent> CastGraphEventsToCalendarEvents(MicrosoftGraphEvent[] graphEvents)
+        {
+            List<CalendarEvent> calendarEvents = new List<CalendarEvent>();
+            foreach (var graphEvent in graphEvents)
+            {
+                CalendarEvent calendarEvent = new CalendarEvent(graphEvent);
+                calendarEvents.Add(calendarEvent);
+            }
+
+            return calendarEvents;
         }
     }
 }
