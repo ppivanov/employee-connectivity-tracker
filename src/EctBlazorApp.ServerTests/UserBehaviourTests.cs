@@ -62,6 +62,7 @@ namespace EctBlazorApp.Server.Tests
         [TestMethod()]
         public async Task UpdateCalendarEventRecordsWrapperAsync_TwoMissingEvents_EventsSavedSuccessfully()
         {
+            const string dateFormat = "yyyy-MM-dd hh:mm";
             EctUser contextUser = _dbContext.Users.First(user => user.Email.Equals("alice@ect.ie"));
             EventEmailAddress[] orgraniserDetails = { GetTestUser("Roger RogerS"), GetTestUser("Jessica JessicaS") };
 
@@ -81,9 +82,12 @@ namespace EctBlazorApp.Server.Tests
                 if (contextUser.CalendarEvents.Any(e => e.Organizer.Contains(orgraniser.ToString())) == false)
                     eventsAddedToDb = false;
             }
+            string expectedLastSignIn = DateTime.Now.ToString(dateFormat);
+            string actualLastSignIn = contextUser.LastSignIn.ToString(dateFormat);
 
             Assert.IsTrue(actualValue);
             Assert.IsTrue(eventsAddedToDb);
+            Assert.AreEqual(expectedLastSignIn, actualLastSignIn);
         }
     }
 }

@@ -49,6 +49,7 @@ namespace EctBlazorApp.Server.Behaviour
                 {
                     user.CalendarEvents.Add(calendarEvent);
                 }
+                user.LastSignIn = DateTime.Now;
                 await dbContext.SaveChangesAsync();
 
                 return true;
