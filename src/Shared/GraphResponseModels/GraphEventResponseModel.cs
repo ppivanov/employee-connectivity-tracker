@@ -14,13 +14,13 @@ namespace EctBlazorApp.Shared.GraphModels
         public string Subject { get; set; }
         public DateTimeZone Start { get; set; }
         public DateTimeZone End { get; set; }
-        public EventAttendee Organizer { get; set; }
-        public EventAttendee[] Attendees { get; set; }
+        public MicrosoftGraphPerson Organizer { get; set; }
+        public MicrosoftGraphPerson[] Attendees { get; set; }
     }
 
-    public class EventAttendee
+    public class MicrosoftGraphPerson
     {
-        public EventEmailAddress emailAddress { get; set; }
+        public MicrosoftGraphEmailAddress emailAddress { get; set; }
 
         public override string ToString()
         {
@@ -28,7 +28,7 @@ namespace EctBlazorApp.Shared.GraphModels
         }
     }
 
-    public class EventEmailAddress
+    public class MicrosoftGraphEmailAddress
     {
         public string Name { get; set; }
         public string Address { get; set; }

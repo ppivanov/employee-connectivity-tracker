@@ -8,7 +8,7 @@ namespace EctBlazorApp.ServerTests
 {
     public static class MockObjects
     {
-        public static GraphEventsResponse GetMockGraphEventResponseOneDayAfterLastLogin(EctUser contextUser, EventEmailAddress[] organiserDetails)
+        public static GraphEventsResponse GetMockGraphEventResponseOneDayAfterLastLogin(EctUser contextUser, MicrosoftGraphEmailAddress[] organiserDetails)
         {
             MicrosoftGraphEvent[] graphEvents = new MicrosoftGraphEvent[organiserDetails.Length];
             for (int i = 0; i < graphEvents.Length; i++)
@@ -27,19 +27,19 @@ namespace EctBlazorApp.ServerTests
                         DateTime = contextUser.LastSignIn.AddDays(3).ToString("o"),
                         TimeZone = "UTC"
                     },
-                    Organizer = new EventAttendee
+                    Organizer = new MicrosoftGraphPerson
                     {
                         emailAddress = eventOrganiser
                     },
-                    Attendees = new EventAttendee[]
+                    Attendees = new MicrosoftGraphPerson[]
                     {
-                        new EventAttendee
+                        new MicrosoftGraphPerson
                         {
                             emailAddress = eventOrganiser
                         },
-                        new EventAttendee
+                        new MicrosoftGraphPerson
                         {
-                            emailAddress = new EventEmailAddress
+                            emailAddress = new MicrosoftGraphEmailAddress
                             {
                                 Name = contextUser.FullName,
                                 Address = contextUser.Email
@@ -75,9 +75,9 @@ namespace EctBlazorApp.ServerTests
               .Select(s => s[random.Next(s.Length)]).ToArray());
         }
 
-        public static EventEmailAddress GetTestUser(string fullName)
+        public static MicrosoftGraphEmailAddress GetTestUser(string fullName)
         {
-            return new EventEmailAddress
+            return new MicrosoftGraphEmailAddress
             {
                 Name = fullName,
                 Address = GetEmailFromFullName(fullName)

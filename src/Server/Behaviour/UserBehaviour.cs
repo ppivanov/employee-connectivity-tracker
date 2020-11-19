@@ -15,6 +15,15 @@ namespace EctBlazorApp.Server.Behaviour
         {
             return GetExistingEctUserOrNewAsync(userId, client, dbContext);
         }
+        public static Task<bool> UpdateCalendarEventRecordsWrapperAsync(this EctUser user, HttpClient client, EctDbContext dbContext)
+        {
+            return UpdateCalendarEventRecordsAsync(user, client, dbContext);
+        }
+        public static Task<bool> UpdateReceivedMailRecordsWrapperAsync(this EctUser user, HttpClient client, EctDbContext dbContext)
+        {
+            return UpdateReceivedMailRecordsAsync(user, client, dbContext);
+        }
+
         private static async Task<EctUser> GetExistingEctUserOrNewAsync(string userId, HttpClient client, EctDbContext dbContext)
         {
             try
@@ -28,11 +37,7 @@ namespace EctBlazorApp.Server.Behaviour
                 return addUserResult;
             }
         }
-
-        public static Task<bool> UpdateCalendarEventRecordsWrapperAsync(this EctUser user, HttpClient client, EctDbContext dbContext)
-        {
-            return UpdateCalendarEventRecordsAsync(user, client, dbContext);
-        }
+        
         private static async Task<bool> UpdateCalendarEventRecordsAsync(EctUser user, HttpClient client, EctDbContext dbContext)
         {
             try
@@ -46,10 +51,33 @@ namespace EctBlazorApp.Server.Behaviour
 
                 if (user.CalendarEvents == null) user.CalendarEvents = new List<CalendarEvent>();
                 foreach (var calendarEvent in calendarEvents)
-                {
                     user.CalendarEvents.Add(calendarEvent);
-                }
-                user.LastSignIn = DateTime.Now;
+                
+                await dbContext.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+       
+        private static async Task<bool> UpdateReceivedMailRecordsAsync(EctUser user, HttpClient client, EctDbContext dbContext)
+        {
+            try
+            {
+                GraphMailResponse graphReceivedMail = await client.GetMissingReceivedMail(user);
+                if (graphReceivedMail.Value.Length < 1)
+                    return true;
+                var receivedMailList = ReceivedMail.CastGraphReceivedMailToReceivedMail(graphReceivedMail.Value);
+                if (receivedMailList.Count < 1)
+                    return false;
+
+                if (user.ReceivedEmails == null) user.ReceivedEmails = new List<ReceivedMail>();
+                foreach (var receivedMail in receivedMailList)
+                    user.ReceivedEmails.Add(receivedMail);
+
                 await dbContext.SaveChangesAsync();
 
                 return true;

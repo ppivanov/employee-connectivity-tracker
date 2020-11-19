@@ -12,12 +12,19 @@ namespace EctBlazorApp.Server.CommonMethods
         private const string baseGraphUrl = "https://graph.microsoft.com/v1.0";
         private static string ConstructGraphUrlForEvents(EctUser user)
         {
-            string formattedFromDate = user.LastSignIn.ToString("s");          // TODO - this must include the time so we don't pull in duplicate events
+            string formattedFromDate = user.LastSignIn.ToString("s");
             string formattedToDate = DateTime.Now.ToString("s");
             string eventsEndpoint = $"{baseGraphUrl}/users/{user.Email}/events?$filter=start/datetime ge '{formattedFromDate}' " +
                 $"and end/datetime le '{formattedToDate}'&$select=subject,organizer,attendees,start,end";
 
             return eventsEndpoint;
+        }
+        private static string ConstructGraphUrlForReceivedMail(EctUser user)
+        {
+            string formattedFromDate = user.LastSignIn.ToString("yyyy-MM-dd");
+            string inboxEndpoint = $"{baseGraphUrl}/users/{user.Email}/mailFolders/inbox/messages?$filter=receivedDateTime ge {formattedFromDate} " +
+                "&$select=receivedDateTime,subject,sender";
+            return inboxEndpoint;
         }
 
         private static string ConstructGraphUrlForUser(string userId)
@@ -51,5 +58,19 @@ namespace EctBlazorApp.Server.CommonMethods
 
             return graphEvents;
         }
+
+        // This method only reads from the user's inbox folder. It can be modified to read more than one folder.
+        // This endpoint returns all outlook folders of a user: https://graph.microsoft.com/v1.0/users/{id | userPrincipalName}/mailFolders/
+        public async Task<GraphMailResponse> GetMissingReceivedMail(HttpClient client, EctUser user)
+        {
+            string eventsUrl = ConstructGraphUrlForReceivedMail(user);
+            var response = await client.GetAsync(eventsUrl);
+
+            string contentAsString = await response.Content.ReadAsStringAsync();
+            GraphMailResponse graphReceivedMail = JsonConvert.DeserializeObject<GraphMailResponse>(contentAsString);
+
+            return graphReceivedMail;
+        }
     }
 }
+

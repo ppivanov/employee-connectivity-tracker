@@ -64,7 +64,7 @@ namespace EctBlazorApp.Server.Tests
         {
             const string dateFormat = "yyyy-MM-dd hh:mm";
             EctUser contextUser = _dbContext.Users.First(user => user.Email.Equals("alice@ect.ie"));
-            EventEmailAddress[] orgraniserDetails = { GetTestUser("Roger RogerS"), GetTestUser("Jessica JessicaS") };
+            MicrosoftGraphEmailAddress[] orgraniserDetails = { GetTestUser("Roger RogerS"), GetTestUser("Jessica JessicaS") };
 
             GraphEventsResponse mockEvent = GetMockGraphEventResponseOneDayAfterLastLogin(contextUser, orgraniserDetails);
             Mock<IMockableMethods> mock = new Mock<IMockableMethods>

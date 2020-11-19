@@ -35,11 +35,21 @@ namespace EctBlazorApp.Server.Controllers
 
             bool eventsSaved = await RetryUpdateMethodIfFails(client, _dbContext, userForParms.UpdateCalendarEventRecordsWrapperAsync);
             if (!eventsSaved)
-                errorString.Append("Failure trying to update records");
+                errorString.Append("Failed: Could not update calendar event records\n");
 
-            // update receivedMail
+            bool receivedEmails = await RetryUpdateMethodIfFails(client, _dbContext, userForParms.UpdateReceivedMailRecordsWrapperAsync);
+            if (!receivedEmails)
+                errorString.Append("Failed: Could not update received mail records\n");
+
             // update sentMail
-            return Ok("Records up to date");
+
+            userForParms.LastSignIn = DateTime.Now;
+            await _dbContext.SaveChangesAsync();
+
+            if (errorString.Length > 1) 
+                return BadRequest(errorString.ToString());
+
+            return Ok("User records up to date");
         }
 
         private delegate Task<bool> UpdateMetgodDelegate(HttpClient client, EctDbContext dbContext);
