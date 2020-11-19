@@ -34,7 +34,7 @@ namespace EctBlazorApp.Client
                 options.ProviderOptions.AdditionalScopesToConsent.Add("https://graph.microsoft.com/Chat.Read.All");
                 options.ProviderOptions.AdditionalScopesToConsent.Add("https://graph.microsoft.com/Mail.Read");
             });
-            builder.Services.AddScoped<ICalendarEventsProvider, MicrosoftCalendarEventsProvider>();
+            builder.Services.AddScoped<IControllerConnection, ControllerConnection>();
             await builder.Build().RunAsync();
         }
     }

@@ -1,46 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Threading.Tasks;
-using EctBlazorApp.Shared.GraphModels;
-using EctBlazorApp.Shared;
+﻿using EctBlazorApp.Shared;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Newtonsoft.Json;
-using System.Net.Http.Json;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace EctBlazorApp.Client.Graph
 {
-    public class MicrosoftCalendarEventsProvider : ICalendarEventsProvider
+    public class ControllerConnection : IControllerConnection
     {
         private readonly IAccessTokenProvider _accessTokenProvider;
         private readonly HttpClient _httpClient;
 
-        public MicrosoftCalendarEventsProvider(IAccessTokenProvider accessTokenProvider, HttpClient httpClient)
+        public ControllerConnection(IAccessTokenProvider accessTokenProvider, HttpClient httpClient)
         {
             _accessTokenProvider = accessTokenProvider;
             _httpClient = httpClient;
-        }
-
-        public async Task<IEnumerable<CalendarEvent>> GetEventsInDateRangeAsync(DateTime fromDate, DateTime toDate)
-        {
-            var accessToken = await GetAccessTokenAsync();
-            if (accessToken == null)
-                return null;
-
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", accessToken);
-            var response = await _httpClient.GetAsync(ConstructGraphUrlForEvents(fromDate, toDate));
-
-            if (!response.IsSuccessStatusCode)
-                return null;
-
-            var contentAsString = await response.Content.ReadAsStringAsync();
-            var microsoftEvents = JsonConvert.DeserializeObject<GraphEventsResponse>(contentAsString);
-
-            var events = CalendarEvent.CastGraphEventsToCalendarEvents(microsoftEvents.Value);
-
-            return events;
         }
 
         public async Task<string> GetCalendarEventsForEmail(string userEmail)
@@ -61,6 +37,8 @@ namespace EctBlazorApp.Client.Graph
 
         public async Task<string> UpdateDatabaseRecords(string userEmail)
         {
+            using var client = new HttpClient();
+
             var accessToken = await GetAccessTokenAsync();
             if (accessToken == null)
                 return "Token missing";
@@ -71,15 +49,13 @@ namespace EctBlazorApp.Client.Graph
                 GraphToken = accessToken
             };
 
-            using var client = new HttpClient();
-
             var json = JsonConvert.SerializeObject(userDetails);
             var data = new StringContent(json, Encoding.UTF8, "application/json");
-
             
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", await GetAPITokenAsync());
-            var response = await _httpClient.PutAsync($"api/main/update-records", data);
+            var response = await _httpClient.PutAsync($"api/main/update-tracking-records", data);
 
+            // Perhaps loop a few times if unsuccessful??
             return await response.Content.ReadAsStringAsync();
         }
 
@@ -120,15 +96,6 @@ namespace EctBlazorApp.Client.Graph
                     return token.Value;
             }
             return null;
-        }
-
-        private string ConstructGraphUrlForEvents(DateTime fromDate, DateTime toDate)
-        {
-            string formattedFromDate = fromDate.ToString("yyyy-MM-dd");
-            string formattedToDate = toDate.ToString("yyyy-MM-dd");
-            string graphUrl = $"https://graph.microsoft.com/v1.0/me/events?$filter=start/datetime ge '{formattedFromDate}' " +
-                $"and end/datetime lt '{formattedToDate}'&$select=subject,organizer,attendees,start,end";
-            return graphUrl;
         }
     }
 }
