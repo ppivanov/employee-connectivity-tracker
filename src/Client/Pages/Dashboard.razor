@@ -11,10 +11,30 @@
 
 <AuthorizeView>
     <Authorized>
-        <h1 class="navigation">Dashboard</h1>
-        <button @onclick="SyncWithMicrosoftGraph">Sync</button>
-        <button @onclick="GetCalendarEventsInDateRange">Retrieve</button>
-        <button @onclick="(e=> GetUserDetails(context.User.GetUserEmail()))">UserDetails</button>
+        <div class="dashboard">
+            <div class="topRow">
+                <div class="dateRange">
+                    <h2>18 Nov - 19 Nov 2020</h2>
+                    <button>Change</button>
+                </div>
+                <div class="textSummary">
+                    <p>Emails sent: 6</p>
+                    <p>Emails received: 15</p>
+                    <p>Number of meetings: 5</p>
+                    <p>Time in meetings: 5 hours</p>
+                </div>
+            </div>
+            <div class="topCollaborators">
+                <h2>Top Collaborators</h2>
+                <div class="collaboratorsList">
+                    <div class="collaborator">
+                        <button @onclick="SyncWithMicrosoftGraph">Sync</button>
+                        <button @onclick="GetCalendarEventsInDateRange">Pull from DB</button>
+                        <button @onclick="(e=> GetUserDetails(context.User.GetUserEmail()))">UpdateRecords</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </Authorized>
     <NotAuthorized>
         <h2>Welcome to Employee Connectivity Tracker</h2>
