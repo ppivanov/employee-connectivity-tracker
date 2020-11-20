@@ -1,0 +1,41 @@
+@page "/"
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using EctBlazorApp.Shared
+@using System.Net.Http.Headers
+@inject HttpClient Http
+@inject IAccessTokenProvider TokenProvider
+@inject IJSRuntime jsRuntime
+@inject IControllerConnection graphProvider
+@inject AuthenticationStateProvider stateProvider
+
+<div class="home">
+    <AuthorizeView>
+        <Authorized>
+            <h2>Hi @context.User.GetUserDisplayName()!</h2>
+            <p>Welcome to ECT!</p>
+        </Authorized>
+        <NotAuthorized>
+            <h2>Welcome to Employee Connectivity Tracker!</h2>
+            <p>Please, <a href="authentication/login">Log in</a> to continue</p>
+        </NotAuthorized>
+    </AuthorizeView>
+</div>
+
+
+@code {
+
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+    protected string userId = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await jsRuntime.InvokeAsync<string>("setPageTitle", "Home");
+        await UpdateRecords();
+    }
+
+    private async Task UpdateRecords()
+    {
+        Console.WriteLine(await graphProvider.UpdateDatabaseRecords(userId));
+    }
+}

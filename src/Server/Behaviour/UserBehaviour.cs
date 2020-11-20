@@ -41,13 +41,13 @@ namespace EctBlazorApp.Server.Behaviour
                 return addUserResult;
             }
         }
-        
+
         private static async Task<bool> UpdateCalendarEventRecordsAsync(EctUser user, HttpClient client, EctDbContext dbContext)
         {
             try
             {
                 GraphEventsResponse graphEvents = await client.GetMissingCalendarEvents(user);
-                if (graphEvents.Value.Length < 1)
+                if (graphEvents.Value == null || graphEvents.Value.Length < 1)
                     return true;
                 var calendarEvents = CalendarEvent.CastGraphEventsToCalendarEvents(graphEvents.Value);
                 if (calendarEvents.Count < 1)
@@ -56,7 +56,7 @@ namespace EctBlazorApp.Server.Behaviour
                 if (user.CalendarEvents == null) user.CalendarEvents = new List<CalendarEvent>();
                 foreach (var calendarEvent in calendarEvents)
                     user.CalendarEvents.Add(calendarEvent);
-                
+
                 await dbContext.SaveChangesAsync();
 
                 return true;
@@ -66,13 +66,13 @@ namespace EctBlazorApp.Server.Behaviour
                 return false;
             }
         }
-       
+
         private static async Task<bool> UpdateReceivedMailRecordsAsync(EctUser user, HttpClient client, EctDbContext dbContext)
         {
             try
             {
                 GraphReceivedMailResponse graphReceivedMail = await client.GetMissingReceivedMail(user);
-                if (graphReceivedMail.Value.Length < 1)
+                if (graphReceivedMail.Value == null || graphReceivedMail.Value.Length < 1)
                     return true;
                 var receivedMailList = ReceivedMail.CastGraphReceivedMailToReceivedMail(graphReceivedMail.Value);
                 if (receivedMailList.Count < 1)
@@ -96,10 +96,10 @@ namespace EctBlazorApp.Server.Behaviour
         {
             try
             {
-                GraphSentMailResponse graphReceivedMail = await client.GetMissingSentMail(user);
-                if (graphReceivedMail.Value.Length < 1)
+                GraphSentMailResponse graphSentMail = await client.GetMissingSentMail(user);
+                if (graphSentMail.Value == null || graphSentMail.Value.Length < 1)
                     return true;
-                var sentMailList = SentMail.CastGraphSentMailToSentMail(graphReceivedMail.Value);
+                var sentMailList = SentMail.CastGraphSentMailToSentMail(graphSentMail.Value);
                 if (sentMailList.Count < 1)
                     return false;
 

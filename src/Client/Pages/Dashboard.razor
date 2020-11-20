@@ -1,9 +1,10 @@
-@page "/"
 @page "/dashboard"
+
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @using EctBlazorApp.Shared
 @using System.Net.Http.Headers
-@*@attribute [Authorize]*@
+@attribute [Authorize]
 @inject HttpClient Http
 @inject IAccessTokenProvider TokenProvider
 @inject IJSRuntime jsRuntime
@@ -34,10 +35,6 @@
             </div>
         </div>
     </Authorized>
-    <NotAuthorized>
-        <h2>Welcome to Employee Connectivity Tracker</h2>
-        <p>Please, <a href="authentication/login">Log in</a> to continue</p>
-    </NotAuthorized>
 </AuthorizeView>
 
 
