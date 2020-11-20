@@ -17,6 +17,7 @@ namespace EctBlazorApp.Server
         public DbSet<CalendarEvent> CalendarEvents { get; set; }
         public DbSet<ReceivedMail> ReceivedEmails { get; set; }
         public DbSet<SentMail> SentEmails { get; set; }
+        public DbSet<EctAdmin> Administrators { get; set; }
 
 
         public EctDbContext()
