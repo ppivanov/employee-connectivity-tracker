@@ -4,13 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
-using System;
 using System.Threading.Tasks;
 using static EctBlazorApp.Shared.SharedCommonMethods;
-using Newtonsoft.Json;
-using System.Net.Http;
-using EctBlazorApp.Shared.GraphModels;
-using System.Net.Http.Headers;
 
 namespace EctBlazorApp.Server.Controllers
 {
@@ -28,7 +23,7 @@ namespace EctBlazorApp.Server.Controllers
 
         [Route("get-calendar-events")]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CalendarEvent>>> GetCalendarEvents([FromQuery] string fromDate, [FromQuery] string toDate)
+        public async Task<ActionResult<IEnumerable<CalendarEvent>>> GetCalendarEventsInDateRange([FromQuery] string fromDate, [FromQuery] string toDate)
         {
             var calendarEvents = 
                 await _dbContext.CalendarEvents.Where(c => 
