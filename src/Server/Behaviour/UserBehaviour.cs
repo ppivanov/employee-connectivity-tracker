@@ -67,7 +67,7 @@ namespace EctBlazorApp.Server.Behaviour
         {
             try
             {
-                GraphMailResponse graphReceivedMail = await client.GetMissingReceivedMail(user);
+                GraphReceivedMailResponse graphReceivedMail = await client.GetMissingReceivedMail(user);
                 if (graphReceivedMail.Value.Length < 1)
                     return true;
                 var receivedMailList = ReceivedMail.CastGraphReceivedMailToReceivedMail(graphReceivedMail.Value);

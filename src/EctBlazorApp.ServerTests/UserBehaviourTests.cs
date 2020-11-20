@@ -62,7 +62,6 @@ namespace EctBlazorApp.Server.Tests
         [TestMethod()]
         public async Task UpdateCalendarEventRecordsWrapperAsync_TwoMissingEvents_EventsSavedSuccessfully()
         {
-            const string dateFormat = "yyyy-MM-dd hh:mm";
             EctUser contextUser = _dbContext.Users.First(user => user.Email.Equals("alice@ect.ie"));
             MicrosoftGraphEmailAddress[] orgraniserDetails = { GetTestUser("Roger RogerS"), GetTestUser("Jessica JessicaS") };
 
@@ -77,17 +76,47 @@ namespace EctBlazorApp.Server.Tests
 
             bool actualValue = await contextUser.UpdateCalendarEventRecordsWrapperAsync(new HttpClient(), _dbContext);
             bool eventsAddedToDb = true;
-            foreach(var orgraniser in orgraniserDetails)
+            foreach (var orgraniser in orgraniserDetails)
             {
                 if (contextUser.CalendarEvents.Any(e => e.Organizer.Contains(orgraniser.ToString())) == false)
+                {
                     eventsAddedToDb = false;
+                    break;                                                                                                      // test has failed at this stage - no point looping through rest of the organisers
+                }
             }
-            string expectedLastSignIn = DateTime.Now.ToString(dateFormat);
-            string actualLastSignIn = contextUser.LastSignIn.ToString(dateFormat);
 
             Assert.IsTrue(actualValue);
             Assert.IsTrue(eventsAddedToDb);
-            Assert.AreEqual(expectedLastSignIn, actualLastSignIn);
+        }
+
+        [TestMethod()]
+        public async Task UpdateReivedMailRecordsWrapperAsync_TwoMissingEmails_EmailsSavedSuccessfully()
+        {
+            EctUser contextUser = _dbContext.Users.First(user => user.Email.Equals("alice@ect.ie"));
+            MicrosoftGraphEmailAddress[] senderDetails = { GetTestUser("Roger RogerS"), GetTestUser("Jessica JessicaS") };
+
+            GraphReceivedMailResponse mockGraphResponse = GetMockGraphMailResponseOneDayAfterLastLogin(contextUser, senderDetails);
+            Mock<IMockableMethods> mock = new Mock<IMockableMethods>
+            {
+                CallBase = true
+            };
+            mock.Setup(x => x.GetMissingReceivedMail(It.IsAny<HttpClient>(), It.IsAny<EctUser>())).ReturnsAsync(mockGraphResponse);
+
+            HttpClientExtensions.Implementation = mock.Object;
+
+            bool actualValue = await contextUser.UpdateReceivedMailRecordsWrapperAsync(new HttpClient(), _dbContext);
+            bool mailAddedToDb = true;
+            foreach (var sender in senderDetails)
+            {
+                if (contextUser.ReceivedEmails.Any(m => m.From.Equals(sender.ToString())) == false)
+                {
+                    mailAddedToDb = false;
+                    break;                                                                                                      // test has failed at this stage - no point looping through rest of the organisers
+                }
+            }
+
+            Assert.IsTrue(actualValue);
+            Assert.IsTrue(mailAddedToDb);
         }
     }
 }

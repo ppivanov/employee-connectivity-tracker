@@ -10,21 +10,21 @@ namespace EctBlazorApp.ServerTests
     {
         public static GraphEventsResponse GetMockGraphEventResponseOneDayAfterLastLogin(EctUser contextUser, MicrosoftGraphEmailAddress[] organiserDetails)
         {
-            MicrosoftGraphEvent[] graphEvents = new MicrosoftGraphEvent[organiserDetails.Length];
-            for (int i = 0; i < graphEvents.Length; i++)
+            MicrosoftGraphEvent[] mockGraphEvents = new MicrosoftGraphEvent[organiserDetails.Length];
+            for (int i = 0; i < mockGraphEvents.Length; i++)
             {
                 var eventOrganiser = organiserDetails[i];
-                graphEvents[i] = new MicrosoftGraphEvent
+                mockGraphEvents[i] = new MicrosoftGraphEvent
                 {
                     Subject = "Short project meeting",
                     Start = new DateTimeZone
                     {
-                        DateTime = contextUser.LastSignIn.AddDays(3).ToString("o"),
+                        DateTime = contextUser.LastSignIn.AddDays(1).ToString("o"),
                         TimeZone = "UTC"
                     },
                     End = new DateTimeZone
                     {
-                        DateTime = contextUser.LastSignIn.AddDays(3).ToString("o"),
+                        DateTime = contextUser.LastSignIn.AddDays(1).ToString("o"),
                         TimeZone = "UTC"
                     },
                     Organizer = new MicrosoftGraphPerson
@@ -51,7 +51,30 @@ namespace EctBlazorApp.ServerTests
 
             return new GraphEventsResponse
             {
-                Value = graphEvents
+                Value = mockGraphEvents
+            };
+        }
+
+        public static GraphReceivedMailResponse GetMockGraphMailResponseOneDayAfterLastLogin(EctUser contextUser, MicrosoftGraphEmailAddress[] senderDetails)
+        {
+            MicrosoftGraphReceivedMail[] mockGraphMail = new MicrosoftGraphReceivedMail[senderDetails.Length];
+            for (int i = 0; i < mockGraphMail.Length; i++)
+            {
+                var mailSender = senderDetails[i];
+                mockGraphMail[i] = new MicrosoftGraphReceivedMail
+                {
+                    ReceivedDateTime = contextUser.LastSignIn.AddDays(1),
+                    Subject = "",
+                    Sender = new MicrosoftGraphPerson
+                    {
+                        emailAddress = mailSender
+                    }
+                };
+            }
+
+            return new GraphReceivedMailResponse
+            {
+                Value = mockGraphMail
             };
         }
 

@@ -25,7 +25,7 @@ namespace EctBlazorApp.Server.CommonMethods
             return Implementation.GetMissingCalendarEvents(client, user);
         }
 
-        public static Task<GraphMailResponse> GetMissingReceivedMail(this HttpClient client, EctUser user)
+        public static Task<GraphReceivedMailResponse> GetMissingReceivedMail(this HttpClient client, EctUser user)
         {
             return Implementation.GetMissingReceivedMail(client, user);
         }

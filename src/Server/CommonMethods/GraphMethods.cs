@@ -61,13 +61,13 @@ namespace EctBlazorApp.Server.CommonMethods
 
         // This method only reads from the user's inbox folder. It can be modified to read more than one folder.
         // This endpoint returns all outlook folders of a user: https://graph.microsoft.com/v1.0/users/{id | userPrincipalName}/mailFolders/
-        public async Task<GraphMailResponse> GetMissingReceivedMail(HttpClient client, EctUser user)
+        public async Task<GraphReceivedMailResponse> GetMissingReceivedMail(HttpClient client, EctUser user)
         {
             string eventsUrl = ConstructGraphUrlForReceivedMail(user);
             var response = await client.GetAsync(eventsUrl);
 
             string contentAsString = await response.Content.ReadAsStringAsync();
-            GraphMailResponse graphReceivedMail = JsonConvert.DeserializeObject<GraphMailResponse>(contentAsString);
+            GraphReceivedMailResponse graphReceivedMail = JsonConvert.DeserializeObject<GraphReceivedMailResponse>(contentAsString);
 
             return graphReceivedMail;
         }

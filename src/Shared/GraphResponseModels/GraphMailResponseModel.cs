@@ -4,7 +4,7 @@ using System.Text;
 
 namespace EctBlazorApp.Shared.GraphModels
 {
-    public class GraphMailResponse
+    public class GraphReceivedMailResponse
     {
         public MicrosoftGraphReceivedMail[] Value { get; set; }
     }
