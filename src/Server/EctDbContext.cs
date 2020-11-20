@@ -60,11 +60,9 @@ namespace EctBlazorApp.Server
         public static void Initialize(EctDbContext context)
         {
             context.Database.EnsureCreated();
-
-            // Look for any students.
             if (context.Users.Any())
             {
-                return;   // DB has been seeded
+                return;
             }
         }
     }

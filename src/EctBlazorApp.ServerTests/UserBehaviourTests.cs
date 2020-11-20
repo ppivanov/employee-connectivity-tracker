@@ -80,7 +80,7 @@ namespace EctBlazorApp.Server.Tests
                 if (contextUser.CalendarEvents.Any(e => e.Organizer.Contains(orgraniser.ToString())) == false)
                 {
                     eventsAddedToDb = false;
-                    break;                                                                                                      // test has failed at this stage - no point looping through rest of the organisers
+                    break;
                 }
             }
 
@@ -130,7 +130,7 @@ namespace EctBlazorApp.Server.Tests
                 if (contextUser.ReceivedEmails.Any(m => m.From.Equals(sender.ToString())) == false)
                 {
                     mailAddedToDb = false;
-                    break;                                                                                                      // test has failed at this stage - no point looping through rest of the organisers
+                    break;
                 }
             }
 
@@ -180,7 +180,7 @@ namespace EctBlazorApp.Server.Tests
                 if (contextUser.SentEmails.Any(m => m.RecipientsAsString.Contains(sender.ToString())) == false)
                 {
                     mailAddedToDb = false;
-                    break;                                                                                                      // test has failed at this stage - no point looping through rest of the organisers
+                    break;
                 }
             }
 

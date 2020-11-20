@@ -55,7 +55,6 @@ namespace EctBlazorApp.Client.Graph
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", await GetAPITokenAsync());
             var response = await _httpClient.PutAsync($"api/main/update-tracking-records", data);
 
-            // Perhaps loop a few times if unsuccessful??
             return await response.Content.ReadAsStringAsync();
         }
 

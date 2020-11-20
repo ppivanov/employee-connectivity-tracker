@@ -17,10 +17,6 @@ namespace EctBlazorApp.ServerTests
                 GetUsers()
             );
 
-            //dbContext.CalendarEvents.AddRange(
-            //    GetEvents()
-            //);
-
             dbContext.SaveChanges();
             return dbContext;
         }
@@ -33,7 +29,7 @@ namespace EctBlazorApp.ServerTests
                         Id = 1,
                         Email = "alice@ect.ie",
                         FullName = "Alice AliceS",
-                        LastSignIn = new DateTime(2020, 11, 1), // Nov 1, 2020
+                        LastSignIn = new DateTime(2020, 11, 1), // Nov 1, 2020 12am
                         CalendarEvents = GetEvents()
                     }
             };
@@ -47,8 +43,8 @@ namespace EctBlazorApp.ServerTests
                 new CalendarEvent
                 {
                     Id = 1,
-                    Start = new DateTime(2020, 11, 5, 9, 0, 0), // 5 Nov, 2020 9:00
-                    End = new DateTime(2020, 11, 5, 9, 30, 0),  // 5 Nov, 2020 9:30
+                    Start = new DateTime(2020, 11, 5, 9, 0, 0), // 5 Nov, 2020 9:00am
+                    End = new DateTime(2020, 11, 5, 9, 30, 0),  // 5 Nov, 2020 9:30am
                     Subject = "Standup",
                     Organizer = "Roger RogerS <roger@ect.ie>"
                 }
