@@ -26,7 +26,13 @@ namespace EctBlazorApp.Server.CommonMethods
                 "&$select=receivedDateTime,subject,sender";
             return inboxEndpoint;
         }
-
+        private static string ConstructGraphUrlForSentMail(EctUser user)
+        {
+            string formattedFromDate = user.LastSignIn.ToString("yyyy-MM-dd");
+            string sentItemsEndpoint = $"{baseGraphUrl}/users/{user.Email}/mailFolders/sentitems/messages?$filter=receivedDateTime ge {formattedFromDate} " +
+                "&$select=sentDateTime,subject,toRecipients";
+            return sentItemsEndpoint;
+        }
         private static string ConstructGraphUrlForUser(string userId)
         {
             string userEndpoint = $"{baseGraphUrl}/users/{userId}?$select=displayName,id,userPrincipalName";
@@ -70,6 +76,17 @@ namespace EctBlazorApp.Server.CommonMethods
             GraphReceivedMailResponse graphReceivedMail = JsonConvert.DeserializeObject<GraphReceivedMailResponse>(contentAsString);
 
             return graphReceivedMail;
+        }
+
+        public async Task<GraphSentMailResponse> GetMissingSentMail(HttpClient client, EctUser user)
+        {
+            string eventsUrl = ConstructGraphUrlForSentMail(user);
+            var response = await client.GetAsync(eventsUrl);
+
+            string contentAsString = await response.Content.ReadAsStringAsync();
+            GraphSentMailResponse graphSentMail = JsonConvert.DeserializeObject<GraphSentMailResponse>(contentAsString);
+
+            return graphSentMail;
         }
     }
 }

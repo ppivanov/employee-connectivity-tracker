@@ -23,6 +23,10 @@ namespace EctBlazorApp.Server.Behaviour
         {
             return UpdateReceivedMailRecordsAsync(user, client, dbContext);
         }
+        public static Task<bool> UpdateSentMailRecordsWrapperAsync(this EctUser user, HttpClient client, EctDbContext dbContext)
+        {
+            return UpdateSentMailRecordsAsync(user, client, dbContext);
+        }
 
         private static async Task<EctUser> GetExistingEctUserOrNewAsync(string userId, HttpClient client, EctDbContext dbContext)
         {
@@ -57,7 +61,7 @@ namespace EctBlazorApp.Server.Behaviour
 
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return false;
             }
@@ -82,7 +86,32 @@ namespace EctBlazorApp.Server.Behaviour
 
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        private static async Task<bool> UpdateSentMailRecordsAsync(EctUser user, HttpClient client, EctDbContext dbContext)
+        {
+            try
+            {
+                GraphSentMailResponse graphReceivedMail = await client.GetMissingSentMail(user);
+                if (graphReceivedMail.Value.Length < 1)
+                    return true;
+                var sentMailList = SentMail.CastGraphSentMailToSentMail(graphReceivedMail.Value);
+                if (sentMailList.Count < 1)
+                    return false;
+
+                if (user.SentEmails == null) user.SentEmails = new List<SentMail>();
+                foreach (var sentMail in sentMailList)
+                    user.SentEmails.Add(sentMail);
+
+                await dbContext.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception)
             {
                 return false;
             }

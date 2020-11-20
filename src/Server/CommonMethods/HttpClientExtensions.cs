@@ -29,5 +29,10 @@ namespace EctBlazorApp.Server.CommonMethods
         {
             return Implementation.GetMissingReceivedMail(client, user);
         }
+
+        public static Task<GraphSentMailResponse> GetMissingSentMail(this HttpClient client, EctUser user)
+        {
+            return Implementation.GetMissingSentMail(client, user);
+        }
     }
 }

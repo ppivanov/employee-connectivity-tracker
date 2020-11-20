@@ -55,7 +55,7 @@ namespace EctBlazorApp.ServerTests
             };
         }
 
-        public static GraphReceivedMailResponse GetMockGraphMailResponseOneDayAfterLastLogin(EctUser contextUser, MicrosoftGraphEmailAddress[] senderDetails)
+        public static GraphReceivedMailResponse GetMockGraphReceivedMailResponseOneDayAfterLastLogin(EctUser contextUser, MicrosoftGraphEmailAddress[] senderDetails)
         {
             MicrosoftGraphReceivedMail[] mockGraphMail = new MicrosoftGraphReceivedMail[senderDetails.Length];
             for (int i = 0; i < mockGraphMail.Length; i++)
@@ -73,6 +73,32 @@ namespace EctBlazorApp.ServerTests
             }
 
             return new GraphReceivedMailResponse
+            {
+                Value = mockGraphMail
+            };
+        }
+
+        public static GraphSentMailResponse GetMockGraphSentMailResponseOneDayAfterLastLogin(EctUser contextUser, MicrosoftGraphEmailAddress[] senderDetails)
+        {
+            MicrosoftGraphSentMail[] mockGraphMail = new MicrosoftGraphSentMail[senderDetails.Length];
+            for (int i = 0; i < mockGraphMail.Length; i++)
+            {
+                var mailSender = senderDetails[i];
+                mockGraphMail[i] = new MicrosoftGraphSentMail
+                {
+                    SentDateTime = contextUser.LastSignIn.AddDays(1),
+                    Subject = "",
+                    ToRecipients = new MicrosoftGraphPerson[]
+                    {
+                        new MicrosoftGraphPerson
+                        {
+                            emailAddress = mailSender
+                        }
+                    }
+                };
+            }
+
+            return new GraphSentMailResponse
             {
                 Value = mockGraphMail
             };

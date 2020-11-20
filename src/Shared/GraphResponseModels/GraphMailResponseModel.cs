@@ -15,4 +15,16 @@ namespace EctBlazorApp.Shared.GraphModels
         public string Subject { get; set; }
         public MicrosoftGraphPerson Sender { get; set; }
     }
+
+    public class GraphSentMailResponse
+    {
+        public MicrosoftGraphSentMail[] Value { get; set; }
+    }
+
+    public class MicrosoftGraphSentMail
+    {
+        public DateTime SentDateTime { get; set; }
+        public string Subject { get; set; }
+        public MicrosoftGraphPerson[] ToRecipients { get; set; }
+    }
 }

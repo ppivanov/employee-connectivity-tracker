@@ -10,6 +10,9 @@ namespace EctBlazorApp.Server.CommonMethods
         Task<GraphUserResponse> GetGraphUser(HttpClient client, string userId);
 
         Task<GraphEventsResponse> GetMissingCalendarEvents(HttpClient client, EctUser user);
+
         Task<GraphReceivedMailResponse> GetMissingReceivedMail(HttpClient client, EctUser user);
+
+        Task<GraphSentMailResponse> GetMissingSentMail(HttpClient client, EctUser user);
     }
 }

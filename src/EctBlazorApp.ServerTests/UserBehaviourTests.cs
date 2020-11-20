@@ -10,7 +10,6 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using static EctBlazorApp.ServerTests.MockObjects;
-using static EctBlazorApp.Shared.SharedCommonMethods;
 
 namespace EctBlazorApp.Server.Tests
 {
@@ -63,7 +62,7 @@ namespace EctBlazorApp.Server.Tests
         public async Task UpdateCalendarEventRecordsWrapperAsync_TwoMissingEvents_EventsSavedSuccessfully()
         {
             EctUser contextUser = _dbContext.Users.First(user => user.Email.Equals("alice@ect.ie"));
-            MicrosoftGraphEmailAddress[] orgraniserDetails = { GetTestUser("Roger RogerS"), GetTestUser("Jessica JessicaS") };
+            MicrosoftGraphEmailAddress[] orgraniserDetails = { GetTestUser("John JohnS"), GetTestUser("Jessica JessicaS") };
 
             GraphEventsResponse mockEvent = GetMockGraphEventResponseOneDayAfterLastLogin(contextUser, orgraniserDetails);
             Mock<IMockableMethods> mock = new Mock<IMockableMethods>
@@ -110,12 +109,12 @@ namespace EctBlazorApp.Server.Tests
         }
 
         [TestMethod()]
-        public async Task UpdateReivedMailRecordsWrapperAsync_TwoMissingEmails_EmailsSavedSuccessfully()
+        public async Task UpdateReceivedMailRecordsWrapperAsync_TwoMissingEmails_EmailsSavedSuccessfully()
         {
             EctUser contextUser = _dbContext.Users.First(user => user.Email.Equals("alice@ect.ie"));
-            MicrosoftGraphEmailAddress[] senderDetails = { GetTestUser("Roger RogerS"), GetTestUser("Jessica JessicaS") };
+            MicrosoftGraphEmailAddress[] senderDetails = { GetTestUser("John JohnS"), GetTestUser("Jessica JessicaS") };
 
-            GraphReceivedMailResponse mockGraphResponse = GetMockGraphMailResponseOneDayAfterLastLogin(contextUser, senderDetails);
+            GraphReceivedMailResponse mockGraphResponse = GetMockGraphReceivedMailResponseOneDayAfterLastLogin(contextUser, senderDetails);
             Mock<IMockableMethods> mock = new Mock<IMockableMethods>
             {
                 CallBase = true
@@ -140,12 +139,12 @@ namespace EctBlazorApp.Server.Tests
         }
 
         [TestMethod()]
-        public async Task UpdateReivedMailRecordsWrapperAsync_NoEmails_RecordsUpToDate()
+        public async Task UpdateReceivedMailRecordsWrapperAsync_NoEmails_RecordsUpToDate()
         {
             EctUser contextUser = _dbContext.Users.First(user => user.Email.Equals("alice@ect.ie"));
             MicrosoftGraphEmailAddress[] senderDetails = new MicrosoftGraphEmailAddress[0];
 
-            GraphReceivedMailResponse mockGraphResponse = GetMockGraphMailResponseOneDayAfterLastLogin(contextUser, senderDetails);
+            GraphReceivedMailResponse mockGraphResponse = GetMockGraphReceivedMailResponseOneDayAfterLastLogin(contextUser, senderDetails);
             Mock<IMockableMethods> mock = new Mock<IMockableMethods>
             {
                 CallBase = true
@@ -155,6 +154,56 @@ namespace EctBlazorApp.Server.Tests
             HttpClientExtensions.Implementation = mock.Object;
 
             bool actualValue = await contextUser.UpdateReceivedMailRecordsWrapperAsync(new HttpClient(), _dbContext);
+
+            Assert.IsTrue(actualValue);
+        }
+
+        [TestMethod()]
+        public async Task UpdateSentMailRecordsWrapperAsync_TwoMissingEmails_EmailsSavedSuccessfully()
+        {
+            EctUser contextUser = _dbContext.Users.First(user => user.Email.Equals("alice@ect.ie"));
+            MicrosoftGraphEmailAddress[] senderDetails = { GetTestUser("John JohnS"), GetTestUser("Jessica JessicaS") };
+
+            GraphSentMailResponse mockGraphResponse = GetMockGraphSentMailResponseOneDayAfterLastLogin(contextUser, senderDetails);
+            Mock<IMockableMethods> mock = new Mock<IMockableMethods>
+            {
+                CallBase = true
+            };
+            mock.Setup(x => x.GetMissingSentMail(It.IsAny<HttpClient>(), It.IsAny<EctUser>())).ReturnsAsync(mockGraphResponse);
+
+            HttpClientExtensions.Implementation = mock.Object;
+
+            bool actualValue = await contextUser.UpdateSentMailRecordsWrapperAsync(new HttpClient(), _dbContext);
+            bool mailAddedToDb = true;
+            foreach (var sender in senderDetails)
+            {
+                if (contextUser.SentEmails.Any(m => m.RecipientsAsString.Contains(sender.ToString())) == false)
+                {
+                    mailAddedToDb = false;
+                    break;                                                                                                      // test has failed at this stage - no point looping through rest of the organisers
+                }
+            }
+
+            Assert.IsTrue(actualValue);
+            Assert.IsTrue(mailAddedToDb);
+        }
+
+        [TestMethod()]
+        public async Task UpdateSentMailRecordsWrapperAsync_NoEmails_RecordsUpToDate()
+        {
+            EctUser contextUser = _dbContext.Users.First(user => user.Email.Equals("alice@ect.ie"));
+            MicrosoftGraphEmailAddress[] recipientDetails = new MicrosoftGraphEmailAddress[0];
+
+            GraphSentMailResponse mockGraphResponse = GetMockGraphSentMailResponseOneDayAfterLastLogin(contextUser, recipientDetails);
+            Mock<IMockableMethods> mock = new Mock<IMockableMethods>
+            {
+                CallBase = true
+            };
+            mock.Setup(x => x.GetMissingSentMail(It.IsAny<HttpClient>(), It.IsAny<EctUser>())).ReturnsAsync(mockGraphResponse);
+
+            HttpClientExtensions.Implementation = mock.Object;
+
+            bool actualValue = await contextUser.UpdateSentMailRecordsWrapperAsync(new HttpClient(), _dbContext);
 
             Assert.IsTrue(actualValue);
         }

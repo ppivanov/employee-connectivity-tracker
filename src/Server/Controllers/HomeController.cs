@@ -39,9 +39,11 @@ namespace EctBlazorApp.Server.Controllers
 
             bool receivedEmails = await RetryUpdateMethodIfFails(client, _dbContext, userForParms.UpdateReceivedMailRecordsWrapperAsync);
             if (!receivedEmails)
-                errorString.Append("Failed: Could not update received mail records\n");
+                errorString.Append("Failed: Could not update received email records\n");
 
-            // update sentMail
+            bool sentEmails = await RetryUpdateMethodIfFails(client, _dbContext, userForParms.UpdateSentMailRecordsWrapperAsync);
+            if (!sentEmails)
+                errorString.Append("Failed: Could not update sent email records\n");
 
             userForParms.LastSignIn = DateTime.Now;
             await _dbContext.SaveChangesAsync();
