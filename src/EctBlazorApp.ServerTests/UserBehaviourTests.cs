@@ -90,6 +90,26 @@ namespace EctBlazorApp.Server.Tests
         }
 
         [TestMethod()]
+        public async Task UpdateCalendarEventRecordsWrapperAsync_NoEvents_RecordsUpToDate()
+        {
+            EctUser contextUser = _dbContext.Users.First(user => user.Email.Equals("alice@ect.ie"));
+            MicrosoftGraphEmailAddress[] orgraniserDetails = new MicrosoftGraphEmailAddress[0];
+
+            GraphEventsResponse mockEvent = GetMockGraphEventResponseOneDayAfterLastLogin(contextUser, orgraniserDetails);
+            Mock<IMockableMethods> mock = new Mock<IMockableMethods>
+            {
+                CallBase = true
+            };
+            mock.Setup(x => x.GetMissingCalendarEvents(It.IsAny<HttpClient>(), It.IsAny<EctUser>())).ReturnsAsync(mockEvent);
+
+            HttpClientExtensions.Implementation = mock.Object;
+
+            bool actualValue = await contextUser.UpdateCalendarEventRecordsWrapperAsync(new HttpClient(), _dbContext);
+            
+            Assert.IsTrue(actualValue);
+        }
+
+        [TestMethod()]
         public async Task UpdateReivedMailRecordsWrapperAsync_TwoMissingEmails_EmailsSavedSuccessfully()
         {
             EctUser contextUser = _dbContext.Users.First(user => user.Email.Equals("alice@ect.ie"));
@@ -117,6 +137,26 @@ namespace EctBlazorApp.Server.Tests
 
             Assert.IsTrue(actualValue);
             Assert.IsTrue(mailAddedToDb);
+        }
+
+        [TestMethod()]
+        public async Task UpdateReivedMailRecordsWrapperAsync_NoEmails_RecordsUpToDate()
+        {
+            EctUser contextUser = _dbContext.Users.First(user => user.Email.Equals("alice@ect.ie"));
+            MicrosoftGraphEmailAddress[] senderDetails = new MicrosoftGraphEmailAddress[0];
+
+            GraphReceivedMailResponse mockGraphResponse = GetMockGraphMailResponseOneDayAfterLastLogin(contextUser, senderDetails);
+            Mock<IMockableMethods> mock = new Mock<IMockableMethods>
+            {
+                CallBase = true
+            };
+            mock.Setup(x => x.GetMissingReceivedMail(It.IsAny<HttpClient>(), It.IsAny<EctUser>())).ReturnsAsync(mockGraphResponse);
+
+            HttpClientExtensions.Implementation = mock.Object;
+
+            bool actualValue = await contextUser.UpdateReceivedMailRecordsWrapperAsync(new HttpClient(), _dbContext);
+
+            Assert.IsTrue(actualValue);
         }
     }
 }
