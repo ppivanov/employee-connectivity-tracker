@@ -19,17 +19,16 @@
                     <button>Change</button>
                 </div>
                 <div class="textSummary">
-                    <p>Emails sent: 6</p>
-                    <p>Emails received: 15</p>
-                    <p>Number of meetings: 5</p>
-                    <p>Time in meetings: 5 hours</p>
+                    <p>Emails sent: @emailsSent</p>
+                    <p>Emails received: @emailsReceived</p>
+                    <p>Number of meetings: @numberOfMeetings</p>
+                    <p>Time in meetings: xx hours</p>
                 </div>
             </div>
             <div class="topCollaborators">
                 <h2>Top Collaborators</h2>
                 <div class="collaboratorsList">
                     <div class="collaborator">
-                        <button @onclick="(e=> GetUserDetails(context.User.GetUserEmail()))">UpdateRecords</button>
                     </div>
                 </div>
             </div>
@@ -39,17 +38,28 @@
 
 
 @code {
+
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    private int emailsSent = 0;
+    private int emailsReceived = 0;
+    private int numberOfMeetings = 0;
+
     protected override async Task OnInitializedAsync()
     {
         await jsRuntime.InvokeAsync<string>("setPageTitle", "Dashboard");
+        await GetDashboardInfoForUser();
     }
 
-    protected async Task GetCalendarEventsInDateRange()
+    protected async Task GetDashboardInfoForUser()
     {
-        DateTime fromDate = DateTime.Now.AddDays(1);
-        DateTime toDate = fromDate.AddDays(2);
+        DateTime fromDate = DateTime.Now.AddDays(-50);
+        DateTime toDate = DateTime.Now;
+        var authenticationState = await authenticationStateTask;
+        string userId = authenticationState.User.GetUserEmail();
 
-        string queryString = $"fromDate={fromDate.ToString("yyyy-MM-dd")}&toDate={toDate.ToString("yyyy-MM-dd")}";
+        string queryString = $"?userId={userId}&fromDate={fromDate.ToString("yyyy-MM-dd")}&toDate={toDate.ToString("yyyy-MM-dd")}";
 
         var tokenResult = await TokenProvider.RequestAccessToken(
             new AccessTokenRequestOptions
@@ -61,11 +71,10 @@
             try
             {
                 Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.Value);
-                var response = await Http.GetFromJsonAsync<CalendarEvent[]>($"api/calendar/get-calendar-events?{queryString}");
-                if (response.Length < 1)
-                {
-                    // TODO
-                }
+                var response = await Http.GetFromJsonAsync<DashboardResponse>($"api/main/get-dashboard-stats{queryString}");
+                emailsSent = response.SentMail.Count;
+                emailsReceived = response.ReceivedMail.Count;
+                numberOfMeetings = response.CalendarEvents.Count;
             }
             catch (AccessTokenNotAvailableException exception)
             {
@@ -77,10 +86,5 @@
     void UpdateDashboard()
     {
         // TODO
-    }
-
-    async void GetUserDetails(string userEmail)
-    {
-        Console.WriteLine(await graphProvider.UpdateDatabaseRecords(userEmail));
     }
 }

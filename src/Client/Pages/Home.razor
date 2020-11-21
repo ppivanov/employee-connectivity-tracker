@@ -26,7 +26,6 @@
 
     [CascadingParameter]
     private Task<AuthenticationState> authenticationStateTask { get; set; }
-    protected string userId = "";
 
     protected override async Task OnInitializedAsync()
     {
@@ -36,6 +35,8 @@
 
     private async Task UpdateRecords()
     {
+        var authenticationState = await authenticationStateTask;
+        string userId = authenticationState.User.GetUserEmail();
         Console.WriteLine(await graphProvider.UpdateDatabaseRecords(userId));
     }
 }

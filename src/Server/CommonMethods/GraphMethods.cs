@@ -15,7 +15,7 @@ namespace EctBlazorApp.Server.CommonMethods
             string formattedFromDate = user.LastSignIn.ToString("s");
             string formattedToDate = DateTime.Now.ToString("s");
             string eventsEndpoint = $"{baseGraphUrl}/users/{user.Email}/events?$filter=start/datetime ge '{formattedFromDate}' " +
-                $"and end/datetime le '{formattedToDate}'&$select=subject,organizer,attendees,start,end";
+                $"and end/datetime le '{formattedToDate}'&$select=subject,organizer,attendees,start,end&$top=999";
 
             return eventsEndpoint;
         }
@@ -23,14 +23,14 @@ namespace EctBlazorApp.Server.CommonMethods
         {
             string formattedFromDate = user.LastSignIn.ToString("yyyy-MM-dd");
             string inboxEndpoint = $"{baseGraphUrl}/users/{user.Email}/mailFolders/inbox/messages?$filter=receivedDateTime ge {formattedFromDate} " +
-                "&$select=receivedDateTime,subject,sender";
+                "&$select=receivedDateTime,subject,sender&$top=999";
             return inboxEndpoint;
         }
         private static string ConstructGraphUrlForSentMail(EctUser user)
         {
             string formattedFromDate = user.LastSignIn.ToString("yyyy-MM-dd");
             string sentItemsEndpoint = $"{baseGraphUrl}/users/{user.Email}/mailFolders/sentitems/messages?$filter=receivedDateTime ge {formattedFromDate} " +
-                "&$select=sentDateTime,subject,toRecipients";
+                "&$select=sentDateTime,subject,toRecipients&$top=999";
             return sentItemsEndpoint;
         }
         private static string ConstructGraphUrlForUser(string userId)

@@ -1,12 +1,16 @@
 ﻿using EctBlazorApp.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using static EctBlazorApp.Server.Behaviour.UserBehaviour;
+using static EctBlazorApp.Shared.SharedCommonMethods;
 
 namespace EctBlazorApp.Server.Controllers
 {
@@ -45,13 +49,34 @@ namespace EctBlazorApp.Server.Controllers
             if (!sentEmails)
                 errorString.Append("Failed: Could not update sent email records\n");
 
-            userForParms.LastSignIn = DateTime.Now;
-            await _dbContext.SaveChangesAsync();
-
-            if (errorString.Length > 1) 
+            if (errorString.Length > 1)
                 return BadRequest(errorString.ToString());
+            else
+            {
+                userForParms.LastSignIn = DateTime.Now;
+                await _dbContext.SaveChangesAsync();
+            }
 
             return Ok("User records up to date");
+        }
+
+        [Route("get-dashboard-stats")]
+        [HttpGet]
+        public async Task<ActionResult<DashboardResponse>> StatsForDashboard([FromQuery] string userId,[FromQuery] string fromDate, [FromQuery] string toDate)               // TODO - Secure this so that only the person logged in can view the data
+        {
+
+            DateTime formattedFromDate = NewDateTimeFromString(fromDate);
+            DateTime formattedToDate = NewDateTimeFromString(toDate);
+            List<ReceivedMail> receivedMail = await GetReceivedMailInDateRange(formattedFromDate, formattedToDate);
+            List<SentMail> sentMail = await GetSentMailInDateRange(formattedFromDate, formattedToDate);
+            List<CalendarEvent> calendarEvents = await GetCalendarEventsInDateRange(formattedFromDate, formattedToDate);
+
+            return new DashboardResponse
+            {
+                CalendarEvents = calendarEvents,
+                ReceivedMail = receivedMail,
+                SentMail = sentMail
+            };
         }
 
         private delegate Task<bool> UpdateMetgodDelegate(HttpClient client, EctDbContext dbContext);
@@ -68,6 +93,32 @@ namespace EctBlazorApp.Server.Controllers
                 retryCount++;
             }
             return false;
+        }
+
+        private async Task<List<ReceivedMail>> GetReceivedMailInDateRange(DateTime fromDate, DateTime toDate)
+        {
+            var receivedMail =
+                await _dbContext.ReceivedEmails.Where(c =>
+                    c.ReceivedAt >= fromDate
+                    && c.ReceivedAt < toDate).ToListAsync();
+            return receivedMail;
+        }
+        private async Task<List<SentMail>> GetSentMailInDateRange(DateTime fromDate, DateTime toDate)
+        {
+            var sentMail =
+                await _dbContext.SentEmails.Where(c =>
+                    c.SentAt >= fromDate
+                    && c.SentAt < toDate).ToListAsync();
+            return sentMail;
+        }
+
+        private async Task<List<CalendarEvent>> GetCalendarEventsInDateRange(DateTime fromDate, DateTime toDate)
+        {
+            var calendarEvents =
+                    await _dbContext.CalendarEvents.Where(c =>
+                        c.Start >= fromDate
+                        && c.End < toDate).ToListAsync();
+            return calendarEvents;
         }
     }
 }
