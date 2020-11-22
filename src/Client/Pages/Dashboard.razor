@@ -1,8 +1,9 @@
 @page "/dashboard"
 
+@using BlazorDateRangePicker
+@using EctBlazorApp.Shared
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
-@using EctBlazorApp.Shared
 @using System.Net.Http.Headers
 @attribute [Authorize]
 @inject HttpClient Http
@@ -15,8 +16,23 @@
         <div class="dashboard">
             <div class="topRow">
                 <div class="dateRange">
-                    <h2>18 Nov - 19 Nov 2020</h2>
-                    <button>Change</button>
+                    <DateRangePicker @bind-StartDate="FromDate" @bind-EndDate="ToDate">
+                        <ButtonsTemplate Context="pickerContext">
+                            <button class="cancelBtn btn btn-sm btn-default"
+                                    @onclick="@pickerContext.ClickCancel" type="button">
+                                Cancel
+                            </button>
+                            <button class="cancelBtn btn btn-sm btn-default"
+                                    @onclick="@(e => ResetClick(e, pickerContext))" type="button">
+                                Reset
+                            </button>
+                            <button class="applyBtn btn btn-sm btn-primary" @onclick="@(e => CustomApply(e, pickerContext))"
+                                    disabled="@(pickerContext.TStartDate == null || pickerContext.TEndDate == null)"
+                                    type="button">
+                                Apply
+                            </button>
+                        </ButtonsTemplate>
+                    </DateRangePicker>
                 </div>
                 <div class="textSummary">
                     <p>Emails sent: @emailsSent</p>
@@ -29,6 +45,7 @@
                 <h2>Top Collaborators</h2>
                 <div class="collaboratorsList">
                     <div class="collaborator">
+
                     </div>
                 </div>
             </div>
@@ -46,16 +63,36 @@
     private int emailsReceived = 0;
     private int numberOfMeetings = 0;
 
+    DateTimeOffset? FromDate { get; set; } = DateTimeOffset.Now;
+    DateTimeOffset? ToDate { get; set; } = DateTimeOffset.Now.AddDays(1);
+
+    void ResetClick(MouseEventArgs e, DateRangePicker picker)
+    {
+        FromDate = DateTimeOffset.Now;
+        ToDate = DateTimeOffset.Now.AddDays(1);
+        // Close the picker
+        picker.Close();
+        // Fire OnRangeSelectEvent
+        picker.OnRangeSelect.InvokeAsync(new DateRange());
+    }
+
+    async Task CustomApply(MouseEventArgs e, DateRangePicker picker)
+    {
+        await picker.ClickApply(e);
+
+        await UpdateDashboard();
+    }
+
     protected override async Task OnInitializedAsync()
     {
         await jsRuntime.InvokeAsync<string>("setPageTitle", "Dashboard");
-        await GetDashboardInfoForUser();
+        await UpdateDashboard();
     }
 
-    protected async Task GetDashboardInfoForUser()
+    protected async Task UpdateDashboard()
     {
-        DateTime fromDate = DateTime.Now.AddDays(-50);
-        DateTime toDate = DateTime.Now;
+        DateTime fromDate = FromDate.Value.Date;
+        DateTime toDate = ToDate.Value.Date;
         var authenticationState = await authenticationStateTask;
         string userId = authenticationState.User.GetUserEmail();
 
@@ -81,10 +118,5 @@
                 exception.Redirect();
             }
         }
-    }
-
-    void UpdateDashboard()
-    {
-        // TODO
     }
 }
