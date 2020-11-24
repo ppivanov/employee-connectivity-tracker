@@ -71,11 +71,14 @@ namespace EctBlazorApp.Server.Controllers
             List<SentMail> sentMail = await GetSentMailInDateRange(formattedFromDate, formattedToDate);
             List<CalendarEvent> calendarEvents = await GetCalendarEventsInDateRange(formattedFromDate, formattedToDate);
 
+            double secondsInMeeting = GetTotalSecondsForEvents(calendarEvents);
+
             return new DashboardResponse
             {
                 CalendarEvents = calendarEvents,
                 ReceivedMail = receivedMail,
-                SentMail = sentMail
+                SentMail = sentMail,
+                SecondsInMeeting = secondsInMeeting
             };
         }
 
@@ -119,6 +122,15 @@ namespace EctBlazorApp.Server.Controllers
                         c.Start >= fromDate
                         && c.End < toDate).ToListAsync();
             return calendarEvents;
+        }
+
+        private double GetTotalSecondsForEvents(List<CalendarEvent> calendarEvents)
+        {
+            double seconds = 0;
+            foreach (var singleEvent in calendarEvents)
+                seconds += (singleEvent.End - singleEvent.Start).TotalSeconds;
+
+            return seconds;
         }
     }
 }

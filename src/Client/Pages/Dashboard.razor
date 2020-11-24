@@ -38,7 +38,7 @@
                     <p>Emails sent: @emailsSent</p>
                     <p>Emails received: @emailsReceived</p>
                     <p>Number of meetings: @numberOfMeetings</p>
-                    <p>Time in meetings: xx hours</p>
+                    <p>Time in meetings: @GetFormattedTimeInMeeting()</p>
                 </div>
             </div>
             <div class="topCollaborators">
@@ -62,6 +62,14 @@
     private int emailsSent = 0;
     private int emailsReceived = 0;
     private int numberOfMeetings = 0;
+    private double secondsInMeeting = 0;
+
+    private string GetFormattedTimeInMeeting()
+    {
+        TimeSpan timeSpan = TimeSpan.FromSeconds(secondsInMeeting);
+        string formattedTime = $"{timeSpan.Hours} hours, {timeSpan.Minutes} minutes";
+        return formattedTime;
+    }
 
     DateTimeOffset? FromDate { get; set; } = DateTimeOffset.Now;
     DateTimeOffset? ToDate { get; set; } = DateTimeOffset.Now.AddDays(1);
@@ -112,6 +120,7 @@
                 emailsSent = response.SentMail.Count;
                 emailsReceived = response.ReceivedMail.Count;
                 numberOfMeetings = response.CalendarEvents.Count;
+                secondsInMeeting = response.SecondsInMeeting;
             }
             catch (AccessTokenNotAvailableException exception)
             {

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace EctBlazorApp.Shared
 {
@@ -9,5 +7,6 @@ namespace EctBlazorApp.Shared
         public List<CalendarEvent> CalendarEvents { get; set; }
         public List<ReceivedMail> ReceivedMail { get; set; }
         public List<SentMail> SentMail { get; set; }
+        public double SecondsInMeeting { get; set; }
     }
 }
