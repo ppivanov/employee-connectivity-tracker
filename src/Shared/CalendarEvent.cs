@@ -72,9 +72,9 @@ namespace EctBlazorApp.Shared
             return calendarEvents;
         }
 
-        public static int GetTotalSecondsForEvents(List<CalendarEvent> calendarEvents)
+        public static double GetTotalSecondsForEvents(List<CalendarEvent> calendarEvents)
         {
-            int seconds = 0;
+            double seconds = 0;
             foreach (var singleEvent in calendarEvents)
                 seconds += (singleEvent.End - singleEvent.Start).TotalSeconds;
 

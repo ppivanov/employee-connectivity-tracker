@@ -34,10 +34,12 @@ namespace EctBlazorApp.Server.Controllers
         {
             using var client = new HttpClient();
             StringBuilder errorString = new StringBuilder("");
-            if (userDetails == null || userDetails.GraphToken == null || userDetails.UserId == null)
+            if (userDetails == null || userDetails.GraphToken == null)
                 return BadRequest("No inputs");
+
+            string userId = await GetPrefferredUsernameFromAccessToken();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", userDetails.GraphToken);
-            EctUser userForParms = await GetExistingEctUserOrNewWrapperAsync(userDetails.UserId, client, _dbContext);
+            EctUser userForParms = await GetExistingEctUserOrNewWrapperAsync(userId, client, _dbContext);
 
             bool eventsSaved = await RetryUpdateMethodIfFails(client, _dbContext, userForParms.UpdateCalendarEventRecordsWrapperAsync);
             if (!eventsSaved)

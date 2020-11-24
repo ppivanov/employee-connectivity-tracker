@@ -6,6 +6,6 @@ namespace EctBlazorApp.Client.Graph
     {
         Task<string> GetCalendarEventsForEmail(string userEmail);
 
-        Task<string> UpdateDatabaseRecords(string userEmail);
+        Task<string> UpdateDatabaseRecords();
     }
 }

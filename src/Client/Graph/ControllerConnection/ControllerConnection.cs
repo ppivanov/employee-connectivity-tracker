@@ -35,7 +35,7 @@ namespace EctBlazorApp.Client.Graph
             return contentAsString;
         }
 
-        public async Task<string> UpdateDatabaseRecords(string userEmail)
+        public async Task<string> UpdateDatabaseRecords()
         {
             using var client = new HttpClient();
 
@@ -45,7 +45,6 @@ namespace EctBlazorApp.Client.Graph
 
             var userDetails = new GraphUserRequestDetails
             {
-                UserId = userEmail,
                 GraphToken = accessToken
             };
 

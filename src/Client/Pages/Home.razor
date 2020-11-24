@@ -24,9 +24,6 @@
 
 @code {
 
-    [CascadingParameter]
-    private Task<AuthenticationState> authenticationStateTask { get; set; }
-
     protected override async Task OnInitializedAsync()
     {
         await jsRuntime.InvokeAsync<string>("setPageTitle", "Home");
@@ -35,8 +32,6 @@
 
     private async Task UpdateRecords()
     {
-        var authenticationState = await authenticationStateTask;
-        string userId = authenticationState.User.GetUserEmail();
-        Console.WriteLine(await graphProvider.UpdateDatabaseRecords(userId));
+        Console.WriteLine(await graphProvider.UpdateDatabaseRecords());
     }
 }
