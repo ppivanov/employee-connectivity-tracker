@@ -71,20 +71,22 @@
         return formattedTime;
     }
 
-    DateTimeOffset? FromDate { get; set; } = DateTimeOffset.Now;
-    DateTimeOffset? ToDate { get; set; } = DateTimeOffset.Now.AddDays(1);
+    private DateTimeOffset? FromDate { get; set; } = DateTimeOffset.Now;
+    private DateTimeOffset? ToDate { get; set; } = DateTimeOffset.Now.AddDays(1);
 
-    void ResetClick(MouseEventArgs e, DateRangePicker picker)
+    private async Task ResetClick(MouseEventArgs e, DateRangePicker picker)
     {
         FromDate = DateTimeOffset.Now;
         ToDate = DateTimeOffset.Now.AddDays(1);
         // Close the picker
-        picker.Close();
+        await picker.Close();
         // Fire OnRangeSelectEvent
-        picker.OnRangeSelect.InvokeAsync(new DateRange());
+        await picker.OnRangeSelect.InvokeAsync(new DateRange());
+
+        await UpdateDashboard();
     }
 
-    async Task CustomApply(MouseEventArgs e, DateRangePicker picker)
+    private async Task CustomApply(MouseEventArgs e, DateRangePicker picker)
     {
         await picker.ClickApply(e);
 
