@@ -6,6 +6,7 @@ using EctBlazorApp.Shared.GraphModels;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -104,7 +105,7 @@ namespace EctBlazorApp.Server.Tests
             HttpClientExtensions.Implementation = mock.Object;
 
             bool actualValue = await contextUser.UpdateCalendarEventRecordsWrapperAsync(new HttpClient(), _dbContext);
-            
+
             Assert.IsTrue(actualValue);
         }
 
@@ -206,6 +207,105 @@ namespace EctBlazorApp.Server.Tests
             bool actualValue = await contextUser.UpdateSentMailRecordsWrapperAsync(new HttpClient(), _dbContext);
 
             Assert.IsTrue(actualValue);
+        }
+
+        [TestMethod()]
+        public void GetCalendarEventsInDateRangeForUserId_NonexistentUserId_ReturnsEmptyList()
+        {
+            List<CalendarEvent> expectedList = new List<CalendarEvent>();
+            List<CalendarEvent> actualList;
+            int userId = 999;
+            DateTime startOfOctober = new DateTime(2020, 10, 1);
+            DateTime endOfNovember = new DateTime(2020, 11, 30);
+
+            actualList = _dbContext.GetCalendarEventsInDateRangeForUserId(userId, startOfOctober, endOfNovember);
+
+            CollectionAssert.AreEquivalent(expectedList, actualList);
+        }
+
+        [TestMethod()]
+        public void GetCalendarEventsInDateRangeForUserId_UserIdForAlice_ReturnsSingleCalendarEvent()
+        {
+            List<CalendarEvent> expectedList;
+            List<CalendarEvent> actualList;
+            int userId = 1;
+            DateTime startOfOctober = new DateTime(2020, 10, 1);
+            DateTime endOfNovember = new DateTime(2020, 11, 30);
+
+            expectedList = _dbContext.CalendarEvents.Where(ce =>
+                ce.EctUserId == userId
+                && ce.End < endOfNovember 
+                && ce.Start >= startOfOctober).ToList();
+
+            actualList = _dbContext.GetCalendarEventsInDateRangeForUserId(userId, startOfOctober, endOfNovember);
+
+            CollectionAssert.AreEquivalent(expectedList, actualList);
+        }
+
+        [TestMethod()]
+        public void GetSentMailInDateRangeForUserId_NonexistentUserId_ReturnsEmptyList()
+        {
+            List<SentMail> expectedList = new List<SentMail>();
+            List<SentMail> actualList;
+            int userId = 999;
+            DateTime startOfOctober = new DateTime(2020, 10, 1);
+            DateTime endOfNovember = new DateTime(2020, 11, 30);
+
+            actualList = _dbContext.GetSentMailInDateRangeForUserId(userId, startOfOctober, endOfNovember);
+
+            CollectionAssert.AreEquivalent(expectedList, actualList);
+        }
+
+        [TestMethod()]
+        public void GetSentMailInDateRangeForUserId_UserIdForAlice_ReturnsSingleSentMail()
+        {
+            List<SentMail> expectedList;
+            List<SentMail> actualList;
+            int userId = 1;
+            DateTime startOfOctober = new DateTime(2020, 10, 1);
+            DateTime endOfNovember = new DateTime(2020, 11, 30);
+
+            expectedList = _dbContext.SentEmails.Where(se =>
+                se.EctUserId == userId
+                && se.SentAt >= startOfOctober
+                && se.SentAt < endOfNovember).ToList();
+
+            actualList = _dbContext.GetSentMailInDateRangeForUserId(userId, startOfOctober, endOfNovember);
+
+            CollectionAssert.AreEquivalent(expectedList, actualList);
+        }
+
+        [TestMethod()]
+        public void GetReceivedMailInDateRangeForUserId_NonexistentUserId_ReturnsEmptyList()
+        {
+            List<ReceivedMail> expectedList = new List<ReceivedMail>();
+            List<ReceivedMail> actualList;
+            int userId = 999;
+            DateTime startOfOctober = new DateTime(2020, 10, 1);
+            DateTime endOfNovember = new DateTime(2020, 11, 30);
+
+            actualList = _dbContext.GetReceivedMailInDateRangeForUserId(userId, startOfOctober, endOfNovember);
+
+            CollectionAssert.AreEquivalent(expectedList, actualList);
+        }
+
+        [TestMethod()]
+        public void GetReceivedMailInDateRangeForUserId_UserIdForAlice_ReturnsSingleReceivedMail()
+        {
+            List<ReceivedMail> expectedList;
+            List<ReceivedMail> actualList;
+            int userId = 1;
+            DateTime startOfOctober = new DateTime(2020, 10, 1);
+            DateTime endOfNovember = new DateTime(2020, 11, 30);
+
+            expectedList = _dbContext.ReceivedEmails.Where(re =>
+                re.EctUserId == userId
+                && re.ReceivedAt >= startOfOctober
+                && re.ReceivedAt < endOfNovember).ToList();
+
+            actualList = _dbContext.GetReceivedMailInDateRangeForUserId(userId, startOfOctober, endOfNovember);
+
+            CollectionAssert.AreEquivalent(expectedList, actualList);
         }
     }
 }
