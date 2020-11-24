@@ -1,9 +1,11 @@
-﻿using EctBlazorApp.Shared;
+﻿using EctBlazorApp.Server.Behaviour;
+using EctBlazorApp.Shared;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -62,16 +64,18 @@ namespace EctBlazorApp.Server.Controllers
 
         [Route("get-dashboard-stats")]
         [HttpGet]
-        public async Task<ActionResult<DashboardResponse>> StatsForDashboard([FromQuery] string userId,[FromQuery] string fromDate, [FromQuery] string toDate)               // TODO - Secure this so that only the person logged in can view the data
+        public async Task<ActionResult<DashboardResponse>> StatsForDashboard([FromQuery] string fromDate, [FromQuery] string toDate)               // TODO - Secure this so that only the person logged in can view the data
         {
+            string userEmail = await GetPrefferredUsernameFromAccessToken();
+            int userId = _dbContext.Users.First(u => u.Email == userEmail).Id;
 
             DateTime formattedFromDate = NewDateTimeFromString(fromDate);
             DateTime formattedToDate = NewDateTimeFromString(toDate);
-            List<ReceivedMail> receivedMail = await GetReceivedMailInDateRange(formattedFromDate, formattedToDate);
-            List<SentMail> sentMail = await GetSentMailInDateRange(formattedFromDate, formattedToDate);
-            List<CalendarEvent> calendarEvents = await GetCalendarEventsInDateRange(formattedFromDate, formattedToDate);
+            List<ReceivedMail> receivedMail = _dbContext.GetReceivedMailInDateRangeForUserId(userId, formattedFromDate, formattedToDate);
+            List<SentMail> sentMail = _dbContext.GetSentMailInDateRangeForUserId(userId, formattedFromDate, formattedToDate);
+            List<CalendarEvent> calendarEvents = _dbContext.GetCalendarEventsInDateRangeForUserId(userId, formattedFromDate, formattedToDate);
 
-            double secondsInMeeting = GetTotalSecondsForEvents(calendarEvents);
+            double secondsInMeeting = CalendarEvent.GetTotalSecondsForEvents(calendarEvents);
 
             return new DashboardResponse
             {
@@ -98,39 +102,19 @@ namespace EctBlazorApp.Server.Controllers
             return false;
         }
 
-        private async Task<List<ReceivedMail>> GetReceivedMailInDateRange(DateTime fromDate, DateTime toDate)
+        private async Task<string> GetPrefferredUsernameFromAccessToken()
         {
-            var receivedMail =
-                await _dbContext.ReceivedEmails.Where(c =>
-                    c.ReceivedAt >= fromDate
-                    && c.ReceivedAt < toDate).ToListAsync();
-            return receivedMail;
-        }
-        private async Task<List<SentMail>> GetSentMailInDateRange(DateTime fromDate, DateTime toDate)
-        {
-            var sentMail =
-                await _dbContext.SentEmails.Where(c =>
-                    c.SentAt >= fromDate
-                    && c.SentAt < toDate).ToListAsync();
-            return sentMail;
-        }
+            var token = await HttpContext.GetTokenAsync("access_token");
 
-        private async Task<List<CalendarEvent>> GetCalendarEventsInDateRange(DateTime fromDate, DateTime toDate)
-        {
-            var calendarEvents =
-                    await _dbContext.CalendarEvents.Where(c =>
-                        c.Start >= fromDate
-                        && c.End < toDate).ToListAsync();
-            return calendarEvents;
-        }
+            var handler = new JwtSecurityTokenHandler();
 
-        private double GetTotalSecondsForEvents(List<CalendarEvent> calendarEvents)
-        {
-            double seconds = 0;
-            foreach (var singleEvent in calendarEvents)
-                seconds += (singleEvent.End - singleEvent.Start).TotalSeconds;
+            var tokenS = handler.ReadToken(token) as JwtSecurityToken;
 
-            return seconds;
+            var tokenClaims = tokenS.Claims;
+
+            var prefferredUsername = tokenClaims.First(c => c.Type == "preferred_username").Value;
+
+            return prefferredUsername;
         }
     }
 }

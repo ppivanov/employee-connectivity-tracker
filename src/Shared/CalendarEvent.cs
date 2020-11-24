@@ -13,6 +13,7 @@ namespace EctBlazorApp.Shared
         public string Subject { get; set; }
         public string Organizer { get; set; }
 
+        public int EctUserId { get; set; }
 
         private List<string> _attendees;
         public List<string> Attendees
@@ -69,6 +70,15 @@ namespace EctBlazorApp.Shared
             }
 
             return calendarEvents;
+        }
+
+        public static int GetTotalSecondsForEvents(List<CalendarEvent> calendarEvents)
+        {
+            int seconds = 0;
+            foreach (var singleEvent in calendarEvents)
+                seconds += (singleEvent.End - singleEvent.Start).TotalSeconds;
+
+            return seconds;
         }
     }
 }
