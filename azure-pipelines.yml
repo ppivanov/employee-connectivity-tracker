@@ -41,9 +41,9 @@ stages:
         vmImage: $(vmImageName)
     steps:
     - task: DotNetCoreCLI@2
-      displayName: Publish the project
       inputs:
         command: 'publish'
+        publishWebProjects: false
         projects: '**/EctBlazorApp.Server.csproj'
         
     - task: AzureRmWebAppDeployment@4
