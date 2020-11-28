@@ -107,13 +107,10 @@ namespace EctBlazorApp.Server.Controllers
         private async Task<string> GetPrefferredUsernameFromAccessToken()
         {
             var token = await HttpContext.GetTokenAsync("access_token");
-
             var handler = new JwtSecurityTokenHandler();
-
             var tokenS = handler.ReadToken(token) as JwtSecurityToken;
 
             var tokenClaims = tokenS.Claims;
-
             var prefferredUsername = tokenClaims.First(c => c.Type == "preferred_username").Value;
 
             return prefferredUsername;
