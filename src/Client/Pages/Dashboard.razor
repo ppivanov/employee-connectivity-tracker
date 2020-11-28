@@ -106,7 +106,7 @@
         var authenticationState = await authenticationStateTask;
         string userId = authenticationState.User.GetUserEmail();
 
-        string queryString = $"?userId={userId}&fromDate={fromDate.ToString("yyyy-MM-dd")}&toDate={toDate.ToString("yyyy-MM-dd")}";
+        string queryString = $"?fromDate={fromDate.ToString("yyyy-MM-dd")}&toDate={toDate.ToString("yyyy-MM-dd")}";
 
         var tokenResult = await TokenProvider.RequestAccessToken(
             new AccessTokenRequestOptions
