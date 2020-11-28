@@ -1,5 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using EctBlazorApp.Shared;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace EctBlazorApp.Server.Controllers
@@ -17,10 +21,34 @@ namespace EctBlazorApp.Server.Controllers
         }
 
         [Route("create-team")]
-        [HttpPut]
-        public async Task<ActionResult> CreateNewTeam()
+        [HttpPost]
+        public async Task<ActionResult> CreateNewTeam(EctTeamRequestDetails teamDetails)                    // TODO - only admins must be allowed access to this endpoint
         {
-            return Ok("Create team endpoint");
+            if (teamDetails.AreDetailsValid() == false)
+                return BadRequest("Invalid team details!");
+
+            try
+            {
+                EctUser leader = _dbContext.Users.First(u => u.Email.Equals(teamDetails.LeaderEmail));
+                List<EctUser> members = _dbContext.Users.Where(u => teamDetails.MemberEmails.Contains(u.Email)).ToList();
+                members.Add(leader);
+
+                EctTeam newTeam = new EctTeam
+                {
+                    Name = teamDetails.Name,
+                    Leader = leader,
+                    Members = members
+                };
+                _dbContext.Teams.Add(newTeam);
+                await _dbContext.SaveChangesAsync();
+
+                return Ok("Create team endpoint");
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal server error. Please, try again later.");
+            }
+            
         }
     }
 }

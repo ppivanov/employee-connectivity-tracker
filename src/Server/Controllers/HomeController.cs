@@ -104,7 +104,7 @@ namespace EctBlazorApp.Server.Controllers
             return false;
         }
 
-        private async Task<string> GetPrefferredUsernameFromAccessToken()
+        private async Task<string> GetPrefferredUsernameFromAccessToken()                                                                           // in almost every case the claim 'preferred_username' is the email address of the user
         {
             var token = await HttpContext.GetTokenAsync("access_token");
             var handler = new JwtSecurityTokenHandler();
