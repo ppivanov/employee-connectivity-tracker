@@ -1,5 +1,6 @@
 ﻿* {
     margin: 0;
+    box-sizing: border-box;
 }
 
 html,
@@ -47,135 +48,102 @@ body {
     user-select: none;
 }
 
+.center-flex {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 /* END of Misc */
 
 /* Navbar */
-.navbar {
+.header {
+    display: flex;
     width: 90vw;
-    height: 4vh;
-    padding: 1vh 4vw;
-    position: relative;
-    display: block;
-    top: 0;
-    left: 0;
-    margin-left: auto;
-    margin-right: auto;
-    border-bottom: 1px solid #333;
-    min-height: 3em;
-}
-
-.navbar-logo {
-    float: left;
-    width: 18%;
-}
-
-.logo {
-    font-size: 1.5em;
-    font-weight: 500;
-}
-
-.navbar-menu,
-.logout-display {
-    float: left;
-}
-
-.navbar-menu {
-    width: 55%;
-    margin-left: 6%;
-    text-align: center;
-}
-
-.navbar-option,
-.divider {
-    display: inline;
-    float: left;
-    width: 5%;
-    padding: 1% 2%;
-    font-size: 1.2em;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.navbar-option {
-    width: 15%;
-    text-align: center;
-}
-
-.navbar-option:hover {
-    background-color: rgb(109, 109, 109);
-    color: rgb(241, 241, 241);
-    cursor: pointer;
-    border-radius: 5px;
-}
-
-.logout-display {
-    float: right;
-    width: 17%;
+    height: 10vh;
     padding: 1em;
-    font-size: 1.1em;
+    margin: auto;
+    border-bottom: 1px solid gray;
 }
 
-    .logout-display > p:hover {
-        cursor: pointer;
-    }
-
-    .logout-display > p > i {
-        margin-left: 2em;
-    }
-
-#dropdown {
-    margin-top: 1em;
-    background-color: rgb(241, 241, 241);
-    height: 20%;
-    padding: 2%;
-}
-
-#dropdown > hr {
-    width: 90%;
+.header-logo {
+    width: 20vw;
     margin: auto;
 }
 
-.navbar-name,
-.logout-button {
-    padding: 3% 5%;
-    width: 90%;
+    .header-logo > .logo {
+        font-size: 2em;
+        color: black;
+        text-decoration: none;
+    }
+
+    .header-logo > #page-title {
+        font-size: 1.5em;
+    }
+
+.menu-option {
+    border: 1px solid red;
+    text-align: center;
 }
 
-.logout-button,
+.login-logout-section {
+    position: fixed;
+    right: 0;
+    width: 25vw;
+    height: 6vh;
+    margin-right: 5vw;
+}
+
 .login-button {
-    margin-bottom: 1em;
-    color: rgb(241, 241, 241);
+    width: 13vw;
+    height: 6vh;
+    max-height: 3.5em;
+    max-width: 15em;
     border: 1px solid black;
-    border-radius: 15px;
-}
-
-.logout-button {
-    margin-left: 5%;
-    background-color: rgb(160, 0, 0);
-    font-size: 1em;
-}
-
-.login-button {
-    width: 10%;
-    float: right;
-    padding: 0.5em;
-    font-size: 1.1em;
+    color: white;
     background-color: rgb(4, 137, 4);
+    border-radius: 9px;
 }
 
-.logout-button:hover,
-.login-button:hover {
+    .login-button:hover {
+        background-color: rgb(1, 82, 1);
+        cursor: pointer;
+    }
+
+.logout-display > p > i {
+    margin-left: 2em;
+}
+
+.logout-display > p:hover {
     cursor: pointer;
 }
 
-.logout-button:hover {
-    background-color: rgb(92, 0, 0);
+#dropdown {
+    position: absolute;
+    width: 15vw;
+    height: auto;
+    margin-top: 1em;
+    padding: 1em;
+    text-align: center;
+    background-color: rgb(241, 241, 241);
 }
 
-.login-button:hover {
-    background-color: rgb(6, 90, 6);
+.header-username {
+    position: relative;
+    width: 100%;
+    margin: 0.5em 0;
+    text-transform: uppercase;
 }
 
+.logout-button {
+    background-color: rgb(160, 0, 0);
+    width: 100%;
+    height: 2.5em;
+    margin: 0.5em 0;
+    font-size: 1em;
+    color: white;
+    border-radius: 15px;
+}
 /* END of Navbar */
 
 .main {
@@ -211,10 +179,10 @@ body {
     width: 75%;
 }
 
-.textSummary > p {
-    float: left;
-    margin: 1em 6em;
-}
+    .textSummary > p {
+        float: left;
+        margin: 1em 6em;
+    }
 
 .topCollaborators {
     width: 20%;
@@ -224,10 +192,10 @@ body {
     margin-left: 1em;
 }
 
-.topCollaborators > h2 {
-    padding-bottom: 0.5em;
-    border-bottom: 1px solid black;
-}
+    .topCollaborators > h2 {
+        padding-bottom: 0.5em;
+        border-bottom: 1px solid black;
+    }
 
 .collaboratorsList {
     width: 100%;
