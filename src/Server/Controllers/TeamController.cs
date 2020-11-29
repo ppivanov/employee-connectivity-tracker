@@ -1,9 +1,11 @@
-﻿using EctBlazorApp.Shared;
+﻿using EctBlazorApp.Server.AuthorizationAttributes;
+using EctBlazorApp.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using System.Threading.Tasks;
 
 namespace EctBlazorApp.Server.Controllers
@@ -48,7 +50,15 @@ namespace EctBlazorApp.Server.Controllers
             {
                 return StatusCode(500, "Internal server error. Please, try again later.");
             }
-            
+        }
+
+        [Route("access")]
+        [HttpGet]
+        [AuthorizeAdmin]
+        public ActionResult<string> AccessTest()
+        {
+            return "testOk";
         }
     }
+
 }

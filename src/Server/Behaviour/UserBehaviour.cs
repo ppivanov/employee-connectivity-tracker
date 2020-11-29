@@ -1,4 +1,4 @@
-﻿using EctBlazorApp.Server.CommonMethods;
+﻿using EctBlazorApp.Server.Extensions;
 using EctBlazorApp.Shared;
 using EctBlazorApp.Shared.GraphModels;
 using System;

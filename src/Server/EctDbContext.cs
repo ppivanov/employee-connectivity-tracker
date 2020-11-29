@@ -1,11 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using EctBlazorApp.Server.Extensions;
 using EctBlazorApp.Shared;
+using EctBlazorApp.Shared.GraphModels;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Net.Http;
-using EctBlazorApp.Server.CommonMethods;
-using EctBlazorApp.Shared.GraphModels;
+using System.Threading.Tasks;
 
 namespace EctBlazorApp.Server
 {
@@ -52,6 +52,11 @@ namespace EctBlazorApp.Server
             {
                 return null;
             }
+        }
+
+        public bool IsEmailForAdmin(string email)
+        {
+            return Administrators.Any(admin => admin.User.Email.Equals(email));
         }
     }
 

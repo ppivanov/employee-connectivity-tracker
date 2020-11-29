@@ -23,7 +23,6 @@ namespace EctBlazorApp.Shared
             return $"{fullName} <{email}>";
         }
 
-
         // Code source: https://docs.microsoft.com/en-us/dotnet/standard/base-types/how-to-verify-that-strings-are-in-valid-email-format#example
         public static bool IsValidEmail(this string email)
         {

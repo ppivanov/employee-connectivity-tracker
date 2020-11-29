@@ -1,9 +1,10 @@
-﻿using EctBlazorApp.Shared;
+﻿using EctBlazorApp.Server.CommonMethods;
+using EctBlazorApp.Shared;
 using EctBlazorApp.Shared.GraphModels;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace EctBlazorApp.Server.CommonMethods
+namespace EctBlazorApp.Server.Extensions
 {
     public static class HttpClientExtensions
     {

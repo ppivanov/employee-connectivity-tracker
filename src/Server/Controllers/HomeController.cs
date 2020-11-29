@@ -1,11 +1,10 @@
 ﻿using EctBlazorApp.Server.Behaviour;
+using EctBlazorApp.Server.CommonMethods;
 using EctBlazorApp.Shared;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -37,7 +36,7 @@ namespace EctBlazorApp.Server.Controllers
             if (userDetails == null || userDetails.GraphToken == null)
                 return BadRequest("No inputs");
 
-            string userId = await GetPrefferredUsernameFromAccessToken();
+            string userId = await HttpContext.GetPrefferredUsername();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", userDetails.GraphToken);
             EctUser userForParms = await GetExistingEctUserOrNewWrapperAsync(userId, client, _dbContext);
 
@@ -68,7 +67,7 @@ namespace EctBlazorApp.Server.Controllers
         [HttpGet]
         public async Task<ActionResult<DashboardResponse>> StatsForDashboard([FromQuery] string fromDate, [FromQuery] string toDate)               // TODO - Secure this so that only the person logged in can view the data
         {
-            string userEmail = await GetPrefferredUsernameFromAccessToken();
+            string userEmail = await HttpContext.GetPrefferredUsername();
             int userId = _dbContext.Users.First(u => u.Email == userEmail).Id;
 
             DateTime formattedFromDate = NewDateTimeFromString(fromDate);
@@ -102,18 +101,6 @@ namespace EctBlazorApp.Server.Controllers
                 retryCount++;
             }
             return false;
-        }
-
-        private async Task<string> GetPrefferredUsernameFromAccessToken()                                                                           // in almost every case the claim 'preferred_username' is the email address of the user
-        {
-            var token = await HttpContext.GetTokenAsync("access_token");
-            var handler = new JwtSecurityTokenHandler();
-            var tokenS = handler.ReadToken(token) as JwtSecurityToken;
-
-            var tokenClaims = tokenS.Claims;
-            var prefferredUsername = tokenClaims.First(c => c.Type == "preferred_username").Value;
-
-            return prefferredUsername;
         }
     }
 }

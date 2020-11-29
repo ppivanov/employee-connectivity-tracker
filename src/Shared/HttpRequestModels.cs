@@ -32,6 +32,5 @@ namespace EctBlazorApp.Shared
             }
             return true;
         }
-
     }
 }
