@@ -5,9 +5,9 @@ using System.Linq;
 using System.Threading.Tasks;
 namespace EctBlazorApp.Server.CommonMethods
 {
-    public static class Miscellaneous
+    public class Miscellaneous : IMockableMisc
     {
-        public static async Task<string> GetPrefferredUsername(this HttpContext controllerContext)                                                                           // in almost every case the claim 'preferred_username' is the email address of the user
+        public async Task<string> GetPreferredUsername(HttpContext controllerContext)                                                                           // in almost every case the claim 'preferred_username' is the email address of the user
         {
             var token = await controllerContext.GetTokenAsync("access_token");
             var handler = new JwtSecurityTokenHandler();

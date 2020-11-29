@@ -35,7 +35,7 @@ namespace EctBlazorApp.ServerTests
             MicrosoftGraphEmailAddress[] orgraniserDetails = { GetTestUser("John JohnS"), GetTestUser("Jessica JessicaS") };
 
             GraphEventsResponse mockEvent = GetMockGraphEventResponseOneDayAfterLastLogin(contextUser, orgraniserDetails);
-            Mock<IMockableMethods> mock = new Mock<IMockableMethods>
+            Mock<IMockableGraphMethods> mock = new Mock<IMockableGraphMethods>
             {
                 CallBase = true
             };
@@ -64,7 +64,7 @@ namespace EctBlazorApp.ServerTests
             MicrosoftGraphEmailAddress[] orgraniserDetails = new MicrosoftGraphEmailAddress[0];
 
             GraphEventsResponse mockEvent = GetMockGraphEventResponseOneDayAfterLastLogin(contextUser, orgraniserDetails);
-            Mock<IMockableMethods> mock = new Mock<IMockableMethods>
+            Mock<IMockableGraphMethods> mock = new Mock<IMockableGraphMethods>
             {
                 CallBase = true
             };
@@ -83,7 +83,7 @@ namespace EctBlazorApp.ServerTests
             MicrosoftGraphEmailAddress[] senderDetails = { GetTestUser("John JohnS"), GetTestUser("Jessica JessicaS") };
 
             GraphReceivedMailResponse mockGraphResponse = GetMockGraphReceivedMailResponseOneDayAfterLastLogin(contextUser, senderDetails);
-            Mock<IMockableMethods> mock = new Mock<IMockableMethods>
+            Mock<IMockableGraphMethods> mock = new Mock<IMockableGraphMethods>
             {
                 CallBase = true
             };
@@ -112,7 +112,7 @@ namespace EctBlazorApp.ServerTests
             MicrosoftGraphEmailAddress[] senderDetails = new MicrosoftGraphEmailAddress[0];
 
             GraphReceivedMailResponse mockGraphResponse = GetMockGraphReceivedMailResponseOneDayAfterLastLogin(contextUser, senderDetails);
-            Mock<IMockableMethods> mock = new Mock<IMockableMethods>
+            Mock<IMockableGraphMethods> mock = new Mock<IMockableGraphMethods>
             {
                 CallBase = true
             };
@@ -131,7 +131,7 @@ namespace EctBlazorApp.ServerTests
             MicrosoftGraphEmailAddress[] senderDetails = { GetTestUser("John JohnS"), GetTestUser("Jessica JessicaS") };
 
             GraphSentMailResponse mockGraphResponse = GetMockGraphSentMailResponseOneDayAfterLastLogin(contextUser, senderDetails);
-            Mock<IMockableMethods> mock = new Mock<IMockableMethods>
+            Mock<IMockableGraphMethods> mock = new Mock<IMockableGraphMethods>
             {
                 CallBase = true
             };
@@ -160,7 +160,7 @@ namespace EctBlazorApp.ServerTests
             MicrosoftGraphEmailAddress[] recipientDetails = new MicrosoftGraphEmailAddress[0];
 
             GraphSentMailResponse mockGraphResponse = GetMockGraphSentMailResponseOneDayAfterLastLogin(contextUser, recipientDetails);
-            Mock<IMockableMethods> mock = new Mock<IMockableMethods>
+            Mock<IMockableGraphMethods> mock = new Mock<IMockableGraphMethods>
             {
                 CallBase = true
             };

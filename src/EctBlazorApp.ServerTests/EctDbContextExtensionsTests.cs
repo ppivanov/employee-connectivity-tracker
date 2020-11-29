@@ -49,7 +49,7 @@ namespace EctBlazorApp.ServerTests
         {
             DateTime expectedLastSignIn = new DateTime(2020, 10, 1);
             GraphUserResponse mockGraphResponse = GetMockGraphUserResponse("Bob BobS");
-            Mock<IMockableMethods> mock = new Mock<IMockableMethods>
+            Mock<IMockableGraphMethods> mock = new Mock<IMockableGraphMethods>
             {
                 CallBase = true
             };

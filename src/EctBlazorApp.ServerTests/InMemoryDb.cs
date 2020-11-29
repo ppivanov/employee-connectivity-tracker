@@ -16,9 +16,31 @@ namespace EctBlazorApp.ServerTests
             dbContext.Users.AddRange(
                 GetUsers()
             );
+            dbContext.Administrators.AddRange(
+                GetAdmins()
+            );
 
             dbContext.SaveChanges();
             return dbContext;
+        }
+
+        private static List<EctAdmin> GetAdmins()
+        {
+            List<EctAdmin> admins = new List<EctAdmin>
+            {
+                new EctAdmin
+                {
+                    Id = 1,
+                    User = new EctUser
+                    {
+                        Id = 2,
+                        Email = "admin@ect.ie",
+                        FullName = "Admin AdminS",
+                        LastSignIn = new DateTime(2020, 11, 1), // Nov 1, 2020 12am
+                    }
+                }
+            };
+            return admins;
         }
         private static List<EctUser> GetUsers()
         {

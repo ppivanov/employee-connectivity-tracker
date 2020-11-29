@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace EctBlazorApp.Server.CommonMethods
 {
-    public class GraphMethods : IMockableMethods
+    public class GraphMethods : IMockableGraphMethods
     {
         private const string baseGraphUrl = "https://graph.microsoft.com/v1.0";
         private static string ConstructGraphUrlForEvents(EctUser user)

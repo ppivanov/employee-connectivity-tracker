@@ -37,7 +37,7 @@ namespace EctBlazorApp.Server.Controllers
             if (userDetails == null || userDetails.GraphToken == null)
                 return BadRequest("No inputs");
 
-            string userId = await HttpContext.GetPrefferredUsername();
+            string userId = await HttpContext.GetPreferredUsername();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", userDetails.GraphToken);
             EctUser userForParms = await _dbContext.GetExistingEctUserOrNewAsync(userId, client);
 
@@ -68,7 +68,7 @@ namespace EctBlazorApp.Server.Controllers
         [HttpGet]
         public async Task<ActionResult<DashboardResponse>> StatsForDashboard([FromQuery] string fromDate, [FromQuery] string toDate)               // TODO - Secure this so that only the person logged in can view the data
         {
-            string userEmail = await HttpContext.GetPrefferredUsername();
+            string userEmail = await HttpContext.GetPreferredUsername();
             int userId = _dbContext.Users.First(u => u.Email == userEmail).Id;
 
             DateTime formattedFromDate = NewDateTimeFromString(fromDate);

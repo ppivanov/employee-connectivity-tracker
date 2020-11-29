@@ -1,11 +1,12 @@
 ﻿using EctBlazorApp.Shared;
 using EctBlazorApp.Shared.GraphModels;
+using Microsoft.AspNetCore.Http;
 using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace EctBlazorApp.Server.CommonMethods
 {
-    public interface IMockableMethods
+    public interface IMockableGraphMethods
     {
         Task<GraphUserResponse> GetGraphUser(HttpClient client, string userId);
 
@@ -14,5 +15,10 @@ namespace EctBlazorApp.Server.CommonMethods
         Task<GraphReceivedMailResponse> GetMissingReceivedMail(HttpClient client, EctUser user);
 
         Task<GraphSentMailResponse> GetMissingSentMail(HttpClient client, EctUser user);
+    }
+
+    public interface IMockableMisc
+    {
+        Task<string> GetPreferredUsername(HttpContext controllerContext);
     }
 }
