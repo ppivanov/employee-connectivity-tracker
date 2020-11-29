@@ -1,5 +1,6 @@
 ﻿using EctBlazorApp.Server.Behaviour;
 using EctBlazorApp.Server.CommonMethods;
+using EctBlazorApp.Server.Extensions;
 using EctBlazorApp.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,7 +11,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using static EctBlazorApp.Server.Behaviour.UserBehaviour;
+using static EctBlazorApp.Server.Behaviour.EctDbContextExtensions;
 using static EctBlazorApp.Shared.SharedCommonMethods;
 
 namespace EctBlazorApp.Server.Controllers
@@ -38,17 +39,17 @@ namespace EctBlazorApp.Server.Controllers
 
             string userId = await HttpContext.GetPrefferredUsername();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", userDetails.GraphToken);
-            EctUser userForParms = await GetExistingEctUserOrNewWrapperAsync(userId, client, _dbContext);
+            EctUser userForParms = await _dbContext.GetExistingEctUserOrNewAsync(userId, client);
 
-            bool eventsSaved = await RetryUpdateMethodIfFails(client, _dbContext, userForParms.UpdateCalendarEventRecordsWrapperAsync);
+            bool eventsSaved = await RetryUpdateMethodIfFails(client, _dbContext, userForParms.UpdateCalendarEventRecordsAsync);
             if (!eventsSaved)
                 errorString.Append("Failed: Could not update calendar event records\n");
 
-            bool receivedEmails = await RetryUpdateMethodIfFails(client, _dbContext, userForParms.UpdateReceivedMailRecordsWrapperAsync);
+            bool receivedEmails = await RetryUpdateMethodIfFails(client, _dbContext, userForParms.UpdateReceivedMailRecordsAsync);
             if (!receivedEmails)
                 errorString.Append("Failed: Could not update received email records\n");
 
-            bool sentEmails = await RetryUpdateMethodIfFails(client, _dbContext, userForParms.UpdateSentMailRecordsWrapperAsync);
+            bool sentEmails = await RetryUpdateMethodIfFails(client, _dbContext, userForParms.UpdateSentMailRecordsAsync);
             if (!sentEmails)
                 errorString.Append("Failed: Could not update sent email records\n");
 

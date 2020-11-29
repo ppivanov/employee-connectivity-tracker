@@ -19,15 +19,18 @@ namespace EctBlazorApp.Server.Tests
     public class UserBehaviourTests : IDisposable
     {
         private readonly EctDbContext _dbContext;
+        private HttpClient _httpClient;
 
         public UserBehaviourTests()
         {
             _dbContext = InMemoryDb.InitInMemoryDbContext();
+            _httpClient = new HttpClient();
         }
 
         public void Dispose()
         {
             _dbContext.Database.EnsureDeleted();
+            _httpClient = null;
         }
 
         [TestMethod()]
@@ -35,7 +38,7 @@ namespace EctBlazorApp.Server.Tests
         {
             string userEmail = "alice@ect.ie";
             EctUser expectedUser = _dbContext.Users.First(user => user.Email.Equals(userEmail));
-            EctUser actualUser = await UserBehaviour.GetExistingEctUserOrNewWrapperAsync(userEmail, new HttpClient(), _dbContext);
+            EctUser actualUser = await _dbContext.GetExistingEctUserOrNewAsync(userEmail, new HttpClient());
 
             Assert.AreSame(expectedUser, actualUser);
         }
@@ -53,7 +56,7 @@ namespace EctBlazorApp.Server.Tests
 
             HttpClientExtensions.Implementation = mock.Object;
 
-            EctUser actualUser = await UserBehaviour.GetExistingEctUserOrNewWrapperAsync(mockGraphResponse.UserPrincipalName, new HttpClient(), _dbContext);
+            EctUser actualUser = await _dbContext.GetExistingEctUserOrNewAsync(mockGraphResponse.UserPrincipalName, new HttpClient());
 
             Assert.AreEqual(mockGraphResponse.UserPrincipalName, actualUser.Email);
             Assert.AreEqual(mockGraphResponse.DisplayName, actualUser.FullName);
@@ -75,7 +78,7 @@ namespace EctBlazorApp.Server.Tests
 
             HttpClientExtensions.Implementation = mock.Object;
 
-            bool actualValue = await contextUser.UpdateCalendarEventRecordsWrapperAsync(new HttpClient(), _dbContext);
+            bool actualValue = await contextUser.UpdateCalendarEventRecordsAsync(new HttpClient(), _dbContext);
             bool eventsAddedToDb = true;
             foreach (var orgraniser in orgraniserDetails)
             {
@@ -105,7 +108,7 @@ namespace EctBlazorApp.Server.Tests
 
             HttpClientExtensions.Implementation = mock.Object;
 
-            bool actualValue = await contextUser.UpdateCalendarEventRecordsWrapperAsync(new HttpClient(), _dbContext);
+            bool actualValue = await contextUser.UpdateCalendarEventRecordsAsync(new HttpClient(), _dbContext);
 
             Assert.IsTrue(actualValue);
         }
@@ -125,7 +128,7 @@ namespace EctBlazorApp.Server.Tests
 
             HttpClientExtensions.Implementation = mock.Object;
 
-            bool actualValue = await contextUser.UpdateReceivedMailRecordsWrapperAsync(new HttpClient(), _dbContext);
+            bool actualValue = await contextUser.UpdateReceivedMailRecordsAsync(new HttpClient(), _dbContext);
             bool mailAddedToDb = true;
             foreach (var sender in senderDetails)
             {
@@ -155,7 +158,7 @@ namespace EctBlazorApp.Server.Tests
 
             HttpClientExtensions.Implementation = mock.Object;
 
-            bool actualValue = await contextUser.UpdateReceivedMailRecordsWrapperAsync(new HttpClient(), _dbContext);
+            bool actualValue = await contextUser.UpdateReceivedMailRecordsAsync(new HttpClient(), _dbContext);
 
             Assert.IsTrue(actualValue);
         }
@@ -175,7 +178,7 @@ namespace EctBlazorApp.Server.Tests
 
             HttpClientExtensions.Implementation = mock.Object;
 
-            bool actualValue = await contextUser.UpdateSentMailRecordsWrapperAsync(new HttpClient(), _dbContext);
+            bool actualValue = await contextUser.UpdateSentMailRecordsAsync(new HttpClient(), _dbContext);
             bool mailAddedToDb = true;
             foreach (var sender in senderDetails)
             {
@@ -205,7 +208,7 @@ namespace EctBlazorApp.Server.Tests
 
             HttpClientExtensions.Implementation = mock.Object;
 
-            bool actualValue = await contextUser.UpdateSentMailRecordsWrapperAsync(new HttpClient(), _dbContext);
+            bool actualValue = await contextUser.UpdateSentMailRecordsAsync(new HttpClient(), _dbContext);
 
             Assert.IsTrue(actualValue);
         }
