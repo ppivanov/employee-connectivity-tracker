@@ -20,7 +20,6 @@ namespace EctBlazorApp.Server.Behaviour
         }
         public static async Task<EctUser> GetExistingEctUserOrNewAsync(this EctDbContext dbContext, string userId, HttpClient client)
         {
-
             try
             {
                 EctUser userForUserIdParm = dbContext.Users.First(user => user.Email.Equals(userId));
