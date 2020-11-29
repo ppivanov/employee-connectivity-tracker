@@ -24,7 +24,8 @@ namespace EctBlazorApp.Server.Controllers
 
         [Route("create-team")]
         [HttpPost]
-        public async Task<ActionResult> CreateNewTeam(EctTeamRequestDetails teamDetails)                    // TODO - only admins must be allowed access to this endpoint
+        [AuthorizeAdmin]
+        public async Task<ActionResult> CreateNewTeam(EctTeamRequestDetails teamDetails)
         {
             if (teamDetails.AreDetailsValid() == false)
                 return BadRequest("Invalid team details!");
@@ -51,14 +52,5 @@ namespace EctBlazorApp.Server.Controllers
                 return StatusCode(500, "Internal server error. Please, try again later.");
             }
         }
-
-        [Route("access")]
-        [HttpGet]
-        [AuthorizeAdmin]
-        public ActionResult<string> AccessTest()
-        {
-            return "testOk";
-        }
     }
-
 }
