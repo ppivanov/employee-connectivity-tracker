@@ -8,7 +8,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EctBlazorApp.Client", "Clie
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EctBlazorApp.Shared", "Shared\EctBlazorApp.Shared.csproj", "{F1A7688B-DB4A-4CC6-8E52-637E9D1508DC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EctBlazorApp.ServerTests", "EctBlazorApp.ServerTests\EctBlazorApp.ServerTests.csproj", "{F8FD7058-274B-41C1-A073-3B8E51EAD512}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EctBlazorApp.ServerTests", "EctBlazorApp.ServerTests\EctBlazorApp.ServerTests.csproj", "{F8FD7058-274B-41C1-A073-3B8E51EAD512}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

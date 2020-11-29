@@ -14,7 +14,6 @@
     <PackageReference Include="Microsoft.Authentication.WebAssembly.Msal" Version="3.2.1" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="3.1.6" />
     <PackageReference Include="Microsoft.Graph" Version="3.19.0" />
-    <PackageReference Include="Syncfusion.Blazor" Version="18.3.0.51" />
     <PackageReference Include="System.Net.Http.Json" Version="3.2.0" />
   </ItemGroup>
 

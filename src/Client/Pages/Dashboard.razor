@@ -123,8 +123,6 @@
                 emailsReceived = response.ReceivedMail.Count;
                 numberOfMeetings = response.CalendarEvents.Count;
                 secondsInMeeting = response.SecondsInMeeting;
-
-                var responseTwo =await Http.GetFromJsonAsync<DashboardResponse>($"api/team/access"); 
             }
             catch (AccessTokenNotAvailableException exception)
             {
