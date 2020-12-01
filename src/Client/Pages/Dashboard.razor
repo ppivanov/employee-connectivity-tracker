@@ -45,9 +45,11 @@
                 <h2>Top Collaborators</h2>
                 <div class="collaboratorsList">
                     <div class="collaborator">
-
                     </div>
                 </div>
+            </div>
+            <div class="emails-chart-container">
+                <div id="emails-chart"></div>
             </div>
         </div>
     </Authorized>
@@ -59,10 +61,28 @@
     [CascadingParameter]
     private Task<AuthenticationState> authenticationStateTask { get; set; }
 
-    private int emailsSent = 0;
-    private int emailsReceived = 0;
+    private DateTimeOffset? FromDate { get; set; } = DateTimeOffset.Now;
+    private DateTimeOffset? ToDate { get; set; } = DateTimeOffset.Now.AddDays(1);
+    private List<SentMail> sentMail;
+    private List<ReceivedMail> receivedMail;
+
+    private int emailsSent
+    {
+        get
+        {
+            return sentMail != null ? sentMail.Count : 0;
+        }
+    }
+    private int emailsReceived
+    {
+        get
+        {
+            return receivedMail != null ? receivedMail.Count : 0;
+        }
+    }
     private int numberOfMeetings = 0;
     private double secondsInMeeting = 0;
+
 
     private string GetFormattedTimeInMeeting()
     {
@@ -70,9 +90,6 @@
         string formattedTime = $"{timeSpan.Hours} hours, {timeSpan.Minutes} minutes";
         return formattedTime;
     }
-
-    private DateTimeOffset? FromDate { get; set; } = DateTimeOffset.Now;
-    private DateTimeOffset? ToDate { get; set; } = DateTimeOffset.Now.AddDays(1);
 
     private async Task ResetClick(MouseEventArgs e, DateRangePicker picker)
     {
@@ -95,8 +112,10 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await jsRuntime.InvokeAsync<string>("setPageTitle", "Dashboard");
+        await jsRuntime.InvokeVoidAsync("setPageTitle", "Dashboard");
         await UpdateDashboard();
+
+
     }
 
     protected async Task UpdateDashboard()
@@ -119,8 +138,9 @@
             {
                 Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.Value);
                 var response = await Http.GetFromJsonAsync<DashboardResponse>($"api/main/get-dashboard-stats{queryString}");
-                emailsSent = response.SentMail.Count;
-                emailsReceived = response.ReceivedMail.Count;
+                sentMail = response.SentMail;
+                receivedMail = response.ReceivedMail;
+
                 numberOfMeetings = response.CalendarEvents.Count;
                 secondsInMeeting = response.SecondsInMeeting;
             }
@@ -129,5 +149,40 @@
                 exception.Redirect();
             }
         }
+        await jsRuntime.InvokeVoidAsync("loadGraph", (object) GetSentAndReceivedEmailData());
+    }
+
+    private List<DateTime> SplitDateRangeToChunks()                                                 // These methods can be moved into their own API to allow for scaling
+    {
+        DateTime startDate = FromDate.Value.Date;
+        DateTime endDate = ToDate.Value.Date;
+        List<DateTime> dateTimeChunks = new List<DateTime>();
+
+        while (startDate <= endDate)
+        {
+            dateTimeChunks.Add(startDate);
+            startDate = startDate.AddDays(1);
+        }
+
+        return dateTimeChunks;
+    }
+
+    private object[][] GetSentAndReceivedEmailData()
+    {
+        var dates = SplitDateRangeToChunks();
+        object[][] newList = new object[dates.Count+1][];
+
+        newList[0] = new object[] { "Date", "Sent Emails", "Received Emails" };
+        for (int i = 1; i <= dates.Count; i++)
+        {
+            int index = i - 1;
+            DateTime date = dates[index];
+            int countOfSentMail = sentMail.Count(sm => sm.SentAt.Date == date);
+            int countOfReceivedMail = receivedMail.Count(rm => rm.ReceivedAt.Date == date);
+
+            newList[i] = new object[] { date.ToString("dd MMM"), countOfSentMail, countOfReceivedMail };
+        }
+
+        return newList;
     }
 }

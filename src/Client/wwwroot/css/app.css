@@ -235,7 +235,7 @@ body {
 }
 
     .menu-option:hover {
-        color: #f1f1f1;
+        color: #3d3d3d;
         background-color: aqua;
     }
 
@@ -264,3 +264,10 @@ body {
         color: white;
     }
 /* End of side menu */
+
+.emails-chart-container {
+    width: 40%;
+    height: 45%;
+    float: left;
+    margin: 5em;
+}
