@@ -271,3 +271,10 @@ body {
     float: left;
     margin: 5em;
 }
+
+.events-chart-container {
+    width: 25%;
+    height: 60%;
+    float: left;
+    margin-top: 5em;
+}

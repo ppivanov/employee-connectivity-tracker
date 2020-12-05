@@ -51,6 +51,9 @@
             <div class="emails-chart-container">
                 <div id="emails-chart"></div>
             </div>
+            <div class="events-chart-container">
+                <div id="events-chart"></div>
+            </div>
         </div>
     </Authorized>
 </AuthorizeView>
@@ -65,6 +68,7 @@
     private DateTimeOffset? ToDate { get; set; } = DateTimeOffset.Now.AddDays(1);
     private List<SentMail> sentMail;
     private List<ReceivedMail> receivedMail;
+    private List<CalendarEvent> calendarEvents;
 
     private int emailsSent
     {
@@ -82,7 +86,6 @@
     }
     private int numberOfMeetings = 0;
     private double secondsInMeeting = 0;
-
 
     private string GetFormattedTimeInMeeting()
     {
@@ -114,8 +117,6 @@
     {
         await jsRuntime.InvokeVoidAsync("setPageTitle", "Dashboard");
         await UpdateDashboard();
-
-
     }
 
     protected async Task UpdateDashboard()
@@ -140,16 +141,17 @@
                 var response = await Http.GetFromJsonAsync<DashboardResponse>($"api/main/get-dashboard-stats{queryString}");
                 sentMail = response.SentMail;
                 receivedMail = response.ReceivedMail;
+                calendarEvents = response.CalendarEvents;
 
-                numberOfMeetings = response.CalendarEvents.Count;
                 secondsInMeeting = response.SecondsInMeeting;
+                numberOfMeetings = calendarEvents.Count;
             }
             catch (AccessTokenNotAvailableException exception)
             {
                 exception.Redirect();
             }
         }
-        await jsRuntime.InvokeVoidAsync("loadGraph", (object) GetSentAndReceivedEmailData());
+        await jsRuntime.InvokeVoidAsync("loadGraph", (object)GetSentAndReceivedEmailData(), (object)GetCalendarEventsData());
     }
 
     private List<DateTime> SplitDateRangeToChunks()                                                 // These methods can be moved into their own API to allow for scaling
@@ -170,12 +172,12 @@
     private object[][] GetSentAndReceivedEmailData()
     {
         var dates = SplitDateRangeToChunks();
-        object[][] newList = new object[dates.Count+1][];
+        object[][] newList = new object[dates.Count + 1][];
 
         newList[0] = new object[] { "Date", "Sent Emails", "Received Emails" };
         for (int i = 1; i <= dates.Count; i++)
         {
-            int index = i - 1;
+            int index = i - 1;                                                                      // We add a row to the array that contains the value descriptions, but we still need the first date at position 0
             DateTime date = dates[index];
             int countOfSentMail = sentMail.Count(sm => sm.SentAt.Date == date);
             int countOfReceivedMail = receivedMail.Count(rm => rm.ReceivedAt.Date == date);
@@ -185,4 +187,41 @@
 
         return newList;
     }
+
+    private object[][] GetCalendarEventsData()
+    {
+        Dictionary<string, int> subjectAndCount = new Dictionary<string, int>();
+
+        // loop and count using the dict
+        foreach (var calendarEvent in calendarEvents)
+        {
+            if (subjectAndCount.ContainsKey(calendarEvent.Subject))
+            {
+                subjectAndCount[calendarEvent.Subject]++;
+            }
+            else
+            {
+                subjectAndCount.Add(calendarEvent.Subject, 1);
+            }
+        }
+
+        object[][] newList = new object[subjectAndCount.Count + 1][];
+        newList[0] = new object[] { "Event subject", "Number of events" };
+        int i = 1;
+        foreach (KeyValuePair<string, int> dictionaryEnty in subjectAndCount)
+        {
+            newList[i] = new object[] { dictionaryEnty.Key, dictionaryEnty.Value.ToString() };
+            i++;
+        }
+
+        return newList;
+    }
+    @* Barchart data format*@
+    @*[
+           ['Element', 'Density', { role: 'style' }, { role: 'annotation' } ],
+           ['Copper', 8.94, '#b87333', 'Cu' ],
+           ['Silver', 10.49, 'silver', 'Ag' ],
+           ['Gold', 19.30, 'gold', 'Au' ],
+           ['Platinum', 21.45, 'color: #e5e4e2', 'Pt' ]
+        ]*@
 }

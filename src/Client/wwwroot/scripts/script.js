@@ -15,22 +15,46 @@ const closeNav = () => {
     document.getElementById('mySidenav').style.width = '0'
 }
 
+const personalEventDivId = "events-chart";
+const personalEmailsDivId = "emails-chart";
 
-// Code adapted from https://developers.google.com/chart/interactive/docs/gallery/linechart
+// Code adapted from https://developers.google.com/chart/interactive/docs/gallery/
 // Load the Visualization API and the corechart package.
-google.charts.load('current', { 'packages': ['line'] });
+google.charts.load('current', { 'packages': ['line', 'bar'] });
 
 // Set a callback to run when the Google Visualization API is loaded.
-window.loadGraph = (mailList) => {
+window.loadGraph = (mailList, calendarList) => {                                // TODO - save these in a global variable to allow for chart resizing (they need to be redrawn)
     google.charts.setOnLoadCallback(drawLineGraph(mailList));
+    if (calendarList.length > 1) {
+        google.charts.setOnLoadCallback(drawBarChart(calendarList));
+    } else {
+        document.getElementById(personalEventDivId).innerHTML = "There are no events in the selected range";
+    }
 }
 
 // Callback that creates and populates a data table,
 // instantiates the pie chart, passes in the data and
 // draws it.
+const drawBarChart = (calendarList) => {
+
+    var data = google.visualization.arrayToDataTable(calendarList);
+    var options = {
+        chart: {
+            title: 'Meetings in period'
+        },
+        bars: 'horizontal',
+        legend: {
+            position: 'none'
+        },
+        height: 750
+    };
+
+    var chart = new google.charts.Bar(document.getElementById(personalEventDivId));
+    chart.draw(data, google.charts.Bar.convertOptions(options));
+}
+
 const drawLineGraph = (mailList) => {
 
-    console.log(mailList);
     var data = google.visualization.arrayToDataTable(mailList);
     var options = {
         chart: {
@@ -39,13 +63,6 @@ const drawLineGraph = (mailList) => {
         height: 550
     };
 
-    var chart = new google.charts.Line(document.getElementById('emails-chart'));
-
+    var chart = new google.charts.Line(document.getElementById(personalEmailsDivId));
     chart.draw(data, google.charts.Line.convertOptions(options));
-}
-
-window.onresize = updateCharts;
-
-function doALoadOfStuff() {
-    //do a load of stuff
 }
