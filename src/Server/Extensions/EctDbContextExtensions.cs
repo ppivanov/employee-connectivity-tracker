@@ -5,7 +5,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace EctBlazorApp.Server.Behaviour
+namespace EctBlazorApp.Server.Extensions
 {
     public static class EctDbContextExtensions
     {
@@ -48,6 +48,11 @@ namespace EctBlazorApp.Server.Behaviour
                     && mail.SentAt >= fromDate
                     && mail.SentAt < toDate).ToList();
             return sentMail;
+        }
+
+        public static bool IsEmailForAdmin(this EctDbContext dbContext, string email)
+        {
+            return dbContext.Administrators.Any(admin => admin.User.Email.Equals(email));
         }
     }
 }

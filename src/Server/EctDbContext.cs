@@ -53,11 +53,6 @@ namespace EctBlazorApp.Server
                 return null;
             }
         }
-
-        public bool IsEmailForAdmin(string email)
-        {
-            return Administrators.Any(admin => admin.User.Email.Equals(email));
-        }
     }
 
     public static class DbInitializer

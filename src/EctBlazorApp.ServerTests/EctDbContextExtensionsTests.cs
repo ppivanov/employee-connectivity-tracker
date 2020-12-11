@@ -1,5 +1,4 @@
 ﻿using EctBlazorApp.Server;
-using EctBlazorApp.Server.Behaviour;
 using EctBlazorApp.Server.CommonMethods;
 using EctBlazorApp.Server.Extensions;
 using EctBlazorApp.Shared;
@@ -160,6 +159,17 @@ namespace EctBlazorApp.ServerTests
             actualList = _dbContext.GetSentMailInDateRangeForUserId(userId, startOfOctober, endOfNovember);
 
             CollectionAssert.AreEquivalent(expectedList, actualList);
+        }
+
+        [DataTestMethod]
+        [DataRow("admin@ect.ie", true)]
+        [DataRow("alice@ect.ie", false)]
+        [TestMethod()]
+        public void IsEmailForAdmin_UserIsAdmin_ReturnsTrue(string userEmail, bool expectedResult)
+        {
+            bool actualResult = _dbContext.IsEmailForAdmin(userEmail);
+
+            Assert.AreEqual(expectedResult, actualResult);
         }
     }
 }

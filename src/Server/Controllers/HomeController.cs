@@ -1,6 +1,4 @@
-﻿using EctBlazorApp.Server.Behaviour;
-using EctBlazorApp.Server.CommonMethods;
-using EctBlazorApp.Server.Extensions;
+﻿using EctBlazorApp.Server.Extensions;
 using EctBlazorApp.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +9,6 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using static EctBlazorApp.Server.Behaviour.EctDbContextExtensions;
 using static EctBlazorApp.Shared.SharedCommonMethods;
 
 namespace EctBlazorApp.Server.Controllers
