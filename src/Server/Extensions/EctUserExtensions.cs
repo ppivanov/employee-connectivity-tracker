@@ -83,5 +83,13 @@ namespace EctBlazorApp.Server.Extensions
                 return false;
             }
         }
+
+        public static void MakeLeader(this EctUser user, EctTeam team)
+        {
+            if (user.LeaderOf == null)
+                user.LeaderOf = new List<EctTeam>();
+
+            user.LeaderOf.Add(team);
+        }
     }
 }

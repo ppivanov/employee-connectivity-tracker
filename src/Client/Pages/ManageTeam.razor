@@ -19,44 +19,44 @@
         }
         else
         {
-    <EditForm Model=teamDetails OnValidSubmit=@SendTeamData Context="formContext">
-        <label>Team name</label>
-        <InputText @bind-Value=teamDetails.Name class="form-control" id="Name" />
+            <EditForm Model=teamDetails OnValidSubmit=@SendTeamData Context="formContext">
+                <label>Team name</label>
+                <InputText @bind-Value=teamDetails.Name class="form-control" id="Name" />
 
-        <label>Leader</label>
-        <select @bind=teamDetails.LeaderEmail>
-            <option value="-">---</option>
-            @foreach (var user in membersFromApi)
-            {
-                <option value="@user">@user</option>
-            }
-        </select>
-        <table>
-            <thead>
-                <tr>
-                    <td>
-                        Member email
-                    </td>
-                </tr>
-            </thead>
-            @foreach (var member in selectedMembers)
-            {
-                <tr>
-                    <td>@member</td>
-                </tr>
-            }
+                <label>Team lead</label>
+                <select @bind=teamDetails.LeaderEmail>
+                    <option value="">---</option>
+                    @foreach (var user in availableLeaders)
+                    {
+                        <option value="@user">@user</option>
+                    }
+                </select>
+                <table>
+                    <thead>
+                        <tr>
+                            <td>
+                                Member email
+                            </td>
+                        </tr>
+                    </thead>
+                    @foreach (var member in selectedMembers)
+                    {
+                        <tr>
+                            <td>@member</td>
+                        </tr>
+                    }
 
-        </table>
-        <select @bind=currentMemberSelection>
-            <option value="-">---</option>
-            @foreach (var user in membersFromApi)
-            {
-                <option value="@user">@user</option>
-            }
-        </select>
-        <button type="button" @onclick="() => AddSelectedMember()" disabled=@isSubmitting>Add member</button>
-        <button type="submit" disabled=@isSubmitting >Save</button>
-    </EditForm>
+                </table>
+                <select @bind=currentMemberSelection>
+                    <option value="">---</option>
+                    @foreach (var user in availableMembers)
+                    {
+                        <option value="@user">@user</option>
+                    }
+                </select>
+                <button type="button" @onclick="() => AddSelectedMember()" disabled=@isSubmitting>Add member</button>
+                <button type="submit" disabled=@isSubmitting>Save</button>
+            </EditForm>
         }
     </Authorized>
 </AuthorizeView>
@@ -65,9 +65,19 @@
     EctTeamRequestDetails teamDetails = new EctTeamRequestDetails();
     string currentMemberSelection { get; set; }
     List<string> selectedMembers { get; set; }
-    List<string> membersFromApi { get; set; }
-    bool isSubmitting = false;
+    HashSet<string> membersFromApi { get; set; }
+    HashSet<string> availableLeaders { get; set; }
+    HashSet<string> availableMembers
+    {
+        get
+        {
+            var selectableMembers = availableLeaders.ToHashSet();                                  // Copy the available set of members
+            selectableMembers.Remove(teamDetails.LeaderEmail);                                      // Remove the selected leader
+            return selectableMembers;
+        }
+    }
 
+    bool isSubmitting = false;
     bool initialized = false;
 
     protected override async Task OnInitializedAsync()
@@ -87,8 +97,9 @@
             try
             {
                 Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                var response = await Http.GetFromJsonAsync<List<string>>($"api/auth/get-app-users");
-                membersFromApi = response;
+                var response = await Http.GetFromJsonAsync<IEnumerable<string>>($"api/auth/get-app-users");
+                membersFromApi = response.ToHashSet();
+                availableLeaders = membersFromApi.ToHashSet();                                     // Copy the set not the reference
             }
             catch (AccessTokenNotAvailableException exception)
             {
@@ -151,7 +162,7 @@
             return;
 
         selectedMembers.Add(currentMemberSelection);
-        membersFromApi.Remove(currentMemberSelection);
+        availableLeaders.Remove(currentMemberSelection);
         await InvokeAsync(StateHasChanged);
     }
 }

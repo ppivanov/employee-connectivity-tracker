@@ -13,4 +13,4 @@ frequency of use in order to identify teammates who may become isolated.
 1. Execute ``$ dotnet run``
 
 ### or
-Load EctWebApp.sln in Visual Studio and run with EctBlazorApp.Server profile.
+Load EctBlazorApp.sln in Visual Studio and run with EctBlazorApp.Server profile.

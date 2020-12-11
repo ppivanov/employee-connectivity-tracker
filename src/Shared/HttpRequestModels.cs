@@ -25,7 +25,7 @@ namespace EctBlazorApp.Shared
             if (!LeaderEmail.IsValidEmail())
                 return false;
 
-            if (MemberEmails == null)
+            if (MemberEmails == null || MemberEmails.Count < 1)
                 return false;
 
             foreach (var memberEmail in MemberEmails)

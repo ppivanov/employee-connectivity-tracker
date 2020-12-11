@@ -1,7 +1,9 @@
 ﻿using EctBlazorApp.Server.AuthorizationAttributes;
+using EctBlazorApp.Server.Extensions;
 using EctBlazorApp.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,8 +34,8 @@ namespace EctBlazorApp.Server.Controllers
 
             try
             {
-                EctUser leader = _dbContext.Users.First(u => u.Email.Equals(teamDetails.LeaderEmail));
-                List<EctUser> members = _dbContext.Users.Where(u => teamDetails.MemberEmails.Contains(u.Email)).ToList();
+                EctUser leader = _dbContext.Users.Include(u => u.LeaderOf).First(u => u.Email.Equals(teamDetails.LeaderEmail));
+                List<EctUser> members = _dbContext.Users.Include(u => u.MemberOf).Where(u => teamDetails.MemberEmails.Contains(u.Email)).ToList();
                 members.Add(leader);
 
                 EctTeam newTeam = new EctTeam
@@ -42,7 +44,11 @@ namespace EctBlazorApp.Server.Controllers
                     Leader = leader,
                     Members = members
                 };
-                _dbContext.Teams.Add(newTeam);
+
+                leader.MakeLeader(newTeam);
+                foreach (var member in members)
+                    member.MemberOf = newTeam;
+
                 await _dbContext.SaveChangesAsync();
 
                 return Ok("Create team endpoint");
