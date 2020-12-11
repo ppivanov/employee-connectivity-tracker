@@ -13,41 +13,70 @@
     <Authorized>
         @*TODO - Add extra validations to ensure user is admin*@
         <h3>Manage Team</h3>
-        @if (teamDetails == null)
+        @if (!initialized)
         {
             <p>Loading...</p>
         }
         else
         {
-            <EditForm Model=teamDetails OnSubmit=@SendTeamData Context="abc">
-                <label>Team name</label>
-                <InputText @bind-Value=teamDetails.Name class="form-control" id="Name" />
+    <EditForm Model=teamDetails OnValidSubmit=@SendTeamData Context="formContext">
+        <label>Team name</label>
+        <InputText @bind-Value=teamDetails.Name class="form-control" id="Name" />
 
-                <label>Leader</label>
-                <select @bind=teamDetails.LeaderEmail>
-                    @foreach (var user in membersFromApi)
-                    {
-                        <option value="@user">@user</option>
-                    }
-                </select>
-                <input type="submit" class="btn btn-primary" value="Save" />
-            </EditForm>
+        <label>Leader</label>
+        <select @bind=teamDetails.LeaderEmail>
+            <option value="-">---</option>
+            @foreach (var user in membersFromApi)
+            {
+                <option value="@user">@user</option>
+            }
+        </select>
+        <table>
+            <thead>
+                <tr>
+                    <td>
+                        Member email
+                    </td>
+                </tr>
+            </thead>
+            @foreach (var member in selectedMembers)
+            {
+                <tr>
+                    <td>@member</td>
+                </tr>
+            }
+
+        </table>
+        <select @bind=currentMemberSelection>
+            <option value="-">---</option>
+            @foreach (var user in membersFromApi)
+            {
+                <option value="@user">@user</option>
+            }
+        </select>
+        <button type="button" @onclick="() => AddSelectedMember()" disabled=@isSubmitting>Add member</button>
+        <button type="submit" disabled=@isSubmitting >Save</button>
+    </EditForm>
         }
     </Authorized>
 </AuthorizeView>
+
 @code {
     EctTeamRequestDetails teamDetails = new EctTeamRequestDetails();
-    string TeamName { get; set; }
-    string TeamLeader { get; set; }
+    string currentMemberSelection { get; set; }
     List<string> selectedMembers { get; set; }
     List<string> membersFromApi { get; set; }
+    bool isSubmitting = false;
+
+    bool initialized = false;
 
     protected override async Task OnInitializedAsync()
     {
         base.OnInitialized();
-        @*await GetUserEmails();*@
+        await GetUserEmails();
+        selectedMembers = new List<string>();
 
-        membersFromApi = new List<string> { "Alice", "bob@ect.ie", "Trudy" };
+        initialized = true;
     }
 
     protected async Task GetUserEmails()
@@ -58,7 +87,7 @@
             try
             {
                 Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                var response = await Http.GetFromJsonAsync<List<string>>($"api/users");             // TODO - create endpoint
+                var response = await Http.GetFromJsonAsync<List<string>>($"api/auth/get-app-users");
                 membersFromApi = response;
             }
             catch (AccessTokenNotAvailableException exception)
@@ -70,17 +99,17 @@
 
     private async Task SendTeamData()
     {
+        if (isSubmitting)
+            return;
+
+        isSubmitting = true;
         var token = await graphProvider.GetAPITokenAsync();
         if (token != null)
         {
             try
             {
-                @*var teamDetails = new EctTeamRequestDetails
-                    {
-                        Name = TeamName,
-                        LeaderEmail = TeamLeader,
-                        MemberEmails = selectedMembers
-                    };*@
+                teamDetails.MemberEmails = selectedMembers;
+
                 var json = JsonConvert.SerializeObject(teamDetails);
                 StringContent data = new StringContent(json, Encoding.UTF8, "application/json");
 
@@ -89,7 +118,7 @@
                 Console.WriteLine(await response.Content.ReadAsStringAsync());
                 if (response.IsSuccessStatusCode)
                 {
-                    // TODO - display success message
+                    Console.WriteLine("Team saved successfully");
                 }
                 else
                 {
@@ -100,6 +129,29 @@
             {
                 exception.Redirect();
             }
+            finally
+            {
+                isSubmitting = false;
+            }
         }
+    }
+
+    private async Task AddSelectedMember()
+    {
+        if (string.IsNullOrEmpty(currentMemberSelection))
+            return;
+
+        if (currentMemberSelection.Equals("-"))
+            return;
+
+        if (currentMemberSelection.Equals(teamDetails.LeaderEmail))
+            return;
+
+        if (selectedMembers.Contains(currentMemberSelection))
+            return;
+
+        selectedMembers.Add(currentMemberSelection);
+        membersFromApi.Remove(currentMemberSelection);
+        await InvokeAsync(StateHasChanged);
     }
 }

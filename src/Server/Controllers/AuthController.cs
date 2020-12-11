@@ -1,9 +1,12 @@
-﻿using EctBlazorApp.Server.Extensions;
+﻿using EctBlazorApp.Shared;
+using EctBlazorApp.Server.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace EctBlazorApp.Server.Controllers
 {
@@ -27,6 +30,15 @@ namespace EctBlazorApp.Server.Controllers
             bool userIsAdmin = _dbContext.IsEmailForAdmin(userEmail);
 
             return userIsAdmin;
+        }
+
+        [Route("get-app-users")]
+        [HttpGet]
+        public ActionResult<IEnumerable<string>> GetUserEmails()
+        {
+            var appUsers = _dbContext.Users.Select(u => u.Email).ToList();
+
+            return appUsers;
         }
     }
 }
