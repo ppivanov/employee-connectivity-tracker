@@ -1,8 +1,36 @@
-﻿<div class="expand-nav center-flex" onclick="openNav()">>></div>
+﻿@inject HttpClient Http
+@inject IControllerConnection graphProvider
+
+<div class="expand-nav center-flex" onclick="openNav()">>></div>
 <nav id="mySidenav" class="sidenav">
     <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
     <a href="/" class="menu-option bottom-border">Home</a>
     <a href="/dashboard" class="menu-option bottom-border">Dashboard</a>
     <a href="#" class="menu-option bottom-border">Team</a>
-    <a href="/manage-team" class="menu-option">Create Team</a>
+    @if (isAdmin)
+    {
+        <a href="/manage-team" class="menu-option">Create Team</a>
+    }
 </nav>
+
+@code{
+    private bool isAdmin { get; set; } = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var token = await graphProvider.GetAPITokenAsync();
+        if (token != null)
+        {
+            try
+            {
+                Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                bool isAdminResponse = await Http.GetFromJsonAsync<Boolean>($"api/auth/is-admin");
+                isAdmin = isAdminResponse;
+            }
+            catch (AccessTokenNotAvailableException exception)                                          // TODO - Find out if this is still valid
+            {
+                // Do nothing - user's not logged in
+            }
+        }
+    }
+}

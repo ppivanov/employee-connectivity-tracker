@@ -78,7 +78,7 @@ namespace EctBlazorApp.Client.Graph
             }
             return null;
         }
-        private async Task<string> GetAPITokenAsync()
+        public async Task<string> GetAPITokenAsync()
         {
             var tokenRequest = await _accessTokenProvider.RequestAccessToken(new AccessTokenRequestOptions
             {

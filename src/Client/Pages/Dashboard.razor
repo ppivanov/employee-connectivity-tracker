@@ -3,8 +3,6 @@
 @using BlazorDateRangePicker
 @using EctBlazorApp.Shared
 @using Microsoft.AspNetCore.Authorization
-@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
-@using System.Net.Http.Headers
 @attribute [Authorize]
 @inject HttpClient Http
 @inject IAccessTokenProvider TokenProvider
@@ -123,21 +121,15 @@
     {
         DateTime fromDate = FromDate.Value.Date;
         DateTime toDate = ToDate.Value.Date;
-        var authenticationState = await authenticationStateTask;
-        string userId = authenticationState.User.GetUserEmail();
 
         string queryString = $"?fromDate={fromDate.ToString("yyyy-MM-dd")}&toDate={toDate.ToString("yyyy-MM-dd")}";
 
-        var tokenResult = await TokenProvider.RequestAccessToken(
-            new AccessTokenRequestOptions
-            {
-                Scopes = new[] { "api://5f468f03-5a1f-4571-9e1e-9606014e5728/API.Access" }
-            });
-        if (tokenResult.TryGetToken(out var token))
+        var token = await graphProvider.GetAPITokenAsync();
+        if (token != null)
         {
             try
             {
-                Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.Value);
+                Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                 var response = await Http.GetFromJsonAsync<DashboardResponse>($"api/main/get-dashboard-stats{queryString}");
                 sentMail = response.SentMail;
                 receivedMail = response.ReceivedMail;
@@ -145,13 +137,13 @@
 
                 secondsInMeeting = response.SecondsInMeeting;
                 numberOfMeetings = calendarEvents.Count;
+                await jsRuntime.InvokeVoidAsync("loadGraph", (object)GetSentAndReceivedEmailData(), (object)GetCalendarEventsData());
             }
-            catch (AccessTokenNotAvailableException exception)
+            catch (AccessTokenNotAvailableException exception)                                          // TODO - Find out if this is still valid
             {
                 exception.Redirect();
             }
         }
-        await jsRuntime.InvokeVoidAsync("loadGraph", (object)GetSentAndReceivedEmailData(), (object)GetCalendarEventsData());
     }
 
     private List<DateTime> SplitDateRangeToChunks()                                                 // These methods can be moved into their own API to allow for scaling
@@ -216,12 +208,4 @@
 
         return newList;
     }
-    @* Barchart data format*@
-    @*[
-           ['Element', 'Density', { role: 'style' }, { role: 'annotation' } ],
-           ['Copper', 8.94, '#b87333', 'Cu' ],
-           ['Silver', 10.49, 'silver', 'Ag' ],
-           ['Gold', 19.30, 'gold', 'Au' ],
-           ['Platinum', 21.45, 'color: #e5e4e2', 'Pt' ]
-        ]*@
 }

@@ -7,5 +7,7 @@ namespace EctBlazorApp.Client.Graph
         Task<string> GetCalendarEventsForEmail(string userEmail);
 
         Task<string> UpdateDatabaseRecords();
+
+        Task<string> GetAPITokenAsync();
     }
 }

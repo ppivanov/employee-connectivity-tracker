@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using EctBlazorApp.Server.Extensions;
+﻿using EctBlazorApp.Server.Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Threading.Tasks;
 
 namespace EctBlazorApp.Server.Controllers
 {
+    [Authorize]
     [Route("api/auth")]
     [ApiController]
     public class AuthController : ControllerBase
