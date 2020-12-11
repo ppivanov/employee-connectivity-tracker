@@ -1,11 +1,11 @@
 ﻿@page "/manage-team"
 
 @using Microsoft.AspNetCore.Authorization
-@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
-@using System.Net.Http.Headers
+@using Newtonsoft.Json
+@using System.Text
+
 @attribute [Authorize]
 @inject HttpClient Http
-@inject IAccessTokenProvider TokenProvider
 @inject IJSRuntime jsRuntime
 @inject IControllerConnection graphProvider
 
@@ -13,38 +13,88 @@
     <Authorized>
         @*TODO - Add extra validations to ensure user is admin*@
         <h3>Manage Team</h3>
-        
+        @if (teamDetails == null)
+        {
+            <p>Loading...</p>
+        }
+        else
+        {
+            <EditForm Model=teamDetails OnSubmit=@SendTeamData Context="abc">
+                <label>Team name</label>
+                <InputText @bind-Value=teamDetails.Name class="form-control" id="Name" />
+
+                <label>Leader</label>
+                <select @bind=teamDetails.LeaderEmail>
+                    @foreach (var user in membersFromApi)
+                    {
+                        <option value="@user">@user</option>
+                    }
+                </select>
+                <input type="submit" class="btn btn-primary" value="Save" />
+            </EditForm>
+        }
     </Authorized>
 </AuthorizeView>
 @code {
-    List<string> selectedMembers;
-    List<string> membersFromApi;
+    EctTeamRequestDetails teamDetails = new EctTeamRequestDetails();
+    string TeamName { get; set; }
+    string TeamLeader { get; set; }
+    List<string> selectedMembers { get; set; }
+    List<string> membersFromApi { get; set; }
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         base.OnInitialized();
+        @*await GetUserEmails();*@
 
-        membersFromApi = new List<string>()
-        {
-            "Alice",
-            "Bob",
-            "Trudy"
-        };
+        membersFromApi = new List<string> { "Alice", "bob@ect.ie", "Trudy" };
     }
 
     protected async Task GetUserEmails()
     {
-        var tokenResult = await TokenProvider.RequestAccessToken(
-            new AccessTokenRequestOptions
-            {
-                Scopes = new[] { "api://5f468f03-5a1f-4571-9e1e-9606014e5728/API.Access" }
-            });
-        if (tokenResult.TryGetToken(out var token))
+        var token = await graphProvider.GetAPITokenAsync();
+        if (token != null)
         {
             try
             {
-                Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.Value);
-                var response = await Http.GetFromJsonAsync<List<string>>($"api/users");
+                Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                var response = await Http.GetFromJsonAsync<List<string>>($"api/users");             // TODO - create endpoint
+                membersFromApi = response;
+            }
+            catch (AccessTokenNotAvailableException exception)
+            {
+                exception.Redirect();
+            }
+        }
+    }
+
+    private async Task SendTeamData()
+    {
+        var token = await graphProvider.GetAPITokenAsync();
+        if (token != null)
+        {
+            try
+            {
+                @*var teamDetails = new EctTeamRequestDetails
+                    {
+                        Name = TeamName,
+                        LeaderEmail = TeamLeader,
+                        MemberEmails = selectedMembers
+                    };*@
+                var json = JsonConvert.SerializeObject(teamDetails);
+                StringContent data = new StringContent(json, Encoding.UTF8, "application/json");
+
+                Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                var response = await Http.PostAsync("api/team/create-team", data);
+                Console.WriteLine(await response.Content.ReadAsStringAsync());
+                if (response.IsSuccessStatusCode)
+                {
+                    // TODO - display success message
+                }
+                else
+                {
+                    // TODO - display error
+                }
             }
             catch (AccessTokenNotAvailableException exception)
             {
