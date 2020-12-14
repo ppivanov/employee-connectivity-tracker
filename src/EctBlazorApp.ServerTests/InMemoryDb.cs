@@ -19,10 +19,9 @@ namespace EctBlazorApp.ServerTests
 
             List<EctUser> teamOneMembers = new List<EctUser> { alice, bob };
             EctTeam teamOne = GetTeamForParameters(alice, teamOneMembers);
+            
             dbContext.Teams.Add(teamOne);
-            dbContext.Users.Add(
-                alice
-            );
+
             dbContext.Administrators.AddRange(
                 GetAdmins()
             );
