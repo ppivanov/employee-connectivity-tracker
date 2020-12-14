@@ -52,7 +52,25 @@ namespace EctBlazorApp.Server.Extensions
 
         public static bool IsEmailForAdmin(this EctDbContext dbContext, string email)
         {
-            return dbContext.Administrators.Any(admin => admin.User.Email.Equals(email));
+            bool isAdmin = dbContext.Administrators.Any(admin => admin.User.Email.Equals(email));
+
+            return isAdmin;
+        }
+
+        public static bool IsEmailForLeader(this EctDbContext dbContext, string email)
+        {
+            try
+            {
+                EctUser user = dbContext.Users.First(u => u.Email.Equals(email));
+                bool isLeader = dbContext.Teams.Any(t => t.LeaderId == user.Id);
+                
+                return isLeader;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
         }
     }
 }

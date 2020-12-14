@@ -163,11 +163,25 @@ namespace EctBlazorApp.ServerTests
 
         [DataTestMethod]
         [DataRow("admin@ect.ie", true)]
+        [DataRow("doesnt@exist.ie", false)]
         [DataRow("alice@ect.ie", false)]
         [TestMethod()]
-        public void IsEmailForAdmin_UserIsAdmin_ReturnsTrue(string userEmail, bool expectedResult)
+        public void IsEmailForAdmin_Parametarized(string userEmail, bool expectedResult)
         {
             bool actualResult = _dbContext.IsEmailForAdmin(userEmail);
+
+            Assert.AreEqual(expectedResult, actualResult);
+        }
+
+        [DataTestMethod]
+        [DataRow("alice@ect.ie", true)]
+        [DataRow("admin@ect.ie", false)]
+        [DataRow("homer@ect.ie", false)]
+        [DataRow("doesnt@exist.ie", false)]
+        [TestMethod()]
+        public void IsEmailForLeader_Parametarized(string userEmail, bool expectedResult)
+        {
+            bool actualResult = _dbContext.IsEmailForLeader(userEmail);
 
             Assert.AreEqual(expectedResult, actualResult);
         }

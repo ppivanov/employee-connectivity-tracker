@@ -31,6 +31,20 @@ namespace EctBlazorApp.Server.Controllers
             return userIsAdmin;
         }
 
+        [Route("is-leader/{teamId?}")]
+        [HttpGet]
+        public async Task<ActionResult<Boolean>> IsLeader(string teamId = "")
+        {
+            string userEmail = await HttpContext.GetPreferredUsername();
+            bool userIsLeader = false;
+            if (string.IsNullOrEmpty(teamId))
+                userIsLeader = _dbContext.IsEmailForLeader(userEmail);                                      // can potentially throw an exception
+            //else
+            //    userIsLeader = _dbContext.IsLeaderForTeam(userEmail, teamId);
+
+            return userIsLeader;
+        }
+
         [Route("get-app-users")]
         [HttpGet]
         public ActionResult<IEnumerable<string>> GetUserEmails()

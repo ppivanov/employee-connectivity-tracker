@@ -13,8 +13,15 @@ namespace EctBlazorApp.ServerTests
             var optionsBuilder = new DbContextOptionsBuilder<EctDbContext>()
                 .UseInMemoryDatabase(Guid.NewGuid().ToString());
             EctDbContext dbContext = new EctDbContext(optionsBuilder.Options);
-            dbContext.Users.AddRange(
-                GetUsers()
+
+            EctUser alice = GetAlice();
+            EctUser bob = GetHomer();
+
+            List<EctUser> teamOneMembers = new List<EctUser> { alice, bob };
+            EctTeam teamOne = GetTeamForParameters(alice, teamOneMembers);
+            dbContext.Teams.Add(teamOne);
+            dbContext.Users.Add(
+                alice
             );
             dbContext.Administrators.AddRange(
                 GetAdmins()
@@ -42,22 +49,35 @@ namespace EctBlazorApp.ServerTests
             };
             return admins;
         }
-        private static List<EctUser> GetUsers()
+        private static EctUser GetAlice()
         {
-            List<EctUser> users = new List<EctUser>
-            {
+            EctUser alice =
                 new EctUser
-                    {
-                        Id = 1,
-                        Email = "alice@ect.ie",
-                        FullName = "Alice AliceS",
-                        LastSignIn = new DateTime(2020, 11, 1), // Nov 1, 2020 12am
-                        CalendarEvents = GetEventsForAlice(),
-                        SentEmails = GetSentMailForAlice(),
-                        ReceivedEmails = GetReceivedMailForAlice()
-                    }
-            };
-            return users;
+                {
+                    Id = 1,
+                    Email = "alice@ect.ie",
+                    FullName = "Alice AliceS",
+                    LastSignIn = new DateTime(2020, 11, 1), // Nov 1, 2020 12am
+                    CalendarEvents = GetEventsForAlice(),
+                    SentEmails = GetSentMailForAlice(),
+                    ReceivedEmails = GetReceivedMailForAlice()
+                }
+            ;
+            return alice;
+        }
+
+        private static EctUser GetHomer()
+        {
+            EctUser bob =
+                new EctUser
+                {
+                    Id = 3,
+                    Email = "homer@ect.ie",
+                    FullName = "Homer HomerS",
+                    LastSignIn = new DateTime(2020, 11, 1) // Nov 1, 2020 12am
+                }
+            ;
+            return bob;
         }
 
         private static List<CalendarEvent> GetEventsForAlice()
@@ -138,10 +158,23 @@ namespace EctBlazorApp.ServerTests
                     From = "Bob BobS <bob@ect.ie>",
                     EctUserId = 1
                 }
-                
+
             };
 
             return receivedEmails;
+        }
+
+        private static EctTeam GetTeamForParameters(EctUser lead, List<EctUser> members)
+        {
+            EctTeam team = new EctTeam
+            {
+                Id = 1,
+                Name = "Team One",
+                Leader = lead,
+                Members = members
+            };
+
+            return team;
         }
     }
 }
