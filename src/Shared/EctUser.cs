@@ -27,7 +27,6 @@ namespace EctBlazorApp.Shared
             Email = graphUser.UserPrincipalName;
             FullName = graphUser.DisplayName;
             LastSignIn = new DateTime(2020, 10, 1); // 1st Oct 2020
-            //MicrosoftId = graphUser.Id;
         }
     }
 }

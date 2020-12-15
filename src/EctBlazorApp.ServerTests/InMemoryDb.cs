@@ -3,9 +3,11 @@ using EctBlazorApp.Shared;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace EctBlazorApp.ServerTests
 {
+    [ExcludeFromCodeCoverage]
     public static class InMemoryDb
     {
         public static EctDbContext InitInMemoryDbContext()

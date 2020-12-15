@@ -9,11 +9,13 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace EctBlazorApp.ServerTests
 {
     [TestClass()]
-    public class AuthorizationAttributesTests : IDisposable
+    [ExcludeFromCodeCoverage]
+    public sealed class AuthorizationAttributesTests : IDisposable
     {
         private readonly EctDbContext _dbContext;
 

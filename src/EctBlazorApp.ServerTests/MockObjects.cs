@@ -1,10 +1,12 @@
 ﻿using EctBlazorApp.Shared;
 using EctBlazorApp.Shared.GraphModels;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace EctBlazorApp.ServerTests
 {
+    [ExcludeFromCodeCoverage]
     public static class MockObjects
     {
         public static GraphEventsResponse GetMockGraphEventResponseOneDayAfterLastLogin(EctUser contextUser, MicrosoftGraphEmailAddress[] organiserDetails)

@@ -7,6 +7,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -16,7 +17,8 @@ using static EctBlazorApp.ServerTests.MockObjects;
 namespace EctBlazorApp.ServerTests
 {
     [TestClass()]
-    public class EctDbContextExtensionsTests : IDisposable
+    [ExcludeFromCodeCoverage]
+    public sealed class EctDbContextExtensionsTests : IDisposable
     {
         private readonly EctDbContext _dbContext;
         private HttpClient _httpClient;

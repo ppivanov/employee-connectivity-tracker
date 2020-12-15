@@ -30,7 +30,6 @@ namespace EctBlazorApp.Client
                 options.ProviderOptions.DefaultAccessTokenScopes.Add("api://5f468f03-5a1f-4571-9e1e-9606014e5728/API.Access");
                 options.ProviderOptions.AdditionalScopesToConsent.Add("https://graph.microsoft.com/User.Read");
                 options.ProviderOptions.AdditionalScopesToConsent.Add("https://graph.microsoft.com/Calendars.Read");
-                // options.ProviderOptions.AdditionalScopesToConsent.Add("https://graph.microsoft.com/CallRecords.Read.All");
                 options.ProviderOptions.AdditionalScopesToConsent.Add("https://graph.microsoft.com/Chat.Read.All");
                 options.ProviderOptions.AdditionalScopesToConsent.Add("https://graph.microsoft.com/Mail.Read");
             });

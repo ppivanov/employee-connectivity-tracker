@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Security.Claims;
-using Microsoft.Graph;
+﻿using System.Security.Claims;
 
 namespace EctBlazorApp.Client.Graph
 {

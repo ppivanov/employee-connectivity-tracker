@@ -3,7 +3,6 @@ using EctBlazorApp.Shared;
 using EctBlazorApp.Shared.GraphModels;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -60,10 +59,6 @@ namespace EctBlazorApp.Server
         public static void Initialize(EctDbContext context)
         {
             context.Database.EnsureCreated();
-            if (context.Users.Any())
-            {
-                return;
-            }
         }
     }
 }

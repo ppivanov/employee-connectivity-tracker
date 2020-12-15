@@ -15,25 +15,20 @@ namespace EctBlazorApp.Shared
 
         public int EctUserId { get; set; }
 
-        private List<string> _attendees;
-        public List<string> Attendees
-        {
-            get { return _attendees; }
-            set { _attendees = value; }
-        }
+        public List<string> Attendees { get; set; }
 
         public string AttendeesAsString
         {
             get
             {
-                if (Attendees.Count < 1) 
+                if (Attendees.Count < 1)
                     return "";
 
                 return string.Join(" | ", Attendees);
             }
             set
             {
-                if (value.Length < 1) 
+                if (value.Length < 1)
                     Attendees = new List<string>();
 
                 Attendees = value.Split(" | ").ToList();

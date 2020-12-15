@@ -15,7 +15,7 @@ namespace EctBlazorApp.Server.AuthorizationAttributes
             var emailFromContext = await context.HttpContext.GetPreferredUsername();
             bool userIsAdmin = dbContext.IsEmailForAdmin(emailFromContext);
 
-            if (userIsAdmin == false)
+            if (!userIsAdmin)
                 context.Result = new UnauthorizedResult();
         }
 

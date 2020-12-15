@@ -8,24 +8,17 @@ namespace EctBlazorApp.Shared
     public class SentMail : Mail
     {
         public DateTime SentAt { get; set; }
-
-        private List<string> _recipients;
-
-        public List<string> Recipients
-        {
-            get { return _recipients; }
-            set { _recipients = value; }
-        }
+        public List<string> Recipients { get; set; }
 
         public string RecipientsAsString 
         { 
             get
             {
-                return string.Join("|", _recipients);
+                return string.Join("|", Recipients);
             }
             set
             {
-                _recipients = value.Split("|").ToList();
+                Recipients = value.Split("|").ToList();
             }
         }
 
