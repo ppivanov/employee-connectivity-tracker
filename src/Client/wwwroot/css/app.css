@@ -314,7 +314,7 @@ body {
 
 .create-team > form {
     width: 80%;
-    margin: 4em auto 0 auto;
+    margin: 0 auto 2em auto;
 }
 
     .create-team > form > .left-half {
@@ -332,6 +332,12 @@ body {
     width: 50%;
     float: left;
 }
+
+.create-team .validation-errors {
+    width: 20%;
+    margin: 4em auto 0 auto;
+}
+
 /* Code source: (dcode) https://dev.to/dcodeyt/creating-beautiful-html-tables-with-css-428l */
 .create-team .selected-members {
     border-collapse: collapse;

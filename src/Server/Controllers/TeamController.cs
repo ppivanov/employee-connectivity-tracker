@@ -29,6 +29,7 @@ namespace EctBlazorApp.Server.Controllers
         [AuthorizeAdmin]
         public async Task<ActionResult> CreateNewTeam(EctTeamRequestDetails teamDetails)
         {
+
             if (teamDetails.AreDetailsValid() == false)
                 return BadRequest("Invalid team details!");
 

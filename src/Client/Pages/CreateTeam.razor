@@ -21,38 +21,51 @@
             else
             {
                 <EditForm Model=teamDetails OnValidSubmit=@SendTeamData Context="formContext">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary style="color: red" />
+
+                    @if (String.IsNullOrEmpty(ServerErrorMessage) == false)
+                    {
+                        <div class="validation-errors">
+                            <p style="color: red; text-align: center;">@ServerErrorMessage</p>
+                        </div>
+                    }
+
                     <div class="left-half">
                         <div class="create-team-input-pair">
                             <label>Team name</label>
                             <InputText @bind-Value=teamDetails.Name class="form-control" id="Name" />
+
                         </div>
                         <div class="create-team-input-pair">
                             <label>Team lead</label>
                             <select @bind=teamDetails.LeaderEmail>
-                                @if (availableLeaders.Count == 0)
+                                @if (AvailableLeaders.Count == 0)
                                 {
                                     <option value="" disabled>No available users</option>
                                 }
                                 else
                                 {
                                     <option value="">---</option>
-                                    @foreach (var user in availableLeaders)
+                                    @foreach (var user in AvailableLeaders)
                                     {
                                         <option value="@user">@user</option>
                                     }
                                 }
+                                }
                             </select>
                         </div>
                         <div class="create-team-input-pair">
-                            <select @bind=currentMemberSelection>
-                                @if (availableMembers.Count == 0)
+                            <label>Available users</label>
+                            <select @bind=CurrentMemberSelection>
+                                @if (AvailableMembers.Count == 0)
                                 {
                                     <option value="" disabled>No available users</option>
                                 }
                                 else
                                 {
                                     <option value="">---</option>
-                                    @foreach (var user in availableMembers)
+                                    @foreach (var user in AvailableMembers)
                                     {
                                         <option value="@user">@user</option>
                                     }
@@ -65,12 +78,12 @@
                         <thead>
                             <tr>
                                 <td>
-                                    Member email
+                                    Selected members
                                 </td>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var member in selectedMembers)
+                            @foreach (var member in teamDetails.MemberEmails)
                             {
                                 <tr>
                                     <td>
@@ -91,15 +104,15 @@
 
 @code {
     EctTeamRequestDetails teamDetails = new EctTeamRequestDetails();
-    string currentMemberSelection { get; set; }
-    List<string> selectedMembers { get; set; }
-    HashSet<string> membersFromApi { get; set; }
-    HashSet<string> availableLeaders { get; set; }
-    HashSet<string> availableMembers
+    string CurrentMemberSelection { get; set; }
+    string ServerErrorMessage { get; set; } = "";
+    HashSet<string> MembersFromApi { get; set; }
+    HashSet<string> AvailableLeaders { get; set; }
+    HashSet<string> AvailableMembers
     {
         get
         {
-            var selectableMembers = availableLeaders.ToHashSet();                                  // Copy the available set of members
+            var selectableMembers = AvailableLeaders.ToHashSet();                                  // Copy the available set of members
             selectableMembers.Remove(teamDetails.LeaderEmail);                                      // Remove the selected leader
             return selectableMembers;
         }
@@ -112,27 +125,27 @@
     {
         await jsRuntime.InvokeVoidAsync("setPageTitle", "Dashboard");
         await GetUserEmails();
-        selectedMembers = new List<string>();
+        teamDetails.MemberEmails = new List<string>();
 
         initialized = true;
     }
 
     private async Task AddSelectedMember()
     {
-        if (string.IsNullOrEmpty(currentMemberSelection))
+        if (string.IsNullOrEmpty(CurrentMemberSelection))
             return;
 
-        if (currentMemberSelection.Equals("-"))
+        if (CurrentMemberSelection.Equals("-"))
             return;
 
-        if (currentMemberSelection.Equals(teamDetails.LeaderEmail))
+        if (CurrentMemberSelection.Equals(teamDetails.LeaderEmail))
             return;
 
-        if (selectedMembers.Contains(currentMemberSelection))
+        if (teamDetails.MemberEmails.Contains(CurrentMemberSelection))
             return;
 
-        selectedMembers.Add(currentMemberSelection);
-        availableLeaders.Remove(currentMemberSelection);
+        teamDetails.MemberEmails.Add(CurrentMemberSelection);
+        AvailableLeaders.Remove(CurrentMemberSelection);
         await InvokeAsync(StateHasChanged);
     }
 
@@ -145,8 +158,8 @@
             {
                 Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                 var response = await Http.GetFromJsonAsync<IEnumerable<string>>($"api/auth/get-app-users");
-                membersFromApi = response.ToHashSet();
-                availableLeaders = membersFromApi.ToHashSet();                                     // Copy the set not the reference
+                MembersFromApi = response.ToHashSet();
+                AvailableLeaders = MembersFromApi.ToHashSet();                                     // Copy the set not the reference
             }
             catch (AccessTokenNotAvailableException exception)
             {
@@ -157,8 +170,8 @@
 
     private async Task RemoveFromSelected(string member)
     {
-        selectedMembers.Remove(member);
-        availableLeaders.Add(member);
+        teamDetails.MemberEmails.Remove(member);
+        AvailableLeaders.Add(member);
         await InvokeAsync(StateHasChanged);
     }
 
@@ -173,7 +186,7 @@
         {
             try
             {
-                teamDetails.MemberEmails = selectedMembers;
+                teamDetails.MemberEmails = teamDetails.MemberEmails;
 
                 var json = JsonConvert.SerializeObject(teamDetails);
                 StringContent data = new StringContent(json, Encoding.UTF8, "application/json");
@@ -187,7 +200,7 @@
                 }
                 else
                 {
-                    // TODO - display error
+                    ServerErrorMessage = await response.Content.ReadAsStringAsync();
                 }
             }
             catch (AccessTokenNotAvailableException exception)
@@ -199,6 +212,8 @@
                 isSubmitting = false;
             }
         }
+
+        await InvokeAsync(StateHasChanged);
     }
 
 }
