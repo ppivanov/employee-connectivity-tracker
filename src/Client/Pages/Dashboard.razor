@@ -58,9 +58,6 @@
 
 @code {
 
-    [CascadingParameter]
-    private Task<AuthenticationState> authenticationStateTask { get; set; }
-
     private DateTimeOffset? FromDate { get; set; } = DateTimeOffset.Now;
     private DateTimeOffset? ToDate { get; set; } = DateTimeOffset.Now.AddDays(1);
     private List<SentMail> sentMail;
@@ -84,11 +81,72 @@
     private int numberOfMeetings = 0;
     private double secondsInMeeting = 0;
 
+    protected override async Task OnInitializedAsync()
+    {
+        await jsRuntime.InvokeVoidAsync("setPageTitle", "Dashboard");
+        await UpdateDashboard();
+    }
+
+    private async Task CustomApply(MouseEventArgs e, DateRangePicker picker)
+    {
+        await picker.ClickApply(e);
+
+        await UpdateDashboard();
+    }
+
+    private object[][] GetCalendarEventsData()
+    {
+        Dictionary<string, int> subjectAndCount = new Dictionary<string, int>();
+
+        // loop and count using the dict
+        foreach (var calendarEvent in calendarEvents)
+        {
+            if (subjectAndCount.ContainsKey(calendarEvent.Subject))
+            {
+                subjectAndCount[calendarEvent.Subject]++;
+            }
+            else
+            {
+                subjectAndCount.Add(calendarEvent.Subject, 1);
+            }
+        }
+
+        object[][] newList = new object[subjectAndCount.Count + 1][];
+        newList[0] = new object[] { "Event subject", "Number of events" };
+        int i = 1;
+        foreach (KeyValuePair<string, int> dictionaryEnty in subjectAndCount)
+        {
+            newList[i] = new object[] { dictionaryEnty.Key, dictionaryEnty.Value.ToString() };
+            i++;
+        }
+
+        return newList;
+    }
+
     private string GetFormattedTimeInMeeting()
     {
         TimeSpan timeSpan = TimeSpan.FromSeconds(secondsInMeeting);
         string formattedTime = $"{timeSpan.Hours} hours, {timeSpan.Minutes} minutes";
         return formattedTime;
+    }
+
+    private object[][] GetSentAndReceivedEmailData()
+    {
+        var dates = SplitDateRangeToChunks();
+        object[][] newList = new object[dates.Count + 1][];
+
+        newList[0] = new object[] { "Date", "Sent Emails", "Received Emails" };
+        for (int i = 1; i <= dates.Count; i++)
+        {
+            int index = i - 1;                                                                      // We add a row to the array that contains the value descriptions, but we still need the first date at position 0
+            DateTime date = dates[index];
+            int countOfSentMail = sentMail.Count(sm => sm.SentAt.Date == date);
+            int countOfReceivedMail = receivedMail.Count(rm => rm.ReceivedAt.Date == date);
+
+            newList[i] = new object[] { date.ToString("dd MMM"), countOfSentMail, countOfReceivedMail };
+        }
+
+        return newList;
     }
 
     private async Task ResetClick(MouseEventArgs e, DateRangePicker picker)
@@ -103,17 +161,19 @@
         await UpdateDashboard();
     }
 
-    private async Task CustomApply(MouseEventArgs e, DateRangePicker picker)
+    private List<DateTime> SplitDateRangeToChunks()                                                 // These methods can be moved into their own API to allow for scaling
     {
-        await picker.ClickApply(e);
+        DateTime startDate = FromDate.Value.Date;
+        DateTime endDate = ToDate.Value.Date;
+        List<DateTime> dateTimeChunks = new List<DateTime>();
 
-        await UpdateDashboard();
-    }
+        while (startDate <= endDate)
+        {
+            dateTimeChunks.Add(startDate);
+            startDate = startDate.AddDays(1);
+        }
 
-    protected override async Task OnInitializedAsync()
-    {
-        await jsRuntime.InvokeVoidAsync("setPageTitle", "Dashboard");
-        await UpdateDashboard();
+        return dateTimeChunks;
     }
 
     protected async Task UpdateDashboard()
@@ -145,66 +205,4 @@
         }
     }
 
-    private List<DateTime> SplitDateRangeToChunks()                                                 // These methods can be moved into their own API to allow for scaling
-    {
-        DateTime startDate = FromDate.Value.Date;
-        DateTime endDate = ToDate.Value.Date;
-        List<DateTime> dateTimeChunks = new List<DateTime>();
-
-        while (startDate <= endDate)
-        {
-            dateTimeChunks.Add(startDate);
-            startDate = startDate.AddDays(1);
-        }
-
-        return dateTimeChunks;
-    }
-
-    private object[][] GetSentAndReceivedEmailData()
-    {
-        var dates = SplitDateRangeToChunks();
-        object[][] newList = new object[dates.Count + 1][];
-
-        newList[0] = new object[] { "Date", "Sent Emails", "Received Emails" };
-        for (int i = 1; i <= dates.Count; i++)
-        {
-            int index = i - 1;                                                                      // We add a row to the array that contains the value descriptions, but we still need the first date at position 0
-            DateTime date = dates[index];
-            int countOfSentMail = sentMail.Count(sm => sm.SentAt.Date == date);
-            int countOfReceivedMail = receivedMail.Count(rm => rm.ReceivedAt.Date == date);
-
-            newList[i] = new object[] { date.ToString("dd MMM"), countOfSentMail, countOfReceivedMail };
-        }
-
-        return newList;
-    }
-
-    private object[][] GetCalendarEventsData()
-    {
-        Dictionary<string, int> subjectAndCount = new Dictionary<string, int>();
-
-        // loop and count using the dict
-        foreach (var calendarEvent in calendarEvents)
-        {
-            if (subjectAndCount.ContainsKey(calendarEvent.Subject))
-            {
-                subjectAndCount[calendarEvent.Subject]++;
-            }
-            else
-            {
-                subjectAndCount.Add(calendarEvent.Subject, 1);
-            }
-        }
-
-        object[][] newList = new object[subjectAndCount.Count + 1][];
-        newList[0] = new object[] { "Event subject", "Number of events" };
-        int i = 1;
-        foreach (KeyValuePair<string, int> dictionaryEnty in subjectAndCount)
-        {
-            newList[i] = new object[] { dictionaryEnty.Key, dictionaryEnty.Value.ToString() };
-            i++;
-        }
-
-        return newList;
-    }
 }
