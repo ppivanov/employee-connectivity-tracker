@@ -10,6 +10,12 @@ using System.Threading.Tasks;
 
 namespace EctBlazorApp.Client.Graph
 {
+    public enum UserRoles
+    {
+        admin,
+        leader
+    }
+
     public class ControllerConnection : IControllerConnection
     {
         private readonly IAccessTokenProvider _accessTokenProvider;
@@ -80,7 +86,19 @@ namespace EctBlazorApp.Client.Graph
             return null;
         }
 
-        public async Task<Boolean> IsAdmin(HttpClient Http)
+        public async Task<Boolean> IsProcessingUserAnAdmin(HttpClient Http)
+        {
+            var adminResponse = await IsProcessingUserAuthorizedForRole(Http, UserRoles.admin);
+            return adminResponse;
+        }
+
+        public async Task<Boolean> IsProcessingUserALeader(HttpClient Http)
+        {
+            var leaderResponse = await IsProcessingUserAuthorizedForRole(Http, UserRoles.leader);
+            return leaderResponse;
+        }
+
+        private async Task<Boolean> IsProcessingUserAuthorizedForRole(HttpClient Http, UserRoles role)
         {
             var token = await GetAPITokenAsync();
             if (token != null)
@@ -88,8 +106,8 @@ namespace EctBlazorApp.Client.Graph
                 try
                 {
                     Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                    bool isAdminResponse = await Http.GetFromJsonAsync<Boolean>($"api/auth/is-admin");
-                    return isAdminResponse;
+                    bool authResponse = await Http.GetFromJsonAsync<Boolean>($"api/auth/is-{role}");
+                    return authResponse;
                 }
                 catch (AccessTokenNotAvailableException)                                          // TODO - Find out if this is still valid
                 {

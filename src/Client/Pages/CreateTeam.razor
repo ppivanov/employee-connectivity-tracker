@@ -134,7 +134,7 @@
         await GetUserEmails();
         teamDetails.MemberEmails = new List<string>();
 
-        isAdmin = await apiConn.IsAdmin(Http);
+        isAdmin = await apiConn.IsProcessingUserAnAdmin(Http);
         initialized = true;
     }
 

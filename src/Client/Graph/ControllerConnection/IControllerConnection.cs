@@ -10,6 +10,8 @@ namespace EctBlazorApp.Client.Graph
 
         Task<string> GetAPITokenAsync();
 
-        Task<Boolean> IsAdmin(HttpClient Http);
+        Task<Boolean> IsProcessingUserAnAdmin(HttpClient Http);
+
+        Task<Boolean> IsProcessingUserALeader(HttpClient Http);
     }
 }

@@ -6,7 +6,10 @@
     <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
     <a href="/" class="menu-option bottom-border">Home</a>
     <a href="/dashboard" class="menu-option bottom-border">Dashboard</a>
-    <a href="#" class="menu-option bottom-border">Team</a> <!-- only visible if user is a team lead -->
+    @if (isLeader)
+    {
+        <a href="#" class="menu-option bottom-border">Team</a>
+    }
     @if (isAdmin)
     {
         <a href="/create-team" class="menu-option">Create Team</a>
@@ -15,9 +18,11 @@
 
 @code{
     private bool isAdmin = false;
+    private bool isLeader = false;
 
     protected override async Task OnInitializedAsync()
     {
-        isAdmin = await apiConn.IsAdmin(Http);
+        isAdmin = await apiConn.IsProcessingUserAnAdmin(Http);
+        isLeader = await apiConn.IsProcessingUserALeader(Http);
     }
 }
