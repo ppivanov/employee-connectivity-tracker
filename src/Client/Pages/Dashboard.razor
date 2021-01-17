@@ -4,9 +4,8 @@
 @using Microsoft.AspNetCore.Authorization
 @attribute [Authorize]
 @inject HttpClient Http
-@inject IAccessTokenProvider TokenProvider
 @inject IJSRuntime jsRuntime
-@inject IControllerConnection graphProvider
+@inject IControllerConnection apiConn
 
 <AuthorizeView>
     <Authorized>

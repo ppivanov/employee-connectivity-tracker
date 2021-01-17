@@ -7,7 +7,7 @@
 @attribute [Authorize]
 @inject HttpClient Http
 @inject IJSRuntime jsRuntime
-@inject IControllerConnection graphProvider
+@inject IControllerConnection apiConn
 
 <AuthorizeView>
     <Authorized>
@@ -151,7 +151,7 @@
 
     protected async Task GetUserEmails()
     {
-        var token = await graphProvider.GetAPITokenAsync();
+        var token = await apiConn.GetAPITokenAsync();
         if (token != null)
         {
             try
@@ -181,7 +181,7 @@
             return;
 
         isSubmitting = true;
-        var token = await graphProvider.GetAPITokenAsync();
+        var token = await apiConn.GetAPITokenAsync();
         if (token != null)
         {
             try

@@ -1,10 +1,7 @@
 @page "/"
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
-@inject HttpClient Http
-@inject IAccessTokenProvider TokenProvider
 @inject IJSRuntime jsRuntime
-@inject IControllerConnection graphProvider
-@inject AuthenticationStateProvider stateProvider
+@inject IControllerConnection apiConn
 
 <div class="home">
     <AuthorizeView>
@@ -30,6 +27,6 @@
 
     private async Task UpdateRecords()
     {
-        Console.WriteLine(await graphProvider.UpdateDatabaseRecords());
+        Console.WriteLine(await apiConn.UpdateDatabaseRecords());
     }
 }
