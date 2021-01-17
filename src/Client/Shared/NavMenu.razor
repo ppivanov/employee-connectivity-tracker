@@ -1,5 +1,5 @@
 ﻿@inject HttpClient Http
-@inject IControllerConnection graphProvider
+@inject IControllerConnection apiConn
 
 <div class="expand-nav center-flex" onclick="openNav()">>></div>
 <nav id="mySidenav" class="sidenav">
@@ -18,7 +18,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var token = await graphProvider.GetAPITokenAsync();
+        var token = await apiConn.GetAPITokenAsync();
         if (token != null)
         {
             try
@@ -27,7 +27,7 @@
                 bool isAdminResponse = await Http.GetFromJsonAsync<Boolean>($"api/auth/is-admin");
                 isAdmin = isAdminResponse;
             }
-            catch (AccessTokenNotAvailableException exception)                                          // TODO - Find out if this is still valid
+            catch (AccessTokenNotAvailableException)                                          // TODO - Find out if this is still valid
             {
                 // Do nothing - user's not logged in
             }

@@ -19,22 +19,6 @@ namespace EctBlazorApp.Client.Graph
             _httpClient = httpClient;
         }
 
-        public async Task<string> GetCalendarEventsForEmail(string userEmail)
-        {
-            var accessToken = await GetAccessTokenAsync();
-            if (accessToken == null)
-                return "Token missing";
-
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", await GetAPITokenAsync());
-            var response = await _httpClient.GetAsync($"api/calendar/get-calendar-events-api?graphToken={accessToken}&userId={userEmail}");
-
-            if (!response.IsSuccessStatusCode)
-                return "Request unsuccessful";
-
-            var contentAsString = await response.Content.ReadAsStringAsync();
-            return contentAsString;
-        }
-
         public async Task<string> UpdateDatabaseRecords()
         {
             using var client = new HttpClient();
@@ -65,8 +49,6 @@ namespace EctBlazorApp.Client.Graph
                 {
                     "https://graph.microsoft.com/User.Read",
                     "https://graph.microsoft.com/Calendars.Read",
-                    // "https://graph.microsoft.com/CallRecords.Read.All",
-                    "https://graph.microsoft.com/Chat.Read.All",
                     "https://graph.microsoft.com/Mail.Read"
                 }
             });
