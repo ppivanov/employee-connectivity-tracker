@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace EctBlazorApp.Client.Graph
 {
@@ -7,5 +9,7 @@ namespace EctBlazorApp.Client.Graph
         Task<string> UpdateDatabaseRecords();
 
         Task<string> GetAPITokenAsync();
+
+        Task<Boolean> IsAdmin(HttpClient Http);
     }
 }

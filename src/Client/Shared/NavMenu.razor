@@ -6,7 +6,7 @@
     <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
     <a href="/" class="menu-option bottom-border">Home</a>
     <a href="/dashboard" class="menu-option bottom-border">Dashboard</a>
-    <a href="#" class="menu-option bottom-border">Team</a>
+    <a href="#" class="menu-option bottom-border">Team</a> <!-- only visible if user is a team lead -->
     @if (isAdmin)
     {
         <a href="/create-team" class="menu-option">Create Team</a>
@@ -14,23 +14,10 @@
 </nav>
 
 @code{
-    private bool isAdmin { get; set; } = false;
+    private bool isAdmin = false;
 
     protected override async Task OnInitializedAsync()
     {
-        var token = await apiConn.GetAPITokenAsync();
-        if (token != null)
-        {
-            try
-            {
-                Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                bool isAdminResponse = await Http.GetFromJsonAsync<Boolean>($"api/auth/is-admin");
-                isAdmin = isAdminResponse;
-            }
-            catch (AccessTokenNotAvailableException)                                          // TODO - Find out if this is still valid
-            {
-                // Do nothing - user's not logged in
-            }
-        }
+        isAdmin = await apiConn.IsAdmin(Http);
     }
 }

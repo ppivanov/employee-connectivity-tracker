@@ -1,8 +1,10 @@
 ﻿using EctBlazorApp.Shared;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Newtonsoft.Json;
+using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -76,6 +78,25 @@ namespace EctBlazorApp.Client.Graph
                     return token.Value;
             }
             return null;
+        }
+
+        public async Task<Boolean> IsAdmin(HttpClient Http)
+        {
+            var token = await GetAPITokenAsync();
+            if (token != null)
+            {
+                try
+                {
+                    Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    bool isAdminResponse = await Http.GetFromJsonAsync<Boolean>($"api/auth/is-admin");
+                    return isAdminResponse;
+                }
+                catch (AccessTokenNotAvailableException)                                          // TODO - Find out if this is still valid
+                {
+                    // user not logged in
+                }
+            }
+            return false;
         }
     }
 }

@@ -182,7 +182,7 @@
 
         string queryString = $"?fromDate={fromDate.ToString("yyyy-MM-dd")}&toDate={toDate.ToString("yyyy-MM-dd")}";
 
-        var token = await graphProvider.GetAPITokenAsync();
+        var token = await apiConn.GetAPITokenAsync();
         if (token != null)
         {
             try

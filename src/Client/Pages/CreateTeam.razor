@@ -11,7 +11,6 @@
 
 <AuthorizeView>
     <Authorized>
-        @*TODO - Add extra validations to ensure user is admin*@
         <div class="create-team">
             <h2 class="create-team-heading">Create Team</h2>
             @if (!initialized)
@@ -20,83 +19,90 @@
             }
             else
             {
-                <EditForm Model=teamDetails OnValidSubmit=@SendTeamData Context="formContext">
-                    <DataAnnotationsValidator />
-                    <ValidationSummary style="color: red" />
+                if (!isAdmin)
+                {
+                    <p>You do not have access to this page. Click <a href="/">here</a> to go back.</p>
+                }
+                else
+                {
+                    <EditForm Model=teamDetails OnValidSubmit=@SendTeamData Context="formContext">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary style="color: red" />
 
-                    @if (String.IsNullOrEmpty(ServerErrorMessage) == false)
-                    {
-                        <div class="validation-errors">
-                            <p style="color: red; text-align: center;">@ServerErrorMessage</p>
-                        </div>
-                    }
+                        @if (String.IsNullOrEmpty(ServerErrorMessage) == false)
+                        {
+                            <div class="validation-errors">
+                                <p style="color: red; text-align: center;">@ServerErrorMessage</p>
+                            </div>
+                        }
 
-                    <div class="left-half">
-                        <div class="create-team-input-pair">
-                            <label>Team name</label>
-                            <InputText @bind-Value=teamDetails.Name class="form-control" id="Name" />
+                        <div class="left-half">
+                            <div class="create-team-input-pair">
+                                <label>Team name</label>
+                                <InputText @bind-Value=teamDetails.Name class="form-control" id="Name" />
 
-                        </div>
-                        <div class="create-team-input-pair">
-                            <label>Team lead</label>
-                            <select @bind=teamDetails.LeaderEmail>
-                                @if (AvailableLeaders.Count == 0)
-                                {
-                                    <option value="" disabled>No available users</option>
-                                }
-                                else
-                                {
-                                    <option value="">---</option>
-                                    @foreach (var user in AvailableLeaders)
+                            </div>
+                            <div class="create-team-input-pair">
+                                <label>Team lead</label>
+                                <select @bind=teamDetails.LeaderEmail>
+                                    @if (AvailableLeaders.Count == 0)
                                     {
-                                        <option value="@user">@user</option>
+                                        <option value="" disabled>No available users</option>
                                     }
-                                }
-                                }
-                            </select>
-                        </div>
-                        <div class="create-team-input-pair">
-                            <label>Available users</label>
-                            <select @bind=CurrentMemberSelection>
-                                @if (AvailableMembers.Count == 0)
-                                {
-                                    <option value="" disabled>No available users</option>
-                                }
-                                else
-                                {
-                                    <option value="">---</option>
-                                    @foreach (var user in AvailableMembers)
+                                    else
                                     {
-                                        <option value="@user">@user</option>
+                                        <option value="">---</option>
+                                        @foreach (var user in AvailableLeaders)
+                                        {
+                                            <option value="@user">@user</option>
+                                        }
                                     }
-                                }
-                            </select>
-                            <button type="button" @onclick="() => AddSelectedMember()" disabled=@isSubmitting class="select-member">Add member</button>
+                                    }
+                                </select>
+                            </div>
+                            <div class="create-team-input-pair">
+                                <label>Available users</label>
+                                <select @bind=CurrentMemberSelection>
+                                    @if (AvailableMembers.Count == 0)
+                                    {
+                                        <option value="" disabled>No available users</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="">---</option>
+                                        @foreach (var user in AvailableMembers)
+                                        {
+                                            <option value="@user">@user</option>
+                                        }
+                                    }
+                                </select>
+                                <button type="button" @onclick="() => AddSelectedMember()" disabled=@isSubmitting class="select-member">Add member</button>
+                            </div>
                         </div>
-                    </div>
-                    <table class="selected-members">
-                        <thead>
-                            <tr>
-                                <td>
-                                    Selected members
-                                </td>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var member in teamDetails.MemberEmails)
-                            {
+                        <table class="selected-members">
+                            <thead>
                                 <tr>
                                     <td>
-                                        @member
-                                        <button class="deselect-btn" @onclick="() => RemoveFromSelected(member)">Remove</button>
+                                        Selected members
                                     </td>
                                 </tr>
-                            }
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                @foreach (var member in teamDetails.MemberEmails)
+                                {
+                                    <tr>
+                                        <td>
+                                            @member
+                                            <button class="deselect-btn" @onclick="() => RemoveFromSelected(member)">Remove</button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
 
-                    <button type="submit" disabled=@isSubmitting class="save-team">Save</button>
-                </EditForm>
+                        <button type="submit" disabled=@isSubmitting class="save-team">Save</button>
+                    </EditForm>
+                }
             }
         </div>
     </Authorized>
@@ -118,6 +124,7 @@
         }
     }
 
+    bool isAdmin = false;
     bool isSubmitting = false;
     bool initialized = false;
 
@@ -127,6 +134,7 @@
         await GetUserEmails();
         teamDetails.MemberEmails = new List<string>();
 
+        isAdmin = await apiConn.IsAdmin(Http);
         initialized = true;
     }
 
