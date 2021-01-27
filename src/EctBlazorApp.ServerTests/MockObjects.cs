@@ -1,6 +1,10 @@
 ﻿using EctBlazorApp.Shared;
 using EctBlazorApp.Shared.GraphModels;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
@@ -133,9 +137,22 @@ namespace EctBlazorApp.ServerTests
                 Address = GetEmailFromFullName(fullName)
             };
         }
+
         private static string GetEmailFromFullName(string fullName)
         {
             return $"{fullName.Split(" ")[0].ToLower()}@ect.ie";
+        }
+
+        public static AuthorizationFilterContext GetAuthorizationFilterContext()
+        {
+            ControllerContext controllerContext = new ControllerContext()
+            {
+                HttpContext = new DefaultHttpContext(),
+                RouteData = new Microsoft.AspNetCore.Routing.RouteData(),
+                ActionDescriptor = new Microsoft.AspNetCore.Mvc.Controllers.ControllerActionDescriptor()
+            };
+
+            return new AuthorizationFilterContext(controllerContext, new List<IFilterMetadata>()); ;
         }
     }
 }

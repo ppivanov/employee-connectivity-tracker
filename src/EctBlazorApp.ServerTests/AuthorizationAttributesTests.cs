@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
 namespace EctBlazorApp.ServerTests
@@ -32,44 +31,32 @@ namespace EctBlazorApp.ServerTests
         [TestMethod()]
         public void AuthorizeAdmin_IsNotAdmin_Unauthorized()
         {
-            ControllerContext controllerContext = new ControllerContext()
-            {
-                HttpContext = new DefaultHttpContext(),
-                RouteData = new Microsoft.AspNetCore.Routing.RouteData(),
-                ActionDescriptor = new Microsoft.AspNetCore.Mvc.Controllers.ControllerActionDescriptor()
-            };
-            AuthorizationFilterContext filterContext = new AuthorizationFilterContext(controllerContext, new List<IFilterMetadata>());
-
-            Mock<AuthorizeAdminAttribute> mockAttribute = new Mock<AuthorizeAdminAttribute>()                                                       //Creating an instance of the attribute and mocking the result of GetDbContextFromAuthorizationFilterContext()
-            {
-                CallBase = true
-            };
-            mockAttribute.Setup(a => a.GetDbContextFromAuthorizationFilterContext(
-                It.IsAny<AuthorizationFilterContext>())).Returns(_dbContext);
-
-            Mock<IMockableMisc> mockHttpContext = new Mock<IMockableMisc>()                                                                         //Mocking the static method GetPreferredUsername
-            {
-                CallBase = true
-            };
-            // make testable via the interface IMockable
-            mockHttpContext.Setup(hc => hc.GetPreferredUsername(It.IsAny<HttpContext>())).ReturnsAsync("alice@ect.ie");
-            HttpContextExtensions.Implementation = mockHttpContext.Object;
-
-            mockAttribute.Object.OnAuthorization(filterContext);
-
-            Assert.IsNotNull(filterContext.Result);                                                                                                 // The Result property is null only if the user has access 
+            TestAuthorizeAdmin("alice@ect.ie", Assert.IsNotNull);
         }
 
         [TestMethod()]
         public void AuthorizeAdmin_IsAdmin_Authorized()
         {
-            ControllerContext controllerContext = new ControllerContext()
-            {
-                HttpContext = new DefaultHttpContext(),
-                RouteData = new Microsoft.AspNetCore.Routing.RouteData(),
-                ActionDescriptor = new Microsoft.AspNetCore.Mvc.Controllers.ControllerActionDescriptor()
-            };
-            AuthorizationFilterContext filterContext = new AuthorizationFilterContext(controllerContext, new List<IFilterMetadata>());
+            TestAuthorizeAdmin("admin@ect.ie", Assert.IsNull);
+        }
+
+        [TestMethod()]
+        public void AuthorizeLeader_IsNotLeader_Unauthorized()
+        {
+            TestAuthorizeLeader("admin@ect.ie", Assert.IsNotNull);                                                                                                // The Result property is null only if the user has access 
+        }
+        
+        [TestMethod()]
+        public void AuthorizeLeader_IsLeader_Authorized()
+        {
+            TestAuthorizeLeader("alice@ect.ie", Assert.IsNull);                                                                                                // The Result property is null only if the user has access 
+        }
+
+        private delegate void AuthorizeAttributeTestDelegate(IActionResult authContextResult);
+
+        private void TestAuthorizeAdmin(string preferredUsername, AuthorizeAttributeTestDelegate method)
+        {
+            AuthorizationFilterContext filterContext = MockObjects.GetAuthorizationFilterContext();
 
             Mock<AuthorizeAdminAttribute> mockAttribute = new Mock<AuthorizeAdminAttribute>()                                                       //Creating an instance of the attribute and mocking the result of GetDbContextFromAuthorizationFilterContext()
             {
@@ -83,12 +70,36 @@ namespace EctBlazorApp.ServerTests
                 CallBase = true
             };
             // make testable via the interface IMockable
-            mockHttpContext.Setup(hc => hc.GetPreferredUsername(It.IsAny<HttpContext>())).ReturnsAsync("admin@ect.ie");
+            mockHttpContext.Setup(hc => hc.GetPreferredUsername(It.IsAny<HttpContext>())).ReturnsAsync(preferredUsername);
             HttpContextExtensions.Implementation = mockHttpContext.Object;
 
             mockAttribute.Object.OnAuthorization(filterContext);
 
-            Assert.IsNull(filterContext.Result);
+            method.Invoke(filterContext.Result);
         }
+        private void TestAuthorizeLeader(string preferredUsername, AuthorizeAttributeTestDelegate method)
+        {
+            AuthorizationFilterContext filterContext = MockObjects.GetAuthorizationFilterContext();
+
+            Mock<AuthorizeLeaderAttribute> mockAttribute = new Mock<AuthorizeLeaderAttribute>()                                                       //Creating an instance of the attribute and mocking the result of GetDbContextFromAuthorizationFilterContext()
+            {
+                CallBase = true
+            };
+            mockAttribute.Setup(a => a.GetDbContextFromAuthorizationFilterContext(
+                It.IsAny<AuthorizationFilterContext>())).Returns(_dbContext);
+
+            Mock<IMockableMisc> mockHttpContext = new Mock<IMockableMisc>()                                                                         //Mocking the static method GetPreferredUsername
+            {
+                CallBase = true
+            };
+            // make testable via the interface IMockable
+            mockHttpContext.Setup(hc => hc.GetPreferredUsername(It.IsAny<HttpContext>())).ReturnsAsync(preferredUsername);
+            HttpContextExtensions.Implementation = mockHttpContext.Object;
+
+            mockAttribute.Object.OnAuthorization(filterContext);
+
+            method.Invoke(filterContext.Result);
+        }
+
     }
 }
