@@ -49,33 +49,5 @@ namespace EctBlazorApp.Shared
 
             return collection.Any();
         }
-    }
-
-    public class NoStringInListBiggerThanAttribute : ValidationAttribute
-    {
-         readonly string message;
-        private string CustomErrorMessage
-        {
-            get
-            {
-                return message != null ? message : "At least one selection is required.";
-            }
-        }
-
-        public NoStringInListBiggerThanAttribute() { }
-
-        public NoStringInListBiggerThanAttribute(string message)
-        {
-            this.message = message;
-        }
-
-        protected override ValidationResult IsValid(object value, ValidationContext validationContext)
-        {
-            var strings = value as IEnumerable<string>;
-            if (strings == null || strings.Any() == false)
-                return new ValidationResult(CustomErrorMessage);
-
-            return ValidationResult.Success;
-        }
-    }
+    }    
 }

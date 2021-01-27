@@ -52,7 +52,7 @@ namespace EctBlazorApp.Server.Controllers
 
                 await _dbContext.SaveChangesAsync();
 
-                return Ok("Create team endpoint");
+                return Ok("Team created successfully.");
             }
             catch (Exception)
             {

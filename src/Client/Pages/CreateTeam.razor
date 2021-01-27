@@ -12,7 +12,6 @@
 <AuthorizeView>
     <Authorized>
         <div class="create-team">
-            <h2 class="create-team-heading">Create Team</h2>
             @if (!initialized)
             {
                 <p>Loading...</p>
@@ -29,10 +28,10 @@
                         <DataAnnotationsValidator />
                         <ValidationSummary style="color: red" />
 
-                        @if (String.IsNullOrEmpty(ServerErrorMessage) == false)
+                        @if (String.IsNullOrEmpty(ServerMessage) == false)
                         {
-                            <div class="validation-errors">
-                                <p style="color: red; text-align: center;">@ServerErrorMessage</p>
+                            <div class="operation-result">
+                                <p style="@ServerMessageInlineStyle">@ServerMessage</p>
                             </div>
                         }
 
@@ -111,14 +110,28 @@
 @code {
     EctTeamRequestDetails teamDetails = new EctTeamRequestDetails();
     string CurrentMemberSelection { get; set; }
-    string ServerErrorMessage { get; set; } = "";
-    HashSet<string> MembersFromApi { get; set; }
-    HashSet<string> AvailableLeaders { get; set; }
-    HashSet<string> AvailableMembers
+    string ServerMessage { get; set; } = "";
+    string ServerMessageInlineStyle
     {
         get
         {
-            var selectableMembers = AvailableLeaders.ToHashSet();                                  // Copy the available set of members
+            var style = new StringBuilder("text-align: center;");
+            var textColor = serverMessageIsError ? "color: red;" : "color: green;";
+            style.Append(textColor);
+
+            return style.ToString();
+        }
+    }
+    HashSet<string>
+                MembersFromApi { get; set; }
+    HashSet<string>
+        AvailableLeaders { get; set; }
+    HashSet<string>
+        AvailableMembers
+    {
+        get
+        {
+            var selectableMembers = AvailableLeaders.ToHashSet();                                   // Copy the available set of members
             selectableMembers.Remove(teamDetails.LeaderEmail);                                      // Remove the selected leader
             return selectableMembers;
         }
@@ -127,12 +140,14 @@
     bool isAdmin = false;
     bool isSubmitting = false;
     bool initialized = false;
+    bool serverMessageIsError = false;
 
     protected override async Task OnInitializedAsync()
     {
-        await jsRuntime.InvokeVoidAsync("setPageTitle", "Dashboard");
+        await jsRuntime.InvokeVoidAsync("setPageTitle", "Create Team");
         await GetUserEmails();
-        teamDetails.MemberEmails = new List<string>();
+        teamDetails.MemberEmails = new List<string>
+            ();
 
         isAdmin = await apiConn.IsProcessingUserAnAdmin(Http);
         initialized = true;
@@ -202,14 +217,10 @@
                 Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                 var response = await Http.PostAsync("api/team/create-team", data);
                 Console.WriteLine(await response.Content.ReadAsStringAsync());
-                if (response.IsSuccessStatusCode)
-                {
-                    Console.WriteLine("Team saved successfully");
-                }
-                else
-                {
-                    ServerErrorMessage = await response.Content.ReadAsStringAsync();
-                }
+                serverMessageIsError = (response.IsSuccessStatusCode == false);
+                ServerMessage = await response.Content.ReadAsStringAsync();
+
+                resetInputFields();
             }
             catch (AccessTokenNotAvailableException exception)
             {
@@ -224,4 +235,10 @@
         await InvokeAsync(StateHasChanged);
     }
 
+    private void resetInputFields()
+    {
+        teamDetails.Name = "";
+        teamDetails.LeaderEmail = "";
+        teamDetails.MemberEmails = new List<string>();
+    }
 }

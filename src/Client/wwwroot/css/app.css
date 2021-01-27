@@ -333,7 +333,7 @@ body {
     float: left;
 }
 
-.create-team .validation-errors {
+.create-team .operation-result {
     width: 20%;
     margin: 4em auto 0 auto;
 }
