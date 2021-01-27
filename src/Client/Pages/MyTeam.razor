@@ -188,7 +188,7 @@
             try
             {
                 Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                var response = await Http.GetFromJsonAsync<DashboardResponse>($"api/main/get-dashboard-stats{queryString}");
+                var response = await Http.GetFromJsonAsync<DashboardResponse>($"api/team/get-team-stats{queryString}");
                 sentMail = response.SentMail;
                 receivedMail = response.ReceivedMail;
                 calendarEvents = response.CalendarEvents;

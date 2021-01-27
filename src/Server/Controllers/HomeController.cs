@@ -63,10 +63,10 @@ namespace EctBlazorApp.Server.Controllers
 
         [Route("get-dashboard-stats")]
         [HttpGet]
-        public async Task<ActionResult<DashboardResponse>> StatsForDashboard([FromQuery] string fromDate, [FromQuery] string toDate)               // TODO - Secure this so that only the person logged in can view the data
+        public async Task<ActionResult<DashboardResponse>> StatsForDashboard([FromQuery] string fromDate, [FromQuery] string toDate)    
         {
             string userEmail = await HttpContext.GetPreferredUsername();
-            int userId = _dbContext.Users.First(u => u.Email == userEmail).Id;
+            int userId = _dbContext.Users.First(u => u.Email == userEmail).Id;                          // TODO - refactor this so that all necessary records are pulled out in a single dbContext linq query
 
             DateTime formattedFromDate = NewDateTimeFromString(fromDate);
             DateTime formattedToDate = NewDateTimeFromString(toDate);

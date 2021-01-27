@@ -7,8 +7,8 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using System.Threading.Tasks;
+using static EctBlazorApp.Shared.SharedCommonMethods;
 
 namespace EctBlazorApp.Server.Controllers
 {
@@ -58,6 +58,31 @@ namespace EctBlazorApp.Server.Controllers
             {
                 return StatusCode(500, "Internal server error. Please, try again later.");
             }
+        }
+
+        [Route("get-team-stats")]
+        [HttpGet]
+        [AuthorizeLeader]
+        public async Task<ActionResult<DashboardResponse>> StatsForDashboard([FromQuery] string fromDate, [FromQuery] string toDate, [FromQuery] string teamId = "")
+        {
+            string userEmail = await HttpContext.GetPreferredUsername();
+            int userId = _dbContext.Users.First(u => u.Email == userEmail).Id;
+
+            DateTime formattedFromDate = NewDateTimeFromString(fromDate);
+            DateTime formattedToDate = NewDateTimeFromString(toDate);
+            List<ReceivedMail> receivedMail = _dbContext.GetReceivedMailInDateRangeForUserId(userId, formattedFromDate, formattedToDate);
+            List<SentMail> sentMail = _dbContext.GetSentMailInDateRangeForUserId(userId, formattedFromDate, formattedToDate);
+            List<CalendarEvent> calendarEvents = _dbContext.GetCalendarEventsInDateRangeForUserId(userId, formattedFromDate, formattedToDate);
+
+            double secondsInMeeting = CalendarEvent.GetTotalSecondsForEvents(calendarEvents);
+
+            return new DashboardResponse
+            {
+                CalendarEvents = calendarEvents,
+                ReceivedMail = receivedMail,
+                SentMail = sentMail,
+                SecondsInMeeting = secondsInMeeting
+            };
         }
     }
 }
