@@ -1,11 +1,9 @@
 ﻿@page "/my-team"
+@inherits MyTeamDashboardClass 
 
 @using BlazorDateRangePicker
 @using Microsoft.AspNetCore.Authorization
 @attribute [Authorize]
-@inject HttpClient Http
-@inject IJSRuntime jsRuntime
-@inject IControllerConnection apiConn
 
 <AuthorizeView>
     <Authorized>
@@ -56,144 +54,5 @@
 
 
 @code {
-
-    private DateTimeOffset? FromDate { get; set; } = DateTimeOffset.Now;
-    private DateTimeOffset? ToDate { get; set; } = DateTimeOffset.Now.AddDays(1);
-    private List<EctUser> teamMembers;
-
-    protected override async Task OnInitializedAsync()
-    {
-        await jsRuntime.InvokeVoidAsync("setPageTitle", "My Team");
-        await UpdateDashboard();
-    }
-
-    private async Task CustomApply(MouseEventArgs e, DateRangePicker picker)
-    {
-        await picker.ClickApply(e);
-
-        await UpdateDashboard();
-    }
-
-    private object[][] GetCalendarEventsData()
-    {
-        @*Dictionary<string, int> subjectAndCount = new Dictionary<string, int>();
-
-            // loop and count using the dict
-            foreach (var calendarEvent in calendarEvents)
-            {
-                if (subjectAndCount.ContainsKey(calendarEvent.Subject))
-                {
-                    subjectAndCount[calendarEvent.Subject]++;
-                }
-                else
-                {
-                    subjectAndCount.Add(calendarEvent.Subject, 1);
-                }
-            }
-
-            object[][] newList = new object[subjectAndCount.Count + 1][];
-            newList[0] = new object[] { "Event subject", "Number of events" };
-            int i = 1;
-            foreach (KeyValuePair<string, int> dictionaryEnty in subjectAndCount)
-            {
-                newList[i] = new object[] { dictionaryEnty.Key, dictionaryEnty.Value.ToString() };
-                i++;
-            }*@
-
-        object[][] newList = new object[0][];
-        return newList;
-    }
-
-    private string GetFormattedTimeInMeeting()
-    {
-        int secondsInMeeting = 0;                                                                   // temporary
-        TimeSpan timeSpan = TimeSpan.FromSeconds(secondsInMeeting);
-        string formattedTime = $"{timeSpan.Hours} hours, {timeSpan.Minutes} minutes";
-        return formattedTime;
-    }
-
-    private object[][] GetSentAndReceivedEmailData()
-    {
-        var dates = SplitDateRangeToChunks();
-        object[][] newList = new object[dates.Count + 1][];
-
-        for (int i = 0; i < dates.Count; i++)
-        {
-            DateTime date = dates[i];
-            int totalReceivedOnDate = 0;
-            int totalSentOnDate = 0;
-
-            StringBuilder sentMailTooltipText = new StringBuilder("");
-            StringBuilder receivedMailTooltipText = new StringBuilder("");
-
-            foreach (var member in teamMembers)
-            {
-                string memberFirstName = member.FullName.Split(" ")[0];
-                int countOfSentMail = member.SentEmails.Count(sm => sm.SentAt.Date == date);
-                sentMailTooltipText.Append($"{memberFirstName}: {countOfSentMail}\n");
-
-                int countOfReceivedMail = member.ReceivedEmails.Count(sm => sm.ReceivedAt.Date == date);
-                receivedMailTooltipText.Append($"{memberFirstName}: {countOfReceivedMail}\n");
-
-                totalSentOnDate += countOfSentMail;
-                totalReceivedOnDate += countOfReceivedMail;
-            }
-
-            newList[i] = new object[] { date.ToString("dd MMM"), totalSentOnDate, 
-                sentMailTooltipText.ToString(), totalReceivedOnDate, receivedMailTooltipText.ToString() };
-        }
-        return newList;
-    }
-
-    private async Task ResetClick(MouseEventArgs e, DateRangePicker picker)
-    {
-        FromDate = DateTimeOffset.Now;
-        ToDate = DateTimeOffset.Now.AddDays(1);
-        // Close the picker
-        await picker.Close();
-        // Fire OnRangeSelectEvent
-        await picker.OnRangeSelect.InvokeAsync(new DateRange());
-
-        await UpdateDashboard();
-    }
-
-    private List<DateTime> SplitDateRangeToChunks()                                                 // These methods can be moved into their own API to allow for scaling
-    {
-        DateTime startDate = FromDate.Value.Date;
-        DateTime endDate = ToDate.Value.Date;
-        List<DateTime> dateTimeChunks = new List<DateTime>();
-
-        while (startDate <= endDate)
-        {
-            dateTimeChunks.Add(startDate);
-            startDate = startDate.AddDays(1);
-        }
-
-        return dateTimeChunks;
-    }
-
-    protected async Task UpdateDashboard()
-    {
-        DateTime fromDate = FromDate.Value.Date;
-        DateTime toDate = ToDate.Value.Date;
-
-        string queryString = $"?fromDate={fromDate.ToString("yyyy-MM-dd")}&toDate={toDate.ToString("yyyy-MM-dd")}";
-
-        var token = await apiConn.GetAPITokenAsync();
-        if (token != null)
-        {
-            try
-            {
-                Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                teamMembers = await Http.GetFromJsonAsync<List<EctUser>>($"api/team/get-team-stats{queryString}");
-
-                await jsRuntime.InvokeVoidAsync("loadMyTeamDashboardGraph", (object)GetSentAndReceivedEmailData());
-            }
-            catch (AccessTokenNotAvailableException exception)
-            {
-                exception.Redirect();
-            }
-        }
-    }
 
 }
