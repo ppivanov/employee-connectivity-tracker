@@ -27,5 +27,14 @@ namespace EctBlazorApp.Shared
             FullName = graphUser.DisplayName;
             LastSignIn = new DateTime(2020, 10, 1); // 1st Oct 2020
         }
+
+        public EctUser(EctUser userToCopy)
+        {
+            Id = userToCopy.Id;
+            Email = userToCopy.Email;
+            FullName = userToCopy.FullName;
+            LastSignIn = userToCopy.LastSignIn;
+            MemberOfId = userToCopy.MemberOfId;
+        }
     }
 }

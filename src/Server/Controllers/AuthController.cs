@@ -37,7 +37,7 @@ namespace EctBlazorApp.Server.Controllers
             string userEmail = await HttpContext.GetPreferredUsername();
             bool userIsLeader = false;
             if (string.IsNullOrEmpty(teamId))
-                userIsLeader = _dbContext.IsEmailForLeader(userEmail);                                      // can potentially throw an exception
+                userIsLeader = _dbContext.IsEmailForLeader(userEmail);
             //else
             //    userIsLeader = _dbContext.IsLeaderForTeam(userEmail, teamId);
 

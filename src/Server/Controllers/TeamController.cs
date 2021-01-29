@@ -63,26 +63,32 @@ namespace EctBlazorApp.Server.Controllers
         [Route("get-team-stats")]
         [HttpGet]
         [AuthorizeLeader]
-        public async Task<ActionResult<DashboardResponse>> StatsForDashboard([FromQuery] string fromDate, [FromQuery] string toDate, [FromQuery] string teamId = "")
+        public async Task<ActionResult<List<EctUser>>> StatsForDashboard([FromQuery] string fromDate, [FromQuery] string toDate, [FromQuery] string teamId = "")
         {
             string userEmail = await HttpContext.GetPreferredUsername();
             int userId = _dbContext.Users.First(u => u.Email == userEmail).Id;
+            EctTeam assignedTeam = _dbContext.Teams.Include(t => t.Members).First(t => t.LeaderId == userId);
+            List<EctUser> membersAndCommsData = new List<EctUser>();
 
             DateTime formattedFromDate = NewDateTimeFromString(fromDate);
             DateTime formattedToDate = NewDateTimeFromString(toDate);
-            List<ReceivedMail> receivedMail = _dbContext.GetReceivedMailInDateRangeForUserId(userId, formattedFromDate, formattedToDate);
-            List<SentMail> sentMail = _dbContext.GetSentMailInDateRangeForUserId(userId, formattedFromDate, formattedToDate);
-            List<CalendarEvent> calendarEvents = _dbContext.GetCalendarEventsInDateRangeForUserId(userId, formattedFromDate, formattedToDate);
 
-            double secondsInMeeting = CalendarEvent.GetTotalSecondsForEvents(calendarEvents);
-
-            return new DashboardResponse
+            foreach (var teamMember in assignedTeam.Members)
             {
-                CalendarEvents = calendarEvents,
-                ReceivedMail = receivedMail,
-                SentMail = sentMail,
-                SecondsInMeeting = secondsInMeeting
-            };
+                membersAndCommsData.Add(GetCommunicationDataAsNewUserInstance(teamMember, formattedFromDate, formattedToDate));
+            }
+
+            return membersAndCommsData;
+        }
+
+        private EctUser GetCommunicationDataAsNewUserInstance(EctUser forUser, DateTime fromDate, DateTime toDate)
+        {
+            EctUser tempUser = new EctUser(forUser);
+            tempUser.CalendarEvents = _dbContext.GetCalendarEventsInDateRangeForUserId(tempUser.Id, fromDate, toDate);
+            tempUser.ReceivedEmails = _dbContext.GetReceivedMailInDateRangeForUserId(tempUser.Id, fromDate, toDate);
+            tempUser.SentEmails = _dbContext.GetSentMailInDateRangeForUserId(tempUser.Id, fromDate, toDate);
+
+            return tempUser;
         }
     }
 }
