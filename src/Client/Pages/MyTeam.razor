@@ -31,14 +31,14 @@
                     </DateRangePicker>
                 </div>
                 <div class="textSummary">
-                    <p>Emails sent: @emailsSent</p>
-                    <p>Emails received: @emailsReceived</p>
-                    <p>Number of meetings: @numberOfMeetings</p>
-                    <p>Time in meetings: @GetFormattedTimeInMeeting()</p>
+                    <p>Emails sent: 0</p>
+                    <p>Emails received: 0</p>
+                    <p>? ? ? ? ? ? : 0</p>
+                    <p>? ? ? ? ? ?: 0</p>
                 </div>
             </div>
             <div class="topCollaborators">
-                <h2>Top Collaborators</h2>
+                <h2>Activity distribution</h2>
                 <div class="collaboratorsList">
                     <div class="collaborator">
                     </div>
@@ -59,26 +59,7 @@
 
     private DateTimeOffset? FromDate { get; set; } = DateTimeOffset.Now;
     private DateTimeOffset? ToDate { get; set; } = DateTimeOffset.Now.AddDays(1);
-    private List<SentMail> sentMail;
-    private List<ReceivedMail> receivedMail;
-    private List<CalendarEvent> calendarEvents;
-
-    private int emailsSent
-    {
-        get
-        {
-            return sentMail != null ? sentMail.Count : 0;
-        }
-    }
-    private int emailsReceived
-    {
-        get
-        {
-            return receivedMail != null ? receivedMail.Count : 0;
-        }
-    }
-    private int numberOfMeetings = 0;
-    private double secondsInMeeting = 0;
+    private List<EctUser> teamMembers;
 
     protected override async Task OnInitializedAsync()
     {
@@ -95,35 +76,37 @@
 
     private object[][] GetCalendarEventsData()
     {
-        Dictionary<string, int> subjectAndCount = new Dictionary<string, int>();
+        @*Dictionary<string, int> subjectAndCount = new Dictionary<string, int>();
 
-        // loop and count using the dict
-        foreach (var calendarEvent in calendarEvents)
-        {
-            if (subjectAndCount.ContainsKey(calendarEvent.Subject))
+            // loop and count using the dict
+            foreach (var calendarEvent in calendarEvents)
             {
-                subjectAndCount[calendarEvent.Subject]++;
+                if (subjectAndCount.ContainsKey(calendarEvent.Subject))
+                {
+                    subjectAndCount[calendarEvent.Subject]++;
+                }
+                else
+                {
+                    subjectAndCount.Add(calendarEvent.Subject, 1);
+                }
             }
-            else
+
+            object[][] newList = new object[subjectAndCount.Count + 1][];
+            newList[0] = new object[] { "Event subject", "Number of events" };
+            int i = 1;
+            foreach (KeyValuePair<string, int> dictionaryEnty in subjectAndCount)
             {
-                subjectAndCount.Add(calendarEvent.Subject, 1);
-            }
-        }
+                newList[i] = new object[] { dictionaryEnty.Key, dictionaryEnty.Value.ToString() };
+                i++;
+            }*@
 
-        object[][] newList = new object[subjectAndCount.Count + 1][];
-        newList[0] = new object[] { "Event subject", "Number of events" };
-        int i = 1;
-        foreach (KeyValuePair<string, int> dictionaryEnty in subjectAndCount)
-        {
-            newList[i] = new object[] { dictionaryEnty.Key, dictionaryEnty.Value.ToString() };
-            i++;
-        }
-
+        object[][] newList = new object[0][];
         return newList;
     }
 
     private string GetFormattedTimeInMeeting()
     {
+        int secondsInMeeting = 0;                                                                   // temporary
         TimeSpan timeSpan = TimeSpan.FromSeconds(secondsInMeeting);
         string formattedTime = $"{timeSpan.Hours} hours, {timeSpan.Minutes} minutes";
         return formattedTime;
@@ -134,17 +117,31 @@
         var dates = SplitDateRangeToChunks();
         object[][] newList = new object[dates.Count + 1][];
 
-        newList[0] = new object[] { "Date", "Sent Emails", "Received Emails" };
-        for (int i = 1; i <= dates.Count; i++)
+        for (int i = 0; i < dates.Count; i++)
         {
-            int index = i - 1;                                                                      // We add a row to the array that contains the value descriptions, but we still need the first date at position 0
-            DateTime date = dates[index];
-            int countOfSentMail = sentMail.Count(sm => sm.SentAt.Date == date);
-            int countOfReceivedMail = receivedMail.Count(rm => rm.ReceivedAt.Date == date);
+            DateTime date = dates[i];
+            int totalReceivedOnDate = 0;
+            int totalSentOnDate = 0;
 
-            newList[i] = new object[] { date.ToString("dd MMM"), countOfSentMail, countOfReceivedMail };
+            StringBuilder sentMailTooltipText = new StringBuilder("");
+            StringBuilder receivedMailTooltipText = new StringBuilder("");
+
+            foreach (var member in teamMembers)
+            {
+                string memberFirstName = member.FullName.Split(" ")[0];
+                int countOfSentMail = member.SentEmails.Count(sm => sm.SentAt.Date == date);
+                sentMailTooltipText.Append($"{memberFirstName}: {countOfSentMail}\n");
+
+                int countOfReceivedMail = member.ReceivedEmails.Count(sm => sm.ReceivedAt.Date == date);
+                receivedMailTooltipText.Append($"{memberFirstName}: {countOfReceivedMail}\n");
+
+                totalSentOnDate += countOfSentMail;
+                totalReceivedOnDate += countOfReceivedMail;
+            }
+
+            newList[i] = new object[] { date.ToString("dd MMM"), totalSentOnDate, 
+                sentMailTooltipText.ToString(), totalReceivedOnDate, receivedMailTooltipText.ToString() };
         }
-
         return newList;
     }
 
@@ -183,26 +180,20 @@
         string queryString = $"?fromDate={fromDate.ToString("yyyy-MM-dd")}&toDate={toDate.ToString("yyyy-MM-dd")}";
 
         var token = await apiConn.GetAPITokenAsync();
-        @*if (token != null)
+        if (token != null)
         {
             try
             {
                 Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                var response = await Http.GetFromJsonAsync<DashboardResponse>($"api/team/get-team-stats{queryString}");
-                sentMail = response.SentMail;
-                receivedMail = response.ReceivedMail;
-                calendarEvents = response.CalendarEvents;
+                teamMembers = await Http.GetFromJsonAsync<List<EctUser>>($"api/team/get-team-stats{queryString}");
 
-                secondsInMeeting = response.SecondsInMeeting;
-                numberOfMeetings = calendarEvents.Count;
-                await jsRuntime.InvokeVoidAsync("loadGraph", (object)GetSentAndReceivedEmailData(), (object)GetCalendarEventsData());
+                await jsRuntime.InvokeVoidAsync("loadMyTeamDashboardGraph", (object)GetSentAndReceivedEmailData());
             }
-            catch (AccessTokenNotAvailableException exception)                                          // TODO - Find out if this is still valid
+            catch (AccessTokenNotAvailableException exception)
             {
                 exception.Redirect();
             }
-        }*@
-    await jsRuntime.InvokeVoidAsync("loadMyTeamDashboardGraph");
-}
+        }
+    }
 
 }

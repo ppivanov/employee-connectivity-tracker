@@ -76,16 +76,22 @@ const drawLineGraph = (mailList) => {
 
 const drawLineGraphManually = (mailList) => {
     var dataTable = new google.visualization.DataTable();
-    dataTable.addColumn('string', 'Year');
-    dataTable.addColumn('number', 'Sales');
+    dataTable.addColumn('string', 'Date');
+    dataTable.addColumn('number', 'Sent emails');
+    dataTable.addColumn({ type: 'string', role: 'tooltip' });
+    dataTable.addColumn('number', 'Received emails');
     // A column for custom tooltip content
     dataTable.addColumn({ type: 'string', role: 'tooltip' });
-    dataTable.addRows([
-        ['2010', 600, 'John: 14\nSam: 2\nPatricia: 35'],
-        ['2011', 1500, 'Sunspot activity made this our best year ever!'],
-        ['2012', 800, '$800K in 2012.'],
-        ['2013', 1000, '$1M in sales last year.']
-    ]);
+    dataTable.addRows(mailList
+        //[
+        //[new Date(2000, 8, 1), 4, 14, 'John: 14\nSam: 2\nPatricia: 35\n'],
+        //[new Date(2000, 8, 2), 4, 12, 'Sunspot activity made this our best year ever!'],
+        //[new Date(2000, 8, 3), 4, 2, '$800K in 2012.'],
+        //[new Date(2000, 8, 4), 4, 5, '$1M in sales last year.']
+        //]
+    );
+
+    console.log(mailList)
 
     var options = {
         chart: {
