@@ -195,7 +195,7 @@
 
                 secondsInMeeting = response.SecondsInMeeting;
                 numberOfMeetings = calendarEvents.Count;
-                await jsRuntime.InvokeVoidAsync("loadGraph", (object)GetSentAndReceivedEmailData(), (object)GetCalendarEventsData());
+                await jsRuntime.InvokeVoidAsync("loadDashboardGraph", (object)GetSentAndReceivedEmailData(), (object)GetCalendarEventsData());
             }
             catch (AccessTokenNotAvailableException exception)                                          // TODO - Find out if this is still valid
             {

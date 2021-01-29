@@ -45,10 +45,10 @@
                 </div>
             </div>
             <div class="emails-chart-container">
-                <div id="emails-chart"></div>
+                <div id="my-team-emails-chart"></div>
             </div>
             <div class="events-chart-container">
-                <div id="events-chart"></div>
+                <div id="my-team-events-chart"></div>
             </div>
         </div>
     </Authorized>
@@ -183,7 +183,7 @@
         string queryString = $"?fromDate={fromDate.ToString("yyyy-MM-dd")}&toDate={toDate.ToString("yyyy-MM-dd")}";
 
         var token = await apiConn.GetAPITokenAsync();
-        if (token != null)
+        @*if (token != null)
         {
             try
             {
@@ -201,7 +201,8 @@
             {
                 exception.Redirect();
             }
-        }
-    }
+        }*@
+    await jsRuntime.InvokeVoidAsync("loadMyTeamDashboardGraph");
+}
 
 }
