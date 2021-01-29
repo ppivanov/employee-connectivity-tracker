@@ -23,32 +23,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
 
         protected override object[][] GetCalendarEventsData()
         {
-            //Dictionary<string, int> subjectAndCount = new Dictionary<string, int>();
-
-            //    // loop and count using the dict
-            //    foreach (var calendarEvent in calendarEvents)
-            //    {
-            //        if (subjectAndCount.ContainsKey(calendarEvent.Subject))
-            //        {
-            //            subjectAndCount[calendarEvent.Subject]++;
-            //        }
-            //        else
-            //        {
-            //            subjectAndCount.Add(calendarEvent.Subject, 1);
-            //        }
-            //    }
-
-            //    object[][] newList = new object[subjectAndCount.Count + 1][];
-            //    newList[0] = new object[] { "Event subject", "Number of events" };
-            //    int i = 1;
-            //    foreach (KeyValuePair<string, int> dictionaryEnty in subjectAndCount)
-            //    {
-            //        newList[i] = new object[] { dictionaryEnty.Key, dictionaryEnty.Value.ToString() };
-            //        i++;
-            //    }
-
-
-            object[][] newList = new object[0][];
+            object[][] newList = new object[0][];               // TODO
             return newList;
         }
         protected override object[][] GetSentAndReceivedEmailData()
@@ -61,9 +36,9 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
                 DateTime date = dates[i];
                 int totalReceivedOnDate = 0;
                 int totalSentOnDate = 0;
-
-                StringBuilder sentMailTooltipText = new StringBuilder("");
-                StringBuilder receivedMailTooltipText = new StringBuilder("");
+                string tooltipDate = date.ToString("dd MMM");
+                StringBuilder sentMailTooltipText = new StringBuilder($"{tooltipDate}\n");
+                StringBuilder receivedMailTooltipText = new StringBuilder($"{tooltipDate}\n");
 
                 foreach (var member in teamMembers)
                 {
@@ -78,8 +53,8 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
                     totalReceivedOnDate += countOfReceivedMail;
                 }
 
-                newList[i] = new object[] { date.ToString("dd MMM"), totalSentOnDate,
-                sentMailTooltipText.ToString(), totalReceivedOnDate, receivedMailTooltipText.ToString() };
+                newList[i] = new object[] { tooltipDate, totalSentOnDate,
+                    sentMailTooltipText.ToString(), totalReceivedOnDate, receivedMailTooltipText.ToString() };
             }
             return newList;
         }
