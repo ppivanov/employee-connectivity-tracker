@@ -1,6 +1,4 @@
-﻿using BlazorDateRangePicker;
-using EctBlazorApp.Shared;
-using Microsoft.AspNetCore.Components.Web;
+﻿using EctBlazorApp.Shared;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.JSInterop;
 using System;

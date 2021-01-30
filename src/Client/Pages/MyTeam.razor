@@ -7,49 +7,64 @@
 
 <AuthorizeView>
     <Authorized>
-        <div class="dashboard">
-            <div class="topRow">
-                <div class="dateRange">
-                    <DateRangePicker @bind-StartDate="FromDate" @bind-EndDate="ToDate">
-                        <ButtonsTemplate Context="pickerContext">
-                            <button class="cancelBtn btn btn-sm btn-default"
-                                    @onclick="@pickerContext.ClickCancel" type="button">
-                                Cancel
-                            </button>
-                            <button class="cancelBtn btn btn-sm btn-default"
-                                    @onclick="@(e => ResetClick(e, pickerContext))" type="button">
-                                Reset
-                            </button>
-                            <button class="applyBtn btn btn-sm btn-primary" @onclick="@(e => CustomApply(e, pickerContext))"
-                                    disabled="@(pickerContext.TStartDate == null || pickerContext.TEndDate == null)"
-                                    type="button">
-                                Apply
-                            </button>
-                        </ButtonsTemplate>
-                    </DateRangePicker>
-                </div>
-                <div class="textSummary">
-                    <p>Emails sent: 0</p>
-                    <p>Emails received: 0</p>
-                    <p>? ? ? ? ? ? : 0</p>
-                    <p>? ? ? ? ? ?: 0</p>
-                </div>
-            </div>
-            <div class="topCollaborators">
-                <h2>Activity distribution</h2>
-                <div class="collaboratorsList">
-                    <div class="collaborator">
+
+        @if (!initialized)
+        {
+            <p>Loading...</p>
+        }
+        else
+        {
+            if (!isLeader)
+            {
+                <p>You do not have access to this page. Click <a href="/">here</a> to go back.</p>
+            }
+            else
+            {
+                <div class="dashboard">
+                    <div class="topRow">
+                        <div class="dateRange">
+                            <DateRangePicker @bind-StartDate="FromDate" @bind-EndDate="ToDate">
+                                <ButtonsTemplate Context="pickerContext">
+                                    <button class="cancelBtn btn btn-sm btn-default"
+                                            @onclick="@pickerContext.ClickCancel" type="button">
+                                        Cancel
+                                    </button>
+                                    <button class="cancelBtn btn btn-sm btn-default"
+                                            @onclick="@(e => ResetClick(e, pickerContext))" type="button">
+                                        Reset
+                                    </button>
+                                    <button class="applyBtn btn btn-sm btn-primary" @onclick="@(e => CustomApply(e, pickerContext))"
+                                            disabled="@(pickerContext.TStartDate == null || pickerContext.TEndDate == null)"
+                                            type="button">
+                                        Apply
+                                    </button>
+                                </ButtonsTemplate>
+                            </DateRangePicker>
+                        </div>
+                        <div class="textSummary">
+                            <p>Emails sent: 0</p>
+                            <p>Emails received: 0</p>
+                            <p>? ? ? ? ? ? : 0</p>
+                            <p>? ? ? ? ? ?: 0</p>
+                        </div>
+                    </div>
+                    <div class="topCollaborators">
+                        <h2>Activity distribution</h2>
+                        <div class="collaboratorsList">
+                            <div class="collaborator">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="emails-chart-container">
+                        <div id="my-team-emails-chart"></div>
+                    </div>
+                    <div class="events-chart-container">
+                        <div id="my-team-events-chart"></div>
                     </div>
                 </div>
-            </div>
-            <div class="emails-chart-container">
-                <div id="my-team-emails-chart"></div>
-            </div>
-            <div class="events-chart-container">
-                <div id="my-team-events-chart"></div>
-            </div>
-        </div>
-    </Authorized>
+            }
+        }
+        </Authorized>
 </AuthorizeView>
 
 

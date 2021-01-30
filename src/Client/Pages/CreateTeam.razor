@@ -145,11 +145,12 @@
     protected override async Task OnInitializedAsync()
     {
         await jsRuntime.InvokeVoidAsync("setPageTitle", "Create Team");
-        await GetUserEmails();
-        teamDetails.MemberEmails = new List<string>
-            ();
-
         isAdmin = await apiConn.IsProcessingUserAnAdmin(Http);
+        if (isAdmin)
+        {
+            await GetUserEmails();
+            teamDetails.MemberEmails = new List<string>();
+        }
         initialized = true;
     }
 

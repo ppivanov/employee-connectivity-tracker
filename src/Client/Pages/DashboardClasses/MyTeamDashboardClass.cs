@@ -13,12 +13,17 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
 {
     public class MyTeamDashboardClass : DashboardClass
     {
+        protected bool isLeader = false;
+        protected bool initialized = false;
         protected List<EctUser> teamMembers;
 
         protected override async Task OnInitializedAsync()
         {
             await jsRuntime.InvokeVoidAsync("setPageTitle", "My Team");
-            await UpdateDashboard();
+            isLeader = await ApiConn.IsProcessingUserALeader(Http);
+            if (isLeader)
+                await UpdateDashboard();
+            initialized = true;
         }
 
         protected override object[][] GetCalendarEventsData()
