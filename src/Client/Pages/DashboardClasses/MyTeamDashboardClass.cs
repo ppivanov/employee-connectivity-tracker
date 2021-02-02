@@ -16,14 +16,15 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         protected bool isLeader = false;
         protected bool initialized = false;
         protected List<EctUser> teamMembers;
+        protected int emailsSent = 0;
+        protected int emailsReceived = 0;
 
         protected override async Task OnInitializedAsync()
         {
-            await jsRuntime.InvokeVoidAsync("setPageTitle", "My Team");
+            await JsRuntime.InvokeVoidAsync("setPageTitle", "My Team");
             isLeader = await ApiConn.IsProcessingUserALeader(Http);
             if (isLeader)
                 await UpdateDashboard();
-            initialized = true;
         }
 
         protected override object[][] GetCalendarEventsData()
@@ -60,6 +61,8 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
 
                 newList[i] = new object[] { tooltipDate, totalSentOnDate,
                     sentMailTooltipText.ToString(), totalReceivedOnDate, receivedMailTooltipText.ToString() };
+                emailsReceived += totalReceivedOnDate;
+                emailsSent += totalSentOnDate;
             }
             return newList;
         }
@@ -80,7 +83,10 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
                     Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                     teamMembers = await Http.GetFromJsonAsync<List<EctUser>>($"api/team/get-team-stats{queryString}");
 
-                    await jsRuntime.InvokeVoidAsync("loadMyTeamDashboardGraph", (object)GetSentAndReceivedEmailData());
+                    initialized = true;
+                    await InvokeAsync(StateHasChanged);                                                                     // Force a refresh of the component before trying to load the js graphs
+
+                    await JsRuntime.InvokeVoidAsync("loadMyTeamDashboardGraph", (object)GetSentAndReceivedEmailData());
                 }
                 catch (AccessTokenNotAvailableException exception)
                 {

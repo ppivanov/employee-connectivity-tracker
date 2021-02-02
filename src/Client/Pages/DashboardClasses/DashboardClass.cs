@@ -19,7 +19,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         protected HttpClient Http { get; set; }
 
         [Inject]
-        protected IJSRuntime jsRuntime { get; set; }
+        protected IJSRuntime JsRuntime { get; set; }
 
         protected DateTimeOffset? FromDate { get; set; } = DateTimeOffset.Now;
         protected DateTimeOffset? ToDate { get; set; } = DateTimeOffset.Now.AddDays(1);

@@ -35,7 +35,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
 
         protected override async Task OnInitializedAsync()
         {
-            await jsRuntime.InvokeVoidAsync("setPageTitle", "Dashboard");
+            await JsRuntime.InvokeVoidAsync("setPageTitle", "Dashboard");
             await UpdateDashboard();
         }
 
@@ -113,7 +113,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
 
                     secondsInMeeting = response.SecondsInMeeting;
                     numberOfMeetings = calendarEvents.Count;
-                    await jsRuntime.InvokeVoidAsync("loadDashboardGraph", (object)GetSentAndReceivedEmailData(), (object)GetCalendarEventsData());
+                    await JsRuntime.InvokeVoidAsync("loadDashboardGraph", (object)GetSentAndReceivedEmailData(), (object)GetCalendarEventsData());
                 }
                 catch (AccessTokenNotAvailableException exception)                                          // TODO - Find out if this is still valid
                 {
