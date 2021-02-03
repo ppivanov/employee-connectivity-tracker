@@ -1,105 +1,512 @@
-set IDENTITY_INSERT [dbo].[Users] ON
+delete from [dbo].[CalendarEvents];
+delete from [dbo].[ReceivedEmails];
+delete from [dbo].[SentEmails];
+delete from [dbo].[Administrators];
+update [dbo].[Users] set MemberOfId = null;
+delete from [dbo].[Teams];
+delete from [dbo].[Users];
+
+
 set IDENTITY_INSERT [dbo].[Teams] ON
-set IDENTITY_INSERT [dbo].[Administrators] ON
-set IDENTITY_INSERT [dbo].[CalendarEvents] ON
-
 insert into [dbo].[Teams] (Id, Name) values (1, 'Cryptographers')
+set IDENTITY_INSERT [dbo].[Teams] OFF
 
-insert into [dbo].[Users] (Id, Email, FullName, LastSignIn) values (1, 'x00149863@outlook.com', 'Pavel Ivanov', '2021-01-29T14:36:39.3900836', 1)
-insert into [dbo].[Users] (Id, Email, FullName, LastSignIn) values (2, 'alice@ect.ie', 'Alice AliceS', '2021-01-29T14:36:39.3900836', 1)
-insert into [dbo].[Users] (Id, Email, FullName, LastSignIn) values (3, 'bob@ect.ie', 'Bob BobS', '2021-01-27T12:37:35.9959879', 1)
-insert into [dbo].[Users] (Id, Email, FullName, LastSignIn) values (4, 'trudy@ect.ie', 'Trudy TrudyS', '2021-01-27T12:37:35.9959879', 1)
+set IDENTITY_INSERT [dbo].[Users] ON
+insert into [dbo].[Users] (Id, Email, FullName, LastSignIn, MemberOfId) values (1, 'x00149863@outlook.com', 'Pavel Ivanov', '2021-01-29T14:36:39.3900836', 1)
+insert into [dbo].[Users] (Id, Email, FullName, LastSignIn, MemberOfId) values (2, 'alice@ect.ie', 'Alice AliceS', '2021-01-29T14:36:39.3900836', 1)
+insert into [dbo].[Users] (Id, Email, FullName, LastSignIn, MemberOfId) values (3, 'bob@ect.ie', 'Bob BobS', '2021-01-27T12:37:35.9959879', 1)
+insert into [dbo].[Users] (Id, Email, FullName, LastSignIn, MemberOfId) values (4, 'trudy@ect.ie', 'Trudy TrudyS', '2021-01-27T12:37:35.9959879', 1)
 insert into [dbo].[Users] (Id, Email, FullName, LastSignIn) values (5, 'noimagination13@outlook.com', 'Admin AdminS', '2021-01-29T14:36:39.3900836')
+set IDENTITY_INSERT [dbo].[Users] OFF
 
 update [dbo].[Teams] set LeaderId = 1 where Id = 1
 
-insert int [dbo].[Administrators] (Id, UserId) values (1, 5)
+set IDENTITY_INSERT [dbo].[Administrators] ON
+insert into [dbo].[Administrators] (Id, UserId) values (1, 5)
+set IDENTITY_INSERT [dbo].[Administrators] OFF
 
 -- After lunch breaks (11 - 15 Jan / one week)
-insert into [dbo].[CalendarEvents] (Id, "Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values (1, '2021-01-11T13:50:00.0000000', '2021-01-11T14:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 1)
-insert into [dbo].[CalendarEvents] (Id, "Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values (2, '2021-01-11T13:50:00.0000000', '2021-01-11T14:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 2)
-insert into [dbo].[CalendarEvents] (Id, "Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values (3, '2021-01-11T13:50:00.0000000', '2021-01-11T14:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 3)
-insert into [dbo].[CalendarEvents] (Id, "Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values (4, '2021-01-11T13:50:00.0000000', '2021-01-11T14:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 4)
+insert into [dbo].[CalendarEvents] ("Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values ('2021-01-11T13:50:00.0000000', '2021-01-11T14:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 1)
+insert into [dbo].[CalendarEvents] ("Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values ('2021-01-11T13:50:00.0000000', '2021-01-11T14:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 2)
+insert into [dbo].[CalendarEvents] ("Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values ('2021-01-11T13:50:00.0000000', '2021-01-11T14:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 3)
+insert into [dbo].[CalendarEvents] ("Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values ('2021-01-11T13:50:00.0000000', '2021-01-11T14:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 4)
 
-insert into [dbo].[CalendarEvents] (Id, "Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values (5, '2021-01-12T13:50:00.0000000', '2021-01-12T14:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 1)
-insert into [dbo].[CalendarEvents] (Id, "Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values (6, '2021-01-12T13:50:00.0000000', '2021-01-12T14:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 2)
-insert into [dbo].[CalendarEvents] (Id, "Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values (7, '2021-01-12T13:50:00.0000000', '2021-01-12T14:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 3)
-insert into [dbo].[CalendarEvents] (Id, "Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values (8, '2021-01-12T13:50:00.0000000', '2021-01-12T14:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 4)
+insert into [dbo].[CalendarEvents] ("Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values ('2021-01-12T13:50:00.0000000', '2021-01-12T14:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 1)
+insert into [dbo].[CalendarEvents] ("Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values ('2021-01-12T13:50:00.0000000', '2021-01-12T14:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 2)
+insert into [dbo].[CalendarEvents] ("Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values ('2021-01-12T13:50:00.0000000', '2021-01-12T14:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 3)
+insert into [dbo].[CalendarEvents] ("Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values ('2021-01-12T13:50:00.0000000', '2021-01-12T14:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 4)
 
-insert into [dbo].[CalendarEvents] (Id, "Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values (9, '2021-01-13T13:50:00.0000000', '2021-01-13T14:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 1)
-insert into [dbo].[CalendarEvents] (Id, "Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values (10, '2021-01-13T13:50:00.0000000', '2021-01-13T14:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 2)
-insert into [dbo].[CalendarEvents] (Id, "Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values (11, '2021-01-13T13:50:00.0000000', '2021-01-13T14:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 3)
-insert into [dbo].[CalendarEvents] (Id, "Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values (12, '2021-01-13T13:50:00.0000000', '2021-01-13T14:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 4)
+insert into [dbo].[CalendarEvents] ("Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values ('2021-01-13T13:50:00.0000000', '2021-01-13T14:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 1)
+insert into [dbo].[CalendarEvents] ("Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values ('2021-01-13T13:50:00.0000000', '2021-01-13T14:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 2)
+insert into [dbo].[CalendarEvents] ("Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values ('2021-01-13T13:50:00.0000000', '2021-01-13T14:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 3)
+insert into [dbo].[CalendarEvents] ("Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values ('2021-01-13T13:50:00.0000000', '2021-01-13T14:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 4)
 
-insert into [dbo].[CalendarEvents] (Id, "Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values (13, '2021-01-14T13:50:00.0000000', '2021-01-14T14:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 1)
-insert into [dbo].[CalendarEvents] (Id, "Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values (14, '2021-01-14T13:50:00.0000000', '2021-01-14T14:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 2)
-insert into [dbo].[CalendarEvents] (Id, "Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values (15, '2021-01-14T13:50:00.0000000', '2021-01-14T14:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 3)
-insert into [dbo].[CalendarEvents] (Id, "Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values (16, '2021-01-14T13:50:00.0000000', '2021-01-14T14:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 4)
+insert into [dbo].[CalendarEvents] ("Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values ('2021-01-14T13:50:00.0000000', '2021-01-14T14:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 1)
+insert into [dbo].[CalendarEvents] ("Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values ('2021-01-14T13:50:00.0000000', '2021-01-14T14:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 2)
+insert into [dbo].[CalendarEvents] ("Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values ('2021-01-14T13:50:00.0000000', '2021-01-14T14:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 3)
+insert into [dbo].[CalendarEvents] ("Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values ('2021-01-14T13:50:00.0000000', '2021-01-14T14:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 4)
 
-insert into [dbo].[CalendarEvents] (Id, "Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values (17, '2021-01-15T13:50:00.0000000', '2021-01-15T14:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 1)
-insert into [dbo].[CalendarEvents] (Id, "Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values (18, '2021-01-15T13:50:00.0000000', '2021-01-15T14:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 2)
-insert into [dbo].[CalendarEvents] (Id, "Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values (19, '2021-01-15T13:50:00.0000000', '2021-01-15T14:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 3)
-insert into [dbo].[CalendarEvents] (Id, "Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values (20, '2021-01-15T13:50:00.0000000', '2021-01-15T14:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 4)
+insert into [dbo].[CalendarEvents] ("Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values ('2021-01-15T13:50:00.0000000', '2021-01-15T14:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 1)
+insert into [dbo].[CalendarEvents] ("Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values ('2021-01-15T13:50:00.0000000', '2021-01-15T14:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 2)
+insert into [dbo].[CalendarEvents] ("Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values ('2021-01-15T13:50:00.0000000', '2021-01-15T14:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 3)
+insert into [dbo].[CalendarEvents] ("Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values ('2021-01-15T13:50:00.0000000', '2021-01-15T14:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 4)
 
 
 -- Planning (once every 2 weeks / 15 Dec, 29 Dec, 12 Jan, 26 Jan)
-insert into [dbo].[CalendarEvents] (Id, "Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values (21, '2020-12-15T09:00:00.0000000', '2020-12-15T10:00:00.0000000', 'Planning', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 1)
-insert into [dbo].[CalendarEvents] (Id, "Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values (22, '2020-12-15T09:00:00.0000000', '2020-12-15T10:00:00.0000000', 'Planning', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 3)
-insert into [dbo].[CalendarEvents] (Id, "Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values (23, '2020-12-15T09:00:00.0000000', '2020-12-15T10:00:00.0000000', 'Planning', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 2)
-insert into [dbo].[CalendarEvents] (Id, "Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values (24, '2020-12-15T09:00:00.0000000', '2020-12-15T10:00:00.0000000', 'Planning', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 4)
+insert into [dbo].[CalendarEvents] ("Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values ('2020-12-15T09:00:00.0000000', '2020-12-15T10:00:00.0000000', 'Planning', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 1)
+insert into [dbo].[CalendarEvents] ("Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values ('2020-12-15T09:00:00.0000000', '2020-12-15T10:00:00.0000000', 'Planning', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 3)
+insert into [dbo].[CalendarEvents] ("Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values ('2020-12-15T09:00:00.0000000', '2020-12-15T10:00:00.0000000', 'Planning', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 2)
+insert into [dbo].[CalendarEvents] ("Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values ('2020-12-15T09:00:00.0000000', '2020-12-15T10:00:00.0000000', 'Planning', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 4)
 
-insert into [dbo].[CalendarEvents] (Id, "Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values (25, '2020-12-29T09:00:00.0000000', '2020-12-29T10:00:00.0000000', 'Planning', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 1)
-insert into [dbo].[CalendarEvents] (Id, "Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values (26, '2020-12-29T09:00:00.0000000', '2020-12-29T10:00:00.0000000', 'Planning', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 3)
-insert into [dbo].[CalendarEvents] (Id, "Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values (27, '2020-12-29T09:00:00.0000000', '2020-12-29T10:00:00.0000000', 'Planning', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 2)
-insert into [dbo].[CalendarEvents] (Id, "Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values (28, '2020-12-29T09:00:00.0000000', '2020-12-29T10:00:00.0000000', 'Planning', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 4)
+insert into [dbo].[CalendarEvents] ("Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values ('2020-12-29T09:00:00.0000000', '2020-12-29T10:00:00.0000000', 'Planning', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 1)
+insert into [dbo].[CalendarEvents] ("Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values ('2020-12-29T09:00:00.0000000', '2020-12-29T10:00:00.0000000', 'Planning', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 3)
+insert into [dbo].[CalendarEvents] ("Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values ('2020-12-29T09:00:00.0000000', '2020-12-29T10:00:00.0000000', 'Planning', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 2)
+insert into [dbo].[CalendarEvents] ("Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values ('2020-12-29T09:00:00.0000000', '2020-12-29T10:00:00.0000000', 'Planning', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 4)
 
-insert into [dbo].[CalendarEvents] (Id, "Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values (29, '2021-01-12T09:00:00.0000000', '2021-01-12T10:00:00.0000000', 'Planning', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 1)
-insert into [dbo].[CalendarEvents] (Id, "Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values (30, '2021-01-12T09:00:00.0000000', '2021-01-12T10:00:00.0000000', 'Planning', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 3)
-insert into [dbo].[CalendarEvents] (Id, "Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values (31, '2021-01-12T09:00:00.0000000', '2021-01-12T10:00:00.0000000', 'Planning', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 2)
-insert into [dbo].[CalendarEvents] (Id, "Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values (32, '2021-01-12T09:00:00.0000000', '2021-01-12T10:00:00.0000000', 'Planning', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 4)
+insert into [dbo].[CalendarEvents] ("Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values ('2021-01-12T09:00:00.0000000', '2021-01-12T10:00:00.0000000', 'Planning', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 1)
+insert into [dbo].[CalendarEvents] ("Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values ('2021-01-12T09:00:00.0000000', '2021-01-12T10:00:00.0000000', 'Planning', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 3)
+insert into [dbo].[CalendarEvents] ("Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values ('2021-01-12T09:00:00.0000000', '2021-01-12T10:00:00.0000000', 'Planning', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 2)
+insert into [dbo].[CalendarEvents] ("Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values ('2021-01-12T09:00:00.0000000', '2021-01-12T10:00:00.0000000', 'Planning', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 4)
 
-insert into [dbo].[CalendarEvents] (Id, "Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values (33, '2021-01-26T09:00:00.0000000', '2021-01-26T10:00:00.0000000', 'Planning', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 1)
-insert into [dbo].[CalendarEvents] (Id, "Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values (34, '2021-01-26T09:00:00.0000000', '2021-01-26T10:00:00.0000000', 'Planning', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 3)
-insert into [dbo].[CalendarEvents] (Id, "Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values (35, '2021-01-26T09:00:00.0000000', '2021-01-26T10:00:00.0000000', 'Planning', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 2)
-insert into [dbo].[CalendarEvents] (Id, "Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values (36, '2021-01-26T09:00:00.0000000', '2021-01-26T10:00:00.0000000', 'Planning', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 4)
+insert into [dbo].[CalendarEvents] ("Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values ('2021-01-26T09:00:00.0000000', '2021-01-26T10:00:00.0000000', 'Planning', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 1)
+insert into [dbo].[CalendarEvents] ("Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values ('2021-01-26T09:00:00.0000000', '2021-01-26T10:00:00.0000000', 'Planning', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 3)
+insert into [dbo].[CalendarEvents] ("Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values ('2021-01-26T09:00:00.0000000', '2021-01-26T10:00:00.0000000', 'Planning', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 2)
+insert into [dbo].[CalendarEvents] ("Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values ('2021-01-26T09:00:00.0000000', '2021-01-26T10:00:00.0000000', 'Planning', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 4)
 
 
 -- New project discussion (once off / 26 Jan)
-insert into [dbo].[CalendarEvents] (Id, "Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values (37, '2021-01-26T10:00:00.0000000', '2021-01-26T11:20:00.0000000', 'New project discussion', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie>', 1)
-insert into [dbo].[CalendarEvents] (Id, "Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values (38, '2021-01-26T10:00:00.0000000', '2021-01-26T11:20:00.0000000', 'New project discussion', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie>', 2)
-insert into [dbo].[CalendarEvents] (Id, "Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values (39, '2021-01-26T10:00:00.0000000', '2021-01-26T11:20:00.0000000', 'New project discussion', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie>', 3)
+insert into [dbo].[CalendarEvents] ("Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values ('2021-01-26T10:00:00.0000000', '2021-01-26T11:20:00.0000000', 'New project discussion', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie>', 1)
+insert into [dbo].[CalendarEvents] ("Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values ('2021-01-26T10:00:00.0000000', '2021-01-26T11:20:00.0000000', 'New project discussion', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie>', 2)
+insert into [dbo].[CalendarEvents] ("Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values ('2021-01-26T10:00:00.0000000', '2021-01-26T11:20:00.0000000', 'New project discussion', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie>', 3)
 
 -- Team breakfast (25 - 29 Jan)
-insert into [dbo].[CalendarEvents] (Id, "Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values (40, '2021-01-25T08:30:00.0000000', '2021-01-25T09:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 1)
-insert into [dbo].[CalendarEvents] (Id, "Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values (41, '2021-01-25T08:30:00.0000000', '2021-01-25T09:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 2)
-insert into [dbo].[CalendarEvents] (Id, "Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values (42, '2021-01-25T08:30:00.0000000', '2021-01-25T09:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 3)
-insert into [dbo].[CalendarEvents] (Id, "Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values (43, '2021-01-25T08:30:00.0000000', '2021-01-25T09:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 4)
+insert into [dbo].[CalendarEvents] ("Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values ('2021-01-25T08:30:00.0000000', '2021-01-25T09:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 1)
+insert into [dbo].[CalendarEvents] ("Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values ('2021-01-25T08:30:00.0000000', '2021-01-25T09:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 2)
+insert into [dbo].[CalendarEvents] ("Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values ('2021-01-25T08:30:00.0000000', '2021-01-25T09:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 3)
+insert into [dbo].[CalendarEvents] ("Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values ('2021-01-25T08:30:00.0000000', '2021-01-25T09:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 4)
 
-insert into [dbo].[CalendarEvents] (Id, "Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values (44, '2021-01-26T08:30:00.0000000', '2021-01-26T09:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 1)
-insert into [dbo].[CalendarEvents] (Id, "Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values (45, '2021-01-26T08:30:00.0000000', '2021-01-26T09:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 2)
-insert into [dbo].[CalendarEvents] (Id, "Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values (46, '2021-01-26T08:30:00.0000000', '2021-01-26T09:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 3)
-insert into [dbo].[CalendarEvents] (Id, "Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values (47, '2021-01-26T08:30:00.0000000', '2021-01-26T09:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 4)
+insert into [dbo].[CalendarEvents] ("Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values ('2021-01-26T08:30:00.0000000', '2021-01-26T09:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 1)
+insert into [dbo].[CalendarEvents] ("Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values ('2021-01-26T08:30:00.0000000', '2021-01-26T09:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 2)
+insert into [dbo].[CalendarEvents] ("Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values ('2021-01-26T08:30:00.0000000', '2021-01-26T09:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 3)
+insert into [dbo].[CalendarEvents] ("Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values ('2021-01-26T08:30:00.0000000', '2021-01-26T09:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 4)
 
-insert into [dbo].[CalendarEvents] (Id, "Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values (48, '2021-01-27T08:30:00.0000000', '2021-01-27T09:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 1)
-insert into [dbo].[CalendarEvents] (Id, "Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values (49, '2021-01-27T08:30:00.0000000', '2021-01-27T09:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 2)
-insert into [dbo].[CalendarEvents] (Id, "Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values (50, '2021-01-27T08:30:00.0000000', '2021-01-27T09:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 3)
-insert into [dbo].[CalendarEvents] (Id, "Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values (51, '2021-01-27T08:30:00.0000000', '2021-01-27T09:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 4)
+insert into [dbo].[CalendarEvents] ("Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values ('2021-01-27T08:30:00.0000000', '2021-01-27T09:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 1)
+insert into [dbo].[CalendarEvents] ("Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values ('2021-01-27T08:30:00.0000000', '2021-01-27T09:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 2)
+insert into [dbo].[CalendarEvents] ("Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values ('2021-01-27T08:30:00.0000000', '2021-01-27T09:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 3)
+insert into [dbo].[CalendarEvents] ("Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values ('2021-01-27T08:30:00.0000000', '2021-01-27T09:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 4)
 
-insert into [dbo].[CalendarEvents] (Id, "Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values (52, '2021-01-28T08:30:00.0000000', '2021-01-28T09:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 1)
-insert into [dbo].[CalendarEvents] (Id, "Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values (53, '2021-01-28T08:30:00.0000000', '2021-01-28T09:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 2)
-insert into [dbo].[CalendarEvents] (Id, "Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values (54, '2021-01-28T08:30:00.0000000', '2021-01-28T09:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 3)
-insert into [dbo].[CalendarEvents] (Id, "Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values (55, '2021-01-28T08:30:00.0000000', '2021-01-28T09:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 4)
+insert into [dbo].[CalendarEvents] ("Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values ('2021-01-28T08:30:00.0000000', '2021-01-28T09:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 1)
+insert into [dbo].[CalendarEvents] ("Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values ('2021-01-28T08:30:00.0000000', '2021-01-28T09:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 2)
+insert into [dbo].[CalendarEvents] ("Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values ('2021-01-28T08:30:00.0000000', '2021-01-28T09:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 3)
+insert into [dbo].[CalendarEvents] ("Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values ('2021-01-28T08:30:00.0000000', '2021-01-28T09:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 4)
 
-insert into [dbo].[CalendarEvents] (Id, "Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values (56, '2021-01-29T08:30:00.0000000', '2021-01-29T09:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 1)
-insert into [dbo].[CalendarEvents] (Id, "Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values (57, '2021-01-29T08:30:00.0000000', '2021-01-29T09:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 2)
-insert into [dbo].[CalendarEvents] (Id, "Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values (58, '2021-01-29T08:30:00.0000000', '2021-01-29T09:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 3)
-insert into [dbo].[CalendarEvents] (Id, "Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values (59, '2021-01-29T08:30:00.0000000', '2021-01-29T09:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 4)
+insert into [dbo].[CalendarEvents] ("Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values ('2021-01-29T08:30:00.0000000', '2021-01-29T09:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 1)
+insert into [dbo].[CalendarEvents] ("Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values ('2021-01-29T08:30:00.0000000', '2021-01-29T09:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 2)
+insert into [dbo].[CalendarEvents] ("Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values ('2021-01-29T08:30:00.0000000', '2021-01-29T09:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 3)
+insert into [dbo].[CalendarEvents] ("Start", "End", "Subject", Organizer, AttendeesAsString, EctUserId) values ('2021-01-29T08:30:00.0000000', '2021-01-29T09:00:00.0000000', 'After lunch break', 'Pavel Ivanov <ppivanov98@outlook.com>', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Alice AliceS <alice@ect.ie> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 4)
 
--- Received mail
+-- New licence email
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('New licence availabe', 'System <non-existent@ect.ie>', '2021-01-25T12:00:00.0000000', 1)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('New licence availabe', 'System <non-existent@ect.ie>', '2021-01-25T12:00:00.0000000', 2)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('New licence availabe', 'System <non-existent@ect.ie>', '2021-01-25T12:00:00.0000000', 3)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('New licence availabe', 'System <non-existent@ect.ie>', '2021-01-25T12:00:00.0000000', 4)
+
+-- new project - meeting notes
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('New project - meeting notes', 'Alice AliceS <alice@ect.ie>', '2021-01-26T11:25:00.0000000',1)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('New project - meeting notes', 'Alice AliceS <alice@ect.ie>', '2021-01-26T11:25:00.0000000',3)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('New project - meeting notes', 'Alice AliceS <alice@ect.ie>', '2021-01-26T11:25:00.0000000',4)
+
+-- Secret birthday party
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Birthday Party for Alice', 'Pavel Ivanov <ppivanov98@outlook.com>', '2021-01-25T09:00:00.0000000',1)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Birthday Party for Alice', 'Pavel Ivanov <ppivanov98@outlook.com>', '2021-01-25T09:00:00.0000000',2)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Birthday Party for Alice', 'Pavel Ivanov <ppivanov98@outlook.com>', '2021-01-25T09:00:00.0000000',3)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Birthday Party for Alice', 'Pavel Ivanov <ppivanov98@outlook.com>', '2021-01-25T09:00:00.0000000',4)
+
+-- phishing
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-02T09:30:00.0000000',1)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-02T09:30:00.0000000',2)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-02T09:30:00.0000000',3)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-02T09:30:00.0000000',4)
+
+-- phishing 2
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 2', 'Attacker <attacker@email.com>', '2021-01-03T09:30:00.0000000',1)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 2', 'Attacker <attacker@email.com>', '2021-01-03T09:30:00.0000000',2)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 2', 'Attacker <attacker@email.com>', '2021-01-03T09:30:00.0000000',3)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 2', 'Attacker <attacker@email.com>', '2021-01-03T09:30:00.0000000',4)
+-- phishing 3
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 3', 'Attacker <attacker@email.com>', '2021-01-03T09:30:00.0000000',1)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 3', 'Attacker <attacker@email.com>', '2021-01-03T09:30:00.0000000',2)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 3', 'Attacker <attacker@email.com>', '2021-01-03T09:30:00.0000000',3)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 3', 'Attacker <attacker@email.com>', '2021-01-03T09:30:00.0000000',4)
+-- phishing 4
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 4', 'Attacker <attacker@email.com>', '2021-01-03T09:30:00.0000000',1)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 4', 'Attacker <attacker@email.com>', '2021-01-03T09:30:00.0000000',2)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 4', 'Attacker <attacker@email.com>', '2021-01-03T09:30:00.0000000',3)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 4', 'Attacker <attacker@email.com>', '2021-01-03T09:30:00.0000000',4)
+-- phishing 5
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 5', 'Attacker <attacker@email.com>', '2021-01-03T09:30:00.0000000',1)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 5', 'Attacker <attacker@email.com>', '2021-01-03T09:30:00.0000000',2)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 5', 'Attacker <attacker@email.com>', '2021-01-03T09:30:00.0000000',3)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 5', 'Attacker <attacker@email.com>', '2021-01-03T09:30:00.0000000',4)
+
+-- phishing 6
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 6', 'Attacker <attacker@email.com>', '2021-01-04T09:30:00.0000000',1)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 6', 'Attacker <attacker@email.com>', '2021-01-04T09:30:00.0000000',2)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 6', 'Attacker <attacker@email.com>', '2021-01-04T09:30:00.0000000',3)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 6', 'Attacker <attacker@email.com>', '2021-01-04T09:30:00.0000000',4)
+-- phishing 7
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 7', 'Attacker <attacker@email.com>', '2021-01-04T09:30:00.0000000',1)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 7', 'Attacker <attacker@email.com>', '2021-01-04T09:30:00.0000000',2)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 7', 'Attacker <attacker@email.com>', '2021-01-04T09:30:00.0000000',3)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 7', 'Attacker <attacker@email.com>', '2021-01-04T09:30:00.0000000',4)
+-- phishing 8
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 8', 'Attacker <attacker@email.com>', '2021-01-04T09:30:00.0000000',1)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 8', 'Attacker <attacker@email.com>', '2021-01-04T09:30:00.0000000',2)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 8', 'Attacker <attacker@email.com>', '2021-01-04T09:30:00.0000000',3)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 8', 'Attacker <attacker@email.com>', '2021-01-04T09:30:00.0000000',4)
+-- phishing 9
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 9', 'Attacker <attacker@email.com>', '2021-01-04T09:30:00.0000000',1)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 9', 'Attacker <attacker@email.com>', '2021-01-04T09:30:00.0000000',2)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 9', 'Attacker <attacker@email.com>', '2021-01-04T09:30:00.0000000',3)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 9', 'Attacker <attacker@email.com>', '2021-01-04T09:30:00.0000000',4)
+-- phishing 10
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 10', 'Attacker <attacker@email.com>', '2021-01-04T09:30:00.0000000',1)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 10', 'Attacker <attacker@email.com>', '2021-01-04T09:30:00.0000000',2)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 10', 'Attacker <attacker@email.com>', '2021-01-04T09:30:00.0000000',3)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 10', 'Attacker <attacker@email.com>', '2021-01-04T09:30:00.0000000',4)
+
+-- phishing 11
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 11', 'Attacker <attacker@email.com>', '2021-01-05T09:30:00.0000000',1)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 11', 'Attacker <attacker@email.com>', '2021-01-05T09:30:00.0000000',2)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 11', 'Attacker <attacker@email.com>', '2021-01-05T09:30:00.0000000',3)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 11', 'Attacker <attacker@email.com>', '2021-01-05T09:30:00.0000000',4)
+-- phishing 12
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 12', 'Attacker <attacker@email.com>', '2021-01-05T09:30:00.0000000',1)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 12', 'Attacker <attacker@email.com>', '2021-01-05T09:30:00.0000000',2)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 12', 'Attacker <attacker@email.com>', '2021-01-05T09:30:00.0000000',3)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 12', 'Attacker <attacker@email.com>', '2021-01-05T09:30:00.0000000',4)
+-- phishing 13
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 13', 'Attacker <attacker@email.com>', '2021-01-05T09:30:00.0000000',1)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 13', 'Attacker <attacker@email.com>', '2021-01-05T09:30:00.0000000',2)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 13', 'Attacker <attacker@email.com>', '2021-01-05T09:30:00.0000000',3)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 13', 'Attacker <attacker@email.com>', '2021-01-05T09:30:00.0000000',4)
+-- phishing 14
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 14', 'Attacker <attacker@email.com>', '2021-01-05T09:30:00.0000000',1)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 14', 'Attacker <attacker@email.com>', '2021-01-05T09:30:00.0000000',2)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 14', 'Attacker <attacker@email.com>', '2021-01-05T09:30:00.0000000',3)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 14', 'Attacker <attacker@email.com>', '2021-01-05T09:30:00.0000000',4)
+-- phishing 15
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 15', 'Attacker <attacker@email.com>', '2021-01-05T09:30:00.0000000',1)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 15', 'Attacker <attacker@email.com>', '2021-01-05T09:30:00.0000000',2)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 15', 'Attacker <attacker@email.com>', '2021-01-05T09:30:00.0000000',3)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 15', 'Attacker <attacker@email.com>', '2021-01-05T09:30:00.0000000',4)
+
+-- phishing 16
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 16', 'Attacker <attacker@email.com>', '2021-01-06T09:30:00.0000000',1)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 16', 'Attacker <attacker@email.com>', '2021-01-06T09:30:00.0000000',2)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 16', 'Attacker <attacker@email.com>', '2021-01-06T09:30:00.0000000',3)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 16', 'Attacker <attacker@email.com>', '2021-01-06T09:30:00.0000000',4)
+-- phishing 17
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 17', 'Attacker <attacker@email.com>', '2021-01-06T09:30:00.0000000',1)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 17', 'Attacker <attacker@email.com>', '2021-01-06T09:30:00.0000000',2)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 17', 'Attacker <attacker@email.com>', '2021-01-06T09:30:00.0000000',3)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 17', 'Attacker <attacker@email.com>', '2021-01-06T09:30:00.0000000',4)
+-- phishing 18
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 18', 'Attacker <attacker@email.com>', '2021-01-06T09:30:00.0000000',1)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 18', 'Attacker <attacker@email.com>', '2021-01-06T09:30:00.0000000',2)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 18', 'Attacker <attacker@email.com>', '2021-01-06T09:30:00.0000000',3)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 18', 'Attacker <attacker@email.com>', '2021-01-06T09:30:00.0000000',4)
+-- phishing 19
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 19', 'Attacker <attacker@email.com>', '2021-01-06T09:30:00.0000000',1)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 19', 'Attacker <attacker@email.com>', '2021-01-06T09:30:00.0000000',2)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 19', 'Attacker <attacker@email.com>', '2021-01-06T09:30:00.0000000',3)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 19', 'Attacker <attacker@email.com>', '2021-01-06T09:30:00.0000000',4)
+-- phishing 20
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 20', 'Attacker <attacker@email.com>', '2021-01-06T09:30:00.0000000',1)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 20', 'Attacker <attacker@email.com>', '2021-01-06T09:30:00.0000000',2)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 20', 'Attacker <attacker@email.com>', '2021-01-06T09:30:00.0000000',3)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 20', 'Attacker <attacker@email.com>', '2021-01-06T09:30:00.0000000',4)
+-- phishing 21
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 21', 'Attacker <attacker@email.com>', '2021-01-06T09:30:00.0000000',1)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 21', 'Attacker <attacker@email.com>', '2021-01-06T09:30:00.0000000',2)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 21', 'Attacker <attacker@email.com>', '2021-01-06T09:30:00.0000000',3)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 21', 'Attacker <attacker@email.com>', '2021-01-06T09:30:00.0000000',4)
+
+-- phishing 22
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 22', 'Attacker <attacker@email.com>', '2021-01-09T09:30:00.0000000',1)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 22', 'Attacker <attacker@email.com>', '2021-01-09T09:30:00.0000000',2)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 22', 'Attacker <attacker@email.com>', '2021-01-09T09:30:00.0000000',3)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 22', 'Attacker <attacker@email.com>', '2021-01-09T09:30:00.0000000',4)
+-- phishing 23
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 23', 'Attacker <attacker@email.com>', '2021-01-09T09:30:00.0000000',1)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 23', 'Attacker <attacker@email.com>', '2021-01-09T09:30:00.0000000',2)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 23', 'Attacker <attacker@email.com>', '2021-01-09T09:30:00.0000000',3)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 23', 'Attacker <attacker@email.com>', '2021-01-09T09:30:00.0000000',4)
+-- phishing 24
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 24', 'Attacker <attacker@email.com>', '2021-01-09T09:30:00.0000000',1)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 24', 'Attacker <attacker@email.com>', '2021-01-09T09:30:00.0000000',2)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 24', 'Attacker <attacker@email.com>', '2021-01-09T09:30:00.0000000',3)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 24', 'Attacker <attacker@email.com>', '2021-01-09T09:30:00.0000000',4)
+-- phishing 25
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 25', 'Attacker <attacker@email.com>', '2021-01-09T09:30:00.0000000',1)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 25', 'Attacker <attacker@email.com>', '2021-01-09T09:30:00.0000000',2)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 25', 'Attacker <attacker@email.com>', '2021-01-09T09:30:00.0000000',3)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 25', 'Attacker <attacker@email.com>', '2021-01-09T09:30:00.0000000',4)
+-- phishing 26
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 26', 'Attacker <attacker@email.com>', '2021-01-09T09:30:00.0000000',1)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 26', 'Attacker <attacker@email.com>', '2021-01-09T09:30:00.0000000',2)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 26', 'Attacker <attacker@email.com>', '2021-01-09T09:30:00.0000000',3)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 26', 'Attacker <attacker@email.com>', '2021-01-09T09:30:00.0000000',4)
+-- phishing 27
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 27', 'Attacker <attacker@email.com>', '2021-01-09T09:30:00.0000000',1)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 27', 'Attacker <attacker@email.com>', '2021-01-09T09:30:00.0000000',2)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 27', 'Attacker <attacker@email.com>', '2021-01-09T09:30:00.0000000',3)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt 27', 'Attacker <attacker@email.com>', '2021-01-09T09:30:00.0000000',4)
+
+
+-- more phishing
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-13T09:30:00.0000000',1)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-13T09:30:00.0000000',2)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-13T09:30:00.0000000',3)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-13T09:30:00.0000000',4)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-13T09:30:00.0000000',1)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-13T09:30:00.0000000',2)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-13T09:30:00.0000000',3)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-13T09:30:00.0000000',4)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-13T09:30:00.0000000',1)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-13T09:30:00.0000000',2)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-13T09:30:00.0000000',3)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-13T09:30:00.0000000',4)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-13T09:30:00.0000000',1)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-13T09:30:00.0000000',2)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-13T09:30:00.0000000',3)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-13T09:30:00.0000000',4)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-13T09:30:00.0000000',1)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-13T09:30:00.0000000',2)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-13T09:30:00.0000000',3)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-13T09:30:00.0000000',4)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-13T09:30:00.0000000',1)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-13T09:30:00.0000000',2)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-13T09:30:00.0000000',3)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-13T09:30:00.0000000',4)
+
+-- more phishing
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-16T09:30:00.0000000',1)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-16T09:30:00.0000000',2)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-16T09:30:00.0000000',3)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-16T09:30:00.0000000',4)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-16T09:30:00.0000000',1)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-16T09:30:00.0000000',2)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-16T09:30:00.0000000',3)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-16T09:30:00.0000000',4)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-16T09:30:00.0000000',1)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-16T09:30:00.0000000',2)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-16T09:30:00.0000000',3)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-16T09:30:00.0000000',4)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-16T09:30:00.0000000',1)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-16T09:30:00.0000000',2)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-16T09:30:00.0000000',3)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-16T09:30:00.0000000',4)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-16T09:30:00.0000000',1)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-16T09:30:00.0000000',2)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-16T09:30:00.0000000',3)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-16T09:30:00.0000000',4)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-16T09:30:00.0000000',1)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-16T09:30:00.0000000',2)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-16T09:30:00.0000000',3)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-16T09:30:00.0000000',4)
+
+
+-- more phishing
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-23T09:30:00.0000000',1)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-23T09:30:00.0000000',2)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-23T09:30:00.0000000',3)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-23T09:30:00.0000000',4)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-23T09:30:00.0000000',1)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-23T09:30:00.0000000',2)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-23T09:30:00.0000000',3)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-23T09:30:00.0000000',4)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-23T09:30:00.0000000',1)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-23T09:30:00.0000000',2)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-23T09:30:00.0000000',3)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-23T09:30:00.0000000',4)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-23T09:30:00.0000000',1)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-23T09:30:00.0000000',2)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-23T09:30:00.0000000',3)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-23T09:30:00.0000000',4)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-23T09:30:00.0000000',1)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-23T09:30:00.0000000',2)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-23T09:30:00.0000000',3)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-23T09:30:00.0000000',4)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-23T09:30:00.0000000',1)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-23T09:30:00.0000000',2)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-23T09:30:00.0000000',3)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Phishing attempt', 'Attacker <attacker@email.com>', '2021-01-23T09:30:00.0000000',4)
+
+-- spam
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Spam mail', 'Spammer <spammer@email.com>', '2021-01-25T09:30:00.0000000',1)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Spam mail', 'Spammer <spammer@email.com>', '2021-01-25T09:30:00.0000000',2)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Spam mail', 'Spammer <spammer@email.com>', '2021-01-25T09:30:00.0000000',3)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Spam mail', 'Spammer <spammer@email.com>', '2021-01-25T09:30:00.0000000',4)
+
+-- spam 2
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Spam mail 2', 'Spammer <spammer@email.com>', '2021-01-25T10:00:00.0000000',1)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Spam mail 2', 'Spammer <spammer@email.com>', '2021-01-25T10:00:00.0000000',2)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Spam mail 2', 'Spammer <spammer@email.com>', '2021-01-25T10:00:00.0000000',3)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Spam mail 2', 'Spammer <spammer@email.com>', '2021-01-25T10:00:00.0000000',4)
+
+-- spam 3
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Spam mail 3', 'Spammer <spammer@email.com>', '2021-01-26T10:00:00.0000000',1)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Spam mail 3', 'Spammer <spammer@email.com>', '2021-01-26T10:00:00.0000000',2)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Spam mail 3', 'Spammer <spammer@email.com>', '2021-01-26T10:00:00.0000000',3)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Spam mail 3', 'Spammer <spammer@email.com>', '2021-01-26T10:00:00.0000000',4)
+
+-- spam 4
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Spam mail 4', 'Spammer <spammer@email.com>', '2021-01-26T11:00:00.0000000',1)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Spam mail 4', 'Spammer <spammer@email.com>', '2021-01-26T11:00:00.0000000',2)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Spam mail 4', 'Spammer <spammer@email.com>', '2021-01-26T11:00:00.0000000',3)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Spam mail 4', 'Spammer <spammer@email.com>', '2021-01-26T11:00:00.0000000',4)
+
+-- spam 5
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Spam mail 5', 'Spammer <spammer@email.com>', '2021-01-26T12:00:00.0000000',1)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Spam mail 5', 'Spammer <spammer@email.com>', '2021-01-26T12:00:00.0000000',2)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Spam mail 5', 'Spammer <spammer@email.com>', '2021-01-26T12:00:00.0000000',3)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Spam mail 5', 'Spammer <spammer@email.com>', '2021-01-26T12:00:00.0000000',4)
+
+-- spam 6
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Spam mail 6', 'Spammer <spammer@email.com>', '2021-01-27T08:00:00.0000000',1)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Spam mail 6', 'Spammer <spammer@email.com>', '2021-01-27T08:00:00.0000000',2)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Spam mail 6', 'Spammer <spammer@email.com>', '2021-01-27T08:00:00.0000000',3)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Spam mail 6', 'Spammer <spammer@email.com>', '2021-01-27T08:00:00.0000000',4)
+
+-- spam 7
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Spam mail 7', 'Spammer <spammer@email.com>', '2021-01-27T08:20:00.0000000',1)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Spam mail 7', 'Spammer <spammer@email.com>', '2021-01-27T08:20:00.0000000',2)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Spam mail 7', 'Spammer <spammer@email.com>', '2021-01-27T08:20:00.0000000',3)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Spam mail 7', 'Spammer <spammer@email.com>', '2021-01-27T08:20:00.0000000',4)
+
+-- spam 8
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Spam mail 8', 'Spammer <spammer@email.com>', '2021-01-27T08:22:00.0000000',1)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Spam mail 8', 'Spammer <spammer@email.com>', '2021-01-27T08:22:00.0000000',2)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Spam mail 8', 'Spammer <spammer@email.com>', '2021-01-27T08:22:00.0000000',3)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Spam mail 8', 'Spammer <spammer@email.com>', '2021-01-27T08:22:00.0000000',4)
+
+-- spam 9
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Spam mail 9', 'Spammer <spammer@email.com>', '2021-01-27T08:30:00.0000000',1)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Spam mail 9', 'Spammer <spammer@email.com>', '2021-01-27T08:30:00.0000000',2)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Spam mail 9', 'Spammer <spammer@email.com>', '2021-01-27T08:30:00.0000000',3)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Spam mail 9', 'Spammer <spammer@email.com>', '2021-01-27T08:30:00.0000000',4)
 
 -- Sent mail
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('New project - meeting notes', '2021-01-26T11:25:00.0000000', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 4)
 
-set IDENTITY_INSERT [dbo].[Users] OFF
-set IDENTITY_INSERT [dbo].[Teams] OFF
-set IDENTITY_INSERT [dbo].[Administrators] OFF
-set IDENTITY_INSERT [dbo].[CalendarEvents] OFF
+-- this takes too long (Alice)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Afternoon break invitation', '2021-01-12T11:25:00.0000000', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 4)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Afternoon break invitation', '2021-01-13T11:25:00.0000000', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 4)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Afternoon break invitation', '2021-01-15T11:25:00.0000000', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 4)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Afternoon break invitation', '2021-01-26T11:25:00.0000000', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 4)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Afternoon break invitation', '2021-01-27T11:25:00.0000000', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 4)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Afternoon break invitation', '2021-01-28T11:25:00.0000000', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 4)
+
+-- x00149863
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Project progress', '2021-01-01T11:25:00.0000000', 'ppivanov98@outlook.com <ppivanov98@outlook.com>', 1)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Project progress', '2021-01-04T11:25:00.0000000', 'ppivanov98@outlook.com <ppivanov98@outlook.com>', 1)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Project progress', '2021-01-05T11:25:00.0000000', 'ppivanov98@outlook.com <ppivanov98@outlook.com>', 1)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Project progress', '2021-01-06T11:25:00.0000000', 'ppivanov98@outlook.com <ppivanov98@outlook.com>', 1)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Project progress', '2021-01-07T11:25:00.0000000', 'ppivanov98@outlook.com <ppivanov98@outlook.com>', 1)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Project progress', '2021-01-08T11:25:00.0000000', 'ppivanov98@outlook.com <ppivanov98@outlook.com>', 1)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Project progress', '2021-01-11T11:25:00.0000000', 'ppivanov98@outlook.com <ppivanov98@outlook.com>', 1)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Project progress', '2021-01-12T11:25:00.0000000', 'ppivanov98@outlook.com <ppivanov98@outlook.com>', 1)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Project progress', '2021-01-13T11:25:00.0000000', 'ppivanov98@outlook.com <ppivanov98@outlook.com>', 1)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Project progress', '2021-01-14T11:25:00.0000000', 'ppivanov98@outlook.com <ppivanov98@outlook.com>', 1)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Project progress', '2021-01-15T11:25:00.0000000', 'ppivanov98@outlook.com <ppivanov98@outlook.com>', 1)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Project progress', '2021-01-18T11:25:00.0000000', 'ppivanov98@outlook.com <ppivanov98@outlook.com>', 1)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Project progress', '2021-01-19T11:25:00.0000000', 'ppivanov98@outlook.com <ppivanov98@outlook.com>', 1)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Project progress', '2021-01-20T11:25:00.0000000', 'ppivanov98@outlook.com <ppivanov98@outlook.com>', 1)
+
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Customer stuff', '2021-01-04T11:25:00.0000000', 'customer <customer@email.com>', 1)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Scrum master updates', '2021-01-04T11:25:00.0000000', 'Scrum Master <s-master@email.com>', 1)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Investigation', '2021-01-04T11:25:00.0000000', 'ppivanov98@outlook.com <ppivanov98@outlook.com>', 1)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Code reviewing', '2021-01-04T11:25:00.0000000', 'Alice AliceS <alice@ect.ie>', 1)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Code reviewing 2', '2021-01-04T11:25:00.0000000', 'Alice AliceS <alice@ect.ie>', 1)
+
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Customer stuff', '2021-01-06T11:25:00.0000000', 'customer <customer@email.com>', 1)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Scrum master updates', '2021-01-06T11:25:00.0000000', 'Scrum Master <s-master@email.com>', 1)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Investigation', '2021-01-06T11:25:00.0000000', 'ppivanov98@outlook.com <ppivanov98@outlook.com>', 1)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Code reviewing', '2021-01-06T11:25:00.0000000', 'Alice AliceS <alice@ect.ie>', 1)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Code reviewing 2', '2021-01-06T11:25:00.0000000', 'Alice AliceS <alice@ect.ie>', 1)
+
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Customer stuff', '2021-01-08T11:25:00.0000000', 'customer <customer@email.com>', 1)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Scrum master updates', '2021-01-08T11:25:00.0000000', 'Scrum Master <s-master@email.com>', 1)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Investigation', '2021-01-08T11:25:00.0000000', 'ppivanov98@outlook.com <ppivanov98@outlook.com>', 1)
+
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Customer stuff', '2021-01-11T11:25:00.0000000', 'customer <customer@email.com>', 1)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Scrum master updates', '2021-01-11T11:25:00.0000000', 'Scrum Master <s-master@email.com>', 1)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Investigation', '2021-01-11T11:25:00.0000000', 'ppivanov98@outlook.com <ppivanov98@outlook.com>', 1)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Code reviewing', '2021-01-11T11:25:00.0000000', 'Alice AliceS <alice@ect.ie>', 1)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Code reviewing 2', '2021-01-11T11:25:00.0000000', 'Alice AliceS <alice@ect.ie>', 1)
+
+
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Customer stuff', '2021-01-18T11:25:00.0000000', 'customer <customer@email.com>', 1)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Scrum master updates', '2021-01184T11:25:00.0000000', 'Scrum Master <s-master@email.com>', 1)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Investigation', '2021-01-18T11:25:00.0000000', 'ppivanov98@outlook.com <ppivanov98@outlook.com>', 1)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Code reviewing', '2021-01-18T11:25:00.0000000', 'Alice AliceS <alice@ect.ie>', 1)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Code reviewing 2', '2021-01-18T11:25:00.0000000', 'Alice AliceS <alice@ect.ie>', 1)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Customer stuff', '2021-01-18T11:25:00.0000000', 'customer <customer@email.com>', 1)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Scrum master updates', '2021-01-18T11:25:00.0000000', 'Scrum Master <s-master@email.com>', 1)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Investigation', '2021-01-18T11:25:00.0000000', 'ppivanov98@outlook.com <ppivanov98@outlook.com>', 1)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Code reviewing', '2021-01-18T11:25:00.0000000', 'Alice AliceS <alice@ect.ie>', 1)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Code reviewing 2', '2021-01-18T11:25:00.0000000', 'Alice AliceS <alice@ect.ie>', 1)
+
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Customer stuff', '2021-01-25T11:25:00.0000000', 'customer <customer@email.com>', 1)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Scrum master updates', '2021-01184T11:25:00.0000000', 'Scrum Master <s-master@email.com>', 1)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Investigation', '2021-01-25T11:25:00.0000000', 'ppivanov98@outlook.com <ppivanov98@outlook.com>', 1)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Code reviewing', '2021-01-25T11:25:00.0000000', 'Alice AliceS <alice@ect.ie>', 1)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Code reviewing 2', '2021-01-25T11:25:00.0000000', 'Alice AliceS <alice@ect.ie>', 1)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Customer stuff', '2021-01-25T11:25:00.0000000', 'customer <customer@email.com>', 1)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Scrum master updates', '2021-01-25T11:25:00.0000000', 'Scrum Master <s-master@email.com>', 1)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Investigation', '2021-01-25T11:25:00.0000000', 'ppivanov98@outlook.com <ppivanov98@outlook.com>', 1)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Code reviewing', '2021-01-25T11:25:00.0000000', 'Alice AliceS <alice@ect.ie>', 1)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Code reviewing 2', '2021-01-25T11:25:00.0000000', 'Alice AliceS <alice@ect.ie>', 1)
+
+-- Trudy
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Customer stuff', '2021-01-05T11:25:00.0000000', 'customer <customer@email.com>', 4)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Scrum master updates', '2021-01-05T11:25:00.0000000', 'Scrum Master <s-master@email.com>', 4)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Investigation', '2021-01-05T11:25:00.0000000', 'ppivanov98@outlook.com <ppivanov98@outlook.com>', 4)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Code reviewing', '2021-01-05T11:25:00.0000000', 'Alice AliceS <alice@ect.ie>', 4)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Code reviewing 2', '2021-01-05T11:25:00.0000000', 'Alice AliceS <alice@ect.ie>', 4)
+
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Customer stuff', '2021-01-07T11:25:00.0000000', 'customer <customer@email.com>', 4)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Scrum master updates', '2021-01-07T11:25:00.0000000', 'Scrum Master <s-master@email.com>', 4)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Investigation', '2021-01-07T11:25:00.0000000', 'ppivanov98@outlook.com <ppivanov98@outlook.com>', 4)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Code reviewing', '2021-01-07T11:25:00.0000000', 'Alice AliceS <alice@ect.ie>', 4)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Code reviewing 2', '2021-01-07T11:25:00.0000000', 'Alice AliceS <alice@ect.ie>', 4)
+
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Customer stuff', '2021-01-08T11:25:00.0000000', 'customer <customer@email.com>', 4)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Scrum master updates', '2021-01-08T11:25:00.0000000', 'Scrum Master <s-master@email.com>', 4)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Investigation', '2021-01-08T11:25:00.0000000', 'ppivanov98@outlook.com <ppivanov98@outlook.com>', 4)
+
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Customer stuff', '2021-01-12T11:25:00.0000000', 'customer <customer@email.com>', 4)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Scrum master updates', '2021-01-12T11:25:00.0000000', 'Scrum Master <s-master@email.com>', 4)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Investigation', '2021-01-12T11:25:00.0000000', 'ppivanov98@outlook.com <ppivanov98@outlook.com>', 4)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Code reviewing', '2021-01-12T11:25:00.0000000', 'Alice AliceS <alice@ect.ie>', 4)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Code reviewing 2', '2021-01-12T11:25:00.0000000', 'Alice AliceS <alice@ect.ie>', 4)
+
+
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Customer stuff', '2021-01-19T11:25:00.0000000', 'customer <customer@email.com>', 4)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Scrum master updates', '2021-01184T11:25:00.0000000', 'Scrum Master <s-master@email.com>', 4)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Investigation', '2021-01-19T11:25:00.0000000', 'ppivanov98@outlook.com <ppivanov98@outlook.com>', 4)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Code reviewing', '2021-01-19T11:25:00.0000000', 'Alice AliceS <alice@ect.ie>', 4)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Code reviewing 2', '2021-01-19T11:25:00.0000000', 'Alice AliceS <alice@ect.ie>', 4)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Customer stuff', '2021-01-19T11:25:00.0000000', 'customer <customer@email.com>', 4)
+
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Customer stuff', '2021-01-27T11:25:00.0000000', 'customer <customer@email.com>', 4)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Scrum master updates', '2021-01184T11:25:00.0000000', 'Scrum Master <s-master@email.com>', 4)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Investigation', '2021-01-27T11:25:00.0000000', 'ppivanov98@outlook.com <ppivanov98@outlook.com>', 4)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Code reviewing', '2021-01-27T11:25:00.0000000', 'Alice AliceS <alice@ect.ie>', 4)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Code reviewing 2', '2021-01-27T11:25:00.0000000', 'Alice AliceS <alice@ect.ie>', 4)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Customer stuff', '2021-01-27T11:25:00.0000000', 'customer <customer@email.com>', 4)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Scrum master updates', '2021-01-27T11:25:00.0000000', 'Scrum Master <s-master@email.com>', 4)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Investigation', '2021-01-27T11:25:00.0000000', 'ppivanov98@outlook.com <ppivanov98@outlook.com>', 4)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Code reviewing', '2021-01-27T11:25:00.0000000', 'Alice AliceS <alice@ect.ie>', 4)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Code reviewing 2', '2021-01-27T11:25:00.0000000', 'Alice AliceS <alice@ect.ie>', 4)
