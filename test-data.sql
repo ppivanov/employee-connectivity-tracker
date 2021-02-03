@@ -448,7 +448,7 @@ insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId
 
 
 insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Customer stuff', '2021-01-18T11:25:00.0000000', 'customer <customer@email.com>', 1)
-insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Scrum master updates', '2021-01184T11:25:00.0000000', 'Scrum Master <s-master@email.com>', 1)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Scrum master updates', '2021-01-18T11:25:00.0000000', 'Scrum Master <s-master@email.com>', 1)
 insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Investigation', '2021-01-18T11:25:00.0000000', 'ppivanov98@outlook.com <ppivanov98@outlook.com>', 1)
 insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Code reviewing', '2021-01-18T11:25:00.0000000', 'Alice AliceS <alice@ect.ie>', 1)
 insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Code reviewing 2', '2021-01-18T11:25:00.0000000', 'Alice AliceS <alice@ect.ie>', 1)
@@ -459,7 +459,7 @@ insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId
 insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Code reviewing 2', '2021-01-18T11:25:00.0000000', 'Alice AliceS <alice@ect.ie>', 1)
 
 insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Customer stuff', '2021-01-25T11:25:00.0000000', 'customer <customer@email.com>', 1)
-insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Scrum master updates', '2021-01184T11:25:00.0000000', 'Scrum Master <s-master@email.com>', 1)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Scrum master updates', '2021-01-18T11:25:00.0000000', 'Scrum Master <s-master@email.com>', 1)
 insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Investigation', '2021-01-25T11:25:00.0000000', 'ppivanov98@outlook.com <ppivanov98@outlook.com>', 1)
 insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Code reviewing', '2021-01-25T11:25:00.0000000', 'Alice AliceS <alice@ect.ie>', 1)
 insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Code reviewing 2', '2021-01-25T11:25:00.0000000', 'Alice AliceS <alice@ect.ie>', 1)
@@ -494,14 +494,14 @@ insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId
 
 
 insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Customer stuff', '2021-01-19T11:25:00.0000000', 'customer <customer@email.com>', 4)
-insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Scrum master updates', '2021-01184T11:25:00.0000000', 'Scrum Master <s-master@email.com>', 4)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Scrum master updates', '2021-01-18T11:25:00.0000000', 'Scrum Master <s-master@email.com>', 4)
 insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Investigation', '2021-01-19T11:25:00.0000000', 'ppivanov98@outlook.com <ppivanov98@outlook.com>', 4)
 insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Code reviewing', '2021-01-19T11:25:00.0000000', 'Alice AliceS <alice@ect.ie>', 4)
 insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Code reviewing 2', '2021-01-19T11:25:00.0000000', 'Alice AliceS <alice@ect.ie>', 4)
 insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Customer stuff', '2021-01-19T11:25:00.0000000', 'customer <customer@email.com>', 4)
 
 insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Customer stuff', '2021-01-27T11:25:00.0000000', 'customer <customer@email.com>', 4)
-insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Scrum master updates', '2021-01184T11:25:00.0000000', 'Scrum Master <s-master@email.com>', 4)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Scrum master updates', '2021-01-18T11:25:00.0000000', 'Scrum Master <s-master@email.com>', 4)
 insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Investigation', '2021-01-27T11:25:00.0000000', 'ppivanov98@outlook.com <ppivanov98@outlook.com>', 4)
 insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Code reviewing', '2021-01-27T11:25:00.0000000', 'Alice AliceS <alice@ect.ie>', 4)
 insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Code reviewing 2', '2021-01-27T11:25:00.0000000', 'Alice AliceS <alice@ect.ie>', 4)
