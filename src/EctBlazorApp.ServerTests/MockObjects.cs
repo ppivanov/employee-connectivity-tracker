@@ -1,4 +1,5 @@
-﻿using EctBlazorApp.Shared;
+﻿using EctBlazorApp.Server.MailKit;
+using EctBlazorApp.Shared;
 using EctBlazorApp.Shared.GraphModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -153,6 +154,18 @@ namespace EctBlazorApp.ServerTests
             };
 
             return new AuthorizationFilterContext(controllerContext, new List<IFilterMetadata>()); ;
+        }
+
+        public static EctMailKit GetMailKit()
+        {
+            return new EctMailKit {
+                Sender = "non-existent@email.com",
+                Reciever = "",
+                SmtpServer = "smtp.gmail.com",
+                Port = 465,
+                UserName = "non-existent@gmail.com",
+                Password = "password123"
+            };
         }
     }
 }

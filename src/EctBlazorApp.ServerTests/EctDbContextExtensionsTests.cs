@@ -1,6 +1,7 @@
 ﻿using EctBlazorApp.Server;
 using EctBlazorApp.Server.CommonMethods;
 using EctBlazorApp.Server.Extensions;
+using EctBlazorApp.Server.MailKit;
 using EctBlazorApp.Shared;
 using EctBlazorApp.Shared.GraphModels;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -22,11 +23,13 @@ namespace EctBlazorApp.ServerTests
     {
         private readonly EctDbContext _dbContext;
         private HttpClient _httpClient;
+        private EctMailKit _mailKit;
 
         public EctDbContextExtensionsTests()
         {
             _dbContext = InMemoryDb.InitInMemoryDbContext();
             _httpClient = new HttpClient();
+            _mailKit = GetMailKit();
         }
 
         public void Dispose()
@@ -40,7 +43,7 @@ namespace EctBlazorApp.ServerTests
         {
             string userEmail = "alice@ect.ie";
             EctUser expectedUser = _dbContext.Users.First(user => user.Email.Equals(userEmail));
-            EctUser actualUser = await _dbContext.GetExistingEctUserOrNewAsync(userEmail, _httpClient);
+            EctUser actualUser = await _dbContext.GetExistingEctUserOrNewAsync(userEmail, _httpClient, _mailKit);
 
             Assert.AreSame(expectedUser, actualUser);
         }
@@ -57,7 +60,7 @@ namespace EctBlazorApp.ServerTests
             mock.Setup(x => x.GetGraphUser(It.IsAny<HttpClient>(), It.IsAny<string>())).ReturnsAsync(mockGraphResponse);
             HttpClientExtensions.Implementation = mock.Object;
 
-            EctUser actualUser = await _dbContext.GetExistingEctUserOrNewAsync(mockGraphResponse.UserPrincipalName, _httpClient);
+            EctUser actualUser = await _dbContext.GetExistingEctUserOrNewAsync(mockGraphResponse.UserPrincipalName, _httpClient, _mailKit);
 
             Assert.AreEqual(mockGraphResponse.UserPrincipalName, actualUser.Email);
             Assert.AreEqual(mockGraphResponse.DisplayName, actualUser.FullName);

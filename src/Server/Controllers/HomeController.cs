@@ -1,4 +1,5 @@
 ﻿using EctBlazorApp.Server.Extensions;
+using EctBlazorApp.Server.MailKit;
 using EctBlazorApp.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -19,9 +20,9 @@ namespace EctBlazorApp.Server.Controllers
     public class HomeController : ControllerBase
     {
         private readonly EctDbContext _dbContext;
-        private readonly MailKit.EctMailKit _mailKitMetadata;
+        private readonly EctMailKit _mailKitMetadata;
 
-        public HomeController(EctDbContext context, MailKit.EctMailKit mailKit)
+        public HomeController(EctDbContext context, EctMailKit mailKit)
         {
             _dbContext = context;
             _mailKitMetadata = mailKit;

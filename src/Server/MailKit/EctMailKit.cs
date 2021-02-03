@@ -14,7 +14,7 @@ namespace EctBlazorApp.Server.MailKit
         public string UserName { get; set; }
         public string Password { get; set; }
         
-        public bool Send(EctUser user)
+        public bool SendWelcome(EctUser user)
         {
             EmailMessage message = new EmailMessage();
             message.Sender = new MailboxAddress("Employee Connectivity Tracker", Sender);

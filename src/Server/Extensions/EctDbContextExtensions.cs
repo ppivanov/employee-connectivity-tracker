@@ -29,7 +29,7 @@ namespace EctBlazorApp.Server.Extensions
             catch (Exception)
             {
                 EctUser addUserResult = await dbContext.AddUser(userId, client);
-                mailKit.Send(addUserResult);
+                mailKit.SendWelcome(addUserResult);
 
                 return addUserResult;
             }
