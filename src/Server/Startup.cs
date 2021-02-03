@@ -1,3 +1,4 @@
+using EctBlazorApp.Server.MailKit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -45,6 +46,10 @@ namespace EctBlazorApp.Server
             {
                 options.UseSqlServer(Configuration["DefaultDbConnection"]);
             });
+
+            services.AddSingleton(
+                Configuration.GetSection("MailKitMetadata").Get<MailKitMetadata>()
+            );
 
             services.AddControllers();
 

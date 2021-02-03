@@ -1,7 +1,10 @@
 ﻿using EctBlazorApp.Server.Extensions;
+using EctBlazorApp.Server.MailKit;
 using EctBlazorApp.Shared;
+using MailKit.Net.Smtp;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MimeKit;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,10 +22,12 @@ namespace EctBlazorApp.Server.Controllers
     public class HomeController : ControllerBase
     {
         private readonly EctDbContext _dbContext;
+        private readonly MailKitMetadata _mailKitMetadata;
 
-        public HomeController(EctDbContext context)
+        public HomeController(EctDbContext context, MailKitMetadata mailKit)
         {
             _dbContext = context;
+            _mailKitMetadata = mailKit;
         }
 
         [Route("update-tracking-records")]
@@ -83,6 +88,32 @@ namespace EctBlazorApp.Server.Controllers
                 SentMail = sentMail,
                 SecondsInMeeting = secondsInMeeting
             };
+        }
+
+        [Route("test-mail/{address}")]
+        [HttpGet]
+        public ActionResult TestMail(string address)
+        {
+            EmailMessage message = new EmailMessage();
+            message.Sender = new MailboxAddress("Self", _mailKitMetadata.Sender);
+            message.Reciever = new MailboxAddress("Receiver name", address);
+            message.Subject = "Welcome";
+            message.Content = "Hello World!";
+            var mimeMessage = message.CreateMimeMessage();
+            try
+            {
+                using SmtpClient smtpClient = new SmtpClient();
+                smtpClient.Connect(_mailKitMetadata.SmtpServer, _mailKitMetadata.Port, true);
+                smtpClient.Authenticate(_mailKitMetadata.UserName, _mailKitMetadata.Password);
+                smtpClient.Send(mimeMessage);
+                smtpClient.Disconnect(true);
+            }
+            catch (Exception)
+            {
+                return BadRequest("Server error");
+            }
+            
+            return Ok("Sent");
         }
 
         private delegate Task<bool> UpdateMetgodDelegate(HttpClient client, EctDbContext dbContext);
