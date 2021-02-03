@@ -1,4 +1,5 @@
-﻿using EctBlazorApp.Shared;
+﻿using EctBlazorApp.Server.MailKit;
+using EctBlazorApp.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +19,7 @@ namespace EctBlazorApp.Server.Extensions
                         && c.End < toDate).ToList();
             return calendarEvents;
         }
-        public static async Task<EctUser> GetExistingEctUserOrNewAsync(this EctDbContext dbContext, string userId, HttpClient client)
+        public static async Task<EctUser> GetExistingEctUserOrNewAsync(this EctDbContext dbContext, string userId, HttpClient client, EctMailKit mailKit)
         {
             try
             {
@@ -28,6 +29,8 @@ namespace EctBlazorApp.Server.Extensions
             catch (Exception)
             {
                 EctUser addUserResult = await dbContext.AddUser(userId, client);
+                mailKit.Send(addUserResult);
+
                 return addUserResult;
             }
         }

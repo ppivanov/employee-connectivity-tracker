@@ -48,7 +48,7 @@ namespace EctBlazorApp.Server
             });
 
             services.AddSingleton(
-                Configuration.GetSection("MailKitMetadata").Get<MailKitMetadata>()
+                Configuration.GetSection("MailKitMetadata").Get<EctMailKit>()
             );
 
             services.AddControllers();

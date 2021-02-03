@@ -1,4 +1,5 @@
 ﻿using MimeKit;
+using MimeKit.Text;
 
 namespace EctBlazorApp.Server.MailKit
 {
@@ -15,7 +16,7 @@ namespace EctBlazorApp.Server.MailKit
             mimeMessage.From.Add(Sender);
             mimeMessage.To.Add(Reciever);
             mimeMessage.Subject = Subject;
-            mimeMessage.Body = new TextPart(MimeKit.Text.TextFormat.Text){ Text = Content };
+            mimeMessage.Body = new TextPart(TextFormat.Text){ Text = Content };
             return mimeMessage;
         }
     }
