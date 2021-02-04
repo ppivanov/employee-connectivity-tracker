@@ -70,6 +70,8 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
 
         protected override async Task UpdateDashboard()
         {
+            emailsSent = 0;
+            emailsReceived = 0;
             DateTime fromDate = FromDate.Value.Date;
             DateTime toDate = ToDate.Value.Date;
 
