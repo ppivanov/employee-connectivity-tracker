@@ -7,19 +7,24 @@ delete from [dbo].[Teams];
 delete from [dbo].[Users];
 
 
-set IDENTITY_INSERT [dbo].[Teams] ON
-insert into [dbo].[Teams] (Id, Name) values (1, 'Cryptographers')
-set IDENTITY_INSERT [dbo].[Teams] OFF
+
 
 set IDENTITY_INSERT [dbo].[Users] ON
-insert into [dbo].[Users] (Id, Email, FullName, LastSignIn, MemberOfId) values (1, 'x00149863@outlook.com', 'Pavel Ivanov', '2021-01-29T14:36:39.3900836', 1)
-insert into [dbo].[Users] (Id, Email, FullName, LastSignIn, MemberOfId) values (2, 'alice@ect.ie', 'Alice AliceS', '2021-01-29T14:36:39.3900836', 1)
-insert into [dbo].[Users] (Id, Email, FullName, LastSignIn, MemberOfId) values (3, 'bob@ect.ie', 'Bob BobS', '2021-01-27T12:37:35.9959879', 1)
-insert into [dbo].[Users] (Id, Email, FullName, LastSignIn, MemberOfId) values (4, 'trudy@ect.ie', 'Trudy TrudyS', '2021-01-27T12:37:35.9959879', 1)
-insert into [dbo].[Users] (Id, Email, FullName, LastSignIn) values (5, 'noimagination13@outlook.com', 'Admin AdminS', '2021-01-29T14:36:39.3900836')
+insert into [dbo].[Users] (Id, Email, FullName, LastSignIn) values (1, 'x00149863@outlook.com', 'Pavel Ivanov', '2021-01-29T14:36:39.3900836')
 set IDENTITY_INSERT [dbo].[Users] OFF
 
-update [dbo].[Teams] set LeaderId = 1 where Id = 1
+-- set IDENTITY_INSERT [dbo].[Teams] ON
+-- insert into [dbo].[Teams] (Id, Name, LeaderId) values (1, 'Cryptographers',1)
+-- set IDENTITY_INSERT [dbo].[Teams] OFF
+
+set IDENTITY_INSERT [dbo].[Users] ON
+insert into [dbo].[Users] (Id, Email, FullName, LastSignIn) values (2, 'alice@ect.ie', 'Alice AliceS', '2021-01-29T14:36:39.3900836')
+insert into [dbo].[Users] (Id, Email, FullName, LastSignIn) values (3, 'bob@ect.ie', 'Bob BobS', '2021-01-27T12:37:35.9959879')
+insert into [dbo].[Users] (Id, Email, FullName, LastSignIn) values (4, 'trudy@ect.ie', 'Trudy TrudyS', '2021-01-27T12:37:35.9959879')
+insert into [dbo].[Users] (Id, Email, FullName, LastSignIn) values (5, 'noimagination1310@outlook.com', 'Admin AdminS', '2021-01-29T14:36:39.3900836')
+set IDENTITY_INSERT [dbo].[Users] OFF
+
+-- update [dbo].[Users] set MemberOfId = 1;
 
 set IDENTITY_INSERT [dbo].[Administrators] ON
 insert into [dbo].[Administrators] (Id, UserId) values (1, 5)
