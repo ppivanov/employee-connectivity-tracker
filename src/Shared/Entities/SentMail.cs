@@ -1,12 +1,14 @@
 ﻿using EctBlazorApp.Shared.GraphModels;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
 namespace EctBlazorApp.Shared.Entities
 {
     public class SentMail : Mail
     {
+        [Required]
         public DateTime SentAt { get; set; }
         public List<string> Recipients { get; set; }
 

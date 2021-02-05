@@ -1,12 +1,15 @@
 ﻿using EctBlazorApp.Shared.GraphModels;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace EctBlazorApp.Shared.Entities
 {
     public class ReceivedMail : Mail
     {
+        [Required]
         public string From { get; set; }
+        [Required]
         public DateTime ReceivedAt { get; set; }
 
         public ReceivedMail() : base()

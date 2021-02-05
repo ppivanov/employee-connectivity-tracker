@@ -1,14 +1,18 @@
 ﻿using EctBlazorApp.Shared.GraphModels;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace EctBlazorApp.Shared.Entities
 {
     public class EctUser
     {
         public int Id { get; set; }
+        [Required]
         public string Email { get; set; }
+        [Required]
         public string FullName { get; set; }
+        [Required]
         public DateTime LastSignIn { get; set; }
 
         public int? MemberOfId { get; set; }
