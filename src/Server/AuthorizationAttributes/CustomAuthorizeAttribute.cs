@@ -28,5 +28,7 @@ namespace EctBlazorApp.Server.AuthorizationAttributes
             if (!userHasAccess)
                 context.Result = new UnauthorizedResult();
         }
+        public abstract void OnAuthorization(AuthorizationFilterContext context);
     }
+
 }

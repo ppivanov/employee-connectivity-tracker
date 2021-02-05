@@ -7,7 +7,7 @@ namespace EctBlazorApp.Server.AuthorizationAttributes
 {
     public class AuthorizeAdminAttribute : CustomAuthorizeAttribute, IAuthorizationFilter
     {
-        public async void OnAuthorization(AuthorizationFilterContext context)
+        public override async void OnAuthorization(AuthorizationFilterContext context)
         {
             await DoesUserHaveAccess(context, EctDbContextExtensions.IsEmailForAdmin);
         }
@@ -15,7 +15,7 @@ namespace EctBlazorApp.Server.AuthorizationAttributes
 
     public class AuthorizeLeaderAttribute : CustomAuthorizeAttribute, IAuthorizationFilter
     {
-        public async void OnAuthorization(AuthorizationFilterContext context)
+        public override async void OnAuthorization(AuthorizationFilterContext context)
         {
             await DoesUserHaveAccess(context, EctDbContextExtensions.IsEmailForLeader);
         }
