@@ -1,4 +1,4 @@
-﻿using EctBlazorApp.Shared;
+﻿using EctBlazorApp.Shared.Entities;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.JSInterop;
 using System;

@@ -2,7 +2,7 @@
 using EctBlazorApp.Server.CommonMethods;
 using EctBlazorApp.Server.Extensions;
 using EctBlazorApp.Server.MailKit;
-using EctBlazorApp.Shared;
+using EctBlazorApp.Shared.Entities;
 using EctBlazorApp.Shared.GraphModels;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;

@@ -1,5 +1,5 @@
 ﻿using EctBlazorApp.Server.MailKit;
-using EctBlazorApp.Shared;
+using EctBlazorApp.Shared.Entities;
 using EctBlazorApp.Shared.GraphModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

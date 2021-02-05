@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using EctBlazorApp.Shared.Entities;
+using System.Collections.Generic;
 
 namespace EctBlazorApp.Shared
 {

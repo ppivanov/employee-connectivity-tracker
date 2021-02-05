@@ -1,5 +1,5 @@
 ﻿using EctBlazorApp.Server.Extensions;
-using EctBlazorApp.Shared;
+using EctBlazorApp.Shared.Entities;
 using EctBlazorApp.Shared.GraphModels;
 using Microsoft.EntityFrameworkCore;
 using System;

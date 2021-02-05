@@ -1,7 +1,6 @@
 ﻿using EctBlazorApp.Shared.ValidationAttributes;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 
 namespace EctBlazorApp.Shared
 {

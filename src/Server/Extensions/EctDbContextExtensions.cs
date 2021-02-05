@@ -1,5 +1,5 @@
 ﻿using EctBlazorApp.Server.MailKit;
-using EctBlazorApp.Shared;
+using EctBlazorApp.Shared.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;

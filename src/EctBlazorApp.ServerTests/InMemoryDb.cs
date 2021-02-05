@@ -1,5 +1,5 @@
 ﻿using EctBlazorApp.Server;
-using EctBlazorApp.Shared;
+using EctBlazorApp.Shared.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;

@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace EctBlazorApp.Shared
+namespace EctBlazorApp.Shared.Entities
 {
     public class EctUser
     {

@@ -1,6 +1,7 @@
 ﻿using EctBlazorApp.Server.Extensions;
 using EctBlazorApp.Server.MailKit;
 using EctBlazorApp.Shared;
+using EctBlazorApp.Shared.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;

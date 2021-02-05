@@ -1,4 +1,4 @@
-﻿using EctBlazorApp.Shared;
+﻿using EctBlazorApp.Shared.Entities;
 using MailKit.Net.Smtp;
 using MimeKit;
 using System;

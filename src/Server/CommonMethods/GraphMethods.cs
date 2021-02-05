@@ -1,4 +1,4 @@
-﻿using EctBlazorApp.Shared;
+﻿using EctBlazorApp.Shared.Entities;
 using EctBlazorApp.Shared.GraphModels;
 using Newtonsoft.Json;
 using System;

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace EctBlazorApp.Shared
+namespace EctBlazorApp.Shared.Entities
 {
     public class CalendarEvent
     {
