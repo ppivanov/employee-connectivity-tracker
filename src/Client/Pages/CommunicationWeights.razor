@@ -21,7 +21,23 @@
                 }
                 else
                 {
-                    <h3>CommunicationWeights</h3>
+                    <h3>Manage Communcation Mediums</h3>
+
+                    <EditForm Model="weights" OnSubmit="@SendWeights" Context="formContext">
+                        @foreach (var medium in weights)
+                        {
+                            <div class="comms-input-pair">
+                                <InputText @bind-Value=medium.Medium class="form-control" id="Medium" />
+                            </div>
+                            <div class="comms-input-pair">
+                                <InputNumber @bind-Value=medium.Weight class="form-control" id="Weight" />%
+                            </div>
+                            <button @onclick="() => RemoveMedium(medium)">Remove</button>
+
+                            <hr />
+                        }
+                    </EditForm>
+                    <button @onclick="() => AddNewMedium()">Add</button>
                 }
             }
         </div>
@@ -33,16 +49,17 @@
     bool isSubmitting = false;
     bool initialized = false;
     bool serverMessageIsError = false;
+    int percentageLeft = 0;
     List<CommunicationWeight> weights;
 
     protected override async Task OnInitializedAsync()
     {
+        percentageLeft = 100;
         await jsRuntime.InvokeVoidAsync("setPageTitle", "Create Team");
         isAdmin = await apiConn.IsProcessingUserAnAdmin(Http);
         if (isAdmin)
-        {
             await GetCommunicationWeights();
-        }
+        
         initialized = true;
     }
 
@@ -62,4 +79,16 @@
             }
         }
     }
+
+    private void AddNewMedium()
+    {
+        weights.Add(new CommunicationWeight());
+    }
+
+    private void RemoveMedium(CommunicationWeight medium)
+    {
+        weights.Remove(medium);
+    }
+
+    private void SendWeights() { }
 }
