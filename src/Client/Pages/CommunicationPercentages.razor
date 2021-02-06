@@ -22,17 +22,33 @@
                 else
                 {
                     <h3>Manage Communcation Mediums</h3>
-
-                    <EditForm Model="percentages" OnSubmit="@SendWeights" Context="formContext">
-                        @foreach (var medium in percentages)
+                    <EditForm Model="percentagesDict" OnSubmit="@SendWeights" Context="formContext">
+                        @foreach (var medium in percentagesDict.Keys)
                         {
                             <div class="comms-input-pair">
-                                <p>@medium.Medium</p>
+                                @if (percentagesDict[medium])
+                                {
+                                    <InputText @bind-Value=medium.Medium class="" id="Medium" placeholder="Medium type"/>
+                                    <InputText @bind-Value=medium.Unit class="" id="Unit" placeholder="Unit"/>
+                                }
+                                else
+                                {
+                                    <p>@medium.Medium (@medium.Unit)</p>
+                                }
                             </div>
                             <div class="comms-input-pair">
                                 <InputNumber @bind-Value=medium.Weight @onchange="(ChangeEventArgs changeWeight) => UpdateWeight(medium, (int)changeWeight.Value)" class="" id="Weight" />%
                             </div>
                             <button @onclick="() => RemoveMedium(medium)">Remove</button>
+
+                            @if (percentagesDict[medium])
+                            {
+                                <button @onclick="() => SaveMedium(medium)">Save</button>
+                            } 
+                            else
+                            {
+                                <button @onclick="() => EditMedium(medium)">Edit</button>
+                            }
 
                             <hr />
                         }
@@ -51,7 +67,7 @@
     bool initialized = false;
     bool serverMessageIsError = false;
     int percentageLeft = 0;
-    List<CommunicationPercentage> percentages;
+    Dictionary<CommunicationPercentage, bool> percentagesDict;          // holds true if user selected for edit
 
     protected override async Task OnInitializedAsync()
     {
@@ -72,7 +88,8 @@
             try
             {
                 Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                percentages = await Http.GetFromJsonAsync<List<CommunicationPercentage>>($"api/communication/weights");
+                var percentages = await Http.GetFromJsonAsync<List<CommunicationPercentage>>($"api/communication/weights");
+                InitializeDictionary(percentages);
             }
             catch (AccessTokenNotAvailableException exception)
             {
@@ -81,14 +98,32 @@
         }
     }
 
+    private void InitializeDictionary(List<CommunicationPercentage> percentages)
+    {
+        percentagesDict = new Dictionary<CommunicationPercentage, bool>();
+        foreach (var medium in percentages)
+        {
+            percentagesDict.Add(medium, false);
+        }
+    }
+
+    private void SaveMedium(CommunicationPercentage medium)
+    {
+        percentagesDict[medium] = false;
+    }
+    private void EditMedium(CommunicationPercentage medium)
+    {
+        percentagesDict[medium] = true;
+    }
+
     private void AddNewMedium()
     {
-        percentages.Add(new CommunicationPercentage());
+        percentagesDict.Add(new CommunicationPercentage(), true);
     }
 
     private void RemoveMedium(CommunicationPercentage medium)
     {
-        percentages.Remove(medium);
+        percentagesDict.Remove(medium);
     }
 
     private void UpdateWeight(CommunicationPercentage medium, int newValue)
