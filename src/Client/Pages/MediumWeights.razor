@@ -23,20 +23,21 @@
                 {
                     <h3>Manage Communcation Mediums</h3>
 
-                    <EditForm Model="weights" OnSubmit="@SendWeights" Context="formContext">
-                        @foreach (var medium in weights)
+                    <EditForm Model="percentages" OnSubmit="@SendWeights" Context="formContext">
+                        @foreach (var medium in percentages)
                         {
                             <div class="comms-input-pair">
-                                <InputText @bind-Value=medium.Medium class="form-control" id="Medium" />
+                                <p>@medium.Medium</p>
                             </div>
                             <div class="comms-input-pair">
-                                <InputNumber @bind-Value=medium.Weight class="form-control" id="Weight" />%
+                                <InputNumber @bind-Value=medium.Weight @onchange="(ChangeEventArgs changeWeight) => UpdateWeight(medium, (int)changeWeight.Value)" class="" id="Weight" />%
                             </div>
                             <button @onclick="() => RemoveMedium(medium)">Remove</button>
 
                             <hr />
                         }
                     </EditForm>
+                    <p>Percentage left: @percentageLeft %</p>
                     <button @onclick="() => AddNewMedium()">Add</button>
                 }
             }
@@ -50,7 +51,7 @@
     bool initialized = false;
     bool serverMessageIsError = false;
     int percentageLeft = 0;
-    List<CommunicationWeight> weights;
+    List<CommunicationPercentage> percentages;
 
     protected override async Task OnInitializedAsync()
     {
@@ -58,12 +59,12 @@
         await jsRuntime.InvokeVoidAsync("setPageTitle", "Create Team");
         isAdmin = await apiConn.IsProcessingUserAnAdmin(Http);
         if (isAdmin)
-            await GetCommunicationWeights();
-        
+            await GetCommunicationPercentages();
+
         initialized = true;
     }
 
-    protected async Task GetCommunicationWeights()
+    protected async Task GetCommunicationPercentages()
     {
         var token = await apiConn.GetAPITokenAsync();
         if (token != null)
@@ -71,7 +72,7 @@
             try
             {
                 Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                weights = await Http.GetFromJsonAsync<List<CommunicationWeight>>($"api/communication/weights");
+                percentages = await Http.GetFromJsonAsync<List<CommunicationPercentage>>($"api/communication/weights");
             }
             catch (AccessTokenNotAvailableException exception)
             {
@@ -82,13 +83,23 @@
 
     private void AddNewMedium()
     {
-        weights.Add(new CommunicationWeight());
+        percentages.Add(new CommunicationPercentage());
     }
 
-    private void RemoveMedium(CommunicationWeight medium)
+    private void RemoveMedium(CommunicationPercentage medium)
     {
-        weights.Remove(medium);
+        percentages.Remove(medium);
     }
 
-    private void SendWeights() { }
+    private void UpdateWeight(CommunicationPercentage medium, int newValue)
+    {
+        //TODO
+    }
+
+    private void SendWeights()
+    {
+        isSubmitting = true;
+
+        isSubmitting = false;
+    }
 }

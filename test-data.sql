@@ -1,3 +1,4 @@
+delete from [dbo].[CommunicationPercentages];
 delete from [dbo].[CalendarEvents];
 delete from [dbo].[ReceivedEmails];
 delete from [dbo].[SentEmails];
@@ -5,9 +6,6 @@ delete from [dbo].[Administrators];
 update [dbo].[Users] set MemberOfId = null;
 delete from [dbo].[Teams];
 delete from [dbo].[Users];
-
-
-
 
 set IDENTITY_INSERT [dbo].[Users] ON
 insert into [dbo].[Users] (Id, Email, FullName, LastSignIn) values (1, 'x00149863@outlook.com', 'Pavel Ivanov', '2021-01-29T14:36:39.3900836')
@@ -515,3 +513,7 @@ insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId
 insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Investigation', '2021-01-27T11:25:00.0000000', 'ppivanov98@outlook.com <ppivanov98@outlook.com>', 4)
 insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Code reviewing', '2021-01-27T11:25:00.0000000', 'Alice AliceS <alice@ect.ie>', 4)
 insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Code reviewing 2', '2021-01-27T11:25:00.0000000', 'Alice AliceS <alice@ect.ie>', 4)
+
+
+insert into [dbo].[CommunicationPercentages] (Medium, Unit, "Weight") values ('Email', 'single', 0)
+insert into [dbo].[CommunicationPercentages] (Medium, Unit, "Weight") values ('Meetings', '10 minutes', 0)

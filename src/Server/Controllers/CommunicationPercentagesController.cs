@@ -9,30 +9,30 @@ namespace EctBlazorApp.Server.Controllers
     [Route("api/communication")]
     [ApiController]
     [AuthorizeAdmin]
-    public class CommunicationWeightsController : ControllerBase
+    public class CommunicationPercentagesController : ControllerBase
     {
 
         private readonly EctDbContext _dbContext;
 
-        public CommunicationWeightsController(EctDbContext dbContext)
+        public CommunicationPercentagesController(EctDbContext dbContext)
         {
             _dbContext = dbContext;
         }
 
         [Route("weights")]
         [HttpGet]
-        public IEnumerable<CommunicationWeight> GetWeights()
+        public IEnumerable<CommunicationPercentage> GetWeights()
         {
-            return _dbContext.CommunicationWeights;
+            return _dbContext.CommunicationPercentages;
         }
 
         [Route("weights/update")]
         [HttpPut]
-        public async Task UpdateWeights([FromBody] IEnumerable<CommunicationWeight> weights)
+        public async Task UpdateWeights([FromBody] IEnumerable<CommunicationPercentage> mediums)
         {
-            _dbContext.CommunicationWeights.RemoveRange(_dbContext.CommunicationWeights);       // Delete all existing records.
+            _dbContext.CommunicationPercentages.RemoveRange(_dbContext.CommunicationPercentages);       // Delete all existing records.
 
-            _dbContext.CommunicationWeights.AddRange(weights);                                  // Add the updated list.
+            _dbContext.CommunicationPercentages.AddRange(mediums);                                  // Add the updated list.
 
             await _dbContext.SaveChangesAsync();
         }

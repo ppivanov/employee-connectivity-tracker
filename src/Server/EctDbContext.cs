@@ -16,7 +16,7 @@ namespace EctBlazorApp.Server
         public DbSet<ReceivedMail> ReceivedEmails { get; set; }
         public DbSet<SentMail> SentEmails { get; set; }
         public DbSet<EctAdmin> Administrators { get; set; }
-        public DbSet<CommunicationWeight> CommunicationWeights { get; set; }
+        public DbSet<CommunicationPercentage> CommunicationPercentages { get; set; }
 
 
         public EctDbContext()

@@ -6,6 +6,7 @@ update [dbo].[Users] set MemberOfId = null;
 delete from [dbo].[Teams];
 delete from [dbo].[Users];
 
+drop table [dbo].[CommunicationPercentages];
 drop table [dbo].[CalendarEvents];
 drop table [dbo].[ReceivedEmails];
 drop table  [dbo].[SentEmails];

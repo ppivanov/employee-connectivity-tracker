@@ -1,16 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace EctBlazorApp.Shared.Entities
 {
-    public class CommunicationWeight
+    public class CommunicationPercentage
     {
         public int Id { get; set; }
 
         [Required]
         public string Medium { get; set; }
+
+        [Required]
+        public string Unit { get; set; }
 
         [Required]
         public int Weight { get; set; }
