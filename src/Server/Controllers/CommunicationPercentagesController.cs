@@ -1,6 +1,7 @@
 ﻿using EctBlazorApp.Server.AuthorizationAttributes;
 using EctBlazorApp.Shared.Entities;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -28,13 +29,20 @@ namespace EctBlazorApp.Server.Controllers
 
         [Route("weights/update")]
         [HttpPut]
-        public async Task UpdateWeights([FromBody] IEnumerable<CommunicationPercentage> mediums)
+        public async Task<ActionResult<string>> UpdateWeights([FromBody] IEnumerable<CommunicationPercentage> mediums)
         {
             _dbContext.CommunicationPercentages.RemoveRange(_dbContext.CommunicationPercentages);       // Delete all existing records.
 
             _dbContext.CommunicationPercentages.AddRange(mediums);                                  // Add the updated list.
-
-            await _dbContext.SaveChangesAsync();
+            try
+            {
+                await _dbContext.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                return BadRequest("Server error. Please, try again later.");
+            }
+            return Ok("Communication mediums updated successfully");
         }
     }
 }

@@ -22,7 +22,11 @@
                 else
                 {
                     <h3>Manage Communcation Mediums</h3>
-                    <EditForm Model="percentagesDict" OnSubmit="@SubmitWeights" Context="formContext">
+                    @if (string.IsNullOrEmpty(serverMessage) == false)
+                    {
+                        <p style="@ServerMessageInlineStyle">@serverMessage</p>
+                    }
+                    <EditForm Model="percentagesDict" OnSubmit="@(async () => await SubmitWeights())" Context="formContext">
                         @foreach (var medium in percentagesDict.Keys)
                         {
                             <div class="comms-input-pair">
@@ -30,7 +34,7 @@
                                     @medium.Medium
                                     @if (percentagesDict[medium])
                                     {
-                                        <InputNumber @bind-Value=medium.Weight class="" id="Weight" style="@PercentageInputStyle()" />
+                                        <InputNumber @bind-Value=medium.Weight class="" id="Weight" style="@PercentageInputStyle" />
                                     }
                                     else
                                     {
@@ -39,24 +43,24 @@
                                     %
                                 </p>
                             </div>
-                            <div class="comms-input-pair">
-                            </div>
-                            <button @onclick="() => ClearPercentage(medium)">Clear</button>
 
-                            @if (percentagesDict[medium])
+                            @if (medium.Medium.Contains("Email") || medium.Medium.Contains("Meetings"))
                             {
-                                <button @onclick="() => SavePercentage(medium)">Save</button>
+                                @if (percentagesDict[medium])
+                                {
+                                    <button @onclick="() => SavePercentage(medium)" type="button">Save</button>
+                                }
+                                else
+                                {
+                                    <button @onclick="() => EditPercentage(medium)" type="button">Edit</button>
+                                }
+                                <button @onclick="() => ClearPercentage(medium)" type="button">Clear</button>
                             }
-                            else
-                            {
-                                <button @onclick="() => EditPercentage(medium)">Edit</button>
+                                <hr />
                             }
-
-                            <hr />
-                        }
-                    </EditForm>
-                    <p>Percentage left: @PercentageLeft %</p>
-                    <button type="submit">Submit</button>
+                            <p>Percentage left: @PercentageLeft %</p>
+                            <button type="submit" disabled="@isSubmitting">Submit</button>
+                        </EditForm>
                 }
             }
         </div>
@@ -64,10 +68,12 @@
 </AuthorizeView>
 
 @code {
-    bool overPercentageLimit = false;
     bool isAdmin = false;
     bool isSubmitting = false;
     bool initialized = false;
+    bool serverMessageIsError = false;
+    string serverMessage = "";
+    Dictionary<CommunicationPercentage, bool> percentagesDict;          // holds true if user selected for edit
     int PercentageLeft
     {
         get
@@ -80,7 +86,6 @@
             return total;
         }
     }
-    Dictionary<CommunicationPercentage, bool> percentagesDict;          // holds true if user selected for edit
 
     protected override async Task OnInitializedAsync()
     {
@@ -129,7 +134,6 @@
         else
         {
             medium.Weight += PercentageLeft;
-            overPercentageLimit = true;
             return false;
         }
     }
@@ -159,17 +163,51 @@
         return null;
     }
 
-    private void SubmitWeights()
+    private async Task SubmitWeights()
     {
+        if(PercentageLeft != 0)
+        {
+            serverMessageIsError = true;
+            serverMessage = "You must distribute the full 100%.";
+            return;
+        }
         isSubmitting = true;
+        serverMessageIsError = false;
 
-        // TODO: send data to api endpoint
+        var toggledMedium = GetToggledMedium();
+        if (toggledMedium != null) percentagesDict[toggledMedium] = false;
 
+        var token = await apiConn.GetAPITokenAsync();
+        if (token != null)
+        {
+            try
+            {
+                Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                var response = await Http.PutAsJsonAsync<List<CommunicationPercentage>>($"api/communication/weights/update", percentagesDict.Keys.ToList());
+                if (response.IsSuccessStatusCode == false)
+                    serverMessageIsError = true;
+                serverMessage = await response.Content.ReadAsStringAsync();
+            }
+            catch (AccessTokenNotAvailableException exception)
+            {
+                exception.Redirect();
+            }
+        }
         isSubmitting = false;
     }
 
-    private string PercentageInputStyle()
+    private string PercentageInputStyle
     {
-        return PercentageLeft <= 0 ? "border: 1px solid red" : "";
+        get
+        {
+            return PercentageLeft <= 0 ? "border: 1px solid red" : "";
+        }
+    }
+    private string ServerMessageInlineStyle
+    {
+        get
+        {
+            return serverMessageIsError ? "color: red;" : "color: green;";
+        }
     }
 }
