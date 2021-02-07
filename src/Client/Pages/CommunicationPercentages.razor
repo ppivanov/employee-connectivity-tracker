@@ -26,35 +26,36 @@
                         @foreach (var medium in percentagesDict.Keys)
                         {
                             <div class="comms-input-pair">
-                                @if (percentagesDict[medium])
-                                {
-                                    <InputText @bind-Value=medium.Medium class="" id="Medium" placeholder="Medium type"/>
-                                    <InputText @bind-Value=medium.Unit class="" id="Unit" placeholder="Unit"/>
-                                }
-                                else
-                                {
-                                    <p>@medium.Medium (@medium.Unit)</p>
-                                }
+                                <p>
+                                    @medium.Medium
+                                    @if (percentagesDict[medium])
+                                    {
+                                        <InputNumber @bind-Value=medium.Weight class="" id="Weight" />
+                                    }
+                                    else
+                                    {
+                                        @medium.Weight
+                                    }
+                                    %
+                                </p>
                             </div>
                             <div class="comms-input-pair">
-                                <InputNumber @bind-Value=medium.Weight @onchange="(ChangeEventArgs changeWeight) => UpdateWeight(medium, (int)changeWeight.Value)" class="" id="Weight" />%
                             </div>
-                            <button @onclick="() => RemoveMedium(medium)">Remove</button>
+                            <button @onclick="() => ClearPercentage(medium)">Clear</button>
 
                             @if (percentagesDict[medium])
                             {
-                                <button @onclick="() => SaveMedium(medium)">Save</button>
-                            } 
+                                <button @onclick="() => SavePercentage(medium)">Save</button>
+                            }
                             else
                             {
-                                <button @onclick="() => EditMedium(medium)">Edit</button>
+                                <button @onclick="() => EditPercentage(medium)">Edit</button>
                             }
 
                             <hr />
                         }
                     </EditForm>
                     <p>Percentage left: @percentageLeft %</p>
-                    <button @onclick="() => AddNewMedium()">Add</button>
                 }
             }
         </div>
@@ -104,31 +105,27 @@
         foreach (var medium in percentages)
         {
             percentagesDict.Add(medium, false);
+
+            percentageLeft -= medium.Weight;
         }
     }
 
-    private void SaveMedium(CommunicationPercentage medium)
+    private void SavePercentage(CommunicationPercentage medium)
     {
-        percentagesDict[medium] = false;
+        if(medium.Weight <= percentageLeft)
+        {
+            percentageLeft -= medium.Weight;
+            percentagesDict[medium] = false;
+        }
     }
-    private void EditMedium(CommunicationPercentage medium)
+    private void EditPercentage(CommunicationPercentage medium)
     {
         percentagesDict[medium] = true;
     }
-
-    private void AddNewMedium()
+    private void ClearPercentage(CommunicationPercentage medium)
     {
-        percentagesDict.Add(new CommunicationPercentage(), true);
-    }
-
-    private void RemoveMedium(CommunicationPercentage medium)
-    {
-        percentagesDict.Remove(medium);
-    }
-
-    private void UpdateWeight(CommunicationPercentage medium, int newValue)
-    {
-        //TODO
+        percentageLeft += medium.Weight;
+        medium.Weight = 0;
     }
 
     private void SendWeights()

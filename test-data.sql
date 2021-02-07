@@ -7,8 +7,10 @@ update [dbo].[Users] set MemberOfId = null;
 delete from [dbo].[Teams];
 delete from [dbo].[Users];
 
-insert into [dbo].[CommunicationPercentages] (Medium, Unit, "Weight") values ('Email', 'single', 0)
-insert into [dbo].[CommunicationPercentages] (Medium, Unit, "Weight") values ('Meetings', '10 minutes', 0)
+insert into [dbo].[CommunicationPercentages] (Medium, "Weight") values ('Email (single)', 0)
+insert into [dbo].[CommunicationPercentages] (Medium, "Weight") values ('Meetings (10 minutes)', 0)
+insert into [dbo].[CommunicationPercentages] (Medium, "Weight") values ('Calls (10 minutes)', 0)
+insert into [dbo].[CommunicationPercentages] (Medium, "Weight") values ('Chat (10 messages)', 0)
 
 set IDENTITY_INSERT [dbo].[Users] ON
 insert into [dbo].[Users] (Id, Email, FullName, LastSignIn) values (1, 'x00149863@outlook.com', 'Pavel Ivanov', '2021-01-29T14:36:39.3900836')

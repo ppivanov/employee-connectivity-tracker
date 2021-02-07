@@ -10,9 +10,6 @@ namespace EctBlazorApp.Shared.Entities
         public string Medium { get; set; }
 
         [Required]
-        public string Unit { get; set; }
-
-        [Required]
         public int Weight { get; set; }
     }
 }
