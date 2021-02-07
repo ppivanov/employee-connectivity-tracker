@@ -21,7 +21,8 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         [Inject]
         protected IJSRuntime JsRuntime { get; set; }
 
-        protected DateTimeOffset? FromDate { get; set; } = DateTimeOffset.Now;
+        protected bool initialized = false;
+        protected DateTimeOffset? FromDate { get; set; } = DateTimeOffset.Now; 
         protected DateTimeOffset? ToDate { get; set; } = DateTimeOffset.Now.AddDays(1);
 
         protected async Task CustomApply(MouseEventArgs e, DateRangePicker picker)

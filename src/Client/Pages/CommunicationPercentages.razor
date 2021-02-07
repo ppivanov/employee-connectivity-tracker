@@ -56,11 +56,11 @@
                                 }
                                 <button @onclick="() => ClearPercentage(medium)" type="button">Clear</button>
                             }
-                                <hr />
-                            }
-                            <p>Percentage left: @PercentageLeft %</p>
-                            <button type="submit" disabled="@isSubmitting">Submit</button>
-                        </EditForm>
+                            <hr />
+                        }
+                        <p>Percentage left: @PercentageLeft %</p>
+                        <button type="submit" disabled="@isSubmitting">Submit</button>
+                    </EditForm>
                 }
             }
         </div>
@@ -89,7 +89,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await jsRuntime.InvokeVoidAsync("setPageTitle", "Create Team");
+        await jsRuntime.InvokeVoidAsync("setPageTitle", "Communication Weights");
         isAdmin = await apiConn.IsProcessingUserAnAdmin(Http);
         if (isAdmin)
             await GetCommunicationPercentages();
@@ -165,7 +165,7 @@
 
     private async Task SubmitWeights()
     {
-        if(PercentageLeft != 0)
+        if (PercentageLeft != 0)
         {
             serverMessageIsError = true;
             serverMessage = "You must distribute the full 100%.";

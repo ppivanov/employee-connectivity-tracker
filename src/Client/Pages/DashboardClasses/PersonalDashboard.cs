@@ -16,6 +16,8 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         private List<SentMail> sentMail;
         private List<ReceivedMail> receivedMail;
         private List<CalendarEvent> calendarEvents;
+        private List<CommunicationPercentage> communicationPercentages;
+        protected Dictionary<string, int> sentMailCollaborators = new Dictionary<string, int>();
 
         protected int emailsSent
         {
@@ -38,6 +40,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         {
             await JsRuntime.InvokeVoidAsync("setPageTitle", "Dashboard");
             await UpdateDashboard();
+            //await GetCommunicationPercentages();
         }
 
         protected string GetFormattedTimeInMeeting()
@@ -45,6 +48,46 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             TimeSpan timeSpan = TimeSpan.FromSeconds(secondsInMeeting);
             string formattedTime = $"{timeSpan.Hours} hours, {timeSpan.Minutes} minutes";
             return formattedTime;
+        }
+
+        protected Dictionary<string, int> GetSentEmailCollaborators()
+        {
+            Dictionary<string, int> emailCollaborators = new Dictionary<string, int>();
+            foreach (var email in sentMail)
+            {
+                string[] recipients = email.RecipientsAsString.Split(" | ");
+                foreach (var recipient in recipients)
+                {
+                    string nameWithSpace = recipient.Split("<")[0];
+                    string nameToAdd = nameWithSpace.Substring(0, nameWithSpace.Length-1);
+                    AddToDictionary(emailCollaborators, nameToAdd);
+                }
+            }
+            return emailCollaborators;
+        }
+
+        private void AddToDictionary(Dictionary<string, int> dictionary, string userName)
+        {
+            if (dictionary.ContainsKey(userName) == false) 
+                dictionary[userName] = 0;
+            dictionary[userName]++;
+        }
+
+        private async Task GetCommunicationPercentages()
+        {
+            var token = await ApiConn.GetAPITokenAsync();
+            if (token != null)
+            {
+                try
+                {
+                    Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    communicationPercentages = await Http.GetFromJsonAsync<List<CommunicationPercentage>>($"api/communication/weights");
+                }
+                catch (AccessTokenNotAvailableException exception)
+                {
+                    exception.Redirect();
+                }
+            }
         }
 
         protected override object[][] GetCalendarEventsData()
@@ -111,7 +154,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
                     sentMail = response.SentMail;
                     receivedMail = response.ReceivedMail;
                     calendarEvents = response.CalendarEvents;
-
+                    sentMailCollaborators = GetSentEmailCollaborators();
                     secondsInMeeting = response.SecondsInMeeting;
                     numberOfMeetings = calendarEvents.Count;
                     await JsRuntime.InvokeVoidAsync("loadDashboardGraph", (object)GetSentAndReceivedEmailData(), (object)GetCalendarEventsData());

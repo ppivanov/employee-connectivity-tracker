@@ -14,7 +14,6 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
     public class MyTeamDashboardClass : DashboardClass
     {
         protected bool isLeader = false;
-        protected bool initialized = false;
         protected List<EctUser> teamMembers;
         protected int emailsSent = 0;
         protected int emailsReceived = 0;
