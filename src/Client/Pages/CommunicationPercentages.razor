@@ -22,7 +22,7 @@
                 else
                 {
                     <h3>Manage Communcation Mediums</h3>
-                    <EditForm Model="percentagesDict" OnSubmit="@SendWeights" Context="formContext">
+                    <EditForm Model="percentagesDict" OnSubmit="@SubmitWeights" Context="formContext">
                         @foreach (var medium in percentagesDict.Keys)
                         {
                             <div class="comms-input-pair">
@@ -30,7 +30,7 @@
                                     @medium.Medium
                                     @if (percentagesDict[medium])
                                     {
-                                        <InputNumber @bind-Value=medium.Weight class="" id="Weight" />
+                                        <InputNumber @bind-Value=medium.Weight class="" id="Weight" style="@PercentageInputStyle()" />
                                     }
                                     else
                                     {
@@ -55,7 +55,8 @@
                             <hr />
                         }
                     </EditForm>
-                    <p>Percentage left: @percentageLeft %</p>
+                    <p>Percentage left: @PercentageLeft %</p>
+                    <button type="submit">Submit</button>
                 }
             }
         </div>
@@ -63,16 +64,26 @@
 </AuthorizeView>
 
 @code {
+    bool overPercentageLimit = false;
     bool isAdmin = false;
     bool isSubmitting = false;
     bool initialized = false;
-    bool serverMessageIsError = false;
-    int percentageLeft = 0;
+    int PercentageLeft
+    {
+        get
+        {
+            int total = 100;
+            foreach (var percentage in percentagesDict.Keys)
+            {
+                total -= percentage.Weight;
+            }
+            return total;
+        }
+    }
     Dictionary<CommunicationPercentage, bool> percentagesDict;          // holds true if user selected for edit
 
     protected override async Task OnInitializedAsync()
     {
-        percentageLeft = 100;
         await jsRuntime.InvokeVoidAsync("setPageTitle", "Create Team");
         isAdmin = await apiConn.IsProcessingUserAnAdmin(Http);
         if (isAdmin)
@@ -105,33 +116,60 @@
         foreach (var medium in percentages)
         {
             percentagesDict.Add(medium, false);
-
-            percentageLeft -= medium.Weight;
         }
     }
 
-    private void SavePercentage(CommunicationPercentage medium)
+    private bool SavePercentage(CommunicationPercentage medium)
     {
-        if(medium.Weight <= percentageLeft)
+        if (PercentageLeft >= 0)
         {
-            percentageLeft -= medium.Weight;
             percentagesDict[medium] = false;
+            return true;
+        }
+        else
+        {
+            medium.Weight += PercentageLeft;
+            overPercentageLimit = true;
+            return false;
         }
     }
-    private void EditPercentage(CommunicationPercentage medium)
+    private void EditPercentage(CommunicationPercentage selectedMedium)
     {
-        percentagesDict[medium] = true;
+        var toggledMedium = GetToggledMedium();
+        if (toggledMedium != null)
+        {
+            if (SavePercentage(toggledMedium))                          // If input value is less than % left only then toggle the other medium
+                percentagesDict[selectedMedium] = true;
+        }
+        else
+            percentagesDict[selectedMedium] = true;                     // If no previous medium is toggled
+
     }
     private void ClearPercentage(CommunicationPercentage medium)
     {
-        percentageLeft += medium.Weight;
         medium.Weight = 0;
     }
+    private CommunicationPercentage GetToggledMedium()
+    {
+        foreach (var medium in percentagesDict.Keys)
+        {
+            if (percentagesDict[medium])
+                return medium;
+        }
+        return null;
+    }
 
-    private void SendWeights()
+    private void SubmitWeights()
     {
         isSubmitting = true;
 
+        // TODO: send data to api endpoint
+
         isSubmitting = false;
+    }
+
+    private string PercentageInputStyle()
+    {
+        return PercentageLeft <= 0 ? "border: 1px solid red" : "";
     }
 }
