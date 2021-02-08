@@ -20,9 +20,16 @@ stages:
 
     steps:
     - task: UseDotNet@2
+      displayName: Force .NET 5
       inputs:
         packageType: 'sdk'
         version: '5.x'
+    - task: DotNetCoreCLI@2
+      displayName: Restore project
+      inputs:
+        command: 'restore'
+        projects: '**/EctBlazorApp.Server.csproj'
+        feedsToUse: 'select'
     - task: DotNetCoreCLI@2
       displayName: Build Server
       inputs:
@@ -45,16 +52,24 @@ stages:
         vmImage: $(vmImageName)
     steps:
     - task: UseDotNet@2
+      displayName: Force .NET 5
       inputs:
         packageType: 'sdk'
         version: '5.x'
     - task: DotNetCoreCLI@2
+      displayName: Restore project
+      inputs:
+        command: 'restore'
+        projects: '**/EctBlazorApp.Server.csproj'
+        feedsToUse: 'select'
+    - task: DotNetCoreCLI@2
+      displayName: Publish project
       inputs:
         command: 'publish'
         publishWebProjects: false
         projects: '**/EctBlazorApp.Server.csproj'
-        
     - task: AzureRmWebAppDeployment@4
+      displayName: Deploy to Azure
       inputs:
         ConnectionType: 'AzureRM'
         azureSubscription: 'Azure for Students(3c7c2ff0-247b-475b-b3ec-932545c61100)'
