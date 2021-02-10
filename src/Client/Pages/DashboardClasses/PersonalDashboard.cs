@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using static EctBlazorApp.Shared.SharedCommonMethods;
 
 namespace EctBlazorApp.Client.Pages.DashboardClasses
 {
@@ -17,7 +18,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         private List<ReceivedMail> receivedMail;
         private List<CalendarEvent> calendarEvents;
         private List<CommunicationPercentage> communicationPercentages;
-        protected Dictionary<string, int> sentMailCollaborators = new Dictionary<string, int>();
+        protected Dictionary<string, int> emailCollaborators = new Dictionary<string, int>();
 
         protected int emailsSent
         {
@@ -36,34 +37,19 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         protected int numberOfMeetings = 0;
         protected double secondsInMeeting = 0;
 
+        protected string GetFormattedTimeInMeeting
+        {
+            get
+            {
+                return FormatSecondsToHoursAndMinutes(secondsInMeeting);
+            }
+        }
+
         protected override async Task OnInitializedAsync()
         {
             await JsRuntime.InvokeVoidAsync("setPageTitle", "Dashboard");
             await UpdateDashboard();
             //await GetCommunicationPercentages();
-        }
-
-        protected string GetFormattedTimeInMeeting()
-        {
-            TimeSpan timeSpan = TimeSpan.FromSeconds(secondsInMeeting);
-            string formattedTime = $"{timeSpan.Hours} hours, {timeSpan.Minutes} minutes";
-            return formattedTime;
-        }
-
-        protected Dictionary<string, int> GetSentEmailCollaborators()
-        {
-            Dictionary<string, int> emailCollaborators = new Dictionary<string, int>();
-            foreach (var email in sentMail)
-            {
-                string[] recipients = email.RecipientsAsString.Split(" | ");
-                foreach (var recipient in recipients)
-                {
-                    string nameWithSpace = recipient.Split("<")[0];
-                    string nameToAdd = nameWithSpace.Substring(0, nameWithSpace.Length-1);
-                    AddToDictionary(emailCollaborators, nameToAdd);
-                }
-            }
-            return emailCollaborators;
         }
 
         private void AddToDictionary(Dictionary<string, int> dictionary, string userName)
@@ -154,15 +140,41 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
                     sentMail = response.SentMail;
                     receivedMail = response.ReceivedMail;
                     calendarEvents = response.CalendarEvents;
-                    sentMailCollaborators = GetSentEmailCollaborators();
                     secondsInMeeting = response.SecondsInMeeting;
                     numberOfMeetings = calendarEvents.Count;
+                    GetEmailCollaborators();
                     await JsRuntime.InvokeVoidAsync("loadDashboardGraph", (object)GetSentAndReceivedEmailData(), (object)GetCalendarEventsData());
                 }
                 catch (AccessTokenNotAvailableException exception)                                          // TODO - Find out if this is still valid
                 {
                     exception.Redirect();
                 }
+            }
+        }
+
+        private void GetEmailCollaborators()
+        {
+            GetSentEmailCollaborators();
+            GetReceivedEmailCollaborators();
+        }
+        private void GetSentEmailCollaborators()
+        {
+            foreach (var email in sentMail)
+            {
+                string[] recipients = email.RecipientsAsString.Split(" | ");
+                foreach (var recipient in recipients)
+                {
+                    string fullName = GetFullNameFromFormattedString(recipient);
+                    AddToDictionary(emailCollaborators, fullName);
+                }
+            }
+        }
+        private void GetReceivedEmailCollaborators()
+        {
+            foreach (var email in receivedMail)
+            {
+                string senderFullName = GetFullNameFromFormattedString(email.From);
+                AddToDictionary(emailCollaborators, senderFullName);
             }
         }
     }

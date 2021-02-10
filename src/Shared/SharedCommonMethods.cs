@@ -23,6 +23,20 @@ namespace EctBlazorApp.Shared
             return $"{fullName} <{email}>";
         }
 
+        public static string GetFullNameFromFormattedString(string formattedString)                 // Expects format: Full Name <email@email.com>
+        {
+            string fullNameWithSpace = formattedString.Split("<")[0];
+            string fullName = fullNameWithSpace[0..^1];
+            return fullName;
+        }
+
+        public static string FormatSecondsToHoursAndMinutes(double seconds)
+        {
+            TimeSpan timeSpan = TimeSpan.FromSeconds(seconds);
+            string formattedTime = $"{timeSpan.Hours} hours, {timeSpan.Minutes} minutes";
+            return formattedTime;
+        }
+
         // Code source: https://docs.microsoft.com/en-us/dotnet/standard/base-types/how-to-verify-that-strings-are-in-valid-email-format#example
         public static bool IsValidEmail(this string email)
         {

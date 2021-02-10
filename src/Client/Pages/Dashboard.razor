@@ -33,14 +33,14 @@
                     <p>Emails sent: @emailsSent</p>
                     <p>Emails received: @emailsReceived</p>
                     <p>Number of meetings: @numberOfMeetings</p>
-                    <p>Time in meetings: @GetFormattedTimeInMeeting()</p>
+                    <p>Time in meetings: @GetFormattedTimeInMeeting</p>
                 </div>
             </div>
             <div class="topCollaborators">
                 <h2>Top Collaborators</h2>
                 <div class="collaboratorsList">
                     <div class="collaborator">
-                        @foreach (var user in sentMailCollaborators)
+                        @foreach (var user in emailCollaborators)
                         {
                             <p>@user.Key (@user.Value)</p>
                         }
