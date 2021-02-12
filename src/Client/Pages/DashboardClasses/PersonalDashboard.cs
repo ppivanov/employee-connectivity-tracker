@@ -148,32 +148,21 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
 
         protected override async Task UpdateDashboard()
         {
-            DateTime fromDate = FromDate.Value.Date;
-            DateTime toDate = ToDate.Value.Date;
+            string queryString = GetDateRangeQueryString(FromDate.Value, ToDate.Value);
+            var response = await ApiConn.FetchDashboardResponse(queryString);
+            ExtractDataFromResponse(response);
+            await GetCollaborators();
 
-            string queryString = $"?fromDate={fromDate.ToString("yyyy-MM-dd")}&toDate={toDate.ToString("yyyy-MM-dd")}";
-
-            var token = await ApiConn.GetAPITokenAsync();
-            if (token != null)
-            {
-                try
-                {
-                    Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                    var response = await Http.GetFromJsonAsync<DashboardResponse>($"api/main/get-dashboard-stats{queryString}");
-                    sentMail = response.SentMail;
-                    receivedMail = response.ReceivedMail;
-                    calendarEvents = response.CalendarEvents;
-                    secondsInMeeting = response.SecondsInMeeting;
-                    numberOfMeetings = calendarEvents.Count;
-                    await GetCollaborators();
-
-                    await JsRuntime.InvokeVoidAsync("loadDashboardGraph", (object)GetSentAndReceivedEmailData(), (object)GetCalendarEventsData());
-                }
-                catch (AccessTokenNotAvailableException exception)                                          // TODO - Find out if this is still valid
-                {
-                    exception.Redirect();
-                }
-            }
+            await JsRuntime.InvokeVoidAsync("loadDashboardGraph", (object)GetSentAndReceivedEmailData(), (object)GetCalendarEventsData());
+        }
+        
+        private void ExtractDataFromResponse(DashboardResponse response)
+        {
+            sentMail = response.SentMail;
+            receivedMail = response.ReceivedMail;
+            calendarEvents = response.CalendarEvents;
+            secondsInMeeting = response.SecondsInMeeting;
+            numberOfMeetings = calendarEvents != null ? calendarEvents.Count : 0;
         }
 
         private async Task GetCollaborators()

@@ -109,6 +109,26 @@ namespace EctBlazorApp.Client.Graph
             }
             return (new CommunicationPoint(), new CommunicationPoint());
         }
+
+        public async Task<DashboardResponse> FetchDashboardResponse(string queryString)
+        {
+            var token = await GetAPITokenAsync();
+            if (token != null)
+            {
+                try
+                {
+                    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    var response = await _httpClient.GetFromJsonAsync<DashboardResponse>($"api/main/get-dashboard-stats{queryString}");
+                    return response;
+                }
+                catch (AccessTokenNotAvailableException exception)                                          // TODO - Find out if this is still valid
+                {
+                    exception.Redirect();
+                }
+            }
+            return new DashboardResponse();
+        }
+
         public async Task<Boolean> IsProcessingUserAnAdmin(HttpClient Http)
         {
             var adminResponse = await IsProcessingUserAuthorizedForRole(Http, UserRoles.admin);

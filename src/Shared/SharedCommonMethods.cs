@@ -30,6 +30,12 @@ namespace EctBlazorApp.Shared
             return fullName;
         }
 
+        public static string GetDateRangeQueryString(DateTimeOffset fromDate, DateTimeOffset toDate)
+        {
+            string queryString = $"?fromDate={fromDate.Date.ToString("yyyy-MM-dd")}&toDate={toDate.Date.ToString("yyyy-MM-dd")}";
+            return queryString;
+        }
+
         public static string FormatSecondsToHoursAndMinutes(double seconds)
         {
             TimeSpan timeSpan = TimeSpan.FromSeconds(seconds);
