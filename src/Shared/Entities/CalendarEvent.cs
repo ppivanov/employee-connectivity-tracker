@@ -30,8 +30,8 @@ namespace EctBlazorApp.Shared.Entities
             {
                 if (value.Length < 1)
                     Attendees = new List<string>();
-
-                Attendees = value.Split(" | ").ToList();
+                else
+                    Attendees = value.Split(" | ").ToList();
             }
         }
 
@@ -74,6 +74,17 @@ namespace EctBlazorApp.Shared.Entities
                 seconds += (singleEvent.End - singleEvent.Start).TotalSeconds;
 
             return seconds;
+        }
+
+        public double GetEventLenghtInMinutes()
+        {
+            double length = (End - Start).TotalMinutes;
+            return length;
+        }
+
+        public List<string> GetAttendeesExcludingUser(string user)
+        {
+            return Attendees.Where(attendee => attendee.ToLower().Contains(user.ToLower()) == false).ToList();
         }
     }
 }

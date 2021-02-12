@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace EctBlazorApp.Server.Controllers
 {
+    [Produces("application/json")]
     [Authorize]
     [Route("api/auth")]
     [ApiController]
@@ -27,7 +28,7 @@ namespace EctBlazorApp.Server.Controllers
             string userEmail = await HttpContext.GetPreferredUsername();
             bool userIsAdmin = _dbContext.IsEmailForAdmin(userEmail);
 
-            return userIsAdmin;
+            return Ok(userIsAdmin);
         }
 
         [Route("is-leader/{teamId?}")]
@@ -41,7 +42,7 @@ namespace EctBlazorApp.Server.Controllers
             //else
             //    userIsLeader = _dbContext.IsLeaderForTeam(userEmail, teamId);
 
-            return userIsLeader;
+            return Ok(userIsLeader);
         }
 
         [Route("get-app-users")]
@@ -50,7 +51,16 @@ namespace EctBlazorApp.Server.Controllers
         {
             var appUsers = _dbContext.Users.Where(u => u.MemberOfId.HasValue == false).Select(u => u.Email).ToList();
 
-            return appUsers;
+            return Ok(appUsers);
+        }
+
+        [Route("my-email")]
+        [HttpGet]
+        public async Task<ActionResult<string>> GetEmailForProcessingUser()
+        {
+            string userEmail = await HttpContext.GetPreferredUsername();
+
+            return Ok(userEmail);
         }
     }
 }

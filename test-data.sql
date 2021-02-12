@@ -7,8 +7,8 @@ update [dbo].[Users] set MemberOfId = null;
 delete from [dbo].[Teams];
 delete from [dbo].[Users];
 
-insert into [dbo].[CommunicationPercentages] (Medium, "Weight") values ('Email (single)', 0)
-insert into [dbo].[CommunicationPercentages] (Medium, "Weight") values ('Meetings (10 minutes)', 0)
+insert into [dbo].[CommunicationPercentages] (Medium, "Weight") values ('Email (single)', 50)
+insert into [dbo].[CommunicationPercentages] (Medium, "Weight") values ('Meetings (10 minutes)', 50)
 insert into [dbo].[CommunicationPercentages] (Medium, "Weight") values ('Calls (10 minutes)', 0)
 insert into [dbo].[CommunicationPercentages] (Medium, "Weight") values ('Chat (10 messages)', 0)
 
@@ -404,6 +404,12 @@ insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) va
 insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Spam mail 9', 'Spammer <spammer@email.com>', '2021-01-27T08:30:00.0000000',2)
 insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Spam mail 9', 'Spammer <spammer@email.com>', '2021-01-27T08:30:00.0000000',3)
 insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Spam mail 9', 'Spammer <spammer@email.com>', '2021-01-27T08:30:00.0000000',4)
+
+-- Weight Test
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Test', 'Alice AliceS <alice@ect.ie>', '2021-02-12T11:25:00.0000000',1)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Test', 'Alice AliceS <alice@ect.ie>', '2021-02-12T11:30:00.0000000',1)
+insert into [dbo].[ReceivedEmails] ("Subject", "From", ReceivedAt, EctUserId) values ('Test', 'Trudy TrudyS <trudy@ect.ie>', '2021-02-12T11:25:00.0000000',1)
+insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('Test', '2021-02-12T11:25:00.0000000', 'Bob BobS <bob@ect.ie> | Alice AliceS <alice@ect.ie>', 1)
 
 -- Sent mail
 insert into [dbo].[SentEmails] ("Subject", SentAt, RecipientsAsString, EctUserId) values ('New project - meeting notes', '2021-01-26T11:25:00.0000000', 'ppivanov98@outlook.com <ppivanov98@outlook.com> | X00149863@outlook.com <X00149863@outlook.com> | Bob BobS <bob@ect.ie> | Trudy TrudyS <trudy@ect.ie>', 4)

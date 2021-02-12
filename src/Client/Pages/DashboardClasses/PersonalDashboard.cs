@@ -1,5 +1,8 @@
-﻿using EctBlazorApp.Shared;
+﻿using EctBlazorApp.Client.Graph;
+using EctBlazorApp.Shared;
 using EctBlazorApp.Shared.Entities;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.JSInterop;
 using System;
@@ -14,30 +17,58 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
 {
     public class PersonalDashboardClass : DashboardClass
     {
+        [Inject]
+        AuthenticationStateProvider AuthenticationStateProvider { get; set; }
+
+        private string userEmail = "";
         private List<SentMail> sentMail;
         private List<ReceivedMail> receivedMail;
         private List<CalendarEvent> calendarEvents;
-        private List<CommunicationPercentage> communicationPercentages;
-        protected Dictionary<string, int> emailCollaborators = new Dictionary<string, int>();
-        protected Dictionary<string, int> meetingCollaborators = new Dictionary<string, int>();
+        private CommunicationPercentage emailCommPercentage;
+        private CommunicationPercentage meetingCommPercentage;
 
-        protected int emailsSent
+        private int TotalMinutesInMeetings
+        {
+            get
+            {
+                return GetMinutesFromSeconds(secondsInMeeting);
+            }
+        }
+        private int TotalEmailCount
+        {
+            get
+            {
+                return EmailsSentCount + EmailsReceivedCount;
+            }
+        }
+        private double ActualEmailPercentage
+        {
+            get
+            {
+                return numberOfMeetings == 0 ? 100 : emailCommPercentage.Weight;
+            }
+        }
+        private double ActualMeetingPercentage
+        {
+            get
+            {
+                return TotalEmailCount == 0 ? 100 : meetingCommPercentage.Weight;
+            }
+        }
+        protected int EmailsSentCount
         {
             get
             {
                 return sentMail != null ? sentMail.Count : 0;
             }
         }
-        protected int emailsReceived
+        protected int EmailsReceivedCount
         {
             get
             {
                 return receivedMail != null ? receivedMail.Count : 0;
             }
         }
-        protected int numberOfMeetings = 0;
-        protected double secondsInMeeting = 0;
-
         protected string GetFormattedTimeInMeeting
         {
             get
@@ -45,22 +76,19 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
                 return FormatSecondsToHoursAndMinutes(secondsInMeeting);
             }
         }
+        protected int numberOfMeetings = 0;
+        protected double secondsInMeeting = 0;
+        protected double totalWeight = 0;
+        protected readonly Dictionary<string, double> collaborators = new Dictionary<string, double>();
+
 
         protected override async Task OnInitializedAsync()
         {
             await JsRuntime.InvokeVoidAsync("setPageTitle", "Dashboard");
+            await FetchCommunicationPercentages();
             await UpdateDashboard();
-            await GetCommunicationPercentages();
         }
-
-        private void AddToCollaborators(Dictionary<string, int> dictionary, string userName)
-        {
-            if (dictionary.ContainsKey(userName) == false) 
-                dictionary[userName] = 0;
-            dictionary[userName]++;
-        }
-
-        private async Task GetCommunicationPercentages()
+        private async Task FetchCommunicationPercentages()
         {
             var token = await ApiConn.GetAPITokenAsync();
             if (token != null)
@@ -68,13 +96,22 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
                 try
                 {
                     Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                    communicationPercentages = await Http.GetFromJsonAsync<List<CommunicationPercentage>>($"api/communication/weights");
+                    var communicationPercentages = await Http.GetFromJsonAsync<List<CommunicationPercentage>>($"api/communication/weights");
+                    emailCommPercentage = CommunicationPercentage.GetCommunicationPercentageForMedium(communicationPercentages, "email");
+                    meetingCommPercentage = CommunicationPercentage.GetCommunicationPercentageForMedium(communicationPercentages, "meeting");
                 }
                 catch (AccessTokenNotAvailableException exception)
                 {
                     exception.Redirect();
                 }
             }
+        }
+
+        private async Task<string> GetProcessingUserEmail()
+        {
+                var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+                var user = authState.User;
+                return user.GetUserEmail();
         }
 
         protected override object[][] GetCalendarEventsData()
@@ -144,7 +181,8 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
                     secondsInMeeting = response.SecondsInMeeting;
                     numberOfMeetings = calendarEvents.Count;
                     GetEmailCollaborators();
-                    GetAttendeesFromCalendarEvents();
+                    await GetAttendeesFromCalendarEvents();
+
                     await JsRuntime.InvokeVoidAsync("loadDashboardGraph", (object)GetSentAndReceivedEmailData(), (object)GetCalendarEventsData());
                 }
                 catch (AccessTokenNotAvailableException exception)                                          // TODO - Find out if this is still valid
@@ -156,40 +194,52 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
 
         private void GetEmailCollaborators()
         {
-            GetSentEmailCollaborators();
-            GetReceivedEmailCollaborators();
+            double weightForSingleMail = ActualEmailPercentage / TotalEmailCount;
+
+            GetSentEmailCollaborators(weightForSingleMail);
+            GetReceivedEmailCollaborators(weightForSingleMail);
         }
-        private void GetSentEmailCollaborators()
+        private void GetSentEmailCollaborators(double weight)
         {
             foreach (var email in sentMail)
             {
+                double splitWeight = weight / email.Recipients.Count;
                 foreach (var recipient in email.Recipients)
                 {
                     string fullName = GetFullNameFromFormattedString(recipient);
-                    AddToCollaborators(emailCollaborators, fullName);
+                    AddToCollaborators(fullName, splitWeight);
                 }
             }
         }
-        private void GetReceivedEmailCollaborators()
+        private void GetReceivedEmailCollaborators(double weight)
         {
             foreach (var email in receivedMail)
             {
                 string senderFullName = GetFullNameFromFormattedString(email.From);
-                AddToCollaborators(emailCollaborators, senderFullName);
+                AddToCollaborators(senderFullName, weight);
+            }
+        }
+        private async Task GetAttendeesFromCalendarEvents()
+        {
+            double weightForTenMinutes = ActualMeetingPercentage / TotalMinutesInMeetings;
+            foreach (var meeting in calendarEvents)
+            {
+                List<string> attendees = meeting.GetAttendeesExcludingUser(await GetProcessingUserEmail());
+                double meetingWeight = meeting.GetEventLenghtInMinutes() * weightForTenMinutes;
+                double weightPerAttendee = meetingWeight / attendees.Count;
+                foreach (var attendee in attendees)
+                {
+                    string fullName = GetFullNameFromFormattedString(attendee);
+                    AddToCollaborators(fullName, weightPerAttendee);
+                }
             }
         }
 
-        private void GetAttendeesFromCalendarEvents()
+        private void AddToCollaborators(string userName, double singleUnitWeight)
         {
-            foreach (var meeting in calendarEvents)
-            {
-                    
-                foreach (var attendee in meeting.Attendees)
-                {
-                    string fullName = GetFullNameFromFormattedString(attendee);
-                    AddToCollaborators(meetingCollaborators, fullName);
-                }
-            }
+            if (collaborators.ContainsKey(userName) == false)
+                collaborators[userName] = 0;
+            collaborators[userName] += singleUnitWeight;
         }
     }
 }

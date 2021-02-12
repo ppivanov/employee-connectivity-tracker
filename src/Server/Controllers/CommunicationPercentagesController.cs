@@ -1,5 +1,6 @@
 ﻿using EctBlazorApp.Server.AuthorizationAttributes;
 using EctBlazorApp.Shared.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -7,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace EctBlazorApp.Server.Controllers
 {
+    [Authorize]
     [Route("api/communication")]
     [ApiController]
-    [AuthorizeAdmin]
     public class CommunicationPercentagesController : ControllerBase
     {
 
@@ -29,6 +30,7 @@ namespace EctBlazorApp.Server.Controllers
 
         [Route("weights/update")]
         [HttpPut]
+        [AuthorizeAdmin]
         public async Task<ActionResult<string>> UpdateWeights([FromBody] IEnumerable<CommunicationPercentage> mediums)
         {
             _dbContext.CommunicationPercentages.RemoveRange(_dbContext.CommunicationPercentages);       // Delete all existing records.

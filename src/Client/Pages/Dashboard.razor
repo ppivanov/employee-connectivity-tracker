@@ -30,8 +30,8 @@
                     </DateRangePicker>
                 </div>
                 <div class="textSummary">
-                    <p>Emails sent: @emailsSent</p>
-                    <p>Emails received: @emailsReceived</p>
+                    <p>Emails sent: @EmailsSentCount</p>
+                    <p>Emails received: @EmailsReceivedCount</p>
                     <p>Number of meetings: @numberOfMeetings</p>
                     <p>Time in meetings: @GetFormattedTimeInMeeting</p>
                 </div>
@@ -40,9 +40,10 @@
                 <h2>Top Collaborators</h2>
                 <div class="collaboratorsList">
                     <div class="collaborator">
-                        @foreach (var user in meetingCollaborators)
+                        @*Total weight: @totalWeight*@
+                        @foreach (var user in collaborators)
                         {
-                            <p>@user.Key (@user.Value)</p>
+                            <p>@user.Key (@user.Value%)</p>
                         }
                     </div>
                 </div>
