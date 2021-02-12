@@ -19,6 +19,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         private List<CalendarEvent> calendarEvents;
         private List<CommunicationPercentage> communicationPercentages;
         protected Dictionary<string, int> emailCollaborators = new Dictionary<string, int>();
+        protected Dictionary<string, int> meetingCollaborators = new Dictionary<string, int>();
 
         protected int emailsSent
         {
@@ -49,10 +50,10 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         {
             await JsRuntime.InvokeVoidAsync("setPageTitle", "Dashboard");
             await UpdateDashboard();
-            //await GetCommunicationPercentages();
+            await GetCommunicationPercentages();
         }
 
-        private void AddToDictionary(Dictionary<string, int> dictionary, string userName)
+        private void AddToCollaborators(Dictionary<string, int> dictionary, string userName)
         {
             if (dictionary.ContainsKey(userName) == false) 
                 dictionary[userName] = 0;
@@ -143,6 +144,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
                     secondsInMeeting = response.SecondsInMeeting;
                     numberOfMeetings = calendarEvents.Count;
                     GetEmailCollaborators();
+                    GetAttendeesFromCalendarEvents();
                     await JsRuntime.InvokeVoidAsync("loadDashboardGraph", (object)GetSentAndReceivedEmailData(), (object)GetCalendarEventsData());
                 }
                 catch (AccessTokenNotAvailableException exception)                                          // TODO - Find out if this is still valid
@@ -161,11 +163,10 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         {
             foreach (var email in sentMail)
             {
-                string[] recipients = email.RecipientsAsString.Split(" | ");
-                foreach (var recipient in recipients)
+                foreach (var recipient in email.Recipients)
                 {
                     string fullName = GetFullNameFromFormattedString(recipient);
-                    AddToDictionary(emailCollaborators, fullName);
+                    AddToCollaborators(emailCollaborators, fullName);
                 }
             }
         }
@@ -174,7 +175,20 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             foreach (var email in receivedMail)
             {
                 string senderFullName = GetFullNameFromFormattedString(email.From);
-                AddToDictionary(emailCollaborators, senderFullName);
+                AddToCollaborators(emailCollaborators, senderFullName);
+            }
+        }
+
+        private void GetAttendeesFromCalendarEvents()
+        {
+            foreach (var meeting in calendarEvents)
+            {
+                    
+                foreach (var attendee in meeting.Attendees)
+                {
+                    string fullName = GetFullNameFromFormattedString(attendee);
+                    AddToCollaborators(meetingCollaborators, fullName);
+                }
             }
         }
     }
