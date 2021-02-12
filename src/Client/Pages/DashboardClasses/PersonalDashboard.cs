@@ -33,27 +33,16 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
                 return GetMinutesFromSeconds(secondsInMeeting);
             }
         }
-        private int TotalEmailCount
+        private int TotalPoints
         {
             get
             {
-                return EmailsSentCount + EmailsReceivedCount;
+                double totalMeetingPoints = TotalMinutesInMeetings / 10.0 * meetingCommPoints.Points;
+                int totalEmailPoints = (EmailsSentCount + EmailsReceivedCount) * emailCommPoints.Points;
+                return (int)(totalEmailPoints + totalMeetingPoints);
             }
         }
-        private double ActualEmailPercentage
-        {
-            get
-            {
-                return numberOfMeetings == 0 ? 100 : emailCommPoints.Points;
-            }
-        }
-        private double ActualMeetingPercentage
-        {
-            get
-            {
-                return TotalEmailCount == 0 ? 100 : meetingCommPoints.Points;
-            }
-        }
+
         protected int EmailsSentCount
         {
             get
@@ -79,19 +68,22 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         protected double secondsInMeeting = 0;
         protected double totalWeight = 0;
         protected readonly Dictionary<string, double> collaboratorsDict = new Dictionary<string, double>();
-        protected List<KeyValuePair<string, double>> collaborators
+        protected IEnumerable<KeyValuePair<string, double>> collaborators
         {
             get
             {
-                /* Source: https://stackoverflow.com/questions/289/how-do-you-sort-a-dictionary-by-value */
-                List<KeyValuePair<string, double>> list = collaboratorsDict.ToList();
+                /* Adapted from: https://stackoverflow.com/a/298 */
+                List<KeyValuePair<string, double>> list = new List<KeyValuePair<string, double>>();
+                foreach (var key in collaboratorsDict.Keys)
+                    list.Add(new KeyValuePair<string, double>(key, collaboratorsDict[key] / TotalPoints * 100));
+
                 list.Sort(
                     (KeyValuePair<string, double> pair1, KeyValuePair<string, double> pair2) => 
                     {
                         return pair2.Value.CompareTo(pair1.Value);                              // descending order
                     }
                 );
-                return list;
+                return list.Take(10);
             }
         }
 
@@ -110,9 +102,10 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
                 try
                 {
                     Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                    var CommunicationPoints = await Http.GetFromJsonAsync<List<CommunicationPoint>>($"api/communication/weights");
+                    var CommunicationPoints = await Http.GetFromJsonAsync<List<CommunicationPoint>>($"api/communication/points");
                     emailCommPoints = CommunicationPoint.GetCommunicationPointForMedium(CommunicationPoints, "email");
                     meetingCommPoints = CommunicationPoint.GetCommunicationPointForMedium(CommunicationPoints, "meeting");
+
                 }
                 catch (AccessTokenNotAvailableException exception)
                 {
@@ -212,52 +205,47 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         }
         private void GetEmailCollaborators()
         {
-            double weightForSingleMail = ActualEmailPercentage / TotalEmailCount;
-
-            GetSentEmailCollaborators(weightForSingleMail);
-            GetReceivedEmailCollaborators(weightForSingleMail);
+            GetSentEmailCollaborators();
+            GetReceivedEmailCollaborators();
         }
-        private void GetSentEmailCollaborators(double weight)
+        private void GetSentEmailCollaborators()
         {
             foreach (var email in sentMail)
             {
-                double splitWeight = weight / email.Recipients.Count;
                 foreach (var recipient in email.Recipients)
                 {
                     string fullName = GetFullNameFromFormattedString(recipient);
-                    AddToCollaborators(fullName, splitWeight);
+                    AddPointsToCollaborator(fullName, emailCommPoints.Points);
                 }
             }
         }
-        private void GetReceivedEmailCollaborators(double weight)
+        private void GetReceivedEmailCollaborators()
         {
             foreach (var email in receivedMail)
             {
                 string senderFullName = GetFullNameFromFormattedString(email.From);
-                AddToCollaborators(senderFullName, weight);
+                AddPointsToCollaborator(senderFullName, emailCommPoints.Points);
             }
         }
         private async Task GetAttendeesFromCalendarEvents()
         {
-            double weightForTenMinutes = ActualMeetingPercentage / TotalMinutesInMeetings;
             foreach (var meeting in calendarEvents)
             {
                 List<string> attendees = meeting.GetAttendeesExcludingUser(await GetProcessingUserEmail());
-                double meetingWeight = meeting.GetEventLenghtInMinutes() * weightForTenMinutes;
-                double weightPerAttendee = meetingWeight / attendees.Count;
                 foreach (var attendee in attendees)
                 {
                     string fullName = GetFullNameFromFormattedString(attendee);
-                    AddToCollaborators(fullName, weightPerAttendee);
+                    AddPointsToCollaborator(fullName, meetingCommPoints.Points);
                 }
             }
         }
 
-        private void AddToCollaborators(string userName, double singleUnitWeight)
+        private void AddPointsToCollaborator(string fullName, double points)
         {
-            if (collaboratorsDict.ContainsKey(userName) == false)
-                collaboratorsDict[userName] = 0;
-            collaboratorsDict[userName] += singleUnitWeight;
+            if (collaboratorsDict.ContainsKey(fullName))
+                collaboratorsDict[fullName] += points;
+            else
+                collaboratorsDict.Add(fullName, points);
         }
     }
 }
