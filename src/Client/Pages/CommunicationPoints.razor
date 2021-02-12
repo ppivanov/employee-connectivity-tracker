@@ -1,4 +1,4 @@
-﻿@page "/comm-weights"
+﻿@page "/comm-points"
 
 @using Microsoft.AspNetCore.Authorization
 @attribute [Authorize]
@@ -8,7 +8,7 @@
 
 <AuthorizeView>
     <Authorized>
-        <div class="communicaiton-weights">
+        <div class="communicaiton-points">
             @if (!initialized)
             {
                 <p>Loading...</p>
@@ -26,27 +26,27 @@
                     {
                         <p style="@ServerMessageInlineStyle">@serverMessage</p>
                     }
-                    <EditForm Model="percentagesDict" OnSubmit="@(async () => await SubmitWeights())" Context="formContext">
-                        @foreach (var medium in percentagesDict.Keys)
+                    <EditForm Model="pointsDict" OnSubmit="@(async () => await SubmitPoints())" Context="formContext">
+                        @foreach (var medium in pointsDict.Keys)
                         {
                             <div class="comms-input-pair">
                                 <p>
                                     @medium.Medium
-                                    @if (percentagesDict[medium])
+                                    @if (pointsDict[medium])
                                     {
-                                        <InputNumber @bind-Value=medium.Points class="" id="Weight" style="@PercentageInputStyle" />
+                                        <InputNumber @bind-Value=medium.Points class="" id="Weight" style="@PointInputStyle" />
                                     }
                                     else
                                     {
                                         @medium.Points
                                     }
-                                    %
+                                    @(medium.Points > 1 ? "points" : "point") 
                                 </p>
                             </div>
 
                             @if (medium.Medium.Contains("Email") || medium.Medium.Contains("Meetings"))
                             {
-                                @if (percentagesDict[medium])
+                                @if (pointsDict[medium])
                                 {
                                     <button @onclick="() => SavePercentage(medium)" type="button">Save</button>
                                 }
@@ -54,11 +54,12 @@
                                 {
                                     <button @onclick="() => EditPercentage(medium)" type="button">Edit</button>
                                 }
-                                <button @onclick="() => ClearPercentage(medium)" type="button">Clear</button>
+                                <button @onclick="() => ClearPoints(medium)" type="button">Clear</button>
                             }
                             <hr />
                         }
-                        <p>Percentage left: @PercentageLeft %</p>
+                        <p><b>Note</b>: You cannot assign more than @maxPoints to a medium.</p>
+                        <p>Total points: @TotalPoints</p>
                         <button type="submit" disabled="@isSubmitting">Submit</button>
                     </EditForm>
                 }
@@ -73,23 +74,24 @@
     bool initialized = false;
     bool serverMessageIsError = false;
     string serverMessage = "";
-    Dictionary<CommunicationPoint, bool> percentagesDict;          // holds true if user selected for edit
-    int PercentageLeft
+    int maxPoints = 100;
+    int TotalPoints
     {
         get
         {
-            int total = 100;
-            foreach (var percentage in percentagesDict.Keys)
+            int total = 0;
+            foreach (var percentage in pointsDict.Keys)
             {
-                total -= percentage.Points;
+                total += percentage.Points;
             }
             return total;
         }
     }
+    Dictionary<CommunicationPoint, bool> pointsDict;          // holds true if user selected for edit
 
     protected override async Task OnInitializedAsync()
     {
-        await jsRuntime.InvokeVoidAsync("setPageTitle", "Communication Weights");
+        await jsRuntime.InvokeVoidAsync("setPageTitle", "Communication Points");
         isAdmin = await apiConn.IsProcessingUserAnAdmin(Http);
         if (isAdmin)
             await GetCommunicationPoints();
@@ -105,7 +107,7 @@
             try
             {
                 Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                var percentages = await Http.GetFromJsonAsync<List<CommunicationPoint>>($"api/communication/weights");
+                var percentages = await Http.GetFromJsonAsync<List<CommunicationPoint>>($"api/communication/points");
                 InitializeDictionary(percentages);
             }
             catch (AccessTokenNotAvailableException exception)
@@ -115,25 +117,25 @@
         }
     }
 
-    private void InitializeDictionary(List<CommunicationPoint> percentages)
+    private void InitializeDictionary(List<CommunicationPoint> commPoints)
     {
-        percentagesDict = new Dictionary<CommunicationPoint, bool>();
-        foreach (var medium in percentages)
+        pointsDict = new Dictionary<CommunicationPoint, bool>();
+        foreach (var medium in commPoints)
         {
-            percentagesDict.Add(medium, false);
+            pointsDict.Add(medium, false);
         }
     }
 
-    private bool SavePercentage(CommunicationPoint medium)
+    private bool SavePercentage(CommunicationPoint selectedMedium)
     {
-        if (PercentageLeft >= 0)
+        if (TotalPoints >= 0)
         {
-            percentagesDict[medium] = false;
+            pointsDict[selectedMedium] = false;
             return true;
         }
         else
         {
-            medium.Points += PercentageLeft;
+            selectedMedium.Points += TotalPoints;
             return false;
         }
     }
@@ -143,39 +145,39 @@
         if (toggledMedium != null)
         {
             if (SavePercentage(toggledMedium))                          // If input value is less than % left only then toggle the other medium
-                percentagesDict[selectedMedium] = true;
+                pointsDict[selectedMedium] = true;
         }
         else
-            percentagesDict[selectedMedium] = true;                     // If no previous medium is toggled
+            pointsDict[selectedMedium] = true;                          // If no previous medium is toggled
 
     }
-    private void ClearPercentage(CommunicationPoint medium)
+    private void ClearPoints(CommunicationPoint selectedMedium)
     {
-        medium.Points = 0;
+        selectedMedium.Points = 0;
     }
     private CommunicationPoint GetToggledMedium()
     {
-        foreach (var medium in percentagesDict.Keys)
+        foreach (var medium in pointsDict.Keys)
         {
-            if (percentagesDict[medium])
+            if (pointsDict[medium])
                 return medium;
         }
         return null;
     }
 
-    private async Task SubmitWeights()
+    private async Task SubmitPoints()
     {
-        if (PercentageLeft != 0)
+        if (TotalPoints < 1)
         {
             serverMessageIsError = true;
-            serverMessage = "You must distribute the full 100%.";
+            serverMessage = "You must assign at least one point (1 point) before submitting.";
             return;
         }
         isSubmitting = true;
         serverMessageIsError = false;
 
         var toggledMedium = GetToggledMedium();
-        if (toggledMedium != null) percentagesDict[toggledMedium] = false;
+        if (toggledMedium != null) pointsDict[toggledMedium] = false;
 
         var token = await apiConn.GetAPITokenAsync();
         if (token != null)
@@ -183,7 +185,7 @@
             try
             {
                 Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                var response = await Http.PutAsJsonAsync<List<CommunicationPoint>>($"api/communication/weights/update", percentagesDict.Keys.ToList());
+                var response = await Http.PutAsJsonAsync<List<CommunicationPoint>>($"api/communication/points/update", pointsDict.Keys.ToList());
                 if (response.IsSuccessStatusCode == false)
                     serverMessageIsError = true;
                 serverMessage = await response.Content.ReadAsStringAsync();
@@ -196,11 +198,11 @@
         isSubmitting = false;
     }
 
-    private string PercentageInputStyle
+    private string PointInputStyle
     {
         get
         {
-            return PercentageLeft <= 0 ? "border: 1px solid red" : "";
+            return TotalPoints <= 0 ? "border: 1px solid red" : "";
         }
     }
     private string ServerMessageInlineStyle

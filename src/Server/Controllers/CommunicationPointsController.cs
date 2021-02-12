@@ -21,14 +21,14 @@ namespace EctBlazorApp.Server.Controllers
             _dbContext = dbContext;
         }
 
-        [Route("weights")]
+        [Route("points")]
         [HttpGet]
         public IEnumerable<CommunicationPoint> GetWeights()
         {
             return _dbContext.CommunicationPoints;
         }
 
-        [Route("weights/update")]
+        [Route("points/update")]
         [HttpPut]
         [AuthorizeAdmin]
         public async Task<ActionResult<string>> UpdateWeights([FromBody] IEnumerable<CommunicationPoint> mediums)
