@@ -8,6 +8,7 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
+using static EctBlazorApp.Shared.SharedCommonMethods;
 
 namespace EctBlazorApp.Client.Pages.DashboardClasses
 {
@@ -33,7 +34,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         }
         protected override object[][] GetSentAndReceivedEmailData()
         {
-            var dates = SplitDateRangeToChunks();
+            var dates = SplitDateRangeToChunks(FromDate.Value, ToDate.Value);
             object[][] newList = new object[dates.Count + 1][];
 
             for (int i = 0; i < dates.Count; i++)
@@ -65,7 +66,6 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             }
             return newList;
         }
-
 
         protected override async Task UpdateDashboard()
         {

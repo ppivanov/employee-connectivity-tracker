@@ -23,8 +23,6 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         private List<SentMail> sentMail;
         private List<ReceivedMail> receivedMail;
         private List<CalendarEvent> calendarEvents;
-        private CommunicationPoint emailCommPoints;
-        private CommunicationPoint meetingCommPoints;
 
         private int TotalMinutesInMeetings
         {
@@ -94,25 +92,6 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             await UpdateDashboard();
         }
 
-        private async Task FetchCommunicationPoints()
-        {
-            var token = await ApiConn.GetAPITokenAsync();
-            if (token != null)
-            {
-                try
-                {
-                    Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                    var CommunicationPoints = await Http.GetFromJsonAsync<List<CommunicationPoint>>($"api/communication/points");
-                    emailCommPoints = CommunicationPoint.GetCommunicationPointForMedium(CommunicationPoints, "email");
-                    meetingCommPoints = CommunicationPoint.GetCommunicationPointForMedium(CommunicationPoints, "meeting");
-
-                }
-                catch (AccessTokenNotAvailableException exception)
-                {
-                    exception.Redirect();
-                }
-            }
-        }
         private async Task<string> GetProcessingUserEmail()
         {
             var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
@@ -150,14 +129,14 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         }
         protected override object[][] GetSentAndReceivedEmailData()
         {
-            var dates = SplitDateRangeToChunks();
+            var dates = SplitDateRangeToChunks(FromDate.Value, ToDate.Value);
             object[][] newList = new object[dates.Count + 1][];
 
             newList[0] = new object[] { "Date", "Sent Emails", "Received Emails" };
             for (int i = 1; i <= dates.Count; i++)
             {
-                int index = i - 1;                                                                      // We add a row to the array that contains the value descriptions, but we still need the first date at position 0
-                DateTime date = dates[index];
+                int datesIndex = i - 1;                                                                      // We add a row to the array that contains the value descriptions, but we still need the first date at position 0
+                DateTime date = dates[datesIndex];
                 int countOfSentMail = sentMail.Count(sm => sm.SentAt.Date == date);
                 int countOfReceivedMail = receivedMail.Count(rm => rm.ReceivedAt.Date == date);
 

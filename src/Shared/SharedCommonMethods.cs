@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
 
@@ -74,6 +75,21 @@ namespace EctBlazorApp.Shared
             {
                 return false;
             }
+        }
+
+        public static List<DateTime> SplitDateRangeToChunks(DateTimeOffset fromDate, DateTimeOffset toDate)
+        {
+            DateTime startDate = fromDate.Date;
+            DateTime endDate = toDate.Date;
+            List<DateTime> dateTimeChunks = new List<DateTime>();
+
+            while (startDate <= endDate)
+            {
+                dateTimeChunks.Add(startDate);
+                startDate = startDate.AddDays(1);
+            }
+
+            return dateTimeChunks;
         }
     }
 }

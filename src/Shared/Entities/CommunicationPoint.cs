@@ -15,6 +15,12 @@ namespace EctBlazorApp.Shared.Entities
         [Required]
         public int Points { get; set; }
 
+        public CommunicationPoint()
+        {
+            Medium = "";
+            Points = 0;
+        }
+
         public static CommunicationPoint GetCommunicationPointForMedium(IEnumerable<CommunicationPoint> communicationPoints, string medium)
         {
             try
@@ -24,11 +30,7 @@ namespace EctBlazorApp.Shared.Entities
             }
             catch (Exception)
             {
-                return new CommunicationPoint
-                {
-                    Medium = "null",
-                    Points = 0
-                };
+                return new CommunicationPoint();
             }
         }
     }

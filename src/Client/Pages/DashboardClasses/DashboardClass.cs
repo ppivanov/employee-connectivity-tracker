@@ -1,10 +1,10 @@
 ﻿using BlazorDateRangePicker;
 using EctBlazorApp.Client.Graph;
+using EctBlazorApp.Shared.Entities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 using System;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -22,6 +22,8 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         protected IJSRuntime JsRuntime { get; set; }
 
         protected bool initialized = false;
+        protected CommunicationPoint emailCommPoints;
+        protected CommunicationPoint meetingCommPoints;
         protected DateTimeOffset? FromDate { get; set; } = DateTimeOffset.Now; 
         protected DateTimeOffset? ToDate { get; set; } = DateTimeOffset.Now.AddDays(1);
 
@@ -43,19 +45,12 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             await UpdateDashboard();
         }
 
-        protected List<DateTime> SplitDateRangeToChunks()                                                 // These methods can be moved into their own API to allow for scaling
+        protected async Task FetchCommunicationPoints()
         {
-            DateTime startDate = FromDate.Value.Date;
-            DateTime endDate = ToDate.Value.Date;
-            List<DateTime> dateTimeChunks = new List<DateTime>();
+            var result = await ApiConn.FetchCommunicationPoints();
 
-            while (startDate <= endDate)
-            {
-                dateTimeChunks.Add(startDate);
-                startDate = startDate.AddDays(1);
-            }
-
-            return dateTimeChunks;
+            emailCommPoints = result.Item1;
+            meetingCommPoints = result.Item2;
         }
 
         protected abstract object[][] GetCalendarEventsData();

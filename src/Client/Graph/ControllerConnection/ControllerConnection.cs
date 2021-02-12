@@ -1,7 +1,9 @@
 ﻿using EctBlazorApp.Shared;
+using EctBlazorApp.Shared.Entities;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
@@ -21,6 +23,8 @@ namespace EctBlazorApp.Client.Graph
         private readonly IAccessTokenProvider _accessTokenProvider;
         private readonly HttpClient _httpClient;
 
+        public ControllerConnection() { }
+
         public ControllerConnection(IAccessTokenProvider accessTokenProvider, HttpClient httpClient)
         {
             _accessTokenProvider = accessTokenProvider;
@@ -29,8 +33,6 @@ namespace EctBlazorApp.Client.Graph
 
         public async Task<string> UpdateDatabaseRecords()
         {
-            using var client = new HttpClient();
-
             var accessToken = await GetAccessTokenAsync();
             if (accessToken == null)
                 return "Token missing";
@@ -86,12 +88,32 @@ namespace EctBlazorApp.Client.Graph
             return null;
         }
 
+        public async Task<(CommunicationPoint, CommunicationPoint)> FetchCommunicationPoints()
+        {
+            var token = await GetAPITokenAsync();
+            if (token != null)
+            {
+                try
+                {
+                    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    var CommunicationPoints = await _httpClient.GetFromJsonAsync<List<CommunicationPoint>>($"api/communication/points");
+                    var emailCommPoints = CommunicationPoint.GetCommunicationPointForMedium(CommunicationPoints, "email");
+                    var meetingCommPoints = CommunicationPoint.GetCommunicationPointForMedium(CommunicationPoints, "meeting");
+
+                    return (emailCommPoints, meetingCommPoints);
+                }
+                catch (AccessTokenNotAvailableException exception)
+                {
+                    exception.Redirect();
+                }
+            }
+            return (new CommunicationPoint(), new CommunicationPoint());
+        }
         public async Task<Boolean> IsProcessingUserAnAdmin(HttpClient Http)
         {
             var adminResponse = await IsProcessingUserAuthorizedForRole(Http, UserRoles.admin);
             return adminResponse;
         }
-
         public async Task<Boolean> IsProcessingUserALeader(HttpClient Http)
         {
             var leaderResponse = await IsProcessingUserAuthorizedForRole(Http, UserRoles.leader);
