@@ -20,7 +20,6 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         [Inject]
         AuthenticationStateProvider AuthenticationStateProvider { get; set; }
 
-        private string userEmail = "";
         private List<SentMail> sentMail;
         private List<ReceivedMail> receivedMail;
         private List<CalendarEvent> calendarEvents;
@@ -79,8 +78,22 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         protected int numberOfMeetings = 0;
         protected double secondsInMeeting = 0;
         protected double totalWeight = 0;
-        protected readonly Dictionary<string, double> collaborators = new Dictionary<string, double>();
-
+        protected readonly Dictionary<string, double> collaboratorsDict = new Dictionary<string, double>();
+        protected List<KeyValuePair<string, double>> collaborators
+        {
+            get
+            {
+                /* Source: https://stackoverflow.com/questions/289/how-do-you-sort-a-dictionary-by-value */
+                List<KeyValuePair<string, double>> list = collaboratorsDict.ToList();
+                list.Sort(
+                    (KeyValuePair<string, double> pair1, KeyValuePair<string, double> pair2) => 
+                    {
+                        return pair2.Value.CompareTo(pair1.Value);                              // descending order
+                    }
+                );
+                return list;
+            }
+        }
 
         protected override async Task OnInitializedAsync()
         {
@@ -88,6 +101,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             await FetchCommunicationPercentages();
             await UpdateDashboard();
         }
+
         private async Task FetchCommunicationPercentages()
         {
             var token = await ApiConn.GetAPITokenAsync();
@@ -106,12 +120,11 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
                 }
             }
         }
-
         private async Task<string> GetProcessingUserEmail()
         {
-                var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-                var user = authState.User;
-                return user.GetUserEmail();
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+            return user.GetUserEmail();
         }
 
         protected override object[][] GetCalendarEventsData()
@@ -180,8 +193,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
                     calendarEvents = response.CalendarEvents;
                     secondsInMeeting = response.SecondsInMeeting;
                     numberOfMeetings = calendarEvents.Count;
-                    GetEmailCollaborators();
-                    await GetAttendeesFromCalendarEvents();
+                    await GetCollaborators();
 
                     await JsRuntime.InvokeVoidAsync("loadDashboardGraph", (object)GetSentAndReceivedEmailData(), (object)GetCalendarEventsData());
                 }
@@ -192,6 +204,12 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             }
         }
 
+        private async Task GetCollaborators()
+        {
+            collaboratorsDict.Clear();
+            GetEmailCollaborators();
+            await GetAttendeesFromCalendarEvents();
+        }
         private void GetEmailCollaborators()
         {
             double weightForSingleMail = ActualEmailPercentage / TotalEmailCount;
@@ -237,9 +255,9 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
 
         private void AddToCollaborators(string userName, double singleUnitWeight)
         {
-            if (collaborators.ContainsKey(userName) == false)
-                collaborators[userName] = 0;
-            collaborators[userName] += singleUnitWeight;
+            if (collaboratorsDict.ContainsKey(userName) == false)
+                collaboratorsDict[userName] = 0;
+            collaboratorsDict[userName] += singleUnitWeight;
         }
     }
 }

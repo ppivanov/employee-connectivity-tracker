@@ -43,7 +43,7 @@
                         @*Total weight: @totalWeight*@
                         @foreach (var user in collaborators)
                         {
-                            <p>@user.Key (@user.Value%)</p>
+                            <p>@user.Key (@Math.Round(user.Value, 2)%)</p>
                         }
                     </div>
                 </div>
