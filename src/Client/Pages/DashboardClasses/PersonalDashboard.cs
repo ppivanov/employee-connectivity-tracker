@@ -23,8 +23,8 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         private List<SentMail> sentMail;
         private List<ReceivedMail> receivedMail;
         private List<CalendarEvent> calendarEvents;
-        private CommunicationPercentage emailCommPercentage;
-        private CommunicationPercentage meetingCommPercentage;
+        private CommunicationPoint emailCommPoints;
+        private CommunicationPoint meetingCommPoints;
 
         private int TotalMinutesInMeetings
         {
@@ -44,14 +44,14 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         {
             get
             {
-                return numberOfMeetings == 0 ? 100 : emailCommPercentage.Weight;
+                return numberOfMeetings == 0 ? 100 : emailCommPoints.Points;
             }
         }
         private double ActualMeetingPercentage
         {
             get
             {
-                return TotalEmailCount == 0 ? 100 : meetingCommPercentage.Weight;
+                return TotalEmailCount == 0 ? 100 : meetingCommPoints.Points;
             }
         }
         protected int EmailsSentCount
@@ -98,11 +98,11 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         protected override async Task OnInitializedAsync()
         {
             await JsRuntime.InvokeVoidAsync("setPageTitle", "Dashboard");
-            await FetchCommunicationPercentages();
+            await FetchCommunicationPoints();
             await UpdateDashboard();
         }
 
-        private async Task FetchCommunicationPercentages()
+        private async Task FetchCommunicationPoints()
         {
             var token = await ApiConn.GetAPITokenAsync();
             if (token != null)
@@ -110,9 +110,9 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
                 try
                 {
                     Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                    var communicationPercentages = await Http.GetFromJsonAsync<List<CommunicationPercentage>>($"api/communication/weights");
-                    emailCommPercentage = CommunicationPercentage.GetCommunicationPercentageForMedium(communicationPercentages, "email");
-                    meetingCommPercentage = CommunicationPercentage.GetCommunicationPercentageForMedium(communicationPercentages, "meeting");
+                    var CommunicationPoints = await Http.GetFromJsonAsync<List<CommunicationPoint>>($"api/communication/weights");
+                    emailCommPoints = CommunicationPoint.GetCommunicationPointForMedium(CommunicationPoints, "email");
+                    meetingCommPoints = CommunicationPoint.GetCommunicationPointForMedium(CommunicationPoints, "meeting");
                 }
                 catch (AccessTokenNotAvailableException exception)
                 {

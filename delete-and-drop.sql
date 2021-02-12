@@ -1,4 +1,4 @@
-﻿drop table [dbo].[CommunicationPercentages];
+﻿drop table [dbo].[CommunicationPoints];
 drop table [dbo].[CalendarEvents];
 drop table [dbo].[ReceivedEmails];
 drop table  [dbo].[SentEmails];

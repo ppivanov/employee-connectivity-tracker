@@ -34,11 +34,11 @@
                                     @medium.Medium
                                     @if (percentagesDict[medium])
                                     {
-                                        <InputNumber @bind-Value=medium.Weight class="" id="Weight" style="@PercentageInputStyle" />
+                                        <InputNumber @bind-Value=medium.Points class="" id="Weight" style="@PercentageInputStyle" />
                                     }
                                     else
                                     {
-                                        @medium.Weight
+                                        @medium.Points
                                     }
                                     %
                                 </p>
@@ -73,7 +73,7 @@
     bool initialized = false;
     bool serverMessageIsError = false;
     string serverMessage = "";
-    Dictionary<CommunicationPercentage, bool> percentagesDict;          // holds true if user selected for edit
+    Dictionary<CommunicationPoint, bool> percentagesDict;          // holds true if user selected for edit
     int PercentageLeft
     {
         get
@@ -81,7 +81,7 @@
             int total = 100;
             foreach (var percentage in percentagesDict.Keys)
             {
-                total -= percentage.Weight;
+                total -= percentage.Points;
             }
             return total;
         }
@@ -92,12 +92,12 @@
         await jsRuntime.InvokeVoidAsync("setPageTitle", "Communication Weights");
         isAdmin = await apiConn.IsProcessingUserAnAdmin(Http);
         if (isAdmin)
-            await GetCommunicationPercentages();
+            await GetCommunicationPoints();
 
         initialized = true;
     }
 
-    protected async Task GetCommunicationPercentages()
+    protected async Task GetCommunicationPoints()
     {
         var token = await apiConn.GetAPITokenAsync();
         if (token != null)
@@ -105,7 +105,7 @@
             try
             {
                 Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                var percentages = await Http.GetFromJsonAsync<List<CommunicationPercentage>>($"api/communication/weights");
+                var percentages = await Http.GetFromJsonAsync<List<CommunicationPoint>>($"api/communication/weights");
                 InitializeDictionary(percentages);
             }
             catch (AccessTokenNotAvailableException exception)
@@ -115,16 +115,16 @@
         }
     }
 
-    private void InitializeDictionary(List<CommunicationPercentage> percentages)
+    private void InitializeDictionary(List<CommunicationPoint> percentages)
     {
-        percentagesDict = new Dictionary<CommunicationPercentage, bool>();
+        percentagesDict = new Dictionary<CommunicationPoint, bool>();
         foreach (var medium in percentages)
         {
             percentagesDict.Add(medium, false);
         }
     }
 
-    private bool SavePercentage(CommunicationPercentage medium)
+    private bool SavePercentage(CommunicationPoint medium)
     {
         if (PercentageLeft >= 0)
         {
@@ -133,11 +133,11 @@
         }
         else
         {
-            medium.Weight += PercentageLeft;
+            medium.Points += PercentageLeft;
             return false;
         }
     }
-    private void EditPercentage(CommunicationPercentage selectedMedium)
+    private void EditPercentage(CommunicationPoint selectedMedium)
     {
         var toggledMedium = GetToggledMedium();
         if (toggledMedium != null)
@@ -149,11 +149,11 @@
             percentagesDict[selectedMedium] = true;                     // If no previous medium is toggled
 
     }
-    private void ClearPercentage(CommunicationPercentage medium)
+    private void ClearPercentage(CommunicationPoint medium)
     {
-        medium.Weight = 0;
+        medium.Points = 0;
     }
-    private CommunicationPercentage GetToggledMedium()
+    private CommunicationPoint GetToggledMedium()
     {
         foreach (var medium in percentagesDict.Keys)
         {
@@ -183,7 +183,7 @@
             try
             {
                 Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                var response = await Http.PutAsJsonAsync<List<CommunicationPercentage>>($"api/communication/weights/update", percentagesDict.Keys.ToList());
+                var response = await Http.PutAsJsonAsync<List<CommunicationPoint>>($"api/communication/weights/update", percentagesDict.Keys.ToList());
                 if (response.IsSuccessStatusCode == false)
                     serverMessageIsError = true;
                 serverMessage = await response.Content.ReadAsStringAsync();

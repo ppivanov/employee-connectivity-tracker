@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace EctBlazorApp.Shared.Entities
 {
-    public class CommunicationPercentage
+    public class CommunicationPoint
     {
         public int Id { get; set; }
 
@@ -13,21 +13,21 @@ namespace EctBlazorApp.Shared.Entities
         public string Medium { get; set; }
 
         [Required]
-        public int Weight { get; set; }
+        public int Points { get; set; }
 
-        public static CommunicationPercentage GetCommunicationPercentageForMedium(IEnumerable<CommunicationPercentage> communicationPercentages, string medium)
+        public static CommunicationPoint GetCommunicationPointForMedium(IEnumerable<CommunicationPoint> communicationPoints, string medium)
         {
             try
             {
-                CommunicationPercentage queryResult = communicationPercentages.First(cp => cp.Medium.ToLower().Contains(medium));
+                CommunicationPoint queryResult = communicationPoints.First(cp => cp.Medium.ToLower().Contains(medium));
                 return queryResult;
             }
             catch (Exception)
             {
-                return new CommunicationPercentage
+                return new CommunicationPoint
                 {
                     Medium = "null",
-                    Weight = 0
+                    Points = 0
                 };
             }
         }
