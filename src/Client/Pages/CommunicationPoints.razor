@@ -1,10 +1,9 @@
 ﻿@page "/comm-points"
+@inherits CommunicationPointsClass 
 
 @using Microsoft.AspNetCore.Authorization
 @attribute [Authorize]
-@inject HttpClient Http
-@inject IJSRuntime jsRuntime
-@inject IControllerConnection apiConn
+
 
 <AuthorizeView>
     <Authorized>
@@ -58,7 +57,7 @@
                             }
                             <hr />
                         }
-                        <p><b>Note</b>: You cannot assign more than @maxPoints to a medium.</p>
+                        <p><b>Note</b>: You cannot assign more than @maxPointsPerMedium to a medium.</p>
                         <p>Total points: @TotalPoints</p>
                         <button type="submit" disabled="@isSubmitting">Submit</button>
                     </EditForm>
@@ -69,147 +68,5 @@
 </AuthorizeView>
 
 @code {
-    bool isAdmin = false;
-    bool isSubmitting = false;
-    bool initialized = false;
-    bool serverMessageIsError = false;
-    string serverMessage = "";
-    int maxPoints = 100;
-    int TotalPoints
-    {
-        get
-        {
-            int total = 0;
-            foreach (var percentage in pointsDict.Keys)
-            {
-                total += percentage.Points;
-            }
-            return total;
-        }
-    }
-    Dictionary<CommunicationPoint, bool> pointsDict;          // holds true if user selected for edit
-
-    protected override async Task OnInitializedAsync()
-    {
-        await jsRuntime.InvokeVoidAsync("setPageTitle", "Communication Points");
-        isAdmin = await apiConn.IsProcessingUserAnAdmin(Http);
-        if (isAdmin)
-            await GetCommunicationPoints();
-
-        initialized = true;
-    }
-
-    protected async Task GetCommunicationPoints()
-    {
-        var token = await apiConn.GetAPITokenAsync();
-        if (token != null)
-        {
-            try
-            {
-                Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                var percentages = await Http.GetFromJsonAsync<List<CommunicationPoint>>($"api/communication/points");
-                InitializeDictionary(percentages);
-            }
-            catch (AccessTokenNotAvailableException exception)
-            {
-                exception.Redirect();
-            }
-        }
-    }
-
-    private void InitializeDictionary(List<CommunicationPoint> commPoints)
-    {
-        pointsDict = new Dictionary<CommunicationPoint, bool>();
-        foreach (var medium in commPoints)
-        {
-            pointsDict.Add(medium, false);
-        }
-    }
-
-    private bool SavePercentage(CommunicationPoint selectedMedium)
-    {
-        if (TotalPoints >= 0)
-        {
-            pointsDict[selectedMedium] = false;
-            return true;
-        }
-        else
-        {
-            selectedMedium.Points += TotalPoints;
-            return false;
-        }
-    }
-    private void EditPercentage(CommunicationPoint selectedMedium)
-    {
-        var toggledMedium = GetToggledMedium();
-        if (toggledMedium != null)
-        {
-            if (SavePercentage(toggledMedium))                          // If input value is less than % left only then toggle the other medium
-                pointsDict[selectedMedium] = true;
-        }
-        else
-            pointsDict[selectedMedium] = true;                          // If no previous medium is toggled
-
-    }
-    private void ClearPoints(CommunicationPoint selectedMedium)
-    {
-        selectedMedium.Points = 0;
-    }
-    private CommunicationPoint GetToggledMedium()
-    {
-        foreach (var medium in pointsDict.Keys)
-        {
-            if (pointsDict[medium])
-                return medium;
-        }
-        return null;
-    }
-
-    private async Task SubmitPoints()
-    {
-        if (TotalPoints < 1)
-        {
-            serverMessageIsError = true;
-            serverMessage = "You must assign at least one point (1 point) before submitting.";
-            return;
-        }
-        isSubmitting = true;
-        serverMessageIsError = false;
-
-        var toggledMedium = GetToggledMedium();
-        if (toggledMedium != null) pointsDict[toggledMedium] = false;
-
-        var token = await apiConn.GetAPITokenAsync();
-        if (token != null)
-        {
-            try
-            {
-                Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                var response = await Http.PutAsJsonAsync<List<CommunicationPoint>>($"api/communication/points/update", pointsDict.Keys.ToList());
-                if (response.IsSuccessStatusCode == false)
-                    serverMessageIsError = true;
-                serverMessage = await response.Content.ReadAsStringAsync();
-            }
-            catch (AccessTokenNotAvailableException exception)
-            {
-                exception.Redirect();
-            }
-        }
-        isSubmitting = false;
-    }
-
-    private string PointInputStyle
-    {
-        get
-        {
-            return TotalPoints <= 0 ? "border: 1px solid red" : "";
-        }
-    }
-    private string ServerMessageInlineStyle
-    {
-        get
-        {
-            return serverMessageIsError ? "color: red;" : "color: green;";
-        }
-    }
+    
 }

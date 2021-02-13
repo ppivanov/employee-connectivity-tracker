@@ -1,6 +1,7 @@
 ﻿using EctBlazorApp.Shared;
 using EctBlazorApp.Shared.Entities;
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -19,5 +20,7 @@ namespace EctBlazorApp.Client.Graph
         Task<(CommunicationPoint, CommunicationPoint)> FetchCommunicationPoints();
         
         Task<DashboardResponse> FetchDashboardResponse(string queryString);
+
+        Task<(bool, string)> SubmitPoints(List<CommunicationPoint> communicationPoints);
     }
 }

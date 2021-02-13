@@ -44,7 +44,7 @@ namespace EctBlazorApp.Client.Graph
 
             var json = JsonConvert.SerializeObject(userDetails);
             var data = new StringContent(json, Encoding.UTF8, "application/json");
-            
+
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", await GetAPITokenAsync());
             var response = await _httpClient.PutAsync($"api/main/update-tracking-records", data);
 
@@ -157,6 +157,31 @@ namespace EctBlazorApp.Client.Graph
                 }
             }
             return false;
+        }       // TODO - remove parameter
+
+        public async Task<(bool, string)> SubmitPoints(List<CommunicationPoint> communicationPoints)
+        {
+            var token = await GetAPITokenAsync();
+            const string tokenErrorMessage = "Error retrieving access token. Please, try again later.";
+            if (token == null)
+                return (true, tokenErrorMessage);
+
+            try
+            {
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                var response = await _httpClient.PutAsJsonAsync<List<CommunicationPoint>>($"api/communication/points/update", communicationPoints);
+                var serverMessage = await response.Content.ReadAsStringAsync();
+                var isError = false;
+                if (response.IsSuccessStatusCode == false)
+                    isError = true;
+
+                return (isError, serverMessage);
+            }
+            catch (AccessTokenNotAvailableException exception)
+            {
+                exception.Redirect();
+            }
+            return (true, tokenErrorMessage);
         }
     }
 }
