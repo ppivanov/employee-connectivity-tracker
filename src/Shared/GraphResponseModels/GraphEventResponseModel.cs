@@ -1,5 +1,5 @@
 ﻿using System;
-using static EctBlazorApp.Shared.SharedCommonMethods;
+using static EctBlazorApp.Shared.SharedMethods;
 
 namespace EctBlazorApp.Shared.GraphModels
 {

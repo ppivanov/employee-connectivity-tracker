@@ -11,7 +11,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using static EctBlazorApp.Shared.SharedCommonMethods;
+using static EctBlazorApp.Shared.SharedMethods;
 
 namespace EctBlazorApp.Server.Controllers
 {

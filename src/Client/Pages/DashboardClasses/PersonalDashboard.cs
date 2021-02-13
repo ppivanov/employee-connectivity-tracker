@@ -11,7 +11,7 @@ using System.Linq;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
-using static EctBlazorApp.Shared.SharedCommonMethods;
+using static EctBlazorApp.Shared.SharedMethods;
 
 namespace EctBlazorApp.Client.Pages.DashboardClasses
 {

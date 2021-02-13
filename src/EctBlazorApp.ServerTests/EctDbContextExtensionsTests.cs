@@ -17,7 +17,7 @@ using static EctBlazorApp.ServerTests.MockObjects;
 
 namespace EctBlazorApp.ServerTests
 {
-    [TestClass()]
+    [TestClass]
     [ExcludeFromCodeCoverage]
     public sealed class EctDbContextExtensionsTests : IDisposable
     {
@@ -38,7 +38,7 @@ namespace EctBlazorApp.ServerTests
             _httpClient = null;
         }
 
-        [TestMethod()]
+        [TestMethod]
         public async Task GetExistingEctUserOrNew_ExistingUserEmail_AliceIsReturned()
         {
             string userEmail = "alice@ect.ie";
@@ -48,7 +48,7 @@ namespace EctBlazorApp.ServerTests
             Assert.AreSame(expectedUser, actualUser);
         }
 
-        [TestMethod()]
+        [TestMethod]
         public async Task GetExistingEctUserOrNew_NonExistentUserEmail_BobIsReturned()
         {
             DateTime expectedLastSignIn = new DateTime(2020, 10, 1);
@@ -67,7 +67,7 @@ namespace EctBlazorApp.ServerTests
             Assert.AreEqual(expectedLastSignIn, actualUser.LastSignIn);
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void GetReceivedMailInDateRangeForUserId_NonexistentUserId_ReturnsEmptyList()
         {
             List<ReceivedMail> expectedList = new List<ReceivedMail>();
@@ -81,7 +81,7 @@ namespace EctBlazorApp.ServerTests
             CollectionAssert.AreEquivalent(expectedList, actualList);
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void GetReceivedMailInDateRangeForUserId_UserIdForAlice_ReturnsSingleReceivedMail()
         {
             List<ReceivedMail> expectedList;
@@ -100,7 +100,7 @@ namespace EctBlazorApp.ServerTests
             CollectionAssert.AreEquivalent(expectedList, actualList);
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void GetCalendarEventsInDateRangeForUserId_NonexistentUserId_ReturnsEmptyList()
         {
             List<CalendarEvent> expectedList = new List<CalendarEvent>();
@@ -114,7 +114,7 @@ namespace EctBlazorApp.ServerTests
             CollectionAssert.AreEquivalent(expectedList, actualList);
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void GetCalendarEventsInDateRangeForUserId_UserIdForAlice_ReturnsSingleCalendarEvent()
         {
             List<CalendarEvent> expectedList;
@@ -133,7 +133,7 @@ namespace EctBlazorApp.ServerTests
             CollectionAssert.AreEquivalent(expectedList, actualList);
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void GetSentMailInDateRangeForUserId_NonexistentUserId_ReturnsEmptyList()
         {
             List<SentMail> expectedList = new List<SentMail>();
@@ -147,7 +147,7 @@ namespace EctBlazorApp.ServerTests
             CollectionAssert.AreEquivalent(expectedList, actualList);
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void GetSentMailInDateRangeForUserId_UserIdForAlice_ReturnsSingleSentMail()
         {
             List<SentMail> expectedList;
@@ -170,7 +170,7 @@ namespace EctBlazorApp.ServerTests
         [DataRow("admin@ect.ie", true)]
         [DataRow("doesnt@exist.ie", false)]
         [DataRow("alice@ect.ie", false)]
-        [TestMethod()]
+        [TestMethod]
         public void IsEmailForAdmin_Parametarized(string userEmail, bool expectedResult)
         {
             bool actualResult = _dbContext.IsEmailForAdmin(userEmail);
@@ -183,7 +183,7 @@ namespace EctBlazorApp.ServerTests
         [DataRow("admin@ect.ie", false)]
         [DataRow("homer@ect.ie", false)]
         [DataRow("doesnt@exist.ie", false)]
-        [TestMethod()]
+        [TestMethod]
         public void IsEmailForLeader_Parametarized(string userEmail, bool expectedResult)
         {
             bool actualResult = _dbContext.IsEmailForLeader(userEmail);

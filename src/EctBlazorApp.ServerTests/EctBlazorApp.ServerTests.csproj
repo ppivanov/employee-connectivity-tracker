@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Server\EctBlazorApp.Server.csproj" />
+    <ProjectReference Include="..\Shared\EctBlazorApp.Shared.csproj" />
   </ItemGroup>
 
 </Project>

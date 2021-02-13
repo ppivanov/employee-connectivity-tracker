@@ -14,7 +14,7 @@ using static EctBlazorApp.ServerTests.MockObjects;
 
 namespace EctBlazorApp.ServerTests
 {
-    [TestClass()]
+    [TestClass]
     [ExcludeFromCodeCoverage]
     public sealed class EctUserExtensionsTests : IDisposable
     {
@@ -30,7 +30,7 @@ namespace EctBlazorApp.ServerTests
             _dbContext.Database.EnsureDeleted();
         }
 
-        [TestMethod()]
+        [TestMethod]
         public async Task UpdateCalendarEventRecordsAsync_TwoMissingEvents_EventsSavedSuccessfully()
         {
             EctUser contextUser = _dbContext.Users.First(user => user.Email.Equals("alice@ect.ie"));
@@ -59,7 +59,7 @@ namespace EctBlazorApp.ServerTests
             Assert.IsTrue(eventsAddedToDb);
         }
 
-        [TestMethod()]
+        [TestMethod]
         public async Task UpdateCalendarEventRecordsAsync_NoEvents_RecordsUpToDate()
         {
             EctUser contextUser = _dbContext.Users.First(user => user.Email.Equals("alice@ect.ie"));
@@ -78,7 +78,7 @@ namespace EctBlazorApp.ServerTests
             Assert.IsTrue(actualValue);
         }
 
-        [TestMethod()]
+        [TestMethod]
         public async Task UpdateReceivedMailRecordsAsync_TwoMissingEmails_EmailsSavedSuccessfully()
         {
             EctUser contextUser = _dbContext.Users.First(user => user.Email.Equals("alice@ect.ie"));
@@ -107,7 +107,7 @@ namespace EctBlazorApp.ServerTests
             Assert.IsTrue(mailAddedToDb);
         }
 
-        [TestMethod()]
+        [TestMethod]
         public async Task UpdateReceivedMailRecordsAsync_NoEmails_RecordsUpToDate()
         {
             EctUser contextUser = _dbContext.Users.First(user => user.Email.Equals("alice@ect.ie"));
@@ -126,7 +126,7 @@ namespace EctBlazorApp.ServerTests
             Assert.IsTrue(actualValue);
         }
 
-        [TestMethod()]
+        [TestMethod]
         public async Task UpdateSentMailRecordsAsync_TwoMissingEmails_EmailsSavedSuccessfully()
         {
             EctUser contextUser = _dbContext.Users.First(user => user.Email.Equals("alice@ect.ie"));
@@ -155,7 +155,7 @@ namespace EctBlazorApp.ServerTests
             Assert.IsTrue(mailAddedToDb);
         }
 
-        [TestMethod()]
+        [TestMethod]
         public async Task UpdateSentMailRecordsAsync_NoEmails_RecordsUpToDate()
         {
             EctUser contextUser = _dbContext.Users.First(user => user.Email.Equals("alice@ect.ie"));

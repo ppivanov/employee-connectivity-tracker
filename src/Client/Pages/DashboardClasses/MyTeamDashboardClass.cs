@@ -8,7 +8,7 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
-using static EctBlazorApp.Shared.SharedCommonMethods;
+using static EctBlazorApp.Shared.SharedMethods;
 
 namespace EctBlazorApp.Client.Pages.DashboardClasses
 {
@@ -71,10 +71,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         {
             emailsSent = 0;
             emailsReceived = 0;
-            DateTime fromDate = FromDate.Value.Date;
-            DateTime toDate = ToDate.Value.Date;
-
-            string queryString = $"?fromDate={fromDate.ToString("yyyy-MM-dd")}&toDate={toDate.ToString("yyyy-MM-dd")}";
+            string queryString = GetDateRangeQueryString(FromDate.Value, ToDate.Value);
 
             var token = await ApiConn.GetAPITokenAsync();
             if (token != null)

@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 namespace EctBlazorApp.Shared
 {
-    public static class SharedCommonMethods
+    public static class SharedMethods
     {
         public static DateTime NewDateTimeFromString(string dateString)                             // Expects the string to be in yyyy-MM-dd format
         {
@@ -32,7 +32,7 @@ namespace EctBlazorApp.Shared
 
         public static string GetDateRangeQueryString(DateTimeOffset fromDate, DateTimeOffset toDate)
         {
-            string queryString = $"?fromDate={fromDate.Date.ToString("yyyy-MM-dd")}&toDate={toDate.Date.ToString("yyyy-MM-dd")}";
+            string queryString = $"?fromDate={fromDate.ToString("yyyy-MM-dd")}&toDate={toDate.ToString("yyyy-MM-dd")}";
             return queryString;
         }
 

@@ -12,7 +12,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace EctBlazorApp.ServerTests
 {
-    [TestClass()]
+    [TestClass]
     [ExcludeFromCodeCoverage]
     public sealed class AuthorizationAttributesTests : IDisposable
     {
@@ -28,25 +28,25 @@ namespace EctBlazorApp.ServerTests
             _dbContext.Database.EnsureDeleted();
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void AuthorizeAdmin_IsNotAdmin_Unauthorized()
         {
             TestAuthorizationAttribute<AuthorizeAdminAttribute>("alice@ect.ie", Assert.IsNotNull);
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void AuthorizeAdmin_IsAdmin_Authorized()
         {
             TestAuthorizationAttribute<AuthorizeAdminAttribute>("admin@ect.ie", Assert.IsNull);
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void AuthorizeLeader_IsNotLeader_Unauthorized()
         {
             TestAuthorizationAttribute<AuthorizeLeaderAttribute>("admin@ect.ie", Assert.IsNotNull);                                                                                                // The Result property is null only if the user has access 
         }
         
-        [TestMethod()]
+        [TestMethod]
         public void AuthorizeLeader_IsLeader_Authorized()
         {
             TestAuthorizationAttribute<AuthorizeLeaderAttribute>("alice@ect.ie", Assert.IsNull);                                                                                                // The Result property is null only if the user has access 
