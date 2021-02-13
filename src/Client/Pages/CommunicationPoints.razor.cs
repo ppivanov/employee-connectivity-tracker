@@ -1,14 +1,10 @@
 ﻿using EctBlazorApp.Client.Graph;
 using EctBlazorApp.Shared.Entities;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.JSInterop;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Net.Http.Json;
 using System.Threading.Tasks;
 
 namespace EctBlazorApp.Client.Pages
@@ -25,20 +21,20 @@ namespace EctBlazorApp.Client.Pages
         IControllerConnection ApiConn { get; set; }
 
         private bool serverMessageIsError = false;
-        protected const int maxPointsPerMedium = 100;
+        public const int maxPointsPerMedium = 100;
         protected bool isAdmin = false;
         protected bool isSubmitting = false;
         protected bool initialized = false;
         protected bool inputError = false;
         protected string serverMessage = "";
-        protected Dictionary<CommunicationPoint, bool> pointsDict;          // holds true if user selected for edit
+        public Dictionary<CommunicationPoint, bool> PointsAndToggles { get; set; }          // holds true if user selected for edit
 
         protected int TotalPoints
         {
             get
             {
                 int total = 0;
-                foreach (var percentage in pointsDict.Keys)
+                foreach (var percentage in PointsAndToggles.Keys)
                 {
                     total += percentage.Points;
                 }
@@ -62,7 +58,6 @@ namespace EctBlazorApp.Client.Pages
             }
         }
 
-
         protected override async Task OnInitializedAsync()
         {
             await jsRuntime.InvokeVoidAsync("setPageTitle", "Communication Points");
@@ -82,50 +77,60 @@ namespace EctBlazorApp.Client.Pages
 
         private void InitializeDictionary(List<CommunicationPoint> commPoints)
         {
-            pointsDict = new Dictionary<CommunicationPoint, bool>();
+            PointsAndToggles = new Dictionary<CommunicationPoint, bool>();
             foreach (var medium in commPoints)
             {
-                pointsDict.Add(medium, false);
+                PointsAndToggles.Add(medium, false);
             }
         }
 
-        protected bool SavePercentage(CommunicationPoint selectedMedium)
+        protected bool SavePoints(CommunicationPoint selectedMedium)
         {
             inputError = false;
+            bool returnValue = false;
             bool lessThanMax = selectedMedium.Points <= maxPointsPerMedium;
-            if (TotalPoints >= 0 && lessThanMax)
+            if (selectedMedium.Points >= 0 && lessThanMax)
             {
-                pointsDict[selectedMedium] = false;
-                return true;
+                PointsAndToggles[selectedMedium] = false;
+                returnValue = true;
+            }
+            else if (selectedMedium.Points < 0)
+            {
+                selectedMedium.Points = 0;
+                inputError = true;
+                returnValue = false;
             }
             else
             {
                 selectedMedium.Points = maxPointsPerMedium;
                 inputError = true;
-                return false;
+                returnValue = false;
             }
+            return returnValue;
         }
-        protected void EditPercentage(CommunicationPoint selectedMedium)
+
+        public void EditPoints(CommunicationPoint selectedMedium)
         {
             var toggledMedium = GetToggledMedium();
             if (toggledMedium != null)
             {
-                if (SavePercentage(toggledMedium))                          // If input value is less than % left only then toggle the other medium
-                    pointsDict[selectedMedium] = true;
+                if (SavePoints(toggledMedium))                          // If input value is less than % left only then toggle the other medium
+                    PointsAndToggles[selectedMedium] = true;
             }
             else
-                pointsDict[selectedMedium] = true;                          // If no previous medium is toggled
-
+                PointsAndToggles[selectedMedium] = true;                          // If no previous medium is toggled
         }
+
         protected void ClearPoints(CommunicationPoint selectedMedium)
         {
             selectedMedium.Points = 0;
         }
+
         private CommunicationPoint GetToggledMedium()
         {
-            foreach (var medium in pointsDict.Keys)
+            foreach (var medium in PointsAndToggles.Keys)
             {
-                if (pointsDict[medium])
+                if (PointsAndToggles[medium])
                     return medium;
             }
             return null;
@@ -143,8 +148,8 @@ namespace EctBlazorApp.Client.Pages
             serverMessageIsError = false;
 
             var toggledMedium = GetToggledMedium();
-            if (toggledMedium != null) pointsDict[toggledMedium] = false;
-            var response = await ApiConn.SubmitPoints(pointsDict.Keys.ToList());
+            if (toggledMedium != null) PointsAndToggles[toggledMedium] = false;
+            var response = await ApiConn.SubmitPoints(PointsAndToggles.Keys.ToList());
             serverMessageIsError = response.Item1;
             serverMessage = response.Item2;
            

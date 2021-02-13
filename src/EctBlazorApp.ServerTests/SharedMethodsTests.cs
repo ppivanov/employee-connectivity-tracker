@@ -1,15 +1,13 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using EctBlazorApp.Shared;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Diagnostics.CodeAnalysis;
 using static EctBlazorApp.Shared.SharedMethods;
 
 namespace EctBlazorApp.ServerTests
 {
     [TestClass]
+    [ExcludeFromCodeCoverage]
     public class SharedMethodsTests
     {
         [DataTestMethod]

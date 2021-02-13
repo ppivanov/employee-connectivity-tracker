@@ -25,13 +25,13 @@
                     {
                         <p style="@ServerMessageInlineStyle">@serverMessage</p>
                     }
-                    <EditForm Model="pointsDict" OnSubmit="@(async () => await SubmitPoints())" Context="formContext">
-                        @foreach (var medium in pointsDict.Keys)
+                    <EditForm Model="PointsAndToggles" OnSubmit="@(async () => await SubmitPoints())" Context="formContext">
+                        @foreach (var medium in PointsAndToggles.Keys)
                         {
                             <div class="comms-input-pair">
                                 <p>
                                     @medium.Medium
-                                    @if (pointsDict[medium])
+                                    @if (PointsAndToggles[medium])
                                     {
                                         <InputNumber @bind-Value=medium.Points class="" id="Weight" style="@PointInputStyle" />
                                     }
@@ -45,13 +45,13 @@
 
                             @if (medium.Medium.Contains("Email") || medium.Medium.Contains("Meetings"))
                             {
-                                @if (pointsDict[medium])
+                                @if (PointsAndToggles[medium])
                                 {
-                                    <button @onclick="() => SavePercentage(medium)" type="button">Save</button>
+                                    <button @onclick="() => SavePoints(medium)" type="button">Save</button>
                                 }
                                 else
                                 {
-                                    <button @onclick="() => EditPercentage(medium)" type="button">Edit</button>
+                                    <button @onclick="() => EditPoints(medium)" type="button">Edit</button>
                                 }
                                 <button @onclick="() => ClearPoints(medium)" type="button">Clear</button>
                             }
