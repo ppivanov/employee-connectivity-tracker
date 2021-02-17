@@ -29,33 +29,37 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
 
         protected override object[][] GetCalendarEventsData()
         {
-            Dictionary<string, int> subjectAndCount = new Dictionary<string, int>();
+            Dictionary<string, HashSet<string>> eventsBySubject = new Dictionary<string, HashSet<string>>();
 
             foreach (var member in teamMembers)
             {
                 foreach (var calendarEvent in member.CalendarEvents)
                 {
-                    if (subjectAndCount.ContainsKey(calendarEvent.Subject))
-                        subjectAndCount[calendarEvent.Subject]++;
+                    string eventDateTimeRange = $"{calendarEvent.Start}-{calendarEvent.End}";
+                    if (eventsBySubject.ContainsKey(calendarEvent.Subject))
+                    {
+                        if (eventsBySubject[calendarEvent.Subject].Contains(eventDateTimeRange) == false)                                               // only add if the specific meeting at the specific time has not been added
+                            eventsBySubject[calendarEvent.Subject].Add(eventDateTimeRange);
+                    }
                     else
-                        subjectAndCount.Add(calendarEvent.Subject, 1);
+                        eventsBySubject.Add(calendarEvent.Subject, new HashSet<string>() { { eventDateTimeRange } });                                   // if none of the meetings so far have had the subject, add a new one and initialize a set for the times
                 }
             }
-            // loop and count using the dict
 
-            object[][] newList = new object[subjectAndCount.Count][];
+            // loop over the dictionary and count the number of elements in the set
+            object[][] newList = new object[eventsBySubject.Count][];
             int i = 0;
-            foreach (KeyValuePair<string, int> dictionaryEntry in subjectAndCount)
+            foreach (KeyValuePair<string, HashSet<string>> dictionaryEntry in eventsBySubject)
             {
-                newList[i] = new object[] { dictionaryEntry.Key, dictionaryEntry.Value };
-                i++;
+                int count = dictionaryEntry.Value.Count;
+                newList[i++] = new object[] { dictionaryEntry.Key, count };
             }
             return newList;
         }
         protected override object[][] GetEmailData()
         {
             var dates = SplitDateRangeToChunks(FromDate.Value, ToDate.Value);
-            object[][] newList = new object[dates.Count + 1][];
+            object[][] newList = new object[dates.Count][];
 
             for (int i = 0; i < dates.Count; i++)
             {
