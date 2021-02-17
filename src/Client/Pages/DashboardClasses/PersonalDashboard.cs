@@ -23,6 +23,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         private List<SentMail> sentMail;
         private List<ReceivedMail> receivedMail;
         private List<CalendarEvent> calendarEvents;
+        private readonly Dictionary<string, double> collaboratorsDict = new Dictionary<string, double>();
 
         private int TotalMinutesInMeetings
         {
@@ -65,7 +66,6 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         protected int numberOfMeetings = 0;
         protected double secondsInMeeting = 0;
         protected double totalWeight = 0;
-        protected readonly Dictionary<string, double> collaboratorsDict = new Dictionary<string, double>();
         protected IEnumerable<KeyValuePair<string, double>> collaborators
         {
             get
