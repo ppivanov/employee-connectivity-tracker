@@ -4,14 +4,16 @@ using EctBlazorApp.Server;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EctBlazorApp.Server.Migrations
 {
     [DbContext(typeof(EctDbContext))]
-    partial class EctDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210217142736_AddTeamThreshold")]
+    partial class AddTeamThreshold
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
