@@ -61,7 +61,7 @@ namespace EctBlazorApp.Client.Pages
         protected override async Task OnInitializedAsync()
         {
             await jsRuntime.InvokeVoidAsync("setPageTitle", "Communication Points");
-            isAdmin = await ApiConn.IsProcessingUserAnAdmin(Http);
+            isAdmin = await ApiConn.IsProcessingUserAnAdmin();
             if (isAdmin)
                 await FetchCommunicationPoints();
 

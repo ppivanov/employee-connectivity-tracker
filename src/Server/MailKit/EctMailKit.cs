@@ -30,9 +30,9 @@ namespace EctBlazorApp.Server.MailKit
                 smtpClient.Send(mimeMessage);
                 smtpClient.Disconnect(true);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return false;                                                                       // todo: log the exception
+                return false;
             }
 
             return true;

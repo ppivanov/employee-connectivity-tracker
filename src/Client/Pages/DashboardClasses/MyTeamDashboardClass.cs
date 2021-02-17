@@ -22,7 +22,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         protected override async Task OnInitializedAsync()
         {
             await JsRuntime.InvokeVoidAsync("setPageTitle", "My Team");
-            isLeader = await ApiConn.IsProcessingUserALeader(Http);
+            isLeader = await ApiConn.IsProcessingUserALeader();
             if (isLeader)
                 await UpdateDashboard();
         }

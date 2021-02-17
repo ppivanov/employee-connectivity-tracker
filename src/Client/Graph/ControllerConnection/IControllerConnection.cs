@@ -13,9 +13,9 @@ namespace EctBlazorApp.Client.Graph
 
         Task<string> GetAPITokenAsync();
 
-        Task<Boolean> IsProcessingUserAnAdmin(HttpClient Http);
+        Task<Boolean> IsProcessingUserAnAdmin();
 
-        Task<Boolean> IsProcessingUserALeader(HttpClient Http);
+        Task<Boolean> IsProcessingUserALeader();
 
         Task<(CommunicationPoint, CommunicationPoint)> FetchCommunicationPoints();
         

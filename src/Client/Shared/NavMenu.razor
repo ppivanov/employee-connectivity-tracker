@@ -23,7 +23,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        isAdmin = await apiConn.IsProcessingUserAnAdmin(Http);
-        isLeader = await apiConn.IsProcessingUserALeader(Http);
+        isAdmin = await apiConn.IsProcessingUserAnAdmin();
+        isLeader = await apiConn.IsProcessingUserALeader();
     }
 }

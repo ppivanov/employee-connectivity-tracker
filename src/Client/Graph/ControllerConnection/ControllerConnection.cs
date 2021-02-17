@@ -129,26 +129,26 @@ namespace EctBlazorApp.Client.Graph
             return new DashboardResponse();
         }
 
-        public async Task<Boolean> IsProcessingUserAnAdmin(HttpClient Http)
+        public async Task<Boolean> IsProcessingUserAnAdmin()
         {
-            var adminResponse = await IsProcessingUserAuthorizedForRole(Http, UserRoles.admin);
+            var adminResponse = await IsProcessingUserAuthorizedForRole(UserRoles.admin);
             return adminResponse;
         }
-        public async Task<Boolean> IsProcessingUserALeader(HttpClient Http)
+        public async Task<Boolean> IsProcessingUserALeader()
         {
-            var leaderResponse = await IsProcessingUserAuthorizedForRole(Http, UserRoles.leader);
+            var leaderResponse = await IsProcessingUserAuthorizedForRole(UserRoles.leader);
             return leaderResponse;
         }
 
-        private async Task<Boolean> IsProcessingUserAuthorizedForRole(HttpClient Http, UserRoles role)
+        private async Task<Boolean> IsProcessingUserAuthorizedForRole(UserRoles role)
         {
             var token = await GetAPITokenAsync();
             if (token != null)
             {
                 try
                 {
-                    Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                    bool authResponse = await Http.GetFromJsonAsync<Boolean>($"api/auth/is-{role}");
+                    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    bool authResponse = await _httpClient.GetFromJsonAsync<Boolean>($"api/auth/is-{role}");
                     return authResponse;
                 }
                 catch (AccessTokenNotAvailableException)                                          // TODO - Find out if this is still valid
@@ -157,7 +157,7 @@ namespace EctBlazorApp.Client.Graph
                 }
             }
             return false;
-        }       // TODO - remove parameter
+        }
 
         public async Task<(bool, string)> SubmitPoints(List<CommunicationPoint> communicationPoints)
         {
