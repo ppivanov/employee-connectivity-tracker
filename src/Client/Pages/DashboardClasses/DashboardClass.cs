@@ -7,6 +7,7 @@ using Microsoft.JSInterop;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using static EctBlazorApp.Shared.SharedMethods;
 
 namespace EctBlazorApp.Client.Pages.DashboardClasses
 {
@@ -22,11 +23,20 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         protected IJSRuntime JsRuntime { get; set; }
 
         protected bool initialized = false;
+        protected int numberOfMeetings = 0;
+        protected double secondsInMeeting = 0;
         protected CommunicationPoint emailCommPoints;
         protected CommunicationPoint meetingCommPoints;
+
         protected DateTimeOffset? FromDate { get; set; } = DateTimeOffset.Now; 
         protected DateTimeOffset? ToDate { get; set; } = DateTimeOffset.Now.AddDays(1);
-
+        protected string FormattedTimeInMeeting
+        {
+            get
+            {
+                return FormatSecondsToHoursAndMinutes(secondsInMeeting);
+            }
+        }
         protected async Task CustomApply(MouseEventArgs e, DateRangePicker picker)
         {
             await picker.ClickApply(e);

@@ -72,6 +72,19 @@ namespace EctBlazorApp.ServerTests
             Assert.AreEqual(expectedResult, actualResult);
         }
 
+        [DataTestMethod]
+        [DataRow(8, 0, 9, 0, 3600)]
+        [DataRow(8, 30, 9, 0, 1800)]
+        [DataRow(13, 20, 14, 10, 3000)]
+        public void GetSecondsFromDateTimeRangeTest(int fromHour, int fromMinutes, int toHour, int toMinutes, int expectedResult)
+        {
+            DateTime from = new DateTime(2021, 1, 1, fromHour, fromMinutes, 0);
+            DateTime to = new DateTime(2021, 1, 1, toHour, toMinutes, 0);
+            int actualResult = GetSecondsFromDateTimeRange(from, to);
+
+            Assert.AreEqual(expectedResult, actualResult);
+        }
+
         [TestMethod]
         public void SplitDateRangeToChunksTest()
         {

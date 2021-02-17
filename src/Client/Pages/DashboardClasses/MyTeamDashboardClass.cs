@@ -39,10 +39,18 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
                     if (eventsBySubject.ContainsKey(calendarEvent.Subject))
                     {
                         if (eventsBySubject[calendarEvent.Subject].Contains(eventDateTimeRange) == false)                                               // only add if the specific meeting at the specific time has not been added
+                        {
                             eventsBySubject[calendarEvent.Subject].Add(eventDateTimeRange);
+                            secondsInMeeting += GetSecondsFromDateTimeRange(calendarEvent.Start, calendarEvent.End);
+                            numberOfMeetings++;
+                        }
                     }
                     else
+                    {
                         eventsBySubject.Add(calendarEvent.Subject, new HashSet<string>() { { eventDateTimeRange } });                                   // if none of the meetings so far have had the subject, add a new one and initialize a set for the times
+                        secondsInMeeting += GetSecondsFromDateTimeRange(calendarEvent.Start, calendarEvent.End);
+                        numberOfMeetings++;
+                    }
                 }
             }
 

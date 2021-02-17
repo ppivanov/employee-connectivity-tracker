@@ -56,16 +56,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
                 return receivedMail != null ? receivedMail.Count : 0;
             }
         }
-        protected string GetFormattedTimeInMeeting
-        {
-            get
-            {
-                return FormatSecondsToHoursAndMinutes(secondsInMeeting);
-            }
-        }
-        protected int numberOfMeetings = 0;
-        protected double secondsInMeeting = 0;
-        protected double totalWeight = 0;
+
         protected IEnumerable<KeyValuePair<string, double>> collaborators
         {
             get
