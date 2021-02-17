@@ -52,7 +52,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             }
             return newList;
         }
-        protected override object[][] GetSentAndReceivedEmailData()
+        protected override object[][] GetEmailData()
         {
             var dates = SplitDateRangeToChunks(FromDate.Value, ToDate.Value);
             object[][] newList = new object[dates.Count + 1][];
@@ -104,7 +104,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
                     initialized = true;
                     await InvokeAsync(StateHasChanged);                                                                     // Force a refresh of the component before trying to load the js graphs
 
-                    await JsRuntime.InvokeVoidAsync("loadMyTeamDashboardGraph", (object)GetSentAndReceivedEmailData(), (object)GetCalendarEventsData());
+                    await JsRuntime.InvokeVoidAsync("loadMyTeamDashboardGraph", (object)GetEmailData(), (object)GetCalendarEventsData());
                 }
                 catch (AccessTokenNotAvailableException exception)
                 {

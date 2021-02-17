@@ -54,7 +54,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         }
 
         protected abstract object[][] GetCalendarEventsData();
-        protected abstract object[][] GetSentAndReceivedEmailData();
+        protected abstract object[][] GetEmailData();
         protected abstract Task UpdateDashboard();
     }
 }

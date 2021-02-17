@@ -76,7 +76,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
                     list.Add(new KeyValuePair<string, double>(key, collaboratorsDict[key] / TotalPoints * 100));
 
                 list.Sort(
-                    (KeyValuePair<string, double> pair1, KeyValuePair<string, double> pair2) => 
+                    (KeyValuePair<string, double> pair1, KeyValuePair<string, double> pair2) =>
                     {
                         return pair2.Value.CompareTo(pair1.Value);                              // descending order
                     }
@@ -125,16 +125,14 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
 
             return newList;
         }
-        protected override object[][] GetSentAndReceivedEmailData()
+        protected override object[][] GetEmailData()
         {
             var dates = SplitDateRangeToChunks(FromDate.Value, ToDate.Value);
-            object[][] newList = new object[dates.Count + 1][];
+            object[][] newList = new object[dates.Count][];
 
-            newList[0] = new object[] { "Date", "Sent Emails", "Received Emails" };
-            for (int i = 1; i <= dates.Count; i++)
+            for (int i = 0; i < dates.Count; i++)
             {
-                int datesIndex = i - 1;                                                                      // We add a row to the array that contains the value descriptions, but we still need the first date at position 0
-                DateTime date = dates[datesIndex];
+                DateTime date = dates[i];
                 int countOfSentMail = sentMail.Count(sm => sm.SentAt.Date == date);
                 int countOfReceivedMail = receivedMail.Count(rm => rm.ReceivedAt.Date == date);
 
@@ -151,9 +149,9 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             ExtractDataFromResponse(response);
             await GetCollaborators();
 
-            await JsRuntime.InvokeVoidAsync("loadDashboardGraph", (object)GetSentAndReceivedEmailData(), (object)GetCalendarEventsData());
+            await JsRuntime.InvokeVoidAsync("loadDashboardGraph", (object)GetEmailData(), (object)GetCalendarEventsData());
         }
-        
+
         private void ExtractDataFromResponse(DashboardResponse response)
         {
             sentMail = response.SentMail;
