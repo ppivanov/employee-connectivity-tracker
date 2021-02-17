@@ -29,7 +29,27 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
 
         protected override object[][] GetCalendarEventsData()
         {
-            object[][] newList = new object[0][];               // TODO
+            Dictionary<string, int> subjectAndCount = new Dictionary<string, int>();
+
+            foreach (var member in teamMembers)
+            {
+                foreach (var calendarEvent in member.CalendarEvents)
+                {
+                    if (subjectAndCount.ContainsKey(calendarEvent.Subject))
+                        subjectAndCount[calendarEvent.Subject]++;
+                    else
+                        subjectAndCount.Add(calendarEvent.Subject, 1);
+                }
+            }
+            // loop and count using the dict
+
+            object[][] newList = new object[subjectAndCount.Count][];
+            int i = 0;
+            foreach (KeyValuePair<string, int> dictionaryEntry in subjectAndCount)
+            {
+                newList[i] = new object[] { dictionaryEntry.Key, dictionaryEntry.Value };
+                i++;
+            }
             return newList;
         }
         protected override object[][] GetSentAndReceivedEmailData()
@@ -84,7 +104,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
                     initialized = true;
                     await InvokeAsync(StateHasChanged);                                                                     // Force a refresh of the component before trying to load the js graphs
 
-                    await JsRuntime.InvokeVoidAsync("loadMyTeamDashboardGraph", (object)GetSentAndReceivedEmailData());
+                    await JsRuntime.InvokeVoidAsync("loadMyTeamDashboardGraph", (object)GetSentAndReceivedEmailData(), (object)GetCalendarEventsData());
                 }
                 catch (AccessTokenNotAvailableException exception)
                 {

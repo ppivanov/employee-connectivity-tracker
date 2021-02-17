@@ -116,13 +116,11 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
                 }
             }
 
-            object[][] newList = new object[subjectAndCount.Count + 1][];
-            newList[0] = new object[] { "Event subject", "Number of events" };
-            int i = 1;
-            foreach (KeyValuePair<string, int> dictionaryEnty in subjectAndCount)
+            object[][] newList = new object[subjectAndCount.Count][];
+            int i = 0;
+            foreach (KeyValuePair<string, int> dictionaryEntry in subjectAndCount)
             {
-                newList[i] = new object[] { dictionaryEnty.Key, dictionaryEnty.Value.ToString() };
-                i++;
+                newList[i++] = new object[] { dictionaryEntry.Key, dictionaryEntry.Value };
             }
 
             return newList;
