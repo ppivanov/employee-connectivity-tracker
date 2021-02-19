@@ -11,7 +11,7 @@ namespace EctBlazorApp.Shared.Entities
         [Required]
         public int LeaderId { get; set; }
         public EctUser Leader { get; set; }
-        public int PointThreshold { get; set; }
+        public int PointsThreshold { get; set; }
         public ICollection<EctUser> Members { get; set; }
     }
 }

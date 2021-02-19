@@ -64,7 +64,7 @@ namespace EctBlazorApp.Server.Controllers
         [Route("get-team-stats")]
         [HttpGet]
         [AuthorizeLeader]
-        public async Task<ActionResult<List<EctUser>>> StatsForDashboard([FromQuery] string fromDate, [FromQuery] string toDate, [FromQuery] string teamId = "")
+        public async Task<ActionResult<List<EctUser>>> GetStatsForDashboard([FromQuery] string fromDate, [FromQuery] string toDate, [FromQuery] string teamId = "")
         {
             string userEmail = await HttpContext.GetPreferredUsername();
             int userId = _dbContext.Users.First(u => u.Email == userEmail).Id;
@@ -80,6 +80,18 @@ namespace EctBlazorApp.Server.Controllers
             }
 
             return membersAndCommsData;
+        }
+
+        [Route("get-points-threshold")]
+        [HttpGet]
+        [AuthorizeLeader]
+        public async Task<ActionResult<int>> GetCurrentPointsThreshold([FromQuery] string teamId = "")
+        {
+            string userEmail = await HttpContext.GetPreferredUsername();
+            int userId = _dbContext.Users.First(u => u.Email == userEmail).Id;
+            EctTeam assignedTeam = _dbContext.Teams.First(t => t.LeaderId == userId);
+            
+            return assignedTeam.PointsThreshold;
         }
 
         private EctUser GetCommunicationDataAsNewUserInstance(EctUser forUser, DateTime fromDate, DateTime toDate)
