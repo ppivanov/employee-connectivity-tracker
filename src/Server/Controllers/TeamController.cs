@@ -13,6 +13,7 @@ using static EctBlazorApp.Shared.SharedMethods;
 
 namespace EctBlazorApp.Server.Controllers
 {
+    [Produces("application/json")]
     [Authorize]
     [Route("api/team")]
     [ApiController]
@@ -91,7 +92,7 @@ namespace EctBlazorApp.Server.Controllers
             int userId = _dbContext.Users.First(u => u.Email == userEmail).Id;
             EctTeam assignedTeam = _dbContext.Teams.First(t => t.LeaderId == userId);
             
-            return assignedTeam.PointsThreshold;
+            return Ok(assignedTeam.PointsThreshold);
         }
 
         private EctUser GetCommunicationDataAsNewUserInstance(EctUser forUser, DateTime fromDate, DateTime toDate)

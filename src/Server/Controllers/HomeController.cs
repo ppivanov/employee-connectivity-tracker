@@ -15,6 +15,7 @@ using static EctBlazorApp.Shared.SharedMethods;
 
 namespace EctBlazorApp.Server.Controllers
 {
+    [Produces("application/json")]
     [Authorize]
     [Route("api/main")]
     [ApiController]

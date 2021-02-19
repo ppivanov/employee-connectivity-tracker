@@ -59,6 +59,20 @@
                                     }
                                 </div>
                             </div>
+                            <div class="points-threshold">
+                                @switch (currentPointsThrehold)
+                                {
+                                    case -1:
+                                        <p>Loading current threshold...</p>
+                                        break;
+                                    case -2:
+                                        <p>There was an error fetching current threshold.</p>
+                                        break;
+                                    default:
+                                        <p>Current threshold: @currentPointsThrehold</p>
+                                        break;
+                                }
+                            </div>
                         </div>
                         <div class="emails-chart-container">
                             <div id="emails-chart"></div>

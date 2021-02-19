@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace EctBlazorApp.Server.Controllers
 {
+    [Produces("application/json")]
     [Authorize]
     [Route("api/communication")]
     [ApiController]

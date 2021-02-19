@@ -193,7 +193,7 @@ namespace EctBlazorApp.Client.Graph
             try
             {
                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                var response = await _httpClient.GetFromJsonAsync<int>($"api/team/get-point-threshold");
+                var response = await _httpClient.GetFromJsonAsync<int>($"api/team/get-points-threshold");
                 return response;
             }
             catch (AccessTokenNotAvailableException exception)
