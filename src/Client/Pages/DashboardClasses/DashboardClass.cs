@@ -63,7 +63,11 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
                 /* Adapted from: https://stackoverflow.com/a/298 */
                 List<KeyValuePair<string, double>> list = new List<KeyValuePair<string, double>>();
                 foreach (var key in collaboratorsDict.Keys)
-                    list.Add(new KeyValuePair<string, double>(key, collaboratorsDict[key] / TotalPoints * 100));
+                {
+                    double percentage = collaboratorsDict[key] / TotalPoints * 100;
+                    double percentageToAdd = collaboratorsDict[key] > 0 ? percentage : 0;
+                    list.Add(new KeyValuePair<string, double>(key, percentageToAdd));
+                }
 
                 list.Sort(
                     (KeyValuePair<string, double> pair1, KeyValuePair<string, double> pair2) =>

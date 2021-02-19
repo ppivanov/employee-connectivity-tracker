@@ -92,7 +92,7 @@ namespace EctBlazorApp.Server.Controllers
             int userId = _dbContext.Users.First(u => u.Email == userEmail).Id;
             EctTeam assignedTeam = _dbContext.Teams.First(t => t.LeaderId == userId);
             
-            return Ok(assignedTeam.PointsThreshold);
+            return assignedTeam.PointsThreshold;
         }
 
         private EctUser GetCommunicationDataAsNewUserInstance(EctUser forUser, DateTime fromDate, DateTime toDate)
