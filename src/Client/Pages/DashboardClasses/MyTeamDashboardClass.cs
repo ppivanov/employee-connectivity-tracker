@@ -18,6 +18,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         protected List<EctUser> teamMembers;
         protected int emailsSent = 0;
         protected int emailsReceived = 0;
+        protected int currentPointsThrehold = -1;
 
         protected override int TotalEmailsCount
         {
@@ -31,9 +32,12 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         {
             await JsRuntime.InvokeVoidAsync("setPageTitle", "My Team");
             isLeader = await ApiConn.IsProcessingUserALeader();
-            await FetchCommunicationPoints();
             if (isLeader)
+            {
+                currentPointsThrehold = await ApiConn.FetchCurrentPointsThreshold();
+                await FetchCommunicationPoints();
                 await UpdateDashboard();
+            }
         }
 
         protected override object[][] GetCalendarEventsData()

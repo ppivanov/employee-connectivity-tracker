@@ -183,5 +183,24 @@ namespace EctBlazorApp.Client.Graph
             }
             return (true, tokenErrorMessage);
         }
+        
+        public async Task<int> FetchCurrentPointsThreshold()
+        {
+            var token = await GetAPITokenAsync();
+            if (token == null)
+                return -2;
+
+            try
+            {
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                var response = await _httpClient.GetFromJsonAsync<int>($"api/team/get-point-threshold");
+                return response;
+            }
+            catch (AccessTokenNotAvailableException exception)
+            {
+                exception.Redirect();
+            }
+            return -2;                                                                                                          // This return should never be executed
+        }
     }
 }
