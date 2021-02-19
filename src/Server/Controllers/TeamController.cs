@@ -65,7 +65,7 @@ namespace EctBlazorApp.Server.Controllers
         [Route("get-team-stats")]
         [HttpGet]
         [AuthorizeLeader]
-        public async Task<ActionResult<List<EctUser>>> GetStatsForDashboard([FromQuery] string fromDate, [FromQuery] string toDate, [FromQuery] string teamId = "")
+        public async Task<ActionResult<List<EctUser>>> GetStatsForDashboard([FromQuery] string fromDate, [FromQuery] string toDate)
         {
             string userEmail = await HttpContext.GetPreferredUsername();
             int userId = _dbContext.Users.First(u => u.Email == userEmail).Id;
@@ -86,13 +86,31 @@ namespace EctBlazorApp.Server.Controllers
         [Route("get-points-threshold")]
         [HttpGet]
         [AuthorizeLeader]
-        public async Task<ActionResult<int>> GetCurrentPointsThreshold([FromQuery] string teamId = "")
+        public async Task<ActionResult<int>> GetCurrentPointsThreshold()
         {
             string userEmail = await HttpContext.GetPreferredUsername();
             int userId = _dbContext.Users.First(u => u.Email == userEmail).Id;
             EctTeam assignedTeam = _dbContext.Teams.First(t => t.LeaderId == userId);
             
             return assignedTeam.PointsThreshold;
+        }
+
+        [Route("set-points-threshold")]
+        [HttpPut]
+        [AuthorizeLeader]
+        public async Task<ActionResult<string>> SetPointsThreshold([FromBody] int newThreshold)
+        {
+            if(newThreshold < 0)
+                return BadRequest("Threshold value must be greater than 0.");
+
+            string userEmail = await HttpContext.GetPreferredUsername();
+            int userId = _dbContext.Users.First(u => u.Email == userEmail).Id;
+            EctTeam assignedTeam = _dbContext.Teams.First(t => t.LeaderId == userId);
+
+            assignedTeam.PointsThreshold = newThreshold;
+            await _dbContext.SaveChangesAsync();
+
+            return Ok("Threshold saved.");
         }
 
         private EctUser GetCommunicationDataAsNewUserInstance(EctUser forUser, DateTime fromDate, DateTime toDate)

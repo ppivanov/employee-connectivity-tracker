@@ -202,5 +202,30 @@ namespace EctBlazorApp.Client.Graph
             }
             return -2;                                                                                                          // This return should never be executed
         }
+
+        public async Task<(bool, string)> SetPointsThreshold(int newThreshold)
+        {
+            var token = await GetAPITokenAsync();
+            const string tokenErrorMessage = "Error retrieving access token. Please, try again later.";
+            if (token == null)
+                return (true, tokenErrorMessage);
+
+            try
+            {
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                var response = await _httpClient.PutAsJsonAsync<int>($"api/communication/points/update", newThreshold);
+                var serverMessage = await response.Content.ReadAsStringAsync();
+                var isError = false;
+                if (response.IsSuccessStatusCode == false)
+                    isError = true;
+
+                return (isError, serverMessage);
+            }
+            catch (AccessTokenNotAvailableException exception)
+            {
+                exception.Redirect();
+            }
+            return (true, tokenErrorMessage);
+        }
     }
 }
