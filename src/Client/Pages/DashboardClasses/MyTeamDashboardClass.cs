@@ -14,11 +14,18 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
 {
     public class MyTeamDashboardClass : DashboardClass
     {
+        private bool serverMessageIsError = false;
+        private bool inputError = false;
+
         protected bool isLeader = false;
+        protected bool isSubmitting = false;
+        protected bool allowsEdit = false;
         protected List<EctUser> teamMembers;
         protected int emailsSent = 0;
         protected int emailsReceived = 0;
-        protected int currentPointsThrehold = -1;
+        protected int currentPointsThreshold = -1;
+        protected int newPointsThreshold = 0;
+        protected string serverMessage = "";
 
         protected override int TotalEmailsCount
         {
@@ -34,7 +41,8 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             isLeader = await ApiConn.IsProcessingUserALeader();
             if (isLeader)
             {
-                currentPointsThrehold = await ApiConn.FetchCurrentPointsThreshold();
+                currentPointsThreshold = await ApiConn.FetchCurrentPointsThreshold();
+                newPointsThreshold = currentPointsThreshold;
                 await FetchCommunicationPoints();
                 await UpdateDashboard();
             }
@@ -161,6 +169,50 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             secondsInMeeting = 0;
             emailsSent = 0;
             emailsReceived = 0;
+        }
+
+        protected async Task SubmitThreshold()
+        {
+            if (newPointsThreshold < 0)
+            {
+                newPointsThreshold = 0;
+                serverMessageIsError = true;
+                inputError = true;
+                serverMessage = "You cannot set the threshold below 0.";
+                return;
+            }
+            isSubmitting = true;
+            serverMessageIsError = false;
+
+            var response = await ApiConn.SubmitPointsThreshold(newPointsThreshold);
+            serverMessageIsError = response.Item1;
+            serverMessage = response.Item2;
+            inputError = serverMessageIsError;
+
+            isSubmitting = false;
+            allowsEdit = false;
+            if (serverMessageIsError == false) currentPointsThreshold = newPointsThreshold;
+        }
+
+        protected void EditThreshold()
+        {
+            allowsEdit = true;
+        }
+
+        protected string ServerMessageInlineStyle
+        {
+            get
+            {
+                return serverMessageIsError ? "color: red;" : "color: green;";
+            }
+        }
+
+        protected string InputStyle
+        {
+            get
+            {
+                return inputError ? "border: 1px solid red" : "";
+            }
         }
     }
 }

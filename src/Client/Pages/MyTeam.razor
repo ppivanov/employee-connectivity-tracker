@@ -1,5 +1,5 @@
 ﻿@page "/my-team"
-@inherits MyTeamDashboardClass 
+@inherits MyTeamDashboardClass
 
 @using BlazorDateRangePicker
 @using Microsoft.AspNetCore.Authorization
@@ -60,17 +60,39 @@
                                 </div>
                             </div>
                             <div class="points-threshold">
-                                @switch (currentPointsThrehold)
+                                @if (isSubmitting)
                                 {
-                                    case -1:
-                                        <p>Loading current threshold...</p>
-                                        break;
-                                    case -2:
-                                        <p>There was an error fetching current threshold.</p>
-                                        break;
-                                    default:
-                                        <p>Current threshold: @currentPointsThrehold</p>
-                                        break;
+                                    <p>Submitting, please wait.</p>
+                                }
+                                else
+                                {
+                                    @switch (currentPointsThreshold)
+                                    {
+                                        case -1:
+                                            <p>Loading current points threshold for notifications...</p>
+                                            break;
+                                        case -2:
+                                            <p>There was an error fetching current notifications threshold.</p>
+                                            break;
+                                        default:
+                                            @if (String.IsNullOrEmpty(serverMessage) == false)
+                                            {
+                                                <p style="@ServerMessageInlineStyle">@serverMessage</p>
+                                            }
+                                            @if (allowsEdit)
+                                            {
+                                                <EditForm Model="newPointsThreshold" OnSubmit="@(async () => await SubmitThreshold())" Context="formContext">
+                                                    <InputNumber @bind-Value="newPointsThreshold" class="" id="" style="@InputStyle" />
+                                                    <button type="submit">Submit</button>
+                                                </EditForm>
+                                            }
+                                            else
+                                            {
+                                                <p>Current threshold for notifications: @currentPointsThreshold</p>
+                                                <button @onclick="EditThreshold">Edit</button>
+                                            }
+                                            break;
+                                    }
                                 }
                             </div>
                         </div>
