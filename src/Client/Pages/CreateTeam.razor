@@ -214,7 +214,6 @@
 
                 Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                 var response = await Http.PostAsync("api/team/create-team", data);
-                Console.WriteLine(await response.Content.ReadAsStringAsync());
                 serverMessageIsError = (response.IsSuccessStatusCode == false);
                 ServerMessage = await response.Content.ReadAsStringAsync();
 

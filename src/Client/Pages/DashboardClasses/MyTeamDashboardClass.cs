@@ -127,7 +127,6 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
                     await FindCollaborators();
                     initialized = true;
                     await InvokeAsync(StateHasChanged);                                                                                                                                     // Force a refresh of the component before trying to load the js graphs
-                    Console.WriteLine($"Total points: {TotalPoints}");
                     await JsRuntime.InvokeVoidAsync("loadMyTeamDashboardGraph", (object)GetEmailData(), (object)GetCalendarEventsData());                                                   // GetCalendarEventsData is adding only some of the collaborators to the dictionary
                 }                                                                                                                                                                           
                 catch (AccessTokenNotAvailableException exception)
@@ -145,7 +144,6 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             {
                 int totalEmails = member.SentEmails.Count + member.ReceivedEmails.Count;
                 double pointsToAdd = totalEmails * emailCommPoints.Points;
-                Console.WriteLine(pointsToAdd);
                 AddPointsToCollaborators(member.FullName, pointsToAdd);
             }
 

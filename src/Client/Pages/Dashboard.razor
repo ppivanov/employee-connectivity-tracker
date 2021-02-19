@@ -40,7 +40,6 @@
                 <h2>Top Collaborators</h2>
                 <div class="collaboratorsList">
                     <div class="collaborator">
-                        @*Total weight: @totalWeight*@
                         @foreach (var user in Collaborators)
                         {
                             <p>@user.Key (@Math.Round(user.Value, 2)%)</p>

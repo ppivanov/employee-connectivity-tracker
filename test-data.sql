@@ -7,13 +7,13 @@ update [dbo].[Users] set MemberOfId = null;
 delete from [dbo].[Teams];
 delete from [dbo].[Users];
 
-insert into [dbo].[CommunicationPoints] (Medium, Points) values ('Email (single)', 50)
-insert into [dbo].[CommunicationPoints] (Medium, Points) values ('Meetings (10 minutes)', 50)
-insert into [dbo].[CommunicationPoints] (Medium, Points) values ('Calls (10 minutes)', 0)
-insert into [dbo].[CommunicationPoints] (Medium, Points) values ('Chat (10 messages)', 0)
+insert into [dbo].[CommunicationPoints] (Medium, Points) values ('Email (single)', 1)
+insert into [dbo].[CommunicationPoints] (Medium, Points) values ('Meetings (10 minutes)', 3)
+-- insert into [dbo].[CommunicationPoints] (Medium, Points) values ('Calls (10 minutes)', 0)
+-- insert into [dbo].[CommunicationPoints] (Medium, Points) values ('Chat (10 messages)', 0)
 
 set IDENTITY_INSERT [dbo].[Users] ON
-insert into [dbo].[Users] (Id, Email, FullName, LastSignIn) values (1, 'x00149863@outlook.com', 'Pavel Ivanov', '2021-01-29T14:36:39.3900836')
+insert into [dbo].[Users] (Id, Email, FullName, LastSignIn) values (1, 'test-ect@outlook.com', 'TestUser ECT', '2021-01-29T14:36:39.3900836')
 set IDENTITY_INSERT [dbo].[Users] OFF
 
 -- set IDENTITY_INSERT [dbo].[Teams] ON
@@ -24,13 +24,13 @@ set IDENTITY_INSERT [dbo].[Users] ON
 insert into [dbo].[Users] (Id, Email, FullName, LastSignIn) values (2, 'alice@ect.ie', 'Alice AliceS', '2021-01-29T14:36:39.3900836')
 insert into [dbo].[Users] (Id, Email, FullName, LastSignIn) values (3, 'bob@ect.ie', 'Bob BobS', '2021-01-27T12:37:35.9959879')
 insert into [dbo].[Users] (Id, Email, FullName, LastSignIn) values (4, 'trudy@ect.ie', 'Trudy TrudyS', '2021-01-27T12:37:35.9959879')
-insert into [dbo].[Users] (Id, Email, FullName, LastSignIn) values (5, 'noimagination1310@outlook.com', 'Admin AdminS', '2021-01-29T14:36:39.3900836')
+-- insert into [dbo].[Users] (Id, Email, FullName, LastSignIn) values (5, 'noimagination1310@outlook.com', 'Admin AdminS', '2021-01-29T14:36:39.3900836')
 set IDENTITY_INSERT [dbo].[Users] OFF
 
 -- update [dbo].[Users] set MemberOfId = 1;
 
 set IDENTITY_INSERT [dbo].[Administrators] ON
-insert into [dbo].[Administrators] (Id, UserId) values (1, 5)
+insert into [dbo].[Administrators] (Id, UserId) values (1, 1)
 set IDENTITY_INSERT [dbo].[Administrators] OFF
 
 -- After lunch breaks (11 - 15 Jan / one week)

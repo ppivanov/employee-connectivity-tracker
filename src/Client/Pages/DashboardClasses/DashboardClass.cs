@@ -52,9 +52,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             get
             {
                 double totalMeetingPoints = TotalMinutesInMeetings / 10.0 * meetingCommPoints.Points;
-                Console.WriteLine($"Meeting points: {totalMeetingPoints}");
                 int totalEmailPoints = (TotalEmailsCount) * emailCommPoints.Points;
-                Console.WriteLine($"Email points: {totalEmailPoints}");
                 return (int)(totalEmailPoints + totalMeetingPoints);
             }
         }
