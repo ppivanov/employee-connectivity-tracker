@@ -19,10 +19,19 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         protected int emailsSent = 0;
         protected int emailsReceived = 0;
 
+        protected override int TotalEmailsCount
+        {
+            get
+            {
+                return emailsSent + emailsReceived;
+            }
+        }
+
         protected override async Task OnInitializedAsync()
         {
             await JsRuntime.InvokeVoidAsync("setPageTitle", "My Team");
             isLeader = await ApiConn.IsProcessingUserALeader();
+            await FetchCommunicationPoints();
             if (isLeader)
                 await UpdateDashboard();
         }
@@ -33,6 +42,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
 
             foreach (var member in teamMembers)
             {
+                int numberOfMeetingsBefore = numberOfMeetings;
                 foreach (var calendarEvent in member.CalendarEvents)
                 {
                     string eventDateTimeRange = $"{calendarEvent.Start}-{calendarEvent.End}";
@@ -52,6 +62,8 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
                         numberOfMeetings++;
                     }
                 }
+                double pointsToAdd = (numberOfMeetings - numberOfMeetingsBefore) * meetingCommPoints.Points;
+                AddPointsToCollaborators(member.FullName, pointsToAdd);
             }
 
             // loop over the dictionary and count the number of elements in the set
@@ -101,8 +113,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
 
         protected override async Task UpdateDashboard()
         {
-            emailsSent = 0;
-            emailsReceived = 0;
+            ResetAttributeValues();
             string queryString = GetDateRangeQueryString(FromDate.Value, ToDate.Value);
 
             var token = await ApiConn.GetAPITokenAsync();
@@ -113,16 +124,41 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
                     Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                     teamMembers = await Http.GetFromJsonAsync<List<EctUser>>($"api/team/get-team-stats{queryString}");
 
+                    await FindCollaborators();
                     initialized = true;
-                    await InvokeAsync(StateHasChanged);                                                                     // Force a refresh of the component before trying to load the js graphs
-
-                    await JsRuntime.InvokeVoidAsync("loadMyTeamDashboardGraph", (object)GetEmailData(), (object)GetCalendarEventsData());
-                }
+                    await InvokeAsync(StateHasChanged);                                                                                                                                     // Force a refresh of the component before trying to load the js graphs
+                    Console.WriteLine($"Total points: {TotalPoints}");
+                    await JsRuntime.InvokeVoidAsync("loadMyTeamDashboardGraph", (object)GetEmailData(), (object)GetCalendarEventsData());                                                   // GetCalendarEventsData is adding only some of the collaborators to the dictionary
+                }                                                                                                                                                                           
                 catch (AccessTokenNotAvailableException exception)
                 {
                     exception.Redirect();
                 }
             }
+        }
+
+        protected override Task FindCollaborators()
+        {
+            // Meeting collaborators added to dictionary in GetCalendarEventData to avoid looping over the user list again
+
+            foreach (var member in teamMembers)
+            {
+                int totalEmails = member.SentEmails.Count + member.ReceivedEmails.Count;
+                double pointsToAdd = totalEmails * emailCommPoints.Points;
+                Console.WriteLine(pointsToAdd);
+                AddPointsToCollaborators(member.FullName, pointsToAdd);
+            }
+
+            return Task.CompletedTask;
+        }
+
+        private void ResetAttributeValues()
+        {
+            collaboratorsDict.Clear();
+            numberOfMeetings = 0;
+            secondsInMeeting = 0;
+            emailsSent = 0;
+            emailsReceived = 0;
         }
     }
 }

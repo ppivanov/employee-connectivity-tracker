@@ -23,22 +23,12 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         private List<SentMail> sentMail;
         private List<ReceivedMail> receivedMail;
         private List<CalendarEvent> calendarEvents;
-        private readonly Dictionary<string, double> collaboratorsDict = new Dictionary<string, double>();
 
-        private int TotalMinutesInMeetings
+        protected override int TotalEmailsCount
         {
             get
             {
-                return GetMinutesFromSeconds(secondsInMeeting);
-            }
-        }
-        private int TotalPoints
-        {
-            get
-            {
-                double totalMeetingPoints = TotalMinutesInMeetings / 10.0 * meetingCommPoints.Points;
-                int totalEmailPoints = (EmailsSentCount + EmailsReceivedCount) * emailCommPoints.Points;
-                return (int)(totalEmailPoints + totalMeetingPoints);
+                return EmailsSentCount + EmailsReceivedCount;
             }
         }
 
@@ -57,37 +47,11 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             }
         }
 
-        protected IEnumerable<KeyValuePair<string, double>> collaborators
-        {
-            get
-            {
-                /* Adapted from: https://stackoverflow.com/a/298 */
-                List<KeyValuePair<string, double>> list = new List<KeyValuePair<string, double>>();
-                foreach (var key in collaboratorsDict.Keys)
-                    list.Add(new KeyValuePair<string, double>(key, collaboratorsDict[key] / TotalPoints * 100));
-
-                list.Sort(
-                    (KeyValuePair<string, double> pair1, KeyValuePair<string, double> pair2) =>
-                    {
-                        return pair2.Value.CompareTo(pair1.Value);                              // descending order
-                    }
-                );
-                return list.Take(10);
-            }
-        }
-
         protected override async Task OnInitializedAsync()
         {
             await JsRuntime.InvokeVoidAsync("setPageTitle", "Dashboard");
             await FetchCommunicationPoints();
             await UpdateDashboard();
-        }
-
-        private async Task<string> GetProcessingUserEmail()
-        {
-            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-            var user = authState.User;
-            return user.GetUserEmail();
         }
 
         protected override object[][] GetCalendarEventsData()
@@ -138,7 +102,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             string queryString = GetDateRangeQueryString(FromDate.Value, ToDate.Value);
             var response = await ApiConn.FetchDashboardResponse(queryString);
             ExtractDataFromResponse(response);
-            await GetCollaborators();
+            await FindCollaborators();
 
             await JsRuntime.InvokeVoidAsync("loadDashboardGraph", (object)GetEmailData(), (object)GetCalendarEventsData());
         }
@@ -152,37 +116,44 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             numberOfMeetings = calendarEvents != null ? calendarEvents.Count : 0;
         }
 
-        private async Task GetCollaborators()
+        private async Task<string> GetProcessingUserEmail()
+        {
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+            return user.GetUserEmail();
+        }
+
+        protected override async Task FindCollaborators()
         {
             collaboratorsDict.Clear();
-            GetEmailCollaborators();
-            await GetAttendeesFromCalendarEvents();
+            FindEmailCollaborators();
+            await FindAttendeesFromCalendarEvents();
         }
-        private void GetEmailCollaborators()
+        private void FindEmailCollaborators()
         {
-            GetSentEmailCollaborators();
-            GetReceivedEmailCollaborators();
+            FindSentEmailCollaborators();
+            FindReceivedEmailCollaborators();
         }
-        private void GetSentEmailCollaborators()
+        private void FindSentEmailCollaborators()
         {
             foreach (var email in sentMail)
             {
                 foreach (var recipient in email.Recipients)
                 {
                     string fullName = GetFullNameFromFormattedString(recipient);
-                    AddPointsToCollaborator(fullName, emailCommPoints.Points);
+                    AddPointsToCollaborators(fullName, emailCommPoints.Points);
                 }
             }
         }
-        private void GetReceivedEmailCollaborators()
+        private void FindReceivedEmailCollaborators()
         {
             foreach (var email in receivedMail)
             {
                 string senderFullName = GetFullNameFromFormattedString(email.From);
-                AddPointsToCollaborator(senderFullName, emailCommPoints.Points);
+                AddPointsToCollaborators(senderFullName, emailCommPoints.Points);
             }
         }
-        private async Task GetAttendeesFromCalendarEvents()
+        private async Task FindAttendeesFromCalendarEvents()
         {
             foreach (var meeting in calendarEvents)
             {
@@ -190,17 +161,9 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
                 foreach (var attendee in attendees)
                 {
                     string fullName = GetFullNameFromFormattedString(attendee);
-                    AddPointsToCollaborator(fullName, meetingCommPoints.Points);
+                    AddPointsToCollaborators(fullName, meetingCommPoints.Points);
                 }
             }
-        }
-
-        private void AddPointsToCollaborator(string fullName, double points)
-        {
-            if (collaboratorsDict.ContainsKey(fullName))
-                collaboratorsDict[fullName] += points;
-            else
-                collaboratorsDict.Add(fullName, points);
         }
     }
 }

@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using static EctBlazorApp.Shared.SharedMethods;
@@ -27,6 +29,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         protected double secondsInMeeting = 0;
         protected CommunicationPoint emailCommPoints;
         protected CommunicationPoint meetingCommPoints;
+        protected readonly Dictionary<string, double> collaboratorsDict = new Dictionary<string, double>();
 
         protected DateTimeOffset? FromDate { get; set; } = DateTimeOffset.Now; 
         protected DateTimeOffset? ToDate { get; set; } = DateTimeOffset.Now.AddDays(1);
@@ -37,6 +40,43 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
                 return FormatSecondsToHoursAndMinutes(secondsInMeeting);
             }
         }
+        protected int TotalMinutesInMeetings
+        {
+            get
+            {
+                return GetMinutesFromSeconds(secondsInMeeting);
+            }
+        }
+        protected int TotalPoints
+        {
+            get
+            {
+                double totalMeetingPoints = TotalMinutesInMeetings / 10.0 * meetingCommPoints.Points;
+                Console.WriteLine($"Meeting points: {totalMeetingPoints}");
+                int totalEmailPoints = (TotalEmailsCount) * emailCommPoints.Points;
+                Console.WriteLine($"Email points: {totalEmailPoints}");
+                return (int)(totalEmailPoints + totalMeetingPoints);
+            }
+        }
+        protected IEnumerable<KeyValuePair<string, double>> Collaborators
+        {
+            get
+            {
+                /* Adapted from: https://stackoverflow.com/a/298 */
+                List<KeyValuePair<string, double>> list = new List<KeyValuePair<string, double>>();
+                foreach (var key in collaboratorsDict.Keys)
+                    list.Add(new KeyValuePair<string, double>(key, collaboratorsDict[key] / TotalPoints * 100));
+
+                list.Sort(
+                    (KeyValuePair<string, double> pair1, KeyValuePair<string, double> pair2) =>
+                    {
+                        return pair2.Value.CompareTo(pair1.Value);                              // descending order
+                    }
+                );
+                return list.Take(10);
+            }
+        }
+
         protected async Task CustomApply(MouseEventArgs e, DateRangePicker picker)
         {
             await picker.ClickApply(e);
@@ -63,8 +103,18 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             meetingCommPoints = result.Item2;
         }
 
+        protected void AddPointsToCollaborators(string fullName, double points)
+        {
+            if (collaboratorsDict.ContainsKey(fullName))
+                collaboratorsDict[fullName] += points;
+            else
+                collaboratorsDict.Add(fullName, points);
+        }
+
+        protected abstract int TotalEmailsCount { get; }
         protected abstract object[][] GetCalendarEventsData();
         protected abstract object[][] GetEmailData();
         protected abstract Task UpdateDashboard();
+        protected abstract Task FindCollaborators();
     }
 }

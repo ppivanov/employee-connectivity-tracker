@@ -53,6 +53,10 @@
                             <h2>Activity distribution</h2>
                             <div class="collaboratorsList">
                                 <div class="collaborator">
+                                    @foreach (var user in Collaborators)
+                                    {
+                                        <p>@user.Key (@Math.Round(user.Value, 2)%)</p>
+                                    }
                                 </div>
                             </div>
                         </div>
