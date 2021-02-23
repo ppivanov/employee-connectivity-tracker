@@ -121,7 +121,7 @@ namespace EctBlazorApp.Client.Graph
                     var response = await _httpClient.GetFromJsonAsync<DashboardResponse>($"api/main/get-dashboard-stats{queryString}");
                     return response;
                 }
-                catch (AccessTokenNotAvailableException exception)                                          // TODO - Find out if this is still valid
+                catch (AccessTokenNotAvailableException exception)
                 {
                     exception.Redirect();
                 }
