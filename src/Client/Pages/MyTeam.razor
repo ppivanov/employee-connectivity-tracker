@@ -66,32 +66,32 @@
                                 }
                                 else
                                 {
-                                    @switch (currentPointsThreshold)
+                                    @if (currentNotificationOptions == null)
                                     {
-                                        case -1:
-                                            <p>Loading current points threshold for notifications...</p>
-                                            break;
-                                        case -2:
-                                            <p>There was an error fetching current notifications threshold.</p>
-                                            break;
-                                        default:
-                                            @if (String.IsNullOrEmpty(serverMessage) == false)
-                                            {
-                                                <p style="@ServerMessageInlineStyle">@serverMessage</p>
-                                            }
-                                            @if (allowsEdit)
-                                            {
-                                                <EditForm Model="newPointsThreshold" OnSubmit="@(async () => await SubmitThreshold())" Context="formContext">
-                                                    <InputNumber @bind-Value="newPointsThreshold" class="" id="" style="@InputStyle" />
-                                                    <button type="submit">Submit</button>
-                                                </EditForm>
-                                            }
-                                            else
-                                            {
-                                                <p>Current threshold for notifications: @currentPointsThreshold</p>
-                                                <button @onclick="EditThreshold">Edit</button>
-                                            }
-                                            break;
+                                        <p>Loading current points threshold for notifications...</p>
+                                    }
+                                    else if (currentNotificationOptions.PointsThreshold == -1)
+                                    {
+                                        <p>There was an error fetching current notifications threshold.</p>
+                                    }
+                                    else
+                                    {
+                                        @if (String.IsNullOrEmpty(serverMessage) == false)
+                                        {
+                                            <p style="@ServerMessageInlineStyle">@serverMessage</p>
+                                        }
+                                        @if (allowsEdit)
+                                        {
+                                            <EditForm Model="newNotificationOptions" OnSubmit="@(async () => await SubmitThreshold())" Context="formContext">
+                                                <InputNumber @bind-Value="newNotificationOptions.PointsThreshold" class="" id="" style="@InputStyle" />
+                                                <button type="submit">Submit</button>
+                                            </EditForm>
+                                        }
+                                        else
+                                        {
+                                            <p>Current threshold for notifications: @currentNotificationOptions.PointsThreshold</p>
+                                            <button @onclick="EditThreshold">Edit</button>
+                                        }
                                     }
                                 }
                             </div>

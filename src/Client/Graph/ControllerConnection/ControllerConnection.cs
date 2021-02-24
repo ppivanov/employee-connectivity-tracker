@@ -184,7 +184,7 @@ namespace EctBlazorApp.Client.Graph
             return (true, tokenErrorMessage);
         }
 
-        public async Task<(bool, string)> SubmitPointsThreshold(int newThreshold)
+        public async Task<(bool, string)> SubmitPointsThreshold(NotificationOptionsResponse notificationOptions)
         {
             var token = await GetAPITokenAsync();
             const string tokenErrorMessage = "Error retrieving access token. Please, try again later.";
@@ -194,7 +194,7 @@ namespace EctBlazorApp.Client.Graph
             try
             {
                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                var response = await _httpClient.PutAsJsonAsync<int>($"api/team/set-points-threshold", newThreshold);
+                var response = await _httpClient.PutAsJsonAsync<NotificationOptionsResponse>($"api/team/set-notification-options", notificationOptions);
                 var serverMessage = await response.Content.ReadAsStringAsync();
                 var isError = false;
                 if (response.IsSuccessStatusCode == false)
@@ -209,23 +209,28 @@ namespace EctBlazorApp.Client.Graph
             return (true, tokenErrorMessage);
         }
         
-        public async Task<int> FetchCurrentPointsThreshold()
+        public async Task<NotificationOptionsResponse> FetchCurrentNotificationOptions()
         {
+            var errorResponse = new NotificationOptionsResponse
+            {
+                PointsThreshold = -1,
+                MarginForNotification = -1
+            };
             var token = await GetAPITokenAsync();
             if (token == null)
-                return -2;
+                return errorResponse;
 
             try
             {
                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                var response = await _httpClient.GetFromJsonAsync<int>($"api/team/get-points-threshold");
+                var response = await _httpClient.GetFromJsonAsync<NotificationOptionsResponse>($"api/team/get-notification-options");
                 return response;
             }
             catch (AccessTokenNotAvailableException exception)
             {
                 exception.Redirect();
             }
-            return -2;                                                                                                          // This return should never be executed
+            return errorResponse;                                                                                                          // This return should never be executed
         }
     }
 }

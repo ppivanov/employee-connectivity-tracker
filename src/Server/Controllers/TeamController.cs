@@ -83,23 +83,27 @@ namespace EctBlazorApp.Server.Controllers
             return membersAndCommsData;
         }
 
-        [Route("get-points-threshold")]
+        [Route("get-notification-options")]
         [HttpGet]
         [AuthorizeLeader]
-        public async Task<ActionResult<int>> GetCurrentPointsThreshold()
+        public async Task<ActionResult<NotificationOptionsResponse>> GetCurrentPointsThreshold()
         {
             string userEmail = await HttpContext.GetPreferredUsername();
             int userId = _dbContext.Users.First(u => u.Email == userEmail).Id;
             EctTeam assignedTeam = _dbContext.Teams.First(t => t.LeaderId == userId);
-            
-            return assignedTeam.PointsThreshold;
+
+            var notificationOptions = new NotificationOptionsResponse
+            {
+                PointsThreshold = assignedTeam.PointsThreshold,
+                MarginForNotification = assignedTeam.MarginForNotification
+            };
+            return notificationOptions;
         }
 
-        //[Route("set-notification-options")]
-        [Route("set-points-threshold")]
+        [Route("set-notification-options")]
         [HttpPut]
         [AuthorizeLeader]
-        public async Task<ActionResult<string>> SetPointsThreshold([FromBody] NotificationOptionsRequest notificationOptions)
+        public async Task<ActionResult<string>> SetPointsThreshold([FromBody] NotificationOptionsResponse notificationOptions)
         {
             string userEmail = await HttpContext.GetPreferredUsername();
             int userId = _dbContext.Users.First(u => u.Email == userEmail).Id;

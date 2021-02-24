@@ -1,4 +1,5 @@
-﻿using EctBlazorApp.Shared.Entities;
+﻿using EctBlazorApp.Shared;
+using EctBlazorApp.Shared.Entities;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.JSInterop;
 using System;
@@ -23,8 +24,8 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         protected List<EctUser> teamMembers;
         protected int emailsSent = 0;
         protected int emailsReceived = 0;
-        protected int currentPointsThreshold = -1;
-        protected int newPointsThreshold = 0;
+        protected NotificationOptionsResponse currentNotificationOptions = null;
+        protected NotificationOptionsResponse newNotificationOptions = null;
         protected string serverMessage = "";
 
         protected override int TotalEmailsCount
@@ -41,8 +42,8 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             isLeader = await ApiConn.IsProcessingUserALeader();
             if (isLeader)
             {
-                currentPointsThreshold = await ApiConn.FetchCurrentPointsThreshold();
-                newPointsThreshold = currentPointsThreshold;
+                currentNotificationOptions = await ApiConn.FetchCurrentNotificationOptions();
+                newNotificationOptions = currentNotificationOptions;
                 await FetchCommunicationPoints();
                 await UpdateDashboard();
             }
@@ -173,9 +174,9 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
 
         protected async Task SubmitThreshold()
         {
-            if (newPointsThreshold < 0)
+            if (newNotificationOptions.PointsThreshold < 0)
             {
-                newPointsThreshold = 0;
+                newNotificationOptions.PointsThreshold = 0;
                 serverMessageIsError = true;
                 inputError = true;
                 serverMessage = "You cannot set the threshold below 0.";
@@ -184,14 +185,14 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             isSubmitting = true;
             serverMessageIsError = false;
 
-            var response = await ApiConn.SubmitPointsThreshold(newPointsThreshold);
+            var response = await ApiConn.SubmitPointsThreshold(newNotificationOptions);
             serverMessageIsError = response.Item1;
             serverMessage = response.Item2;
             inputError = serverMessageIsError;
 
             isSubmitting = false;
             allowsEdit = false;
-            if (serverMessageIsError == false) currentPointsThreshold = newPointsThreshold;
+            if (serverMessageIsError == false) currentNotificationOptions = newNotificationOptions;
         }
 
         protected void EditThreshold()

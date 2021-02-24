@@ -23,8 +23,8 @@ namespace EctBlazorApp.Client.Graph
 
         Task<(bool, string)> SubmitPoints(List<CommunicationPoint> communicationPoints);
 
-        Task<(bool, string)> SubmitPointsThreshold(int newThreshold);
+        Task<(bool, string)> SubmitPointsThreshold(NotificationOptionsResponse notificationOptions);
 
-        Task<int> FetchCurrentPointsThreshold();
+        Task<NotificationOptionsResponse> FetchCurrentNotificationOptions();
     }
 }

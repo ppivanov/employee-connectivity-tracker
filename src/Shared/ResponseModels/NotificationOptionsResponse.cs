@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace EctBlazorApp.Shared
 {
-    public class NotificationOptionsRequest
+    public class NotificationOptionsResponse
     {
         [Required]
         [Range(0, 200, ErrorMessage = "The points threshold must be between {0} and {1}")]
