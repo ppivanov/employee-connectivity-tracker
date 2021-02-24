@@ -1,5 +1,6 @@
 ﻿using EctBlazorApp.Server.MailKit;
 using EctBlazorApp.Shared.Entities;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,7 @@ namespace EctBlazorApp.Server.Extensions
     public static class EctTeamExtensions
     {
         // this should be triggered every Sunday at noon for most accurate results
-        public static void ProcessNotifications(this EctTeam team, EctMailKit mailKit, EctDbContext dbContext)
+        public static void ProcessNotifications(EctMailKit mailKit, EctDbContext dbContext)
         {                                                                                       //                              Examples:
             DateTime currentWeekEnd = DateTime.Now.AddDays(1);                                  // Following Monday             March 1st
             DateTime currentWeekStart = currentWeekEnd.AddDays(-7);                             // Last week's Monday           Feb  22th
@@ -20,19 +21,28 @@ namespace EctBlazorApp.Server.Extensions
             DateTime previousWeekEnd = currentWeekStart;                                        // Last week's Monday           Feb  22th
             DateTime previousWeekStart = currentWeekStart.AddDays(-7);                          // The Monday before that       Feb  15th
 
-            var emailMessage = new StringBuilder($"Stats for week starting: {currentWeekStart.ToString("dd dddd, MMM yyyy")},\n" +
-                $"compared to week starting: {previousWeekStart.ToString("dd dddd, MMM yyyy")}\n\n");
+            var heading = $"Stats for week starting: {currentWeekStart.ToString("dd dddd, MMM yyyy")},\n" +
+                $"compared to week starting: {previousWeekStart.ToString("dd dddd, MMM yyyy")}\n\nPotentially isolated members:\n\n";
+            var emailMessage = new StringBuilder(heading);
 
-            foreach (var member in team.Members)
+            var teams = dbContext.Teams.Include(t => t.Members).ToList();
+            foreach (var team in teams)
             {
-                int currentWeekPoints = GetCommunicationPointsForUserId(member.Id, currentWeekStart, currentWeekEnd, dbContext);
-                int previousWeekPoints = GetCommunicationPointsForUserId(member.Id, previousWeekStart, previousWeekEnd, dbContext);
+                var members = team.Members.ToList();
+                foreach (var member in members)
+                {
+                    int currentWeekPoints = GetCommunicationPointsForUserId(member.Id, currentWeekStart, currentWeekEnd, dbContext);
+                    int previousWeekPoints = GetCommunicationPointsForUserId(member.Id, previousWeekStart, previousWeekEnd, dbContext);
+                    currentWeekPoints = currentWeekPoints > 0 ? currentWeekPoints : 1;
+                    previousWeekPoints = previousWeekPoints > 0 ? previousWeekPoints : 1;
 
-                string message = team.ProcessPoints(member, currentWeekPoints, previousWeekPoints);
-                emailMessage.Append(message);
+                    string message = team.ProcessPoints(member, currentWeekPoints, previousWeekPoints);
+                    emailMessage.Append(message);
+                }
+                if (emailMessage.ToString().Equals(heading)) emailMessage.Append("None\n");
+
+                team.SendNotificationEmail(emailMessage.ToString(), mailKit, dbContext);
             }
-
-            team.SendNotificationEmail(emailMessage.ToString(), mailKit, dbContext);
         }
 
         private static int GetCommunicationPointsForUserId(int userId, DateTime fromDate, DateTime toDate, EctDbContext dbContext)

@@ -123,9 +123,7 @@ namespace EctBlazorApp.Server.Controllers
         [HttpGet]
         public async void TestNotifications()
         {
-            EctTeam randomTeam = _dbContext.Teams.FirstOrDefault();
-
-            randomTeam.ProcessNotifications(_mailKit, _dbContext);
+            EctTeamExtensions.ProcessNotifications(_mailKit, _dbContext);
         }
 
         private EctUser GetCommunicationDataAsNewUserInstance(EctUser forUser, DateTime fromDate, DateTime toDate)
