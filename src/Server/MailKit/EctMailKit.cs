@@ -16,11 +16,30 @@ namespace EctBlazorApp.Server.MailKit
         
         public bool SendWelcome(EctUser user)
         {
-            EmailMessage message = new EmailMessage();
-            message.Sender = new MailboxAddress("Employee Connectivity Tracker", Sender);
-            message.Reciever = new MailboxAddress(user.FullName, user.Email);
-            message.Subject = "Welcome to ECT!";
-            message.Content = "Welcome to Employee Connectivity Tracker!";
+            string subject = "Welcome to ECT!";
+            string messageContent = "Welcome to Employee Connectivity Tracker!";
+            bool sentSuccessfully = SendMessage(user, subject, messageContent);
+
+            return sentSuccessfully;
+        }
+
+        public bool SendNotificationEmail(EctUser recipient, string messageContent)
+        {
+            string subject = "ECT: Isolated teammates";
+            bool sentSuccessfully = SendMessage(recipient, subject, messageContent);
+
+            return sentSuccessfully;
+        }
+
+        private bool SendMessage(EctUser recipient, string subject, string messageContent)
+        {
+            EmailMessage message = new EmailMessage
+            {
+                Sender = new MailboxAddress("Employee Connectivity Tracker", Sender),
+                Reciever = new MailboxAddress(recipient.FullName, recipient.Email),
+                Subject = subject,
+                Content = messageContent
+            };
             var mimeMessage = message.CreateMimeMessage();
             try
             {
@@ -34,14 +53,7 @@ namespace EctBlazorApp.Server.MailKit
             {
                 return false;
             }
-
             return true;
         }
-
-        public bool SendNotificationEmail()                     // todo
-        {
-            return true;
-        }
-
     }
 }

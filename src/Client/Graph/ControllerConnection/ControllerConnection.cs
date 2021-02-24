@@ -31,7 +31,7 @@ namespace EctBlazorApp.Client.Graph
             _httpClient = httpClient;
         }
 
-        public async Task TestNotifications()
+        public async Task TestNotifications() // TODO: remove this method
         {
             var token = await GetAPITokenAsync();
             if (token != null)

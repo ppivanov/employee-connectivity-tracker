@@ -12,7 +12,7 @@ namespace EctBlazorApp.Server.Extensions
     public static class EctTeamExtensions
     {
         // this should be triggered every Sunday at noon for most accurate results
-        public static void ProcessNotifications(this EctTeam team, EctDbContext dbContext, EctMailKit mailKit)
+        public static void ProcessNotifications(this EctTeam team, EctMailKit mailKit, EctDbContext dbContext)
         {                                                                                       //                              Examples:
             DateTime currentWeekEnd = DateTime.Now.AddDays(1);                                  // Following Monday             March 1st
             DateTime currentWeekStart = currentWeekEnd.AddDays(-7);                             // Last week's Monday           Feb  22th
@@ -29,9 +29,10 @@ namespace EctBlazorApp.Server.Extensions
                 int previousWeekPoints = GetCommunicationPointsForUserId(member.Id, previousWeekStart, previousWeekEnd, dbContext);
 
                 string message = team.ProcessPoints(member, currentWeekPoints, previousWeekPoints);
+                emailMessage.Append(message);
             }
 
-            team.SendNotificationEmail(emailMessage.ToString(), mailKit);
+            team.SendNotificationEmail(emailMessage.ToString(), mailKit, dbContext);
         }
 
         private static int GetCommunicationPointsForUserId(int userId, DateTime fromDate, DateTime toDate, EctDbContext dbContext)
@@ -41,17 +42,10 @@ namespace EctBlazorApp.Server.Extensions
             List<CalendarEvent> calendarEvents = dbContext.GetCalendarEventsInDateRangeForUserId(userId, fromDate, toDate);
 
             int mailCount = receivedMail.Count + sentMail.Count;
-            int minutesInMeetings = GetMinutesFromEvents(calendarEvents);
+            int minutesInMeetings = CalendarEvent.GetTotalMinutesFromEvents(calendarEvents);
 
             int totalCommunicationPoints = GetCommunicationPoints(mailCount, minutesInMeetings, dbContext);
             return totalCommunicationPoints;
-        }
-
-        private static int GetMinutesFromEvents(List<CalendarEvent> calendarEvents)
-        {
-            double totalSeconds = CalendarEvent.GetTotalSecondsForEvents(calendarEvents);
-            int totalMinutes = GetMinutesFromSeconds(totalSeconds);
-            return totalMinutes;
         }
 
         private static int GetCommunicationPoints(int mailCount, int minutesInMeetings, EctDbContext dbContext)
@@ -75,14 +69,17 @@ namespace EctBlazorApp.Server.Extensions
             float percentDifferenceInPoints = currentWeekPoints / previousWeekPoints * 100 - 100;
             if (percentDifferenceInPoints < 0 && percentDifferenceInPoints >= team.MarginForNotification)
                 emailMessage.Append($"{user.FullName} has been communicating {percentDifferenceInPoints}% less this week compared to last week.\n");
-            
+
+            if (emailMessage.Length > 0) emailMessage.Append("\n");
+
             return emailMessage.ToString();
         }
 
-        private static void SendNotificationEmail(this EctTeam team, string message, EctMailKit mailKit)
+        private static void SendNotificationEmail(this EctTeam team, string messageContent, EctMailKit mailKit, EctDbContext dbContext)
         {
-            mailKit.SendNotificationEmail();
-            // send email to leader && additional recipients if specified
+            var teamLead = dbContext.Users.First(u => u.Id.Equals(team.LeaderId));
+            mailKit.SendNotificationEmail(teamLead, messageContent);
+            // send email to additional recipients if specified
         }
     }
 }

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using static EctBlazorApp.Shared.SharedMethods;
 
 namespace EctBlazorApp.Shared.Entities
 {
@@ -76,10 +77,11 @@ namespace EctBlazorApp.Shared.Entities
             return seconds;
         }
 
-        public double GetEventLenghtInMinutes()
+        public static int GetTotalMinutesFromEvents(List<CalendarEvent> calendarEvents)
         {
-            double length = (End - Start).TotalMinutes;
-            return length;
+            double totalSeconds = CalendarEvent.GetTotalSecondsForEvents(calendarEvents);
+            int totalMinutes = GetMinutesFromSeconds(totalSeconds);
+            return totalMinutes;
         }
 
         public List<string> GetAttendeesExcludingUser(string user)
