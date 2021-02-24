@@ -83,13 +83,23 @@
                                         @if (allowsEdit)
                                         {
                                             <EditForm Model="newNotificationOptions" OnSubmit="@(async () => await SubmitThreshold())" Context="formContext">
-                                                <InputNumber @bind-Value="newNotificationOptions.PointsThreshold" class="" id="" style="@InputStyle" />
+                                                <p>
+                                                    <label>Threshold for notifications:</label>
+                                                    <InputNumber @bind-Value="newNotificationOptions.PointsThreshold" class="" id="" style="@InputStyle" />
+                                                </p>
+
+                                                <p>
+                                                    <label>Margin for notifications:</label>
+                                                    <InputNumber @bind-Value="newNotificationOptions.MarginForNotification" class="" id="" style="@InputStyle" />
+                                                </p>
+
                                                 <button type="submit">Submit</button>
                                             </EditForm>
                                         }
                                         else
                                         {
                                             <p>Current threshold for notifications: @currentNotificationOptions.PointsThreshold</p>
+                                            <p>Current margin for notifications: @currentNotificationOptions.MarginForNotification</p>
                                             <button @onclick="EditThreshold">Edit</button>
                                         }
                                     }

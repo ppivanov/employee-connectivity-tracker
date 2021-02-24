@@ -12,7 +12,7 @@ namespace EctBlazorApp.Shared.Entities
         public int LeaderId { get; set; }
         public EctUser Leader { get; set; }
         public int PointsThreshold { get; set; }
-        public int MarginForNotification { get; set; }
+        public double MarginForNotification { get; set; }
         public ICollection<EctUser> Members { get; set; }
     }
 }

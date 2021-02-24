@@ -110,6 +110,7 @@ namespace EctBlazorApp.Server.Controllers
             EctTeam assignedTeam = _dbContext.Teams.First(t => t.LeaderId == userId);
 
             assignedTeam.PointsThreshold = notificationOptions.PointsThreshold;
+            assignedTeam.MarginForNotification = notificationOptions.MarginForNotification;
             await _dbContext.SaveChangesAsync();
 
             return Ok("Threshold saved.");
