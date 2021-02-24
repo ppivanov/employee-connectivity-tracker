@@ -12,9 +12,6 @@ namespace EctBlazorApp.Client.Pages
     public class CommunicationPointsClass : ComponentBase
     {
         [Inject]
-        HttpClient Http { get; set; }
-
-        [Inject]
         IJSRuntime jsRuntime { get; set; }
 
         [Inject]
@@ -71,8 +68,8 @@ namespace EctBlazorApp.Client.Pages
         protected async Task FetchCommunicationPoints()
         {
             var response = await ApiConn.FetchCommunicationPoints();
-            var percentages = new List<CommunicationPoint> { response.Item1, response.Item2 };
-            InitializeDictionary(percentages);
+            var points = new List<CommunicationPoint> { response.Item1, response.Item2 };
+            InitializeDictionary(points);
         }
 
         private void InitializeDictionary(List<CommunicationPoint> commPoints)

@@ -116,6 +116,15 @@ namespace EctBlazorApp.Server.Controllers
             return Ok("Threshold saved.");
         }
 
+        [Route("test-notifications")]
+        [HttpGet]
+        public async void TestNotifications()
+        {
+            EctTeam randomTeam = _dbContext.Teams.FirstOrDefault();
+
+            randomTeam.ProcessNotifications();
+        }
+
         private EctUser GetCommunicationDataAsNewUserInstance(EctUser forUser, DateTime fromDate, DateTime toDate)
         {
             EctUser tempUser = new EctUser(forUser);

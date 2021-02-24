@@ -31,6 +31,22 @@ namespace EctBlazorApp.Client.Graph
             _httpClient = httpClient;
         }
 
+        public async Task TestNotifications()
+        {
+            var token = await GetAPITokenAsync();
+            if (token != null)
+            {
+                try
+                {
+                    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    await _httpClient.GetFromJsonAsync<List<CommunicationPoint>>($"api/team/test-notifications");
+                }
+                catch (AccessTokenNotAvailableException exception)
+                {
+                    exception.Redirect();
+                }
+            }
+        }
         public async Task<string> UpdateDatabaseRecords()
         {
             var accessToken = await GetAccessTokenAsync();
