@@ -95,19 +95,17 @@ namespace EctBlazorApp.Server.Controllers
             return assignedTeam.PointsThreshold;
         }
 
+        //[Route("set-notification-options")]
         [Route("set-points-threshold")]
         [HttpPut]
         [AuthorizeLeader]
-        public async Task<ActionResult<string>> SetPointsThreshold([FromBody] int newThreshold)
+        public async Task<ActionResult<string>> SetPointsThreshold([FromBody] NotificationOptionsRequest notificationOptions)
         {
-            if(newThreshold < 0)
-                return BadRequest("Threshold value must be greater than 0.");
-
             string userEmail = await HttpContext.GetPreferredUsername();
             int userId = _dbContext.Users.First(u => u.Email == userEmail).Id;
             EctTeam assignedTeam = _dbContext.Teams.First(t => t.LeaderId == userId);
 
-            assignedTeam.PointsThreshold = newThreshold;
+            assignedTeam.PointsThreshold = notificationOptions.PointsThreshold;
             await _dbContext.SaveChangesAsync();
 
             return Ok("Threshold saved.");
