@@ -1,4 +1,5 @@
-﻿using EctBlazorApp.Shared.Entities;
+﻿using EctBlazorApp.Server.MailKit;
+using EctBlazorApp.Shared.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,8 +11,8 @@ namespace EctBlazorApp.Server.Extensions
 {
     public static class EctTeamExtensions
     {
-        // should be triggered every Sunday at noon
-        public static void ProcessNotifications(this EctTeam team, EctDbContext dbContext)
+        // this should be triggered every Sunday at noon for most accurate results
+        public static void ProcessNotifications(this EctTeam team, EctDbContext dbContext, EctMailKit mailKit)
         {                                                                                       //                              Examples:
             DateTime currentWeekEnd = DateTime.Now.AddDays(1);                                  // Following Monday             March 1st
             DateTime currentWeekStart = currentWeekEnd.AddDays(-7);                             // Last week's Monday           Feb  22th
@@ -19,7 +20,8 @@ namespace EctBlazorApp.Server.Extensions
             DateTime previousWeekEnd = currentWeekStart;                                        // Last week's Monday           Feb  22th
             DateTime previousWeekStart = currentWeekStart.AddDays(-7);                          // The Monday before that       Feb  15th
 
-            var emailMessage = new StringBuilder("");
+            var emailMessage = new StringBuilder($"Stats for week starting: {currentWeekStart.ToString("dd dddd, MMM yyyy")},\n" +
+                $"compared to week starting: {previousWeekStart.ToString("dd dddd, MMM yyyy")}\n\n");
 
             foreach (var member in team.Members)
             {
@@ -29,7 +31,7 @@ namespace EctBlazorApp.Server.Extensions
                 string message = team.ProcessPoints(member, currentWeekPoints, previousWeekPoints);
             }
 
-            // send email to leader && additional recipients if specified
+            team.SendNotificationEmail(emailMessage.ToString(), mailKit);
         }
 
         private static int GetCommunicationPointsForUserId(int userId, DateTime fromDate, DateTime toDate, EctDbContext dbContext)
@@ -67,14 +69,20 @@ namespace EctBlazorApp.Server.Extensions
         {
             var emailMessage = new StringBuilder("");
             if(currentWeekPoints < team.PointsThreshold)
-            {
-                emailMessage.Append($"{user.FullName} is below the threshold that is" +
-                    " set for their team. ${currentWeekPoints}/{team.PointsThreshold}\n");
-            }
+                emailMessage.Append($"{user.FullName} is below the threshold" +
+                    $" set for their team. {currentWeekPoints}/{team.PointsThreshold}\n");
 
-            // Check the % difference in the users current and past data
-
+            float percentDifferenceInPoints = currentWeekPoints / previousWeekPoints * 100 - 100;
+            if (percentDifferenceInPoints < 0 && percentDifferenceInPoints >= team.MarginForNotification)
+                emailMessage.Append($"{user.FullName} has been communicating {percentDifferenceInPoints}% less this week compared to last week.\n");
+            
             return emailMessage.ToString();
+        }
+
+        private static void SendNotificationEmail(this EctTeam team, string message, EctMailKit mailKit)
+        {
+            mailKit.SendNotificationEmail();
+            // send email to leader && additional recipients if specified
         }
     }
 }

@@ -122,7 +122,7 @@ namespace EctBlazorApp.Server.Controllers
         {
             EctTeam randomTeam = _dbContext.Teams.FirstOrDefault();
 
-            randomTeam.ProcessNotifications();
+            randomTeam.ProcessNotifications(_dbContext);
         }
 
         private EctUser GetCommunicationDataAsNewUserInstance(EctUser forUser, DateTime fromDate, DateTime toDate)

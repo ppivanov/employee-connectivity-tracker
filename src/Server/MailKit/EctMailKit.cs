@@ -38,5 +38,10 @@ namespace EctBlazorApp.Server.MailKit
             return true;
         }
 
+        public bool SendNotificationEmail()                     // todo
+        {
+            return true;
+        }
+
     }
 }

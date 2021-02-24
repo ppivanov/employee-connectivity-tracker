@@ -22,12 +22,12 @@ namespace EctBlazorApp.Server.Controllers
     public class HomeController : ControllerBase
     {
         private readonly EctDbContext _dbContext;
-        private readonly EctMailKit _mailKitMetadata;
+        private readonly EctMailKit _mailKit;
 
         public HomeController(EctDbContext context, EctMailKit mailKit)
         {
             _dbContext = context;
-            _mailKitMetadata = mailKit;
+            _mailKit = mailKit;
         }
 
         [Route("update-tracking-records")]
@@ -41,7 +41,7 @@ namespace EctBlazorApp.Server.Controllers
 
             string userId = await HttpContext.GetPreferredUsername();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", userDetails.GraphToken);
-            EctUser userForParms = await _dbContext.GetExistingEctUserOrNewAsync(userId, client, _mailKitMetadata);
+            EctUser userForParms = await _dbContext.GetExistingEctUserOrNewAsync(userId, client, _mailKit);
 
             bool eventsSaved = await RetryUpdateMethodIfFails(client, _dbContext, userForParms.UpdateCalendarEventRecordsAsync);
             if (!eventsSaved)
