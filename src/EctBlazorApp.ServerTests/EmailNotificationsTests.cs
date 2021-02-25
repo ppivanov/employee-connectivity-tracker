@@ -26,9 +26,9 @@ namespace EctBlazorApp.ServerTests
         }
 
         [TestMethod]
-        public void GetCommunicationPointsForUserId()
+        public void GetCommunicationPointsForUserId__Homer_1_Jan_2021__73Points()
         {
-            var homer = GetHomerFromInMemoryDb();
+            var homer = GetUserFromInMemoryDb("Homer");
             DateTime fromDate = new DateTime(2021, 1, 1);
             DateTime toDate = new DateTime(2021, 1, 8);
             int expectedResult = 73;
@@ -38,9 +38,22 @@ namespace EctBlazorApp.ServerTests
             Assert.AreEqual(expectedResult, actualResult);
         }
 
-        private EctUser GetHomerFromInMemoryDb()
+        [TestMethod]
+        public void GetCommunicationPointsForUserId__Alice_23_Sep_2020__30Points()
         {
-            var homer = _dbContext.Users.First(u => u.Id == 3);
+            var alice = GetUserFromInMemoryDb("Alice");
+            DateTime fromDate = new DateTime(2020, 9, 23);
+            DateTime toDate = new DateTime(2020, 9, 30);
+            int expectedResult = 30;
+
+            int actualResult = _dbContext.GetCommunicationPointsForUserId(alice.Id, fromDate, toDate);
+
+            Assert.AreEqual(expectedResult, actualResult);
+        }
+
+        private EctUser GetUserFromInMemoryDb(string name)
+        {
+            var homer = _dbContext.Users.First(u => u.FullName.Contains(name));
             return homer;
         }
     }
