@@ -15,8 +15,9 @@ namespace EctBlazorApp.Server.Extensions
                     $" set for their team. {currentWeekPoints}/{team.PointsThreshold}\n");
 
             float percentDifferenceInPoints = currentWeekPoints / previousWeekPoints * 100 - 100;
-            if (percentDifferenceInPoints < 0 && percentDifferenceInPoints >= team.MarginForNotification)
-                emailMessage.Append($"{user.FullName} has been communicating {percentDifferenceInPoints}% less this week compared to last week.\n");
+            float realPercentDifference = percentDifferenceInPoints * -1;
+            if (percentDifferenceInPoints < 0 && realPercentDifference >= team.MarginForNotification)
+                emailMessage.Append($"{user.FullName} has been communicating {realPercentDifference}% less this week compared to last week.\n");
 
             if (emailMessage.Length > 0) emailMessage.Append("\n");
 
