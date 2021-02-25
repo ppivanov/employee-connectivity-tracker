@@ -16,10 +16,15 @@ namespace EctBlazorApp.Shared.Entities
         { 
             get
             {
+                if (Recipients.Count < 1)
+                    return "";
+
                 return string.Join("|", Recipients);
             }
             set
             {
+                if (value.Length < 1)
+                    Recipients = new List<string>();
                 Recipients = value.Split("|").ToList();
             }
         }

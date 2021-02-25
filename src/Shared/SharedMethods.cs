@@ -46,7 +46,8 @@ namespace EctBlazorApp.Shared
         public static int GetMinutesFromSeconds(double seconds)
         {
             TimeSpan timeSpan = TimeSpan.FromSeconds(seconds);
-            return timeSpan.Minutes;
+            int totalMinutes = timeSpan.Hours * 60 + timeSpan.Minutes;
+            return totalMinutes;
         }
 
         public static int GetSecondsFromDateTimeRange(DateTime from, DateTime to)

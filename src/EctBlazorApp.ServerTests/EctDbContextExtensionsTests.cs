@@ -22,8 +22,8 @@ namespace EctBlazorApp.ServerTests
     public sealed class EctDbContextExtensionsTests : IDisposable
     {
         private readonly EctDbContext _dbContext;
+        private readonly EctMailKit _mailKit;
         private HttpClient _httpClient;
-        private EctMailKit _mailKit;
 
         public EctDbContextExtensionsTests()
         {

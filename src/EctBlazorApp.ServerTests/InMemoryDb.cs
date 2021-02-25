@@ -17,15 +17,15 @@ namespace EctBlazorApp.ServerTests
             EctDbContext dbContext = new EctDbContext(optionsBuilder.Options);
 
             EctUser alice = GetAlice();
-            EctUser bob = GetHomer();
+            EctUser homer = GetHomer();
+            EctTeam teamOne = GetTeamForParameters(alice, new List<EctUser> { alice, homer });
 
-            List<EctUser> teamOneMembers = new List<EctUser> { alice, bob };
-            EctTeam teamOne = GetTeamForParameters(alice, teamOneMembers);
-            
             dbContext.Teams.Add(teamOne);
-
             dbContext.Administrators.AddRange(
                 GetAdmins()
+            );
+            dbContext.CommunicationPoints.AddRange(
+                GetCommunicationPoints()
             );
 
             dbContext.SaveChanges();
@@ -50,6 +50,7 @@ namespace EctBlazorApp.ServerTests
             };
             return admins;
         }
+
         private static EctUser GetAlice()
         {
             EctUser alice =
@@ -69,16 +70,38 @@ namespace EctBlazorApp.ServerTests
 
         private static EctUser GetHomer()
         {
-            EctUser bob =
+            EctUser homer =
                 new EctUser
                 {
                     Id = 3,
                     Email = "homer@ect.ie",
                     FullName = "Homer HomerS",
-                    LastSignIn = new DateTime(2020, 11, 1) // Nov 1, 2020 12am
+                    LastSignIn = new DateTime(2020, 11, 1), // Nov 1, 2020 12am
+                    CalendarEvents = GetEventsForHomer(),
+                    SentEmails = GetSentMailForHomer(),
+                    ReceivedEmails = GetReceivedMailForHomer()
                 }
             ;
-            return bob;
+            return homer;
+        }
+
+        private static List<CommunicationPoint> GetCommunicationPoints()
+        {
+            var communicationPoints = new List<CommunicationPoint>
+            {
+                new CommunicationPoint
+                {
+                    Medium = "Email",
+                    Points = 1
+                },
+                new CommunicationPoint
+                {
+                    Medium = "Meetings",
+                    Points = 3
+                }
+            };
+
+            return communicationPoints;
         }
 
         private static List<CalendarEvent> GetEventsForAlice()
@@ -107,7 +130,6 @@ namespace EctBlazorApp.ServerTests
 
             return events;
         }
-
         private static List<SentMail> GetSentMailForAlice()
         {
             List<SentMail> sentEmails = new List<SentMail> {
@@ -131,7 +153,6 @@ namespace EctBlazorApp.ServerTests
 
             return sentEmails;
         }
-
         private static List<ReceivedMail> GetReceivedMailForAlice()
         {
             List<ReceivedMail> receivedEmails = new List<ReceivedMail> {
@@ -163,6 +184,147 @@ namespace EctBlazorApp.ServerTests
             };
 
             return receivedEmails;
+        }
+
+        private static List<CalendarEvent> GetEventsForHomer() // Total 2 hrs 50 minutes == 170 minutes
+        {
+            return new List<CalendarEvent>
+                {
+                    new CalendarEvent
+                    {
+                        Id = 3,
+                        Start = new DateTime(2021, 1, 1, 12, 00, 00),
+                        End= new DateTime(2021, 1, 1, 13, 00, 00)           // 1 hr
+                    },
+                    new CalendarEvent
+                    {
+                        Id = 4,
+                        Start = new DateTime(2021, 1, 2, 12, 00, 00),
+                        End= new DateTime(2021, 1, 2, 13, 30, 00)           // 1 hr, 30 min
+                    },
+
+                    new CalendarEvent
+                    {
+                        Id = 5,
+                        Start = new DateTime(2021, 1, 3, 14, 00, 00),
+                        End= new DateTime(2021, 1, 3, 14, 20, 00)           // 20 min
+                    }
+                };
+        }
+        private static List<SentMail> GetSentMailForHomer()    // 10 emails - Jan 1st to 7th
+        {
+            return
+                new List<SentMail>
+                {
+                    new SentMail
+                    {
+                        Id = 3, SentAt = new DateTime(2021, 1, 1, 11, 05, 00),
+                        Recipients = new List<string>()
+                    },
+                    new SentMail
+                    {
+                        Id = 4, SentAt = new DateTime(2021, 1, 1, 12, 00, 00),
+                        Recipients = new List<string>()
+                    },
+                    new SentMail
+                    {
+                        Id = 5, SentAt = new DateTime(2021, 1, 1, 12, 32, 00),
+                        Recipients = new List<string>()
+                    },
+                    new SentMail
+                    {
+                        Id = 6, SentAt = new DateTime(2021, 1, 2, 11, 05, 00),
+                        Recipients = new List<string>()
+                    },
+                    new SentMail
+                    {
+                        Id = 7, SentAt = new DateTime(2021, 1, 2, 12, 00, 00),
+                        Recipients = new List<string>()
+                    },
+                    new SentMail
+                    {
+                        Id = 8, SentAt = new DateTime(2021, 1, 5, 12, 32, 00),
+                        Recipients = new List<string>()
+                    },
+                    new SentMail
+                    {
+                        Id = 9, SentAt = new DateTime(2021, 1, 5, 11, 05, 00),
+                        Recipients = new List<string>()
+                    },
+                    new SentMail
+                    {
+                        Id = 10, SentAt = new DateTime(2021, 1, 5, 12, 00, 00),
+                        Recipients = new List<string>()
+                    },
+                    new SentMail
+                    {
+                        Id = 11, SentAt = new DateTime(2021, 1, 5, 12, 32, 00),
+                        Recipients = new List<string>()
+                    },
+                    new SentMail
+                    {
+                        Id = 12, SentAt = new DateTime(2021, 1, 7, 11, 05, 00),
+                        Recipients = new List<string>()
+                    }
+                };
+        }
+        private static List<ReceivedMail> GetReceivedMailForHomer()    // 12 emails - Jan 1st to 7th
+        {
+            return
+                new List<ReceivedMail>
+                {
+                    new ReceivedMail
+                    {
+                        Id = 4,
+                        ReceivedAt = new DateTime(2021, 1, 1, 11, 05, 00)
+                    },
+                    new ReceivedMail
+                    {
+                        Id = 5,
+                        ReceivedAt = new DateTime(2021, 1, 1, 12, 00, 00)
+                    },
+                    new ReceivedMail
+                    {
+                        Id = 6,
+                        ReceivedAt = new DateTime(2021, 1, 1, 12, 32, 00)
+                    },
+                    new ReceivedMail
+                    {
+                        Id = 7, ReceivedAt = new DateTime(2021, 1, 2, 11, 05, 00)
+                    },
+                    new ReceivedMail
+                    {
+                        Id = 8, ReceivedAt = new DateTime(2021, 1, 2, 12, 00, 00)
+                    },
+                    new ReceivedMail
+                    {
+                        Id = 9, ReceivedAt = new DateTime(2021, 1, 5, 12, 32, 00)
+                    },
+                    new ReceivedMail
+                    {
+                        Id = 10, ReceivedAt = new DateTime(2021, 1, 5, 11, 05, 00)
+                    },
+                    new ReceivedMail
+                    {
+                        Id = 11, ReceivedAt = new DateTime(2021, 1, 5, 12, 00, 00)
+                    },
+                    new ReceivedMail
+                    {
+                        Id = 12, ReceivedAt = new DateTime(2021, 1, 5, 12, 32, 00)
+                    },
+                    new ReceivedMail
+                    {
+                        Id = 13, ReceivedAt = new DateTime(2021, 1, 7, 11, 05, 00)
+                    },
+                    new ReceivedMail
+                    {
+                        Id = 14, ReceivedAt = new DateTime(2021, 1, 7, 12, 00, 00)
+                    },
+                    new ReceivedMail
+                    {
+                        Id = 15, ReceivedAt = new DateTime(2021, 1, 7, 12, 32, 00)
+                    },
+                };
         }
 
         private static EctTeam GetTeamForParameters(EctUser lead, List<EctUser> members)

@@ -78,7 +78,10 @@ namespace EctBlazorApp.Server.Extensions
 
         }
 
-        // this should be triggered every Sunday at noon for most accurate results
+
+        /******************** Email notifications ********************/
+
+        // this method should be triggered every Sunday at noon
         public static void ProcessNotifications(this EctDbContext dbContext, EctMailKit mailKit)
         {                                                                                       //                              Examples:
             DateTime currentWeekEnd = DateTime.Now.AddDays(1);                                  // Following Monday             March 1st
@@ -111,7 +114,7 @@ namespace EctBlazorApp.Server.Extensions
             }
         }
 
-        private static int GetCommunicationPointsForUserId(this EctDbContext dbContext, int userId, DateTime fromDate, DateTime toDate)
+        public static int GetCommunicationPointsForUserId(this EctDbContext dbContext, int userId, DateTime fromDate, DateTime toDate)
         {
             List<ReceivedMail> receivedMail = dbContext.GetReceivedMailInDateRangeForUserId(userId, fromDate, toDate);
             List<SentMail> sentMail = dbContext.GetSentMailInDateRangeForUserId(userId, fromDate, toDate);
@@ -133,12 +136,6 @@ namespace EctBlazorApp.Server.Extensions
 
             return totalPoints;
         }
-        private static void SendNotificationEmail(this EctDbContext dbContext, string messageContent, EctTeam team, EctMailKit mailKit)
-        {
-            var teamLead = dbContext.Users.First(u => u.Id.Equals(team.LeaderId));
-            mailKit.SendNotificationEmail(teamLead, messageContent);
-            // send email to additional recipients if specified
-        }
         private static string GenerateNotificationMessage(EctTeam team, EctUser user, int currentWeekPoints, int previousWeekPoints)
         {
             var emailMessage = new StringBuilder("");
@@ -154,6 +151,12 @@ namespace EctBlazorApp.Server.Extensions
             if (emailMessage.Length > 0) emailMessage.Append("\n");
 
             return emailMessage.ToString();
+        }
+        private static void SendNotificationEmail(this EctDbContext dbContext, string messageContent, EctTeam team, EctMailKit mailKit)
+        {
+            var teamLead = dbContext.Users.First(u => u.Id.Equals(team.LeaderId));
+            mailKit.SendNotificationEmail(teamLead, messageContent);
+            // send email to additional recipients if specified
         }
     }
 }
