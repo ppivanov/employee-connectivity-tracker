@@ -68,16 +68,16 @@ namespace EctBlazorApp.Server.Controllers
 
         [Route("get-dashboard-stats")]
         [HttpGet]
-        public async Task<ActionResult<DashboardResponse>> StatsForDashboard([FromQuery] string fromDateString, [FromQuery] string toDateString)    
+        public async Task<ActionResult<DashboardResponse>> StatsForDashboard([FromQuery] string fromDate, [FromQuery] string toDate)    
         {
             string userEmail = await HttpContext.GetPreferredUsername();
-            int userId = _dbContext.Users.First(u => u.Email == userEmail).Id;                          // TODO - refactor this so that all necessary records are pulled out in a single dbContext linq query
+            int userId = _dbContext.Users.First(u => u.Email == userEmail).Id;
 
-            DateTime fromDate = NewDateTimeFromString(fromDateString);
-            DateTime toDate = NewDateTimeFromString(toDateString);
-            List<ReceivedMail> receivedMail = _dbContext.GetReceivedMailInDateRangeForUserId(userId, fromDate, toDate);
-            List<SentMail> sentMail = _dbContext.GetSentMailInDateRangeForUserId(userId, fromDate, toDate);
-            List<CalendarEvent> calendarEvents = _dbContext.GetCalendarEventsInDateRangeForUserId(userId, fromDate, toDate);
+            DateTime fromDateTime = NewDateTimeFromString(fromDate);
+            DateTime toDateTime = NewDateTimeFromString(toDate);
+            List<ReceivedMail> receivedMail = _dbContext.GetReceivedMailInDateRangeForUserId(userId, fromDateTime, toDateTime);
+            List<SentMail> sentMail = _dbContext.GetSentMailInDateRangeForUserId(userId, fromDateTime, toDateTime);
+            List<CalendarEvent> calendarEvents = _dbContext.GetCalendarEventsInDateRangeForUserId(userId, fromDateTime, toDateTime);
 
             double secondsInMeeting = CalendarEvent.GetTotalSecondsForEvents(calendarEvents);
 
