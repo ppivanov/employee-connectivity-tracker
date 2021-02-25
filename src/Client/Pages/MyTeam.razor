@@ -90,7 +90,7 @@
 
                                                 <p>
                                                     <label>Margin for notifications:</label>
-                                                    <InputNumber @bind-Value="newNotificationOptions.MarginForNotification" class="" id="" style="@InputStyle" />
+                                                    <InputNumber @bind-Value="newNotificationOptions.MarginForNotification" class="" id="" style="@InputStyle" />%
                                                 </p>
 
                                                 <button type="submit">Submit</button>
@@ -99,7 +99,7 @@
                                         else
                                         {
                                             <p>Current threshold for notifications: @currentNotificationOptions.PointsThreshold</p>
-                                            <p>Current margin for notifications: @currentNotificationOptions.MarginForNotification</p>
+                                            <p>Current margin for notifications: @currentNotificationOptions.MarginForNotification%</p>
                                             <button @onclick="EditThreshold">Edit</button>
                                         }
                                     }
