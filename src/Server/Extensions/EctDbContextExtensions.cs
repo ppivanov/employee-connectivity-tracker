@@ -102,12 +102,12 @@ namespace EctBlazorApp.Server.Extensions
                     currentWeekPoints = currentWeekPoints > 0 ? currentWeekPoints : 1;
                     previousWeekPoints = previousWeekPoints > 0 ? previousWeekPoints : 1;
 
-                    string message = team.ProcessPoints(member, currentWeekPoints, previousWeekPoints);
+                    string message = GenerateNotificationMessage(team, member, currentWeekPoints, previousWeekPoints);
                     emailMessage.Append(message);
                 }
                 if (emailMessage.ToString().Equals(heading)) emailMessage.Append("None\n");
 
-                team.SendNotificationEmail(emailMessage.ToString(), mailKit, dbContext);
+                dbContext.SendNotificationEmail(emailMessage.ToString(), team, mailKit);
             }
         }
 
@@ -123,7 +123,6 @@ namespace EctBlazorApp.Server.Extensions
             int totalCommunicationPoints = dbContext.CalculateTotalCommunicationPoints(mailCount, minutesInMeetings);
             return totalCommunicationPoints;
         }
-
         private static int CalculateTotalCommunicationPoints(this EctDbContext dbContext, int mailCount, int minutesInMeetings)
         {
             IEnumerable<CommunicationPoint> commPoints = dbContext.CommunicationPoints;
@@ -133,6 +132,28 @@ namespace EctBlazorApp.Server.Extensions
             int totalPoints = (int)(mailCount * emailPoints + minutesInMeetings / 10.0 * meetingPoints);
 
             return totalPoints;
+        }
+        private static void SendNotificationEmail(this EctDbContext dbContext, string messageContent, EctTeam team, EctMailKit mailKit)
+        {
+            var teamLead = dbContext.Users.First(u => u.Id.Equals(team.LeaderId));
+            mailKit.SendNotificationEmail(teamLead, messageContent);
+            // send email to additional recipients if specified
+        }
+        private static string GenerateNotificationMessage(EctTeam team, EctUser user, int currentWeekPoints, int previousWeekPoints)
+        {
+            var emailMessage = new StringBuilder("");
+            if (currentWeekPoints < team.PointsThreshold)
+                emailMessage.Append($"{user.FullName} is below the threshold" +
+                    $" set for their team. {currentWeekPoints}/{team.PointsThreshold}\n");
+
+            float percentDifferenceInPoints = currentWeekPoints / previousWeekPoints * 100 - 100;
+            float realPercentDifference = percentDifferenceInPoints * -1;
+            if (percentDifferenceInPoints < 0 && realPercentDifference >= team.MarginForNotification)
+                emailMessage.Append($"{user.FullName} has been communicating {realPercentDifference}% less this week compared to last week.\n");
+
+            if (emailMessage.Length > 0) emailMessage.Append("\n");
+
+            return emailMessage.ToString();
         }
     }
 }
