@@ -21,15 +21,15 @@ namespace EctBlazorApp.Server.CommonMethods
         }
         private static string ConstructGraphUrlForReceivedMail(EctUser user)
         {
-            string formattedFromDate = user.LastSignIn.ToString("yyyy-MM-dd");
-            string inboxEndpoint = $"{baseGraphUrl}/users/{user.Email}/mailFolders/inbox/messages?$filter=receivedDateTime ge {formattedFromDate} " +
+            string formattedFromDate = user.LastSignIn.ToString("s");
+            string inboxEndpoint = $"{baseGraphUrl}/users/{user.Email}/mailFolders/inbox/messages?$filter=receivedDateTime ge {formattedFromDate}Z " +
                 "&$select=receivedDateTime,subject,sender&$top=999";
             return inboxEndpoint;
         }
         private static string ConstructGraphUrlForSentMail(EctUser user)
         {
-            string formattedFromDate = user.LastSignIn.ToString("yyyy-MM-dd");
-            string sentItemsEndpoint = $"{baseGraphUrl}/users/{user.Email}/mailFolders/sentitems/messages?$filter=receivedDateTime ge {formattedFromDate} " +
+            string formattedFromDate = user.LastSignIn.ToString("s");
+            string sentItemsEndpoint = $"{baseGraphUrl}/users/{user.Email}/mailFolders/sentitems/messages?$filter=receivedDateTime ge {formattedFromDate}Z " +
                 "&$select=sentDateTime,subject,toRecipients&$top=999";
             return sentItemsEndpoint;
         }

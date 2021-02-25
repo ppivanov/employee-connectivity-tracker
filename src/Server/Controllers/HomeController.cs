@@ -57,11 +57,9 @@ namespace EctBlazorApp.Server.Controllers
 
             if (errorString.Length > 1)
                 return BadRequest(errorString.ToString());
-            else
-            {
-                userForParms.LastSignIn = DateTime.Now;
-                await _dbContext.SaveChangesAsync();
-            }
+
+            userForParms.LastSignIn = DateTime.Now;
+            await _dbContext.SaveChangesAsync();
 
             return Ok("User records up to date");
         }
