@@ -9,5 +9,6 @@ namespace EctBlazorApp.Shared
         public List<ReceivedMail> ReceivedMail { get; set; }
         public List<SentMail> SentMail { get; set; }
         public double SecondsInMeeting { get; set; }
+        public string UserFullName { get; set; }
     }
 }

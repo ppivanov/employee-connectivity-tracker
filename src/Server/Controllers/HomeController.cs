@@ -68,10 +68,10 @@ namespace EctBlazorApp.Server.Controllers
         [HttpGet]
         public async Task<ActionResult<DashboardResponse>> StatsForDashboard([FromQuery] string fromDate, [FromQuery] string toDate, [FromQuery] string UID = "")
         {
-            int userId = await GetUserIdFromHashOrProcessingUserId(UID);
-            if (userId == -1)
+            EctUser user = await GetUserIdFromHashOrProcessingUserId(UID);
+            if (user == null)
                 return BadRequest(new DashboardResponse
-                {
+                {   UserFullName = "",
                     CalendarEvents = new List<CalendarEvent>(),
                     ReceivedMail = new List<ReceivedMail>(),
                     SentMail = new List<SentMail>(),
@@ -80,19 +80,20 @@ namespace EctBlazorApp.Server.Controllers
 
             DateTime fromDateTime = NewDateTimeFromString(fromDate);
             DateTime toDateTime = NewDateTimeFromString(toDate);
-            List<ReceivedMail> receivedMail = _dbContext.GetReceivedMailInDateRangeForUserId(userId, fromDateTime, toDateTime);
-            List<SentMail> sentMail = _dbContext.GetSentMailInDateRangeForUserId(userId, fromDateTime, toDateTime);
-            List<CalendarEvent> calendarEvents = _dbContext.GetCalendarEventsInDateRangeForUserId(userId, fromDateTime, toDateTime);
+            List<ReceivedMail> receivedMail = _dbContext.GetReceivedMailInDateRangeForUserId(user.Id, fromDateTime, toDateTime);
+            List<SentMail> sentMail = _dbContext.GetSentMailInDateRangeForUserId(user.Id, fromDateTime, toDateTime);
+            List<CalendarEvent> calendarEvents = _dbContext.GetCalendarEventsInDateRangeForUserId(user.Id, fromDateTime, toDateTime);
 
             double secondsInMeeting = CalendarEvent.GetTotalSecondsForEvents(calendarEvents);
-
-            return new DashboardResponse
-            {
-                CalendarEvents = calendarEvents,
-                ReceivedMail = receivedMail,
-                SentMail = sentMail,
-                SecondsInMeeting = secondsInMeeting
-            };
+            string userFullName = String.IsNullOrEmpty(UID) ? "" : user.FullName;
+            return Ok(new DashboardResponse
+                {
+                    CalendarEvents = calendarEvents,
+                    ReceivedMail = receivedMail,
+                    SentMail = sentMail,
+                    SecondsInMeeting = secondsInMeeting,
+                    UserFullName = userFullName
+                });
         }
 
         private delegate Task<bool> UpdateMetgodDelegate(HttpClient client, EctDbContext dbContext);
@@ -110,18 +111,18 @@ namespace EctBlazorApp.Server.Controllers
             return false;
         }
 
-        private async Task<int> GetUserIdFromHashOrProcessingUserId(string hashedUserId)
+        private async Task<EctUser> GetUserIdFromHashOrProcessingUserId(string hashedUserId)
         {
             string userEmail = await HttpContext.GetPreferredUsername();
-            int userId;
+            EctUser user;
             if (String.IsNullOrEmpty(hashedUserId))
             {
-                userId = _dbContext.Users.First(u => u.Email == userEmail).Id;
-                return userId;
+                user = _dbContext.Users.First(u => u.Email == userEmail);
+                return user;
             }
 
-            userId = _dbContext.GetUserIdIfEmailIsTeamLead(userEmail, hashedUserId);
-            return userId;
+            user = _dbContext.GetUserIdIfEmailIsTeamLead(userEmail, hashedUserId);
+            return user;
         }
     }
 }

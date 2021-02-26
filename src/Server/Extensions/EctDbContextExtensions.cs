@@ -79,7 +79,7 @@ namespace EctBlazorApp.Server.Extensions
 
         }
 
-        public static int GetUserIdIfEmailIsTeamLead(this EctDbContext dbContext, string email, string hashedUserId)
+        public static EctUser GetUserIdIfEmailIsTeamLead(this EctDbContext dbContext, string email, string hashedUserId)
         {
             EctUser teamLead = dbContext.Users.Include(u => u.LeaderOf).First(u => u.Email.Equals(email));
             EctUser userForHashedId = null;
@@ -89,7 +89,7 @@ namespace EctBlazorApp.Server.Extensions
                 {
                     var members = dbContext.Users.Where(u => u.MemberOfId == team.Id).ToList();                                             // Get all the users for that team.
                     userForHashedId = members.First(u => hashedUserId.Equals(ComputeSha256Hash(u.Id.ToString())));                          // Check if any of the members' Id matches {hashedUserId} and return the user.
-                    if (userForHashedId != null) return userForHashedId.Id;
+                    if (userForHashedId != null) return userForHashedId;
                 }
                 catch (Exception)
                 {
@@ -101,7 +101,7 @@ namespace EctBlazorApp.Server.Extensions
             //    .Any(u => hashedUserId.Equals(ComputeSha256Hash(u.Id.ToString()))                                                         // Does the user's Id match the requested {userId}?
             //        && u.MemberOf.LeaderId == teamLead.Id);                                                                               // Are they a member of a team led by {email}?
 
-            return -1;
+            return null;
         }
 
 
