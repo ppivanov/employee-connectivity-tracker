@@ -1,3 +1,4 @@
+using EctBlazorApp.Server.CronJob;
 using EctBlazorApp.Server.MailKit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -6,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
 
 namespace EctBlazorApp.Server
 {
@@ -50,6 +52,12 @@ namespace EctBlazorApp.Server
             services.AddSingleton(
                 Configuration.GetSection("MailKitMetadata").Get<EctMailKit>()
             );
+
+            services.AddCronJob<NotificationCronJob>(c =>
+            {
+                c.CronExpression = @"*/1 * * * *";                              // run job every minute
+                c.TimeZoneInfo = TimeZoneInfo.Local;
+            });
 
             services.AddControllers();
 

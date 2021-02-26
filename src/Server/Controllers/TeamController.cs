@@ -130,8 +130,8 @@ namespace EctBlazorApp.Server.Controllers
         }
     }
 
-    [AuthorizeThirdParty]
-    [Route("api/team")]
+    [AuthorizeNonUserRequest]
+    [Route("api/notifications")]
     [ApiController]
     public class NotificationController : ControllerBase
     {
@@ -144,9 +144,9 @@ namespace EctBlazorApp.Server.Controllers
             _mailKit = mailKit;
         }
 
-        [Route("trigger/notifications/process")]
+        [Route("process/trigger")]
         [HttpGet]
-        public async void TriggerNotifications()
+        public void TriggerNotifications()
         {
             _dbContext.ProcessNotifications(_mailKit);
         }

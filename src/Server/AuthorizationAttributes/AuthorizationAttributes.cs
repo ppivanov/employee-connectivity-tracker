@@ -23,7 +23,7 @@ namespace EctBlazorApp.Server.AuthorizationAttributes
         }
     }
 
-    public class AuthorizeThirdPartyAttribute : AuthorizeAttribute, IAuthorizationFilter
+    public class AuthorizeNonUserRequestAttribute : AuthorizeAttribute, IAuthorizationFilter
     {
         public void OnAuthorization(AuthorizationFilterContext context)
         {
