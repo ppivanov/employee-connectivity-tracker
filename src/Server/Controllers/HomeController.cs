@@ -71,11 +71,13 @@ namespace EctBlazorApp.Server.Controllers
             EctUser user = await GetUserIdFromHashOrProcessingUserId(UID);
             if (user == null)
                 return BadRequest(new DashboardResponse
-                {   UserFullName = "",
+                { 
                     CalendarEvents = new List<CalendarEvent>(),
                     ReceivedMail = new List<ReceivedMail>(),
                     SentMail = new List<SentMail>(),
-                    SecondsInMeeting = 0
+                    SecondsInMeeting = 0,
+                    UserFullName = "",
+                    UserEmail = "",
                 });
 
             DateTime fromDateTime = NewDateTimeFromString(fromDate);
@@ -86,13 +88,15 @@ namespace EctBlazorApp.Server.Controllers
 
             double secondsInMeeting = CalendarEvent.GetTotalSecondsForEvents(calendarEvents);
             string userFullName = String.IsNullOrEmpty(UID) ? "" : user.FullName;
+            string userEmailAddress = String.IsNullOrEmpty(UID) ? "" : user.Email;
             return Ok(new DashboardResponse
                 {
                     CalendarEvents = calendarEvents,
                     ReceivedMail = receivedMail,
                     SentMail = sentMail,
                     SecondsInMeeting = secondsInMeeting,
-                    UserFullName = userFullName
+                    UserFullName = userFullName,
+                    UserEmail = userEmailAddress
                 });
         }
 

@@ -10,5 +10,6 @@ namespace EctBlazorApp.Shared
         public List<SentMail> SentMail { get; set; }
         public double SecondsInMeeting { get; set; }
         public string UserFullName { get; set; }
+        public string UserEmail { get; set; }
     }
 }

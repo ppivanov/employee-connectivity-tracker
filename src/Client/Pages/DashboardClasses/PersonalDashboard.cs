@@ -23,6 +23,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         private List<SentMail> sentMail;
         private List<ReceivedMail> receivedMail;
         private List<CalendarEvent> calendarEvents;
+        private string userEmailAddress = "";
 
         protected override int TotalEmailsCount
         {
@@ -116,6 +117,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             calendarEvents = response.CalendarEvents;
             secondsInMeeting = response.SecondsInMeeting;
             numberOfMeetings = calendarEvents != null ? calendarEvents.Count : 0;
+            userEmailAddress = response.UserEmail;
 
             if (String.IsNullOrEmpty(response.UserFullName) == false)
                 await JsRuntime.InvokeVoidAsync("setPageTitle", response.UserFullName);
@@ -160,9 +162,11 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         }
         private async Task FindAttendeesFromCalendarEvents()
         {
+            string emailToFilterOut =
+                String.IsNullOrEmpty(userEmailAddress) ? await GetEmailForProcessingUser() : userEmailAddress;
             foreach (var meeting in calendarEvents)
             {
-                List<string> attendees = meeting.GetAttendeesExcludingUser(await GetEmailForProcessingUser());
+                List<string> attendees = meeting.GetAttendeesExcludingUser(emailToFilterOut);
                 foreach (var attendee in attendees)
                 {
                     string fullName = GetFullNameFromFormattedString(attendee);
