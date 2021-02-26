@@ -1,5 +1,6 @@
 ﻿using EctBlazorApp.Server.MailKit;
 using EctBlazorApp.Shared.Entities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -77,6 +78,21 @@ namespace EctBlazorApp.Server.Extensions
                 return false;
             }
 
+        }
+
+        public delegate Task<string> GetPreferredUserName();
+        public static async Task<EctUser> GetUserFromHashOrProcessingUser(this EctDbContext dbContext, string hashedUserId, GetPreferredUserName getPreferredUsername)
+        {
+            string userEmail = await getPreferredUsername.Invoke();
+            EctUser user;
+            if (String.IsNullOrEmpty(hashedUserId))
+            {
+                user = dbContext.Users.First(u => u.Email == userEmail);
+                return user;
+            }
+
+            user = dbContext.GetUserIdIfEmailIsTeamLead(userEmail, hashedUserId);
+            return user;
         }
 
         public static EctUser GetUserIdIfEmailIsTeamLead(this EctDbContext dbContext, string email, string hashedUserId)

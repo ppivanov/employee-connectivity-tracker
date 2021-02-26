@@ -3,10 +3,10 @@ using EctBlazorApp.Server.MailKit;
 using EctBlazorApp.Shared;
 using EctBlazorApp.Shared.Entities;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -68,7 +68,7 @@ namespace EctBlazorApp.Server.Controllers
         [HttpGet]
         public async Task<ActionResult<DashboardResponse>> StatsForDashboard([FromQuery] string fromDate, [FromQuery] string toDate, [FromQuery] string UID = "")
         {
-            EctUser user = await GetUserIdFromHashOrProcessingUserId(UID);
+            EctUser user = await _dbContext.GetUserFromHashOrProcessingUser(UID, HttpContext.GetPreferredUsername);
             if (user == null)
                 return BadRequest(new DashboardResponse
                 { 
@@ -113,20 +113,6 @@ namespace EctBlazorApp.Server.Controllers
                 retryCount++;
             }
             return false;
-        }
-
-        private async Task<EctUser> GetUserIdFromHashOrProcessingUserId(string hashedUserId)
-        {
-            string userEmail = await HttpContext.GetPreferredUsername();
-            EctUser user;
-            if (String.IsNullOrEmpty(hashedUserId))
-            {
-                user = _dbContext.Users.First(u => u.Email == userEmail);
-                return user;
-            }
-
-            user = _dbContext.GetUserIdIfEmailIsTeamLead(userEmail, hashedUserId);
-            return user;
         }
     }
 }

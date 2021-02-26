@@ -13,6 +13,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using static EctBlazorApp.ServerTests.MockObjects;
+using static EctBlazorApp.Shared.SharedMethods;
 
 
 namespace EctBlazorApp.ServerTests
@@ -189,6 +190,52 @@ namespace EctBlazorApp.ServerTests
             bool actualResult = _dbContext.IsEmailForLeader(userEmail);
 
             Assert.AreEqual(expectedResult, actualResult);
+        }
+
+        [TestMethod]
+        public async Task GetUserFromHashOrProcessingUser_HashIsEmpty_ReturnsHomer()
+        {
+            string hashedUserId = "";
+            EctUser expectedUser = _dbContext.Users.First(u => u.Email.Equals("homer@ect.ie"));
+            
+            EctUser actualUser = await _dbContext.GetUserFromHashOrProcessingUser(hashedUserId, MockPreferredUsername_Homer);
+
+            Assert.AreEqual(expectedUser, actualUser);
+        }
+
+        [TestMethod]
+        public async Task GetUserFromHashOrProcessingUser_AliceRequestsHomerWithHash_ReturnsHomer()
+        {
+            EctUser expectedUser = _dbContext.Users.First(u => u.Email.Equals("homer@ect.ie"));
+            string hashedUserId = ComputeSha256Hash(expectedUser.Id.ToString());
+
+            EctUser actualUser = await _dbContext.GetUserFromHashOrProcessingUser(hashedUserId, MockPreferredUsername_Alice);
+
+            Assert.AreEqual(expectedUser, actualUser);
+        }
+
+        [TestMethod]
+        public async Task GetUserFromHashOrProcessingUser_AliceRequestsAdminWithHash_ReturnsNull()
+        {
+            EctUser admin = _dbContext.Users.First(u => u.Email.Equals("admin@ect.ie"));
+            string hashedUserId = ComputeSha256Hash(admin.Id.ToString());
+
+            EctUser actualUser = await _dbContext.GetUserFromHashOrProcessingUser(hashedUserId, MockPreferredUsername_Alice);
+
+            Assert.AreEqual(null, actualUser);
+        }
+
+        private Task<string> MockPreferredUsername(string email)
+        {
+            return Task.Run(() => { return email; });
+        }
+        private Task<string> MockPreferredUsername_Alice()
+        {
+            return MockPreferredUsername("alice@ect.ie");
+        }
+        private Task<string> MockPreferredUsername_Homer()
+        {
+            return MockPreferredUsername("homer@ect.ie");
         }
     }
 }
