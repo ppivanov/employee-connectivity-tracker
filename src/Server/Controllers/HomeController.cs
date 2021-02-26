@@ -89,7 +89,6 @@ namespace EctBlazorApp.Server.Controllers
         }
 
         private delegate Task<bool> UpdateMetgodDelegate(HttpClient client, EctDbContext dbContext);
-
         private async Task<bool> RetryUpdateMethodIfFails(HttpClient client, EctDbContext dbContext, UpdateMetgodDelegate method)
         {
             const int defaultRetryCount = 3;

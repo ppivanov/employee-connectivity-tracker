@@ -135,9 +135,11 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
                 try
                 {
                     Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                    teamMembers = await Http.GetFromJsonAsync<List<EctUser>>($"api/team/get-team-stats{queryString}");
+                    var response = await Http.GetFromJsonAsync<TeamDashboardResponse>($"api/team/get-team-stats{queryString}");
+                    teamMembers = response.TeamMembers;
 
                     await FindCollaborators();
+                    await JsRuntime.InvokeVoidAsync("setPageTitle", response.TeamName);
                     initialized = true;
                     await InvokeAsync(StateHasChanged);                                                                                                                                     // Force a refresh of the component before trying to load the js graphs
                     await JsRuntime.InvokeVoidAsync("loadMyTeamDashboardGraph", (object)GetEmailData(), (object)GetCalendarEventsData());                                                   // GetCalendarEventsData is adding only some of the collaborators to the dictionary

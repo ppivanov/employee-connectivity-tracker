@@ -68,22 +68,26 @@ namespace EctBlazorApp.Server.Controllers
         [Route("get-team-stats")]
         [HttpGet]
         [AuthorizeLeader]
-        public async Task<ActionResult<List<EctUser>>> GetStatsForDashboard([FromQuery] string fromDate, [FromQuery] string toDate)
+        public async Task<ActionResult<TeamDashboardResponse>> GetStatsForDashboard([FromQuery] string fromDate, [FromQuery] string toDate)
         {
             string userEmail = await HttpContext.GetPreferredUsername();
             int userId = _dbContext.Users.First(u => u.Email == userEmail).Id;
             EctTeam assignedTeam = _dbContext.Teams.Include(t => t.Members).First(t => t.LeaderId == userId);
-            List<EctUser> membersAndCommsData = new List<EctUser>();
+            TeamDashboardResponse response = new TeamDashboardResponse
+            {
+                TeamName = assignedTeam.Name,
+                TeamMembers = new List<EctUser>()
+            };
 
             DateTime formattedFromDate = NewDateTimeFromString(fromDate);
             DateTime formattedToDate = NewDateTimeFromString(toDate);
 
             foreach (var teamMember in assignedTeam.Members)
             {
-                membersAndCommsData.Add(GetCommunicationDataAsNewUserInstance(teamMember, formattedFromDate, formattedToDate));
+                response.TeamMembers.Add(GetCommunicationDataAsNewUserInstance(teamMember, formattedFromDate, formattedToDate));
             }
 
-            return membersAndCommsData;
+            return response;
         }
 
         [Route("get-notification-options")]
