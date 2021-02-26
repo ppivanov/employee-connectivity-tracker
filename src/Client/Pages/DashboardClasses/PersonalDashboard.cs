@@ -3,13 +3,10 @@ using EctBlazorApp.Shared;
 using EctBlazorApp.Shared.Entities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http.Headers;
-using System.Net.Http.Json;
 using System.Threading.Tasks;
 using static EctBlazorApp.Shared.SharedMethods;
 
@@ -19,6 +16,9 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
     {
         [Inject]
         AuthenticationStateProvider AuthenticationStateProvider { get; set; }
+
+        [Parameter]
+        public string HashedUserId { get; set; }
 
         private List<SentMail> sentMail;
         private List<ReceivedMail> receivedMail;
@@ -100,10 +100,14 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         protected override async Task UpdateDashboard()
         {
             string queryString = GetDateRangeQueryString(FromDate.Value, ToDate.Value);
-            var response = await ApiConn.FetchDashboardResponse(queryString);
+            string userIdQueryString = String.IsNullOrEmpty(HashedUserId) ? "" : $"&UID={HashedUserId}";
+
+            var response = await ApiConn.FetchDashboardResponse($"{queryString}{userIdQueryString}");
             ExtractDataFromResponse(response);
             await FindCollaborators();
 
+            if(String.IsNullOrEmpty(response.UserFullName) == false)
+                await JsRuntime.InvokeVoidAsync("setPageTitle", response.UserFullName);
             await JsRuntime.InvokeVoidAsync("loadDashboardGraph", (object)GetEmailData(), (object)GetCalendarEventsData());
         }
 
