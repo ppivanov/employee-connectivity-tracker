@@ -55,7 +55,7 @@
                                 <div class="collaborator">
                                     @foreach (var user in Collaborators)
                                     {
-                                        <p>@user.Key (@Math.Round(user.Value, 2)%)</p>
+                                        <p>@user.Key (@Math.Round(user.Value, 2)%)</p> <button @onclick="() => RedirectToDasboard(user.Key)">View</button>
                                     }
                                 </div>
                             </div>

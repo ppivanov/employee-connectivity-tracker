@@ -103,24 +103,25 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             string userIdQueryString = String.IsNullOrEmpty(HashedUserId) ? "" : $"&UID={HashedUserId}";
 
             var response = await ApiConn.FetchDashboardResponse($"{queryString}{userIdQueryString}");
-            ExtractDataFromResponse(response);
+            await ExtractDataFromResponse(response);
             await FindCollaborators();
 
-            if(String.IsNullOrEmpty(response.UserFullName) == false)
-                await JsRuntime.InvokeVoidAsync("setPageTitle", response.UserFullName);
             await JsRuntime.InvokeVoidAsync("loadDashboardGraph", (object)GetEmailData(), (object)GetCalendarEventsData());
         }
 
-        private void ExtractDataFromResponse(DashboardResponse response)
+        private async Task ExtractDataFromResponse(DashboardResponse response)
         {
             sentMail = response.SentMail;
             receivedMail = response.ReceivedMail;
             calendarEvents = response.CalendarEvents;
             secondsInMeeting = response.SecondsInMeeting;
             numberOfMeetings = calendarEvents != null ? calendarEvents.Count : 0;
+
+            if (String.IsNullOrEmpty(response.UserFullName) == false)
+                await JsRuntime.InvokeVoidAsync("setPageTitle", response.UserFullName);
         }
 
-        private async Task<string> GetProcessingUserEmail()
+        private async Task<string> GetEmailForProcessingUser()
         {
             var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
             var user = authState.User;
@@ -161,7 +162,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         {
             foreach (var meeting in calendarEvents)
             {
-                List<string> attendees = meeting.GetAttendeesExcludingUser(await GetProcessingUserEmail());
+                List<string> attendees = meeting.GetAttendeesExcludingUser(await GetEmailForProcessingUser());
                 foreach (var attendee in attendees)
                 {
                     string fullName = GetFullNameFromFormattedString(attendee);

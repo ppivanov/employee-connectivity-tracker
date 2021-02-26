@@ -1,5 +1,6 @@
 ﻿using EctBlazorApp.Shared;
 using EctBlazorApp.Shared.Entities;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.JSInterop;
 using System;
@@ -15,6 +16,9 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
 {
     public class MyTeamDashboardClass : DashboardClass
     {
+        [Inject]
+        protected NavigationManager NavManager { get; set; }
+
         private bool serverMessageIsError = false;
         private bool inputError = false;
 
@@ -153,15 +157,6 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             return Task.CompletedTask;
         }
 
-        private void ResetAttributeValues()
-        {
-            collaboratorsDict.Clear();
-            numberOfMeetings = 0;
-            secondsInMeeting = 0;
-            emailsSent = 0;
-            emailsReceived = 0;
-        }
-
         protected async Task SubmitThreshold()
         {
             if (newNotificationOptions.PointsThreshold < 0)
@@ -190,6 +185,13 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             allowsEdit = true;
         }
 
+        protected void RedirectToDasboard(string userFullName)
+        {
+            int userId = teamMembers.First(u => u.FullName.Equals(userFullName)).Id;
+            string hasedUserId = ComputeSha256Hash(userId.ToString());
+            NavManager.NavigateTo($"/dashboard/{hasedUserId}");
+        }
+
         protected string ServerMessageInlineStyle
         {
             get
@@ -204,6 +206,22 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             {
                 return inputError ? "border: 1px solid red" : "";
             }
+        }
+        private void ResetAttributeValues()
+        {
+            numberOfMeetings = 0;
+            secondsInMeeting = 0;
+            collaboratorsDict.Clear();
+
+            serverMessageIsError = false;
+            inputError = false;
+            isSubmitting = false;
+            teamMembers = null;
+            emailsSent = 0;
+            emailsReceived = 0;
+            currentNotificationOptions = null;
+            newNotificationOptions = null;
+            serverMessage = "";
         }
     }
 }
