@@ -129,27 +129,4 @@ namespace EctBlazorApp.Server.Controllers
             return tempUser;
         }
     }
-
-    [AuthorizeNonUserRequest]
-    [Route("api/notifications")]
-    [ApiController]
-    public class NotificationController : ControllerBase
-    {
-        private readonly EctDbContext _dbContext;
-        private readonly EctMailKit _mailKit;
-
-        public NotificationController(EctDbContext context, EctMailKit mailKit)
-        {
-            _dbContext = context;
-            _mailKit = mailKit;
-        }
-
-        [Route("process/trigger")]
-        [HttpGet]
-        public void TriggerNotifications()
-        {
-            _dbContext.ProcessNotifications(_mailKit);
-        }
-    }
 }
-

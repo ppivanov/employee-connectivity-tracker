@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using EctBlazorApp.Server.Extensions;
+using EctBlazorApp.Server.MailKit;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,12 +11,20 @@ namespace EctBlazorApp.Server.CronJob
 {
     public class NotificationCronJob : CronJobService
     {
-        public NotificationCronJob(IScheduleConfig<NotificationCronJob> config)
-            : base(config.CronExpression, config.TimeZoneInfo) {  }
+        private readonly IServiceProvider _serviceProvider;
+        public NotificationCronJob(IScheduleConfig<NotificationCronJob> config, IServiceProvider serviceProvider)
+            : base(config.CronExpression, config.TimeZoneInfo) 
+        {
+            _serviceProvider = serviceProvider;
+        }
 
         public override Task DoWork(CancellationToken cancellationToken)
         {
-            Console.WriteLine($"{DateTime.Now:hh:mm:ss} CronJob is working.");
+            using var scope = _serviceProvider.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<EctDbContext>();
+            var mailKit = scope.ServiceProvider.GetRequiredService<EctMailKit>();
+
+            dbContext.ProcessNotifications(mailKit);
             return Task.CompletedTask;
         }
     }
