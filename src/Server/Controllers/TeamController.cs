@@ -119,13 +119,6 @@ namespace EctBlazorApp.Server.Controllers
             return Ok("Threshold saved.");
         }
 
-        [Route("test-notifications")]
-        [HttpGet]
-        public async void TestNotifications()
-        {
-            _dbContext.ProcessNotifications(_mailKit);
-        }
-
         private EctUser GetCommunicationDataAsNewUserInstance(EctUser forUser, DateTime fromDate, DateTime toDate)
         {
             EctUser tempUser = new EctUser(forUser);
@@ -136,4 +129,27 @@ namespace EctBlazorApp.Server.Controllers
             return tempUser;
         }
     }
+
+    [AuthorizeThirdParty]
+    [Route("api/team")]
+    [ApiController]
+    public class NotificationController : ControllerBase
+    {
+        private readonly EctDbContext _dbContext;
+        private readonly EctMailKit _mailKit;
+
+        public NotificationController(EctDbContext context, EctMailKit mailKit)
+        {
+            _dbContext = context;
+            _mailKit = mailKit;
+        }
+
+        [Route("trigger/notifications/process")]
+        [HttpGet]
+        public async void TriggerNotifications()
+        {
+            _dbContext.ProcessNotifications(_mailKit);
+        }
+    }
 }
+
