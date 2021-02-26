@@ -9,8 +9,6 @@ namespace EctBlazorApp.Client.Graph
 {
     public interface IControllerConnection
     {
-        Task TestNotifications();
-
         Task<string> UpdateDatabaseRecords();
 
         Task<string> GetAPITokenAsync();

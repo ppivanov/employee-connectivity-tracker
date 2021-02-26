@@ -1,5 +1,4 @@
 @page "/"
-@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @inject IJSRuntime jsRuntime
 @inject IControllerConnection apiConn
 
@@ -8,7 +7,6 @@
         <Authorized>
             <h2>Hi @context.User.GetUserDisplayName()!</h2>
             <p>Welcome to ECT!</p>
-            <button @onclick="async () => await apiConn.TestNotifications()">Test notifications</button>
         </Authorized>
         <NotAuthorized>
             <h2>Welcome to Employee Connectivity Tracker!</h2>
