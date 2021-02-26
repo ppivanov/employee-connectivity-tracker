@@ -66,10 +66,17 @@ namespace EctBlazorApp.Server.Controllers
 
         [Route("get-dashboard-stats")]
         [HttpGet]
-        public async Task<ActionResult<DashboardResponse>> StatsForDashboard([FromQuery] string fromDate, [FromQuery] string toDate)    
+        public async Task<ActionResult<DashboardResponse>> StatsForDashboard([FromQuery] string fromDate, [FromQuery] string toDate, [FromQuery] string UID = "")
         {
-            string userEmail = await HttpContext.GetPreferredUsername();
-            int userId = _dbContext.Users.First(u => u.Email == userEmail).Id;
+            int userId = await GetUserIdFromHashOrProcessingUserId(UID);
+            if (userId == -1)
+                return BadRequest(new DashboardResponse
+                {
+                    CalendarEvents = new List<CalendarEvent>(),
+                    ReceivedMail = new List<ReceivedMail>(),
+                    SentMail = new List<SentMail>(),
+                    SecondsInMeeting = 0
+                });
 
             DateTime fromDateTime = NewDateTimeFromString(fromDate);
             DateTime toDateTime = NewDateTimeFromString(toDate);
@@ -101,6 +108,20 @@ namespace EctBlazorApp.Server.Controllers
                 retryCount++;
             }
             return false;
+        }
+
+        private async Task<int> GetUserIdFromHashOrProcessingUserId(string hashedUserId)
+        {
+            string userEmail = await HttpContext.GetPreferredUsername();
+            int userId;
+            if (String.IsNullOrEmpty(hashedUserId))
+            {
+                userId = _dbContext.Users.First(u => u.Email == userEmail).Id;
+                return userId;
+            }
+
+            userId = _dbContext.GetUserIdIfEmailIsTeamLead(userEmail, hashedUserId);
+            return userId;
         }
     }
 }

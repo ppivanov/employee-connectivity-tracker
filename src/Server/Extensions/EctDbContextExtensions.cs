@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using static EctBlazorApp.Shared.SharedMethods;
 
 namespace EctBlazorApp.Server.Extensions
 {
@@ -68,7 +69,7 @@ namespace EctBlazorApp.Server.Extensions
             {
                 EctUser user = dbContext.Users.First(u => u.Email.Equals(email));
                 bool isLeader = dbContext.Teams.Any(t => t.LeaderId == user.Id);
-                
+
                 return isLeader;
             }
             catch (Exception)
@@ -76,6 +77,31 @@ namespace EctBlazorApp.Server.Extensions
                 return false;
             }
 
+        }
+
+        public static int GetUserIdIfEmailIsTeamLead(this EctDbContext dbContext, string email, string hashedUserId)
+        {
+            EctUser teamLead = dbContext.Users.Include(u => u.LeaderOf).First(u => u.Email.Equals(email));
+            EctUser userForHashedId = null;
+            foreach (var team in teamLead.LeaderOf)                                                                                         // As of now leaders are assigned a single team and this loop runs only once
+            {
+                try
+                {
+                    var members = dbContext.Users.Where(u => u.MemberOfId == team.Id).ToList();                                             // Get all the users for that team.
+                    userForHashedId = members.First(u => hashedUserId.Equals(ComputeSha256Hash(u.Id.ToString())));                          // Check if any of the members' Id matches {hashedUserId} and return the user.
+                    if (userForHashedId != null) return userForHashedId.Id;
+                }
+                catch (Exception)
+                {
+                    // It's ok the hashedId didn't match any of the members.
+                }
+            }
+
+            //bool isTeamLeadForUserWithId = dbContext.Users.Include(u => u.MemberOf)                                                       // This query may be slow as it hashes every user's Id until it finds a match. T(n) = n * [ComputeSha256Hash() + ...]
+            //    .Any(u => hashedUserId.Equals(ComputeSha256Hash(u.Id.ToString()))                                                         // Does the user's Id match the requested {userId}?
+            //        && u.MemberOf.LeaderId == teamLead.Id);                                                                               // Are they a member of a team led by {email}?
+
+            return -1;
         }
 
 
