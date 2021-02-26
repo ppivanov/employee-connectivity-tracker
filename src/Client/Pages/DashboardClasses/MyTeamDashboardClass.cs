@@ -107,9 +107,9 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
                 {
                     string memberFirstName = member.FullName.Split(" ")[0];
                     int countOfSentMail = member.SentEmails.Count(sm => sm.SentAt.Date == date);
-                    sentMailTooltipText.Append($"{memberFirstName}: {countOfSentMail}\n");
-
                     int countOfReceivedMail = member.ReceivedEmails.Count(sm => sm.ReceivedAt.Date == date);
+
+                    sentMailTooltipText.Append($"{memberFirstName}: {countOfSentMail}\n");
                     receivedMailTooltipText.Append($"{memberFirstName}: {countOfReceivedMail}\n");
 
                     totalSentOnDate += countOfSentMail;
@@ -129,26 +129,14 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             ResetAttributeValues();
             string queryString = GetDateRangeQueryString(FromDate.Value, ToDate.Value);
 
-            var token = await ApiConn.GetAPITokenAsync();
-            if (token != null)
-            {
-                try
-                {
-                    Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                    var response = await Http.GetFromJsonAsync<TeamDashboardResponse>($"api/team/get-team-stats{queryString}");
-                    teamMembers = response.TeamMembers;
+            var response = await ApiConn.FetchTeamDashboardResponse(queryString);
+            teamMembers = response.TeamMembers;
 
-                    await FindCollaborators();
-                    await JsRuntime.InvokeVoidAsync("setPageTitle", response.TeamName);
-                    initialized = true;
-                    await InvokeAsync(StateHasChanged);                                                                                                                                     // Force a refresh of the component before trying to load the js graphs
-                    await JsRuntime.InvokeVoidAsync("loadMyTeamDashboardGraph", (object)GetEmailData(), (object)GetCalendarEventsData());                                                   // GetCalendarEventsData is adding only some of the collaborators to the dictionary
-                }                                                                                                                                                                           
-                catch (AccessTokenNotAvailableException exception)
-                {
-                    exception.Redirect();
-                }
-            }
+            await FindCollaborators();
+            initialized = true;
+            await InvokeAsync(StateHasChanged);                                                                                                                                     // Force a refresh of the component before trying to load the js graphs
+            await JsRuntime.InvokeVoidAsync("setPageTitle", response.TeamName);
+            await JsRuntime.InvokeVoidAsync("loadMyTeamDashboardGraph", (object)GetEmailData(), (object)GetCalendarEventsData());                                                   // GetCalendarEventsData is adding only some of the collaborators to the dictionary
         }
 
         protected override Task FindCollaborators()

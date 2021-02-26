@@ -129,6 +129,26 @@ namespace EctBlazorApp.Client.Graph
             return new DashboardResponse();
         }
 
+        public async Task<TeamDashboardResponse> FetchTeamDashboardResponse(string queryString)
+        {
+            var token = await GetAPITokenAsync();
+            if (token != null)
+            {
+                try
+                {
+                    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    var response = await _httpClient.GetFromJsonAsync<TeamDashboardResponse>($"api/team/get-team-stats{queryString}");
+
+                    return response;
+                }
+                catch (AccessTokenNotAvailableException exception)
+                {
+                    exception.Redirect();
+                }
+            }
+            return new TeamDashboardResponse { TeamMembers = new List<EctUser>(), TeamName = "" };
+        }
+
         public async Task<Boolean> IsProcessingUserAnAdmin()
         {
             var adminResponse = await IsProcessingUserAuthorizedForRole(UserRoles.admin);

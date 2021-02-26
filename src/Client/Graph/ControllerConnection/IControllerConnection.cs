@@ -21,6 +21,8 @@ namespace EctBlazorApp.Client.Graph
         
         Task<DashboardResponse> FetchDashboardResponse(string queryString);
 
+        Task<TeamDashboardResponse> FetchTeamDashboardResponse(string queryString);
+
         Task<(bool, string)> SubmitPoints(List<CommunicationPoint> communicationPoints);
 
         Task<(bool, string)> SubmitPointsThreshold(NotificationOptionsResponse notificationOptions);
