@@ -1,6 +1,5 @@
 ﻿using EctBlazorApp.Server.AuthorizationAttributes;
 using EctBlazorApp.Server.Extensions;
-using EctBlazorApp.Server.MailKit;
 using EctBlazorApp.Shared;
 using EctBlazorApp.Shared.Entities;
 using Microsoft.AspNetCore.Authorization;
@@ -21,12 +20,10 @@ namespace EctBlazorApp.Server.Controllers
     public class TeamController : ControllerBase
     {
         private readonly EctDbContext _dbContext;
-        private readonly EctMailKit _mailKit;
 
-        public TeamController(EctDbContext context, EctMailKit mailKit)
+        public TeamController(EctDbContext context)
         {
             _dbContext = context;
-            _mailKit = mailKit;
         }
 
         [Route("create-team")]
@@ -48,7 +45,8 @@ namespace EctBlazorApp.Server.Controllers
                 {
                     Name = teamDetails.Name,
                     Leader = leader,
-                    Members = members
+                    Members = members,
+                    AdditionalUsersToNotify = new List<string> { leader.Email }
                 };
 
                 leader.MakeLeader(newTeam);

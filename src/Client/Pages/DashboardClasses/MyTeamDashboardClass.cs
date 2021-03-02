@@ -180,7 +180,6 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
 
         protected void EditNotificationOptions()
         {
-            newNotificationOptions.UsersToNotify.Add("test-ect@outlook.com");
             allowsEdit = true;
         }
         protected void CancelEditNotificationOptions()
@@ -191,9 +190,8 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             newNotificationOptions.UsersToNotify = currentNotificationOptions.UsersToNotify.ToList();
         }
 
-        protected void RemoveUserToNotify(int indexToRemove)
+        protected void RemoveUserToNotify(string toRemove)
         {
-            string toRemove = newNotificationOptions.UsersToNotify[indexToRemove];
             newNotificationOptions.UsersToNotify.Remove(toRemove);
         }
 

@@ -80,19 +80,19 @@
                                         {
                                             <p style="@ServerMessageInlineStyle">@serverMessage</p>
                                         }
-                                        @if (allowsEdit)
+                                        @if (allowsEdit)                                                                                                     // Edit view
                                         {
                                             <EditForm Model="newNotificationOptions" OnSubmit="@(async () => await SubmitNotificationOptions())" Context="formContext">
                                                 <label>
                                                     Threshold for notifications:
-                                                    <InputNumber @bind-Value="newNotificationOptions.PointsThreshold" class="" style="@InputStyle" 
+                                                    <InputNumber @bind-Value="newNotificationOptions.PointsThreshold" class="" style="@InputStyle"
                                                                  placeholder="@($"Current: {currentNotificationOptions.PointsThreshold}")" />
                                                 </label>
                                                 <br />
                                                 <label>
                                                     Margin for notifications:
-                                                    <InputNumber @bind-Value="newNotificationOptions.MarginForNotification" class="" style="@InputStyle" 
-                                                                 placeholder="@($"Current: {currentNotificationOptions.MarginForNotification}")"/>%
+                                                    <InputNumber @bind-Value="newNotificationOptions.MarginForNotification" class="" style="@InputStyle"
+                                                                 placeholder="@($"Current: {currentNotificationOptions.MarginForNotification}")" />%
                                                 </label>
 
                                                 <p>Users to notify:</p>
@@ -100,24 +100,40 @@
                                                     <InputText @bind-Value="newUserToNotify" class="" placeholder="email@example.com" />
                                                     <button @onclick="AddUserToNotify" type="button">Add user</button>
                                                 </p>
-                                                @foreach (var email in newNotificationOptions.UsersToNotify)
-                                                {
-                                                    <p>@email</p>
-                                                }
+                                                <table>
+                                                    @foreach (var email in newNotificationOptions.UsersToNotify)
+                                                    {
+                                                        <tr>
+                                                            <td>
+                                                                <p>@email</p>
+                                                            </td>
+                                                            <td style="width: 100px">
+                                                                <button type="button" class="deselect-btn" style="width: 100px"
+                                                                        @onclick="() => RemoveUserToNotify(email)">Remove</button>
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </table>
                                                 <br />
                                                 <button type="submit">Submit</button>
                                                 <button @onclick="CancelEditNotificationOptions" type="button">Cancel</button>
                                             </EditForm>
                                         }
-                                        else
+                                        else                                                                                                                // Current notification options view
                                         {
                                             <p>Current threshold for notifications: @currentNotificationOptions.PointsThreshold</p>
                                             <p>Current margin for notifications: @currentNotificationOptions.MarginForNotification%</p>
                                             <p>Addtional users to notify:</p>
-                                            @foreach (var email in newNotificationOptions.UsersToNotify)
-                                            {
-                                                <p>@email</p>
-                                            }
+                                            <table>
+                                                @foreach (var email in newNotificationOptions.UsersToNotify)
+                                                {
+                                                    <tr>
+                                                        <td>
+                                                            <p>@email</p>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            </table>
                                             <button @onclick="EditNotificationOptions">Edit</button>
                                         }
                                     }
