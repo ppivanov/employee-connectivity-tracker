@@ -13,7 +13,7 @@ namespace EctBlazorApp.ServerTests
     [ExcludeFromCodeCoverage]
     public sealed class EmailNotificationsTests : IDisposable
     {
-        private EctDbContext _dbContext;
+        private readonly EctDbContext _dbContext;
 
         public EmailNotificationsTests()
         {
@@ -22,6 +22,7 @@ namespace EctBlazorApp.ServerTests
 
         public void Dispose()
         {
+            _dbContext.Dispose();
             _dbContext.Database.EnsureDeleted();
         }
 

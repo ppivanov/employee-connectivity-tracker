@@ -25,6 +25,7 @@ namespace EctBlazorApp.ServerTests
 
         public void Dispose()
         {
+            _dbContext.Dispose();
             _dbContext.Database.EnsureDeleted();
         }
 
