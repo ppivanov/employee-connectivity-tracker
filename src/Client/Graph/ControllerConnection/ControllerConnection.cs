@@ -244,6 +244,7 @@ namespace EctBlazorApp.Client.Graph
             {
                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                 var response = await _httpClient.GetFromJsonAsync<NotificationOptionsResponse>($"api/team/get-notification-options");
+
                 return response;
             }
             catch (AccessTokenNotAvailableException exception)
