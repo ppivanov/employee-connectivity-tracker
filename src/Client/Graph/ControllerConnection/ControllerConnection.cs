@@ -268,9 +268,9 @@ namespace EctBlazorApp.Client.Graph
                     bool authResponse = await _httpClient.GetFromJsonAsync<Boolean>($"api/auth/is-{role}");
                     return authResponse;
                 }
-                catch (AccessTokenNotAvailableException)                                          // TODO - Find out if this is still valid
+                catch (AccessTokenNotAvailableException exception)
                 {
-                    // user not logged in
+                    exception.Redirect();
                 }
             }
             return false;
