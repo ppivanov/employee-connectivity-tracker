@@ -97,16 +97,16 @@
 
                                                 <p>Users to notify:</p>
                                                 <p>
-                                                    <input id="userToNotify_name" list="names" @onchange="@(async (args) => await SetUserToNotifyName(args))" placeholder="John Doe"/>
+                                                    <input id="userToNotify_name" list="names" @onchange="@(async (args) => await SetUserToNotifyName(args))" placeholder="John Doe" />
                                                     <input id="userToNotify_email" list="emails" @onchange="@(async (args) => await SetUserToNotifyEmail(args))" placeholder="email@example.com" />
-                                                    <datalist id="names" >
-                                                        @foreach (var member in teamMembers)
+                                                    <datalist id="names">
+                                                        @foreach (var member in AvailableUsersForNotification)
                                                         {
                                                             <option value="@member.FullName"></option>
                                                         }
                                                     </datalist>
                                                     <datalist id="emails">
-                                                        @foreach (var member in teamMembers)
+                                                        @foreach (var member in AvailableUsersForNotification)
                                                         {
                                                             <option value="@member.Email"></option>
 
@@ -125,7 +125,7 @@
                                                             <td style="width: 100px">
                                                                 @if (nameAndEmail.Equals(leaderNameAndEmail))
                                                                 {
-                                                                    <span class="deselect-btn" 
+                                                                    <span class="deselect-btn"
                                                                           style="background-color: green; width: 100px;">Team lead</span>
                                                                 }
                                                                 else

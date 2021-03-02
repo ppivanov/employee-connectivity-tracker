@@ -1,6 +1,8 @@
 ﻿using EctBlazorApp.Server.Extensions;
+using EctBlazorApp.Shared.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -52,6 +54,19 @@ namespace EctBlazorApp.Server.Controllers
             var appUsers = _dbContext.Users.Where(u => u.MemberOfId.HasValue == false).Select(u => u.Email).ToList();
 
             return Ok(appUsers);
+        }
+
+        [Route("get-administrators")]
+        [HttpGet]
+        public ActionResult<IEnumerable<EctUser>> GetAdminstrators()
+        {
+            List<EctUser> administrators = _dbContext.Administrators.Include(a => a.User).Select(a => a.User).ToList();
+            if(administrators == null)
+            {
+                administrators = new List<EctUser>();
+            }
+
+            return Ok(administrators);
         }
 
         [Route("my-email")]

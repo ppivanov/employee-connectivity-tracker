@@ -2,10 +2,14 @@
     document.getElementById('page-title').innerHTML = ' - ' + titleIn;
 }
 window.setUserToNotifyEmail = (name) => {
-    document.getElementById('userToNotify_email').value = name;
+    let inputField = document.getElementById('userToNotify_email');
+    inputField.value = name;
+    inputField.disabled = true;
 }
 window.setUserToNotifyName = (email) => {
-    document.getElementById('userToNotify_name').value = email;
+    let inputField = document.getElementById('userToNotify_name');
+    inputField.value = email;
+    inputField.disabled = true;
 }
 
 const toggleUserDropdown = () => {

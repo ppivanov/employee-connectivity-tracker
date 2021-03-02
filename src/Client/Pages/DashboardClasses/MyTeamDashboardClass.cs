@@ -16,22 +16,40 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         [Inject]
         protected NavigationManager NavManager { get; set; }
 
-        private bool serverMessageIsError = false;
         private bool inputError = false;
+        private bool serverMessageIsError = false;
+        private List<EctUser> administrators;
 
+        protected bool allowsEdit = false;
         protected bool isLeader = false;
         protected bool isSubmitting = false;
-        protected bool allowsEdit = false;
-        protected List<EctUser> teamMembers;
         protected int emailsSent = 0;
         protected int emailsReceived = 0;
-        protected NotificationOptionsResponse currentNotificationOptions = null;
-        protected NotificationOptionsResponse newNotificationOptions = null;
-        protected string serverMessage = "";
         protected string leaderNameAndEmail = "";
         protected string newUserToNotify_Email = "";
         protected string newUserToNotify_Name = "";
+        protected string serverMessage = "";
+        protected List<EctUser> teamMembers;
+        protected NotificationOptionsResponse currentNotificationOptions = null;
+        protected NotificationOptionsResponse newNotificationOptions = null;
+        
 
+        protected List<EctUser> AvailableUsersForNotification
+        {
+            get
+            {
+                var users = teamMembers.ToList();
+                users.AddRange(administrators);
+                users = users.GroupBy(u => u.Email).Select(u => u.First()).ToList();
+                foreach (var selectedUser in newNotificationOptions.UsersToNotify)
+                {
+                    var duplicate = users.FirstOrDefault(u => u.Email.Equals(GetEmailFromFormattedString(selectedUser)));
+                    if (duplicate != null)
+                        users.Remove(duplicate);
+                }
+                return users;
+            }
+        }
         protected override int TotalEmailsCount
         {
             get
@@ -39,20 +57,56 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
                 return emailsSent + emailsReceived;
             }
         }
-
-        protected override async Task OnInitializedAsync()
+        protected string InputStyle
         {
-            await JsRuntime.InvokeVoidAsync("setPageTitle", "My Team");
-            isLeader = await ApiConn.IsProcessingUserALeader();
-            if (isLeader)
+            get
             {
-                currentNotificationOptions = await ApiConn.FetchCurrentNotificationOptions();
-                newNotificationOptions = new NotificationOptionsResponse(currentNotificationOptions);
-                await FetchCommunicationPoints();
-                await UpdateDashboard();
+                return inputError ? "border: 1px solid red" : "";
+            }
+        }
+        protected string ServerMessageInlineStyle
+        {
+            get
+            {
+                return serverMessageIsError ? "color: red;" : "color: green;";
             }
         }
 
+        protected void AddUserToNotify()
+        {
+            string nameAndEmail = FormatFullNameAndEmail(newUserToNotify_Name, newUserToNotify_Email);
+            newNotificationOptions.UsersToNotify.Add(nameAndEmail);
+            newUserToNotify_Name = "";
+            newUserToNotify_Email = "";
+        }
+        
+        protected void CancelEditNotificationOptions()
+        {
+            allowsEdit = false;
+            newNotificationOptions.PointsThreshold = currentNotificationOptions.PointsThreshold;
+            newNotificationOptions.MarginForNotification = currentNotificationOptions.MarginForNotification;
+            newNotificationOptions.UsersToNotify = currentNotificationOptions.UsersToNotify.ToList();
+        }
+        
+        protected void EditNotificationOptions()
+        {
+            allowsEdit = true;
+        }
+        
+        protected override Task FindCollaborators()
+        {
+            // Meeting collaborators added to dictionary in GetCalendarEventData to avoid looping over the user list again
+
+            foreach (var member in teamMembers)
+            {
+                int totalEmails = member.SentEmails.Count + member.ReceivedEmails.Count;
+                double pointsToAdd = totalEmails * emailCommPoints.Points;
+                AddPointsToCollaborators(member.FullName, pointsToAdd);
+            }
+
+            return Task.CompletedTask;
+        }
+       
         protected override object[][] GetCalendarEventsData()
         {
             Dictionary<string, HashSet<string>> eventsBySubject = new Dictionary<string, HashSet<string>>();
@@ -93,6 +147,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             }
             return newList;
         }
+        
         protected override object[][] GetEmailData()
         {
             var dates = SplitDateRangeToChunks(FromDate.Value, ToDate.Value);
@@ -127,37 +182,33 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             }
             return newList;
         }
-
-        protected override async Task UpdateDashboard()
+        
+        protected override async Task OnInitializedAsync()
         {
-            ResetAttributeValues();
-            string queryString = GetDateRangeQueryString(FromDate.Value, ToDate.Value);
-
-            var response = await ApiConn.FetchTeamDashboardResponse(queryString);
-            teamMembers = response.TeamMembers;
-            leaderNameAndEmail = response.LeaderNameAndEmail;
-
-            await FindCollaborators();
-            initialized = true;
-            await InvokeAsync(StateHasChanged);                                                                                                                                     // Force a refresh of the component before trying to load the js graphs
-            await JsRuntime.InvokeVoidAsync("setPageTitle", response.TeamName);
-            await JsRuntime.InvokeVoidAsync("loadMyTeamDashboardGraph", (object)GetEmailData(), (object)GetCalendarEventsData());                                                   // GetCalendarEventsData is adding only some of the collaborators to the dictionary
-        }
-
-        protected override Task FindCollaborators()
-        {
-            // Meeting collaborators added to dictionary in GetCalendarEventData to avoid looping over the user list again
-
-            foreach (var member in teamMembers)
+            await JsRuntime.InvokeVoidAsync("setPageTitle", "My Team");
+            isLeader = await ApiConn.IsProcessingUserALeader();
+            if (isLeader)
             {
-                int totalEmails = member.SentEmails.Count + member.ReceivedEmails.Count;
-                double pointsToAdd = totalEmails * emailCommPoints.Points;
-                AddPointsToCollaborators(member.FullName, pointsToAdd);
+                currentNotificationOptions = await ApiConn.FetchCurrentNotificationOptions();
+                newNotificationOptions = new NotificationOptionsResponse(currentNotificationOptions);
+                administrators = await ApiConn.FetchAdminstrators();
+                await FetchCommunicationPoints();
+                await UpdateDashboard();
             }
-
-            return Task.CompletedTask;
         }
-
+        
+        protected void RedirectToDasboard(string userFullName)
+        {
+            int userId = teamMembers.First(u => u.FullName.Equals(userFullName)).Id;
+            string hasedUserId = ComputeSha256Hash(userId.ToString());
+            NavManager.NavigateTo($"/dashboard/{hasedUserId}");
+        }
+       
+        protected void RemoveUserToNotify(string toRemove)
+        {
+            newNotificationOptions.UsersToNotify.Remove(toRemove);
+        }
+        
         protected async Task SubmitNotificationOptions()
         {
             if (newNotificationOptions.PointsThreshold < 0)
@@ -180,47 +231,18 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             allowsEdit = false;
             if (serverMessageIsError == false) currentNotificationOptions = newNotificationOptions;
         }
-
-        protected void EditNotificationOptions()
+        
+        protected async Task SetUserToNotifyEmail(ChangeEventArgs args)
         {
-            allowsEdit = true;
-        }
-        protected void CancelEditNotificationOptions()
-        {
-            allowsEdit = false;
-            newNotificationOptions.PointsThreshold = currentNotificationOptions.PointsThreshold;
-            newNotificationOptions.MarginForNotification = currentNotificationOptions.MarginForNotification;
-            newNotificationOptions.UsersToNotify = currentNotificationOptions.UsersToNotify.ToList();
-        }
-
-        protected void RemoveUserToNotify(string toRemove)
-        {
-            newNotificationOptions.UsersToNotify.Remove(toRemove);
-        }
-
-        protected void AddUserToNotify()
-        {
-            string nameAndEmail = FormatFullNameAndEmail(newUserToNotify_Name, newUserToNotify_Email);
-            newNotificationOptions.UsersToNotify.Add(nameAndEmail);
-            newUserToNotify_Name = "";
-            newUserToNotify_Email = "";
-        }
-
-        protected void RedirectToDasboard(string userFullName)
-        {
-            int userId = teamMembers.First(u => u.FullName.Equals(userFullName)).Id;
-            string hasedUserId = ComputeSha256Hash(userId.ToString());
-            NavManager.NavigateTo($"/dashboard/{hasedUserId}");
-        }
-
-        protected string ServerMessageInlineStyle
-        {
-            get
+            newUserToNotify_Email = args.Value.ToString();
+            var matchingMember = teamMembers.FirstOrDefault(m => m.Email.Equals(newUserToNotify_Email));
+            if (matchingMember != null)
             {
-                return serverMessageIsError ? "color: red;" : "color: green;";
+                await JsRuntime.InvokeVoidAsync("setUserToNotifyName", matchingMember.FullName);
+                newUserToNotify_Name = matchingMember.FullName;
             }
         }
-
+       
         protected async Task SetUserToNotifyName(ChangeEventArgs args)
         {
             newUserToNotify_Name = args.Value.ToString();
@@ -232,24 +254,23 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             }
         }
 
-        protected async Task SetUserToNotifyEmail(ChangeEventArgs args)
+        protected override async Task UpdateDashboard()
         {
-            newUserToNotify_Email = args.Value.ToString();
-            var matchingMember = teamMembers.FirstOrDefault(m => m.Email.Equals(newUserToNotify_Email));
-            if (matchingMember != null)
-            {
-                await JsRuntime.InvokeVoidAsync("setUserToNotifyName", matchingMember.FullName);
-                newUserToNotify_Name = matchingMember.FullName;
-            }
+            ResetAttributeValues();
+            string queryString = GetDateRangeQueryString(FromDate.Value, ToDate.Value);
+
+            var response = await ApiConn.FetchTeamDashboardResponse(queryString);
+            teamMembers = response.TeamMembers;
+            leaderNameAndEmail = response.LeaderNameAndEmail;
+
+            await FindCollaborators();
+            initialized = true;
+            await InvokeAsync(StateHasChanged);                                                                                                                                     // Force a refresh of the component before trying to load the js graphs
+            await JsRuntime.InvokeVoidAsync("setPageTitle", response.TeamName);
+            await JsRuntime.InvokeVoidAsync("loadMyTeamDashboardGraph", (object)GetEmailData(), (object)GetCalendarEventsData());                                                   // GetCalendarEventsData is adding only some of the collaborators to the dictionary
         }
 
-        protected string InputStyle
-        {
-            get
-            {
-                return inputError ? "border: 1px solid red" : "";
-            }
-        }
+
         private void ResetAttributeValues()
         {
             numberOfMeetings = 0;
