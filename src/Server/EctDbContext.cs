@@ -32,6 +32,7 @@ namespace EctBlazorApp.Server
         {
             modelBuilder.Entity<CalendarEvent>().Ignore(e => e.Attendees);
             modelBuilder.Entity<SentMail>().Ignore(e => e.Recipients);
+            modelBuilder.Entity<EctTeam>().Ignore(e => e.AdditionalUsersToNotify);
 
             modelBuilder.Entity<EctTeam>()
                 .HasOne(p => p.Leader)
