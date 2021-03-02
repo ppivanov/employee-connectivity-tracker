@@ -32,6 +32,12 @@ namespace EctBlazorApp.Shared
             return fullName;
         }
 
+        public static string GetEmailFromFormattedString(string formattedString)                 // Expects format: Full Name <email@email.com>
+        {
+            string fullName = formattedString.Split("<")[1].Split(">")[0].Trim();
+            return fullName;
+        }
+
         public static string GetDateRangeQueryString(DateTimeOffset fromDate, DateTimeOffset toDate)
         {
             string queryString = $"?fromDate={fromDate.ToString("yyyy-MM-dd")}&toDate={toDate.ToString("yyyy-MM-dd")}";

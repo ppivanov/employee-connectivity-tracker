@@ -9,6 +9,8 @@ namespace EctBlazorApp.Shared
     {
         public string TeamName { get; set; }
 
+        public string LeaderNameAndEmail { get; set; }
+
         public List<EctUser> TeamMembers { get; set; }
     }
 }

@@ -28,7 +28,9 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         protected NotificationOptionsResponse currentNotificationOptions = null;
         protected NotificationOptionsResponse newNotificationOptions = null;
         protected string serverMessage = "";
-        protected string newUserToNotify = "";
+        protected string leaderNameAndEmail = "";
+        protected string newUserToNotify_Email = "";
+        protected string newUserToNotify_Name = "";
 
         protected override int TotalEmailsCount
         {
@@ -133,6 +135,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
 
             var response = await ApiConn.FetchTeamDashboardResponse(queryString);
             teamMembers = response.TeamMembers;
+            leaderNameAndEmail = response.LeaderNameAndEmail;
 
             await FindCollaborators();
             initialized = true;
@@ -197,8 +200,10 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
 
         protected void AddUserToNotify()
         {
-            newNotificationOptions.UsersToNotify.Add(newUserToNotify);
-            newUserToNotify = "";
+            string nameAndEmail = FormatFullNameAndEmail(newUserToNotify_Name, newUserToNotify_Email);
+            newNotificationOptions.UsersToNotify.Add(nameAndEmail);
+            newUserToNotify_Name = "";
+            newUserToNotify_Email = "";
         }
 
         protected void RedirectToDasboard(string userFullName)
@@ -236,6 +241,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             emailsSent = 0;
             emailsReceived = 0;
             serverMessage = "";
+            leaderNameAndEmail = "";
         }
     }
 }

@@ -97,19 +97,30 @@
 
                                                 <p>Users to notify:</p>
                                                 <p>
-                                                    <InputText @bind-Value="newUserToNotify" class="" placeholder="email@example.com" />
+                                                    <InputText @bind-Value="newUserToNotify_Name" class="" placeholder="John Doe" style="@InputStyle" />
+                                                    <InputText @bind-Value="newUserToNotify_Email" class="" placeholder="email@example.com" style="@InputStyle" />
                                                     <button @onclick="AddUserToNotify" type="button">Add user</button>
                                                 </p>
                                                 <table>
-                                                    @foreach (var email in newNotificationOptions.UsersToNotify)
+                                                    @foreach (var nameAndEmail in newNotificationOptions.UsersToNotify)
                                                     {
                                                         <tr>
                                                             <td>
-                                                                <p>@email</p>
+                                                                <p>@nameAndEmail</p>
                                                             </td>
                                                             <td style="width: 100px">
-                                                                <button type="button" class="deselect-btn" style="width: 100px"
-                                                                        @onclick="() => RemoveUserToNotify(email)">Remove</button>
+                                                                @if (nameAndEmail.Equals(leaderNameAndEmail))
+                                                                {
+                                                                    <span class="deselect-btn" 
+                                                                          style="background-color: green; width: 100px;">Team lead</span>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <button type="button" class="deselect-btn" style="width: 100px"
+                                                                            @onclick="() => RemoveUserToNotify(nameAndEmail)">
+                                                                        Remove
+                                                                    </button>
+                                                                }
                                                             </td>
                                                         </tr>
                                                     }

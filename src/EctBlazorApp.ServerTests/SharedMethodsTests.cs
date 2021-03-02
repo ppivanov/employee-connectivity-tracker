@@ -47,6 +47,16 @@ namespace EctBlazorApp.ServerTests
         }
 
         [DataTestMethod]
+        [DataRow("Pavel P <x00149863@outlook.com>", "x00149863@outlook.com")]
+        [DataRow("X <x>", "x")]
+        public void GetEmailFromFormattedStringTest(string formattedString, string expectedResult)
+        {
+            string actualResult = GetEmailFromFormattedString(formattedString);
+
+            Assert.AreEqual(expectedResult, actualResult);
+        }
+
+        [DataTestMethod]
         [DataRow(2019, 1, 2, 2019, 2, 1)]
         [DataRow(2020, 10, 20, 2020, 12, 23)]
         [DataRow(2020, 9, 4, 2021, 9, 5)]

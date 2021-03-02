@@ -2,6 +2,7 @@
 using MailKit.Net.Smtp;
 using MimeKit;
 using System;
+using static EctBlazorApp.Shared.SharedMethods;
 
 namespace EctBlazorApp.Server.MailKit
 {
@@ -23,7 +24,7 @@ namespace EctBlazorApp.Server.MailKit
             return sentSuccessfully;
         }
 
-        public bool SendNotificationEmail(EctUser recipient, string messageContent)
+        public bool SendNotificationEmail(string recipient, string messageContent)
         {
             string subject = "ECT: Isolated teammates";
             bool sentSuccessfully = SendMessage(recipient, subject, messageContent);
@@ -33,10 +34,22 @@ namespace EctBlazorApp.Server.MailKit
 
         private bool SendMessage(EctUser recipient, string subject, string messageContent)
         {
+            return SendMessage(recipient.FullName, recipient.Email, subject, messageContent);
+        }
+
+        private bool SendMessage(string recipient, string subject, string messageContent)
+        {
+            var name = GetFullNameFromFormattedString(recipient);
+            var email = GetEmailFromFormattedString(recipient);
+            return SendMessage(name, email, subject, messageContent);
+        }
+
+        private bool SendMessage(string recipientName, string recipientEmail, string subject, string messageContent)
+        {
             EmailMessage message = new EmailMessage
             {
                 Sender = new MailboxAddress("Employee Connectivity Tracker", Sender),
-                Reciever = new MailboxAddress(recipient.FullName, recipient.Email),
+                Reciever = new MailboxAddress(recipientName, recipientEmail),
                 Subject = subject,
                 Content = messageContent
             };

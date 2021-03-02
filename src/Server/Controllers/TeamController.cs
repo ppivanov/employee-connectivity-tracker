@@ -40,13 +40,13 @@ namespace EctBlazorApp.Server.Controllers
                 EctUser leader = _dbContext.Users.Include(u => u.LeaderOf).First(u => u.Email.Equals(teamDetails.LeaderEmail));
                 List<EctUser> members = _dbContext.Users.Include(u => u.MemberOf).Where(u => teamDetails.MemberEmails.Contains(u.Email)).ToList();
                 members.Add(leader);
-
+                string leaderNameAndEmail = FormatFullNameAndEmail(leader.FullName, leader.Email);
                 EctTeam newTeam = new EctTeam
                 {
                     Name = teamDetails.Name,
                     Leader = leader,
                     Members = members,
-                    AdditionalUsersToNotify = new List<string> { leader.Email }
+                    AdditionalUsersToNotify = new List<string> { leaderNameAndEmail }
                 };
 
                 leader.MakeLeader(newTeam);
@@ -69,12 +69,13 @@ namespace EctBlazorApp.Server.Controllers
         public async Task<ActionResult<TeamDashboardResponse>> GetStatsForDashboard([FromQuery] string fromDate, [FromQuery] string toDate)
         {
             string userEmail = await HttpContext.GetPreferredUsername();
-            int userId = _dbContext.Users.First(u => u.Email == userEmail).Id;
-            EctTeam assignedTeam = _dbContext.Teams.Include(t => t.Members).First(t => t.LeaderId == userId);
+            EctUser teamLead = _dbContext.Users.First(u => u.Email == userEmail);
+            EctTeam assignedTeam = _dbContext.Teams.Include(t => t.Members).First(t => t.LeaderId == teamLead.Id);
             TeamDashboardResponse response = new TeamDashboardResponse
             {
                 TeamName = assignedTeam.Name,
-                TeamMembers = new List<EctUser>()
+                TeamMembers = new List<EctUser>(),
+                LeaderNameAndEmail = FormatFullNameAndEmail(teamLead.FullName, teamLead.Email)
             };
 
             DateTime formattedFromDate = NewDateTimeFromString(fromDate);

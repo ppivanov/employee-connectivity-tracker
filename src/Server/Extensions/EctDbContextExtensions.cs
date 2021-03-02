@@ -151,7 +151,7 @@ namespace EctBlazorApp.Server.Extensions
                 }
                 if (emailMessage.ToString().Equals(heading)) emailMessage.Append("None\n");
 
-                dbContext.SendNotificationEmail(emailMessage.ToString(), team, mailKit);
+                SendNotificationEmail(emailMessage.ToString(), team, mailKit);
             }
         }
 
@@ -193,11 +193,14 @@ namespace EctBlazorApp.Server.Extensions
 
             return emailMessage.ToString();
         }
-        private static void SendNotificationEmail(this EctDbContext dbContext, string messageContent, EctTeam team, EctMailKit mailKit)
+        
+        
+        private static void SendNotificationEmail(string messageContent, EctTeam team, EctMailKit mailKit)                                  // Not a DbContext extension method. Move to a more suitable place.
         {
-            var teamLead = dbContext.Users.First(u => u.Id.Equals(team.LeaderId));
-            mailKit.SendNotificationEmail(teamLead, messageContent);
-            // send email to additional recipients if specified
+            foreach (var recipient in team.AdditionalUsersToNotify)
+            {
+                mailKit.SendNotificationEmail(recipient, messageContent);
+            }
         }
     }
 }
