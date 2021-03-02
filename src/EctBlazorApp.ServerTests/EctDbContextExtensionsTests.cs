@@ -35,9 +35,8 @@ namespace EctBlazorApp.ServerTests
 
         public void Dispose()
         {
-            _dbContext.Dispose();
-            _httpClient.Dispose();
             _dbContext.Database.EnsureDeleted();
+            _httpClient.Dispose();
             _httpClient = null;
         }
 
