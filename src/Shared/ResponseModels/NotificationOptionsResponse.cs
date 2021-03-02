@@ -12,5 +12,14 @@ namespace EctBlazorApp.Shared
         [Range(0, 100, ErrorMessage = "The margin for notifications must be between {0}% and {1}%")]
         public double MarginForNotification { get; set; }
         //public List<string> UsersToNotify { get; set; }
+
+        public NotificationOptionsResponse() {  }
+
+        public NotificationOptionsResponse(NotificationOptionsResponse optionsToCopy) 
+        {
+            PointsThreshold = optionsToCopy.PointsThreshold;
+            MarginForNotification = optionsToCopy.MarginForNotification;
+        }
+
     }
 }

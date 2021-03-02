@@ -44,7 +44,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             if (isLeader)
             {
                 currentNotificationOptions = await ApiConn.FetchCurrentNotificationOptions();
-                newNotificationOptions = currentNotificationOptions;
+                newNotificationOptions = new NotificationOptionsResponse(currentNotificationOptions);
                 await FetchCommunicationPoints();
                 await UpdateDashboard();
             }
