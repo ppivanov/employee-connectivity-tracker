@@ -17,6 +17,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         protected NavigationManager NavManager { get; set; }
 
         private bool inputError = false;
+        private bool addNotifyUserInputError = false;
         private bool serverMessageIsError = false;
         private List<EctUser> administrators;
 
@@ -32,8 +33,15 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         protected List<EctUser> teamMembers;
         protected NotificationOptionsResponse currentNotificationOptions = null;
         protected NotificationOptionsResponse newNotificationOptions = null;
-        
 
+
+        protected string AddNotifyUserInputStyle
+        {
+            get
+            {
+                return addNotifyUserInputError ? "border: 1px solid red" : "";
+            }
+        }
         protected List<EctUser> AvailableUsersForNotification
         {
             get
@@ -72,14 +80,24 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             }
         }
 
-        protected void AddUserToNotify()
+        protected async Task AddUserToNotify()
         {
+            if (String.IsNullOrWhiteSpace(newUserToNotify_Name)
+                || String.IsNullOrWhiteSpace(newUserToNotify_Email))
+            {
+                addNotifyUserInputError = true;
+                serverMessageIsError = true;
+                serverMessage = "You must provide values for both Name and Email fields.";
+                return;
+            }
             string nameAndEmail = FormatFullNameAndEmail(newUserToNotify_Name, newUserToNotify_Email);
             newNotificationOptions.UsersToNotify.Add(nameAndEmail);
             newUserToNotify_Name = "";
             newUserToNotify_Email = "";
+            await JsRuntime.InvokeVoidAsync("resetUserToNotifyEmail");
+            await JsRuntime.InvokeVoidAsync("resetUserToNotifyName");
         }
-        
+
         protected void CancelEditNotificationOptions()
         {
             allowsEdit = false;
@@ -87,12 +105,12 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             newNotificationOptions.MarginForNotification = currentNotificationOptions.MarginForNotification;
             newNotificationOptions.UsersToNotify = currentNotificationOptions.UsersToNotify.ToList();
         }
-        
+
         protected void EditNotificationOptions()
         {
             allowsEdit = true;
         }
-        
+
         protected override Task FindCollaborators()
         {
             // Meeting collaborators added to dictionary in GetCalendarEventData to avoid looping over the user list again
@@ -106,7 +124,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
 
             return Task.CompletedTask;
         }
-       
+
         protected override object[][] GetCalendarEventsData()
         {
             Dictionary<string, HashSet<string>> eventsBySubject = new Dictionary<string, HashSet<string>>();
@@ -147,7 +165,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             }
             return newList;
         }
-        
+
         protected override object[][] GetEmailData()
         {
             var dates = SplitDateRangeToChunks(FromDate.Value, ToDate.Value);
@@ -182,7 +200,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             }
             return newList;
         }
-        
+
         protected override async Task OnInitializedAsync()
         {
             await JsRuntime.InvokeVoidAsync("setPageTitle", "My Team");
@@ -196,19 +214,19 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
                 await UpdateDashboard();
             }
         }
-        
+
         protected void RedirectToDasboard(string userFullName)
         {
             int userId = teamMembers.First(u => u.FullName.Equals(userFullName)).Id;
             string hasedUserId = ComputeSha256Hash(userId.ToString());
             NavManager.NavigateTo($"/dashboard/{hasedUserId}");
         }
-       
+
         protected void RemoveUserToNotify(string toRemove)
         {
             newNotificationOptions.UsersToNotify.Remove(toRemove);
         }
-        
+
         protected async Task SubmitNotificationOptions()
         {
             if (newNotificationOptions.PointsThreshold < 0)
@@ -231,7 +249,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             allowsEdit = false;
             if (serverMessageIsError == false) currentNotificationOptions = newNotificationOptions;
         }
-        
+
         protected async Task SetUserToNotifyEmail(ChangeEventArgs args)
         {
             newUserToNotify_Email = args.Value.ToString();
@@ -241,17 +259,21 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
                 await JsRuntime.InvokeVoidAsync("setUserToNotifyName", matchingMember.FullName);
                 newUserToNotify_Name = matchingMember.FullName;
             }
+            else
+                await JsRuntime.InvokeVoidAsync("resetUserToNotifyName");
         }
-       
+
         protected async Task SetUserToNotifyName(ChangeEventArgs args)
         {
             newUserToNotify_Name = args.Value.ToString();
             var matchingMember = teamMembers.FirstOrDefault(m => m.FullName.Equals(newUserToNotify_Name));
-            if(matchingMember != null)
+            if (matchingMember != null)
             {
                 await JsRuntime.InvokeVoidAsync("setUserToNotifyEmail", matchingMember.Email);
                 newUserToNotify_Email = matchingMember.Email;
             }
+            else
+                await JsRuntime.InvokeVoidAsync("resetUserToNotifyEmail");
         }
 
         protected override async Task UpdateDashboard()

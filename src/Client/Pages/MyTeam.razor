@@ -97,8 +97,12 @@
 
                                                 <p>Users to notify:</p>
                                                 <p>
-                                                    <input id="userToNotify_name" list="names" @onchange="@(async (args) => await SetUserToNotifyName(args))" placeholder="John Doe" />
-                                                    <input id="userToNotify_email" list="emails" @onchange="@(async (args) => await SetUserToNotifyEmail(args))" placeholder="email@example.com" />
+                                                    <input id="userToNotify_name" list="names" 
+                                                           @onchange="@(async (args) => await SetUserToNotifyName(args))" 
+                                                           placeholder="John Doe" style="@AddNotifyUserInputStyle"/>
+                                                    <input id="userToNotify_email" list="emails" 
+                                                           @onchange="@(async (args) => await SetUserToNotifyEmail(args))" 
+                                                           placeholder="email@example.com" style="@AddNotifyUserInputStyle"/>
                                                     <datalist id="names">
                                                         @foreach (var member in AvailableUsersForNotification)
                                                         {
@@ -113,7 +117,7 @@
                                                         }
                                                     </datalist>
 
-                                                    <button @onclick="AddUserToNotify" type="button">Add user</button>
+                                                    <button @onclick="async () => await AddUserToNotify()" type="button">Add user</button>
                                                 </p>
                                                 <table>
                                                     @foreach (var nameAndEmail in newNotificationOptions.UsersToNotify)

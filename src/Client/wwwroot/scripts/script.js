@@ -12,6 +12,18 @@ window.setUserToNotifyName = (email) => {
     inputField.disabled = true;
 }
 
+window.resetUserToNotifyEmail = () => {
+    resetInputField('userToNotify_email');
+}
+window.resetUserToNotifyName = () => {
+    resetInputField('userToNotify_name')
+}
+const resetInputField = (elementId) => {
+    let inputField = document.getElementById(elementId);
+    inputField.value = "";
+    inputField.disabled = false;
+}
+
 const toggleUserDropdown = () => {
     let element = document.getElementById('dropdown')
     element.classList.toggle('display-none')
