@@ -1,5 +1,11 @@
 ﻿window.setPageTitle = (titleIn) => {
-    document.getElementById("page-title").innerHTML = " - " + titleIn;
+    document.getElementById('page-title').innerHTML = ' - ' + titleIn;
+}
+window.setUserToNotifyEmail = (name) => {
+    document.getElementById('userToNotify_email').value = name;
+}
+window.setUserToNotifyName = (email) => {
+    document.getElementById('userToNotify_name').value = email;
 }
 
 const toggleUserDropdown = () => {
@@ -15,10 +21,10 @@ const closeNav = () => {
     document.getElementById('mySidenav').style.width = '0'
 }
 
-const eventsChartDivId = "events-chart";
+const eventsChartDivId = 'events-chart';
 const eventsChartHeight = 550;
 
-const emailsChartDivId = "emails-chart";
+const emailsChartDivId = 'emails-chart';
 const emailChartHeight = 550;
 
 // Code adapted from https://developers.google.com/chart/interactive/docs/gallery/
@@ -31,7 +37,7 @@ window.loadDashboardGraph = (mailList, calendarList) => {                       
     if (calendarList.length > 1) {
         google.charts.setOnLoadCallback(drawEventsBarChart(calendarList));
     } else {
-        document.getElementById(eventsChartDivId).innerHTML = "There are no events in the selected range";
+        document.getElementById(eventsChartDivId).innerHTML = 'There are no events in the selected range';
     }
 }
 
@@ -40,7 +46,7 @@ window.loadMyTeamDashboardGraph = (mailList, calendarList) => {
     if (calendarList.length > 1) {
         google.charts.setOnLoadCallback(drawEventsBarChart(calendarList));
     } else {
-        document.getElementById(eventsChartDivId).innerHTML = "There are no events in the selected range";
+        document.getElementById(eventsChartDivId).innerHTML = 'There are no events in the selected range';
     }
 
 }

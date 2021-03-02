@@ -97,8 +97,22 @@
 
                                                 <p>Users to notify:</p>
                                                 <p>
-                                                    <InputText @bind-Value="newUserToNotify_Name" class="" placeholder="John Doe" style="@InputStyle" />
-                                                    <InputText @bind-Value="newUserToNotify_Email" class="" placeholder="email@example.com" style="@InputStyle" />
+                                                    <input id="userToNotify_name" list="names" @onchange="@(async (args) => await SetUserToNotifyName(args))" placeholder="John Doe"/>
+                                                    <input id="userToNotify_email" list="emails" @onchange="@(async (args) => await SetUserToNotifyEmail(args))" placeholder="email@example.com" />
+                                                    <datalist id="names" >
+                                                        @foreach (var member in teamMembers)
+                                                        {
+                                                            <option value="@member.FullName"></option>
+                                                        }
+                                                    </datalist>
+                                                    <datalist id="emails">
+                                                        @foreach (var member in teamMembers)
+                                                        {
+                                                            <option value="@member.Email"></option>
+
+                                                        }
+                                                    </datalist>
+
                                                     <button @onclick="AddUserToNotify" type="button">Add user</button>
                                                 </p>
                                                 <table>

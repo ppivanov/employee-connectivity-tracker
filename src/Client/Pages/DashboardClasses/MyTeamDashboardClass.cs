@@ -221,6 +221,28 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             }
         }
 
+        protected async Task SetUserToNotifyName(ChangeEventArgs args)
+        {
+            newUserToNotify_Name = args.Value.ToString();
+            var matchingMember = teamMembers.FirstOrDefault(m => m.FullName.Equals(newUserToNotify_Name));
+            if(matchingMember != null)
+            {
+                await JsRuntime.InvokeVoidAsync("setUserToNotifyEmail", matchingMember.Email);
+                newUserToNotify_Email = matchingMember.Email;
+            }
+        }
+
+        protected async Task SetUserToNotifyEmail(ChangeEventArgs args)
+        {
+            newUserToNotify_Email = args.Value.ToString();
+            var matchingMember = teamMembers.FirstOrDefault(m => m.Email.Equals(newUserToNotify_Email));
+            if (matchingMember != null)
+            {
+                await JsRuntime.InvokeVoidAsync("setUserToNotifyName", matchingMember.FullName);
+                newUserToNotify_Name = matchingMember.FullName;
+            }
+        }
+
         protected string InputStyle
         {
             get
