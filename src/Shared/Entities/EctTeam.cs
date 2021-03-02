@@ -29,7 +29,7 @@ namespace EctBlazorApp.Shared.Entities
             }
             set
             {
-                if (value.Length < 1)
+                if (value == null || value.Length < 1)
                     AdditionalUsersToNotify = new List<string>();
                 else
                     AdditionalUsersToNotify = value.Split(" | ").ToList();

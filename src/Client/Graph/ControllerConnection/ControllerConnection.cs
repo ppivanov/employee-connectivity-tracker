@@ -204,7 +204,7 @@ namespace EctBlazorApp.Client.Graph
             return (true, tokenErrorMessage);
         }
 
-        public async Task<(bool, string)> SubmitPointsThreshold(NotificationOptionsResponse notificationOptions)
+        public async Task<(bool, string)> SubmitNotificationOptions(NotificationOptionsResponse notificationOptions)
         {
             var token = await GetAPITokenAsync();
             const string tokenErrorMessage = "Error retrieving access token. Please, try again later.";

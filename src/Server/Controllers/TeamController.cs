@@ -102,7 +102,8 @@ namespace EctBlazorApp.Server.Controllers
             var notificationOptions = new NotificationOptionsResponse
             {
                 PointsThreshold = assignedTeam.PointsThreshold,
-                MarginForNotification = assignedTeam.MarginForNotification
+                MarginForNotification = assignedTeam.MarginForNotification,
+                UsersToNotify = assignedTeam.AdditionalUsersToNotify
             };
             return notificationOptions;
         }
@@ -110,7 +111,7 @@ namespace EctBlazorApp.Server.Controllers
         [Route("set-notification-options")]
         [HttpPut]
         [AuthorizeLeader]
-        public async Task<ActionResult<string>> SetPointsThreshold([FromBody] NotificationOptionsResponse notificationOptions)
+        public async Task<ActionResult<string>> SetNotificationOptions([FromBody] NotificationOptionsResponse notificationOptions)
         {
             string userEmail = await HttpContext.GetPreferredUsername();
             int userId = _dbContext.Users.First(u => u.Email == userEmail).Id;
@@ -118,9 +119,10 @@ namespace EctBlazorApp.Server.Controllers
 
             assignedTeam.PointsThreshold = notificationOptions.PointsThreshold;
             assignedTeam.MarginForNotification = notificationOptions.MarginForNotification;
+            assignedTeam.AdditionalUsersToNotify = notificationOptions.UsersToNotify;
             await _dbContext.SaveChangesAsync();
 
-            return Ok("Threshold saved.");
+            return Ok("Notification options saved.");
         }
 
         private EctUser GetCommunicationDataAsNewUserInstance(EctUser forUser, DateTime fromDate, DateTime toDate)

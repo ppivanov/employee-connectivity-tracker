@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace EctBlazorApp.Shared
 {
@@ -11,7 +12,7 @@ namespace EctBlazorApp.Shared
         [Required]
         [Range(0, 100, ErrorMessage = "The margin for notifications must be between {0}% and {1}%")]
         public double MarginForNotification { get; set; }
-        //public List<string> UsersToNotify { get; set; }
+        public List<string> UsersToNotify { get; set; }
 
         public NotificationOptionsResponse() {  }
 
@@ -19,6 +20,7 @@ namespace EctBlazorApp.Shared
         {
             PointsThreshold = optionsToCopy.PointsThreshold;
             MarginForNotification = optionsToCopy.MarginForNotification;
+            UsersToNotify = optionsToCopy.UsersToNotify.ToList();                                           // Make a copy of the users
         }
 
     }

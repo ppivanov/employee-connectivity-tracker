@@ -28,6 +28,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         protected NotificationOptionsResponse currentNotificationOptions = null;
         protected NotificationOptionsResponse newNotificationOptions = null;
         protected string serverMessage = "";
+        protected string newUserToNotify = "";
 
         protected override int TotalEmailsCount
         {
@@ -154,7 +155,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             return Task.CompletedTask;
         }
 
-        protected async Task SubmitThreshold()
+        protected async Task SubmitNotificationOptions()
         {
             if (newNotificationOptions.PointsThreshold < 0)
             {
@@ -167,7 +168,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             isSubmitting = true;
             serverMessageIsError = false;
 
-            var response = await ApiConn.SubmitPointsThreshold(newNotificationOptions);
+            var response = await ApiConn.SubmitNotificationOptions(newNotificationOptions);
             serverMessageIsError = response.Item1;
             serverMessage = response.Item2;
             inputError = serverMessageIsError;
@@ -177,9 +178,29 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             if (serverMessageIsError == false) currentNotificationOptions = newNotificationOptions;
         }
 
-        protected void EditThreshold()
+        protected void EditNotificationOptions()
         {
+            newNotificationOptions.UsersToNotify.Add("test-ect@outlook.com");
             allowsEdit = true;
+        }
+        protected void CancelEditNotificationOptions()
+        {
+            allowsEdit = false;
+            newNotificationOptions.PointsThreshold = currentNotificationOptions.PointsThreshold;
+            newNotificationOptions.MarginForNotification = currentNotificationOptions.MarginForNotification;
+            newNotificationOptions.UsersToNotify = currentNotificationOptions.UsersToNotify.ToList();
+        }
+
+        protected void RemoveUserToNotify(int indexToRemove)
+        {
+            string toRemove = newNotificationOptions.UsersToNotify[indexToRemove];
+            newNotificationOptions.UsersToNotify.Remove(toRemove);
+        }
+
+        protected void AddUserToNotify()
+        {
+            newNotificationOptions.UsersToNotify.Add(newUserToNotify);
+            newUserToNotify = "";
         }
 
         protected void RedirectToDasboard(string userFullName)

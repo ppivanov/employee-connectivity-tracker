@@ -82,25 +82,43 @@
                                         }
                                         @if (allowsEdit)
                                         {
-                                            <EditForm Model="newNotificationOptions" OnSubmit="@(async () => await SubmitThreshold())" Context="formContext">
-                                                <p>
-                                                    <label>Threshold for notifications:</label>
-                                                    <InputNumber @bind-Value="newNotificationOptions.PointsThreshold" class="" id="" style="@InputStyle" />
-                                                </p>
+                                            <EditForm Model="newNotificationOptions" OnSubmit="@(async () => await SubmitNotificationOptions())" Context="formContext">
+                                                <label>
+                                                    Threshold for notifications:
+                                                    <InputNumber @bind-Value="newNotificationOptions.PointsThreshold" class="" style="@InputStyle" 
+                                                                 placeholder="@($"Current: {currentNotificationOptions.PointsThreshold}")" />
+                                                </label>
+                                                <br />
+                                                <label>
+                                                    Margin for notifications:
+                                                    <InputNumber @bind-Value="newNotificationOptions.MarginForNotification" class="" style="@InputStyle" 
+                                                                 placeholder="@($"Current: {currentNotificationOptions.MarginForNotification}")"/>%
+                                                </label>
 
+                                                <p>Users to notify:</p>
                                                 <p>
-                                                    <label>Margin for notifications:</label>
-                                                    <InputNumber @bind-Value="newNotificationOptions.MarginForNotification" class="" id="" style="@InputStyle" />%
+                                                    <InputText @bind-Value="newUserToNotify" class="" placeholder="email@example.com" />
+                                                    <button @onclick="AddUserToNotify" type="button">Add user</button>
                                                 </p>
-
+                                                @foreach (var email in newNotificationOptions.UsersToNotify)
+                                                {
+                                                    <p>@email</p>
+                                                }
+                                                <br />
                                                 <button type="submit">Submit</button>
+                                                <button @onclick="CancelEditNotificationOptions" type="button">Cancel</button>
                                             </EditForm>
                                         }
                                         else
                                         {
                                             <p>Current threshold for notifications: @currentNotificationOptions.PointsThreshold</p>
                                             <p>Current margin for notifications: @currentNotificationOptions.MarginForNotification%</p>
-                                            <button @onclick="EditThreshold">Edit</button>
+                                            <p>Addtional users to notify:</p>
+                                            @foreach (var email in newNotificationOptions.UsersToNotify)
+                                            {
+                                                <p>@email</p>
+                                            }
+                                            <button @onclick="EditNotificationOptions">Edit</button>
                                         }
                                     }
                                 }
