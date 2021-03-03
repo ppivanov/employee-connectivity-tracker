@@ -17,7 +17,6 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         protected NavigationManager NavManager { get; set; }
 
         private bool _inputError = false;
-        private List<EctUser> _administrators;
 
         protected bool allowsEdit = false;
         protected bool isLeader = false;
@@ -25,7 +24,6 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         protected int emailsSent = 0;
         protected int emailsReceived = 0;
         protected string leaderNameAndEmail = "";
-        protected List<EctUser> teamMembers;
 
         protected string AddNotifyUserInputStyle
         {
@@ -38,8 +36,8 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         {
             get
             {
-                var users = teamMembers.ToList();
-                users.AddRange(_administrators);
+                var users = TeamMembers.ToList();
+                users.AddRange(Administrators);
                 users = users.GroupBy(u => u.Email).Select(u => u.First()).ToList();
                 foreach (var selectedUser in NewNotificationOptions.UsersToNotify)
                 {
@@ -78,20 +76,22 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         public string UserToNotify_Email { get; set; } = "";
         public string UserToNotify_Name { get; set; } = "";
         public string ServerMessage { get; set; } = "";
+        public List<EctUser> Administrators { get; set; }
+        public List<EctUser> TeamMembers { get; set; }
         public NotificationOptionsResponse CurrentNotificationOptions { get; set; } = null;
         public NotificationOptionsResponse NewNotificationOptions { get; set; } = null;
 
         public MyTeamDashboardClass() { }
 
-        public MyTeamDashboardClass(                                                               // Used to initalize an instance of the class for unit tests
+        public MyTeamDashboardClass(                                                                // Used to initalize an instance of the class for unit tests
             List<EctUser> administrators,
             List<EctUser> teamMembers,
             NotificationOptionsResponse currentNotificationOptions,
             NotificationOptionsResponse newNotificationOptions
             )
         {
-            _administrators = administrators;
-            this.teamMembers = teamMembers;
+            Administrators = administrators;
+            this.TeamMembers = teamMembers;
             this.CurrentNotificationOptions = currentNotificationOptions;
             this.NewNotificationOptions = newNotificationOptions;
         }
@@ -105,19 +105,46 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             NewNotificationOptions.UsersToNotify.Add(nameAndEmail);
             UserToNotify_Name = "";
             UserToNotify_Email = "";
-            await ResetUserToNotifyFields();
+            await JsInterop("resetUserToNotifyEmail");
+            await JsInterop("resetUserToNotifyName");
         }
 
-        public virtual async Task ResetUserToNotifyFields()
+        public virtual async Task JsInterop(string function, string parameter = "")
         {
-            await JsRuntime.InvokeVoidAsync("resetUserToNotifyEmail");
-            await JsRuntime.InvokeVoidAsync("resetUserToNotifyName");
-        }
+            await JsRuntime.InvokeVoidAsync(function, parameter);
+        }               // Used to mock JavaScript function calls
 
         public void RemoveUserToNotify(string toRemove)
         {
             NewNotificationOptions.UsersToNotify.Remove(toRemove);
         }
+
+        public async Task SetUserToNotifyEmail(ChangeEventArgs args)
+        {
+            UserToNotify_Email = args.Value.ToString();
+            var matchingMember = AvailableUsersForNotification.FirstOrDefault(m => m.Email.Equals(UserToNotify_Email));
+            if (matchingMember != null)
+            {
+                await JsInterop("setUserToNotifyName", matchingMember.FullName);
+                UserToNotify_Name = matchingMember.FullName;
+            }
+            else
+                await JsInterop("resetUserToNotifyName");
+        }
+
+        public async Task SetUserToNotifyName(ChangeEventArgs args)
+        {
+            UserToNotify_Name = args.Value.ToString();
+            var matchingMember = AvailableUsersForNotification.FirstOrDefault(m => m.FullName.Equals(UserToNotify_Name));
+            if (matchingMember != null)
+            {
+                await JsInterop("setUserToNotifyEmail", matchingMember.Email);
+                UserToNotify_Email = matchingMember.Email;
+            }
+            else
+                await JsInterop("resetUserToNotifyEmail");
+        }
+
 
         protected void CancelEditNotificationOptions()
         {
@@ -136,7 +163,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         {
             // Meeting collaborators added to dictionary in GetCalendarEventData to avoid looping over the user list again
 
-            foreach (var member in teamMembers)
+            foreach (var member in TeamMembers)
             {
                 int totalEmails = member.SentEmails.Count + member.ReceivedEmails.Count;
                 double pointsToAdd = totalEmails * emailCommPoints.Points;
@@ -150,7 +177,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         {
             Dictionary<string, HashSet<string>> eventsBySubject = new Dictionary<string, HashSet<string>>();
 
-            foreach (var member in teamMembers)
+            foreach (var member in TeamMembers)
             {
                 int numberOfMeetingsBefore = numberOfMeetings;
                 foreach (var calendarEvent in member.CalendarEvents)
@@ -201,7 +228,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
                 StringBuilder sentMailTooltipText = new StringBuilder($"{tooltipDate}\n");
                 StringBuilder receivedMailTooltipText = new StringBuilder($"{tooltipDate}\n");
 
-                foreach (var member in teamMembers)
+                foreach (var member in TeamMembers)
                 {
                     string memberFirstName = member.FullName.Split(" ")[0];
                     int countOfSentMail = member.SentEmails.Count(sm => sm.SentAt.Date == date);
@@ -224,13 +251,13 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
 
         protected override async Task OnInitializedAsync()
         {
-            await JsRuntime.InvokeVoidAsync("setPageTitle", "My Team");
+            await JsInterop("setPageTitle", "My Team");
             isLeader = await ApiConn.IsProcessingUserALeader();
             if (isLeader)
             {
                 CurrentNotificationOptions = await ApiConn.FetchCurrentNotificationOptions();
                 NewNotificationOptions = new NotificationOptionsResponse(CurrentNotificationOptions);
-                _administrators = await ApiConn.FetchAdminstrators();
+                Administrators = await ApiConn.FetchAdminstrators();
                 await FetchCommunicationPoints();
                 await UpdateDashboard();
             }
@@ -238,7 +265,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
 
         protected void RedirectToDasboard(string userFullName)
         {
-            int userId = teamMembers.First(u => u.FullName.Equals(userFullName)).Id;
+            int userId = TeamMembers.First(u => u.FullName.Equals(userFullName)).Id;
             string hasedUserId = ComputeSha256Hash(userId.ToString());
             NavManager.NavigateTo($"/dashboard/{hasedUserId}");
         }
@@ -266,45 +293,19 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             if (ServerMessageIsError == false) CurrentNotificationOptions = NewNotificationOptions;
         }
 
-        protected async Task SetUserToNotifyEmail(ChangeEventArgs args)
-        {
-            UserToNotify_Email = args.Value.ToString();
-            var matchingMember = teamMembers.FirstOrDefault(m => m.Email.Equals(UserToNotify_Email));
-            if (matchingMember != null)
-            {
-                await JsRuntime.InvokeVoidAsync("setUserToNotifyName", matchingMember.FullName);
-                UserToNotify_Name = matchingMember.FullName;
-            }
-            else
-                await JsRuntime.InvokeVoidAsync("resetUserToNotifyName");
-        }
-
-        protected async Task SetUserToNotifyName(ChangeEventArgs args)
-        {
-            UserToNotify_Name = args.Value.ToString();
-            var matchingMember = teamMembers.FirstOrDefault(m => m.FullName.Equals(UserToNotify_Name));
-            if (matchingMember != null)
-            {
-                await JsRuntime.InvokeVoidAsync("setUserToNotifyEmail", matchingMember.Email);
-                UserToNotify_Email = matchingMember.Email;
-            }
-            else
-                await JsRuntime.InvokeVoidAsync("resetUserToNotifyEmail");
-        }
-
         protected override async Task UpdateDashboard()
         {
             ResetAttributeValues();
             string queryString = GetDateRangeQueryString(FromDate.Value, ToDate.Value);
 
             var response = await ApiConn.FetchTeamDashboardResponse(queryString);
-            teamMembers = response.TeamMembers;
+            TeamMembers = response.TeamMembers;
             leaderNameAndEmail = response.LeaderNameAndEmail;
 
             await FindCollaborators();
             initialized = true;
             await InvokeAsync(StateHasChanged);                                                                                                                                     // Force a refresh of the component before trying to load the js graphs
-            await JsRuntime.InvokeVoidAsync("setPageTitle", response.TeamName);
+            await JsInterop("setPageTitle", response.TeamName);
             await JsRuntime.InvokeVoidAsync("loadMyTeamDashboardGraph", (object)GetEmailData(), (object)GetCalendarEventsData());                                                   // GetCalendarEventsData is adding only some of the collaborators to the dictionary
         }
 
@@ -317,7 +318,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             ServerMessageIsError = false;
             _inputError = false;
             isSubmitting = false;
-            teamMembers = null;
+            TeamMembers = null;
             emailsSent = 0;
             emailsReceived = 0;
             ServerMessage = "";
