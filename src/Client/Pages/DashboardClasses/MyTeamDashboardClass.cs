@@ -250,6 +250,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
                 await UpdateDashboard();
             }
             initialized = true;
+            await InvokeAsync(StateHasChanged);
         }
 
         protected void RedirectToDasboard(string userFullName)

@@ -39,37 +39,27 @@
                             </div>
                             <div class="create-team-input-pair">
                                 <label>Team lead</label>
-                                <select @bind=teamDetails.LeaderNameAndEmail>
-                                    @if (AvailableLeaders.Count == 0)
+                                <input id="createTeamLeader" list="leaders"
+                                    @onchange="@(async (args) => await SetLeaderNameEmail(args))" 
+                                    placeholder="Full Name <email@example.com>" style="@InputStyle" />
+                                <datalist id="leaders">
+                                    @foreach (var leader in AvailableLeaders)
                                     {
-                                        <option value="" disabled>No available users</option>
+                                        <option value="@leader" />
                                     }
-                                    else
-                                    {
-                                        <option value="">---</option>
-                                        @foreach (var user in AvailableLeaders)
-                                        {
-                                            <option value="@user">@user</option>
-                                        }
-                                    }
-                                </select>
+                                </datalist>
                             </div>
                             <div class="create-team-input-pair">
                                 <label>Available users</label>
-                                <select @bind=CurrentMemberSelection>
-                                    @if (AvailableMembers.Count == 0)
+                                <input id="createTeamMember" list="members"
+                                    @onchange="@(async (args) => await SetMemberNameEmail(args))"
+                                    placeholder="Full Name <email@example.com>" style="@InputStyle" />
+                                <datalist id="members">
+                                    @foreach (var member in AvailableMembers)
                                     {
-                                        <option value="" disabled>No available users</option>
+                                        <option value="@member" />
                                     }
-                                    else
-                                    {
-                                        <option value="">---</option>
-                                        @foreach (var user in AvailableMembers)
-                                        {
-                                            <option value="@user">@user</option>
-                                        }
-                                    }
-                                </select>
+                                </datalist>
                                 <button type="button" @onclick="() => AddSelectedMember()" disabled=@isSubmitting class="select-member">Add member</button>
                             </div>
                         </div>

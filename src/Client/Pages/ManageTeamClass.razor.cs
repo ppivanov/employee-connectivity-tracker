@@ -1,16 +1,13 @@
 ﻿using EctBlazorApp.Client.Graph;
 using EctBlazorApp.Shared;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.JSInterop;
-using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
+using static EctBlazorApp.Shared.SharedMethods;
 
 namespace EctBlazorApp.Client.Pages
 {
@@ -23,8 +20,10 @@ namespace EctBlazorApp.Client.Pages
         [Inject]
         protected HttpClient Http { get; set; }
 
-        protected EctTeamRequestDetails teamDetails = new EctTeamRequestDetails();
+        private bool serverMessageIsError = false;
+        
         protected string CurrentMemberSelection { get; set; }
+        protected string InputStyle { get => inputError ? "border: 1px solid red" : ""; }
         protected string ServerMessage { get; set; } = "";
         protected string ServerMessageInlineStyle
         {
@@ -52,7 +51,21 @@ namespace EctBlazorApp.Client.Pages
         protected bool isAdmin = false;
         protected bool isSubmitting = false;
         protected bool initialized = false;
-        bool serverMessageIsError = false;
+        protected bool inputError = false;
+        protected EctTeamRequestDetails teamDetails = new EctTeamRequestDetails();
+
+        public async Task SetLeaderNameEmail(ChangeEventArgs args)
+        {
+            teamDetails.LeaderNameAndEmail = args.Value.ToString();
+            // if the email has already been added to the list of members -> display error
+        }
+
+        public async Task SetMemberNameEmail(ChangeEventArgs args)
+        {
+            CurrentMemberSelection = args.Value.ToString();
+            //AvailableLeaders.Remove(CurrentMemberSelection);
+            // if the email has already been added to the list of members -> display error
+        }
 
         protected override async Task OnInitializedAsync()
         {
@@ -68,14 +81,15 @@ namespace EctBlazorApp.Client.Pages
 
         protected async Task AddSelectedMember()
         {
-            if (string.IsNullOrEmpty(CurrentMemberSelection)
-                || CurrentMemberSelection.Equals("-")
-                || CurrentMemberSelection.Equals(teamDetails.LeaderNameAndEmail)
-                || teamDetails.MemberNamesAndEmails.Contains(CurrentMemberSelection))
-                    return;
+            if (IsCurrentMemberSelectionEmpty()
+                || IsCurrentMemberSelectionFormatted()
+                || IsCurrentMemberSelectionAlreadyLeader()
+                || IsCurrentMemberSelectionAlreadySelected())
+                return;
 
             teamDetails.MemberNamesAndEmails.Add(CurrentMemberSelection);
             AvailableLeaders.Remove(CurrentMemberSelection);
+            CurrentMemberSelection = "";
             await InvokeAsync(StateHasChanged);
         }
 
@@ -83,7 +97,7 @@ namespace EctBlazorApp.Client.Pages
         {
             var response = await ApiConn.GetUsersEligibleForMembers();
             MembersFromApi = response.ToHashSet();
-            AvailableLeaders = MembersFromApi.ToHashSet();                                     // Copy the set not the reference
+            AvailableLeaders = MembersFromApi.ToHashSet();                                      // Copy the set not the reference
         }
 
         protected async Task RemoveFromSelected(string member)
@@ -108,11 +122,60 @@ namespace EctBlazorApp.Client.Pages
             isSubmitting = false;
         }
 
+
         private void ResetInputFields()
         {
             teamDetails.Name = "";
             teamDetails.LeaderNameAndEmail = "";
             teamDetails.MemberNamesAndEmails = new List<string>();
+        }
+
+        private bool IsCurrentMemberSelectionEmpty()
+        {
+            if (string.IsNullOrEmpty(CurrentMemberSelection))
+            {
+                inputError = true;
+                serverMessageIsError = true;
+                ServerMessage = "Please, select a member first.";
+                return true;
+            }
+            return false;
+        }
+
+        private bool IsCurrentMemberSelectionFormatted()
+        {
+            if (IsStringInMemberFormat(CurrentMemberSelection) == false)
+            {
+                inputError = true;
+                serverMessageIsError = true;
+                ServerMessage = "Please, enter the details in the reqired format.";
+                return true;
+            }
+            return false;
+        }
+
+        private bool IsCurrentMemberSelectionAlreadyLeader()
+        {
+            if (CurrentMemberSelection.Equals(teamDetails.LeaderNameAndEmail))
+            {
+                inputError = true;
+                serverMessageIsError = true;
+                ServerMessage = "User already selected as team lead.";
+                return true;
+            }
+            return false;
+        }
+
+        private bool IsCurrentMemberSelectionAlreadySelected()
+        {
+            if (teamDetails.MemberNamesAndEmails.Contains(CurrentMemberSelection))
+            {
+                inputError = true;
+                serverMessageIsError = true;
+                ServerMessage = "This user has already beeen selected.";
+                return true;
+            }
+            return false;
         }
     }
 }

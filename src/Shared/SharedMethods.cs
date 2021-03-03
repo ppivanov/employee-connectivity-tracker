@@ -38,6 +38,18 @@ namespace EctBlazorApp.Shared
             return fullName;
         }
 
+        public static bool IsStringInMemberFormat(string member)
+        {
+            try
+            {
+                return Regex.IsMatch(member, @"^([a-z A-Z]{1,} <.+>)$");
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
         public static string GetDateRangeQueryString(DateTimeOffset fromDate, DateTimeOffset toDate)
         {
             string queryString = $"?fromDate={fromDate.ToString("yyyy-MM-dd")}&toDate={toDate.ToString("yyyy-MM-dd")}";
