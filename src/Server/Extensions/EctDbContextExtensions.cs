@@ -26,7 +26,7 @@ namespace EctBlazorApp.Server.Extensions
         {
             try
             {
-                EctUser userForUserIdParm = dbContext.Users.FirstOrDefault(user => user.Email.Equals(userId));
+                EctUser userForUserIdParm = dbContext.Users.First(user => user.Email.Equals(userId));
                 return userForUserIdParm;
             }
             catch (Exception)

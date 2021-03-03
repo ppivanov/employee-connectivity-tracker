@@ -29,7 +29,7 @@ namespace EctBlazorApp.ServerTests
         public EctDbContextExtensionsTests()
         {
             _dbContext = InMemoryDb.InitInMemoryDbContext();
-            _httpClient = new HttpClient();
+            _httpClient = new();
             _mailKit = GetMailKit();
         }
 
@@ -53,12 +53,9 @@ namespace EctBlazorApp.ServerTests
         [TestMethod]
         public async Task GetExistingEctUserOrNew_NonExistentUserEmail_BobIsReturned()
         {
-            DateTime expectedLastSignIn = new DateTime(2020, 10, 1);
+            DateTime expectedLastSignIn = new(2020, 10, 1);
             GraphUserResponse mockGraphResponse = GetMockGraphUserResponse("Bob BobS");
-            Mock<IMockableGraphMethods> mock = new Mock<IMockableGraphMethods>
-            {
-                CallBase = true
-            };
+            Mock<IMockableGraphMethods> mock = new() { CallBase = true };
             mock.Setup(x => x.GetGraphUser(It.IsAny<HttpClient>(), It.IsAny<string>())).ReturnsAsync(mockGraphResponse);
             HttpClientExtensions.Implementation = mock.Object;
 
@@ -72,11 +69,11 @@ namespace EctBlazorApp.ServerTests
         [TestMethod]
         public void GetReceivedMailInDateRangeForUserId_NonexistentUserId_ReturnsEmptyList()
         {
-            List<ReceivedMail> expectedList = new List<ReceivedMail>();
+            List<ReceivedMail> expectedList = new();
             List<ReceivedMail> actualList;
             int userId = 999;
-            DateTime startOfOctober = new DateTime(2020, 10, 1);
-            DateTime endOfNovember = new DateTime(2020, 11, 30);
+            DateTime startOfOctober = new(2020, 10, 1);
+            DateTime endOfNovember = new(2020, 11, 30);
 
             actualList = _dbContext.GetReceivedMailInDateRangeForUserId(userId, startOfOctober, endOfNovember);
 
@@ -89,8 +86,8 @@ namespace EctBlazorApp.ServerTests
             List<ReceivedMail> expectedList;
             List<ReceivedMail> actualList;
             int userId = 1;
-            DateTime startOfOctober = new DateTime(2020, 10, 1);
-            DateTime endOfNovember = new DateTime(2020, 11, 30);
+            DateTime startOfOctober = new(2020, 10, 1);
+            DateTime endOfNovember = new(2020, 11, 30);
 
             expectedList = _dbContext.ReceivedEmails.Where(re =>
                 re.EctUserId == userId
@@ -108,8 +105,8 @@ namespace EctBlazorApp.ServerTests
             List<CalendarEvent> expectedList = new List<CalendarEvent>();
             List<CalendarEvent> actualList;
             int userId = 999;
-            DateTime startOfOctober = new DateTime(2020, 10, 1);
-            DateTime endOfNovember = new DateTime(2020, 11, 30);
+            DateTime startOfOctober = new(2020, 10, 1);
+            DateTime endOfNovember = new(2020, 11, 30);
 
             actualList = _dbContext.GetCalendarEventsInDateRangeForUserId(userId, startOfOctober, endOfNovember);
 
@@ -122,8 +119,8 @@ namespace EctBlazorApp.ServerTests
             List<CalendarEvent> expectedList;
             List<CalendarEvent> actualList;
             int userId = 1;
-            DateTime startOfOctober = new DateTime(2020, 10, 1);
-            DateTime endOfNovember = new DateTime(2020, 11, 30);
+            DateTime startOfOctober = new(2020, 10, 1);
+            DateTime endOfNovember = new(2020, 11, 30);
 
             expectedList = _dbContext.CalendarEvents.Where(ce =>
                 ce.EctUserId == userId
@@ -138,11 +135,11 @@ namespace EctBlazorApp.ServerTests
         [TestMethod]
         public void GetSentMailInDateRangeForUserId_NonexistentUserId_ReturnsEmptyList()
         {
-            List<SentMail> expectedList = new List<SentMail>();
+            List<SentMail> expectedList = new();
             List<SentMail> actualList;
             int userId = 999;
-            DateTime startOfOctober = new DateTime(2020, 10, 1);
-            DateTime endOfNovember = new DateTime(2020, 11, 30);
+            DateTime startOfOctober = new(2020, 10, 1);
+            DateTime endOfNovember = new(2020, 11, 30);
 
             actualList = _dbContext.GetSentMailInDateRangeForUserId(userId, startOfOctober, endOfNovember);
 
@@ -155,8 +152,8 @@ namespace EctBlazorApp.ServerTests
             List<SentMail> expectedList;
             List<SentMail> actualList;
             int userId = 1;
-            DateTime startOfOctober = new DateTime(2020, 10, 1);
-            DateTime endOfNovember = new DateTime(2020, 11, 30);
+            DateTime startOfOctober = new(2020, 10, 1);
+            DateTime endOfNovember = new(2020, 11, 30);
 
             expectedList = _dbContext.SentEmails.Where(se =>
                 se.EctUserId == userId
