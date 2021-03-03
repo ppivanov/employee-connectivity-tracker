@@ -31,7 +31,7 @@ namespace EctBlazorApp.Client.Graph
             _httpClient = httpClient;
         }
 
-        public async Task<List<EctUser>> FetchAdminstrators()
+        public async Task<IEnumerable<EctUser>> FetchAdminstrators()
         {
             var token = await GetAPITokenAsync();
             if (token != null)
@@ -39,7 +39,7 @@ namespace EctBlazorApp.Client.Graph
                 try
                 {
                     _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                    var administrators = await _httpClient.GetFromJsonAsync<List<EctUser>>($"api/auth/get-administrators");
+                    var administrators = await _httpClient.GetFromJsonAsync<IEnumerable<EctUser>>($"api/auth/get-administrators");
 
                     return administrators;
                 }
@@ -84,7 +84,7 @@ namespace EctBlazorApp.Client.Graph
                 try
                 {
                     _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                    var CommunicationPoints = await _httpClient.GetFromJsonAsync<List<CommunicationPoint>>($"api/communication/points");
+                    var CommunicationPoints = await _httpClient.GetFromJsonAsync<IEnumerable<CommunicationPoint>>($"api/communication/points");
                     var emailCommPoints = CommunicationPoint.GetCommunicationPointForMedium(CommunicationPoints, "email");
                     var meetingCommPoints = CommunicationPoint.GetCommunicationPointForMedium(CommunicationPoints, "meeting");
 
@@ -116,7 +116,7 @@ namespace EctBlazorApp.Client.Graph
             }
             return new DashboardResponse();
         }
-        
+
         public async Task<TeamDashboardResponse> FetchTeamDashboardResponse(string queryString)
         {
             var token = await GetAPITokenAsync();
@@ -154,13 +154,32 @@ namespace EctBlazorApp.Client.Graph
             }
             return null;
         }
-        
+
+        public async Task<IEnumerable<string>> GetUsersEligibleForMembers()
+        {
+            var token = await GetAPITokenAsync();
+            if (token != null)
+            {
+                try
+                {
+                    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    var response = await _httpClient.GetFromJsonAsync<IEnumerable<string>>($"api/auth/get-app-users");
+                    return response;
+                }
+                catch (AccessTokenNotAvailableException exception)
+                {
+                    exception.Redirect();
+                }
+            }
+            return new List<string>();
+        }
+
         public async Task<Boolean> IsProcessingUserAnAdmin()
         {
             var adminResponse = await IsProcessingUserAuthorizedForRole(UserRoles.admin);
             return adminResponse;
         }
-        
+
         public async Task<Boolean> IsProcessingUserALeader()
         {
             var leaderResponse = await IsProcessingUserAuthorizedForRole(UserRoles.leader);
@@ -177,7 +196,7 @@ namespace EctBlazorApp.Client.Graph
             try
             {
                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                var response = await _httpClient.PutAsJsonAsync<NotificationOptionsResponse>($"api/team/set-notification-options", notificationOptions);
+                var response = await _httpClient.PutAsJsonAsync($"api/team/set-notification-options", notificationOptions);
                 var serverMessage = await response.Content.ReadAsStringAsync();
                 var isError = false;
                 if (response.IsSuccessStatusCode == false)
@@ -191,8 +210,8 @@ namespace EctBlazorApp.Client.Graph
             }
             return (true, tokenErrorMessage);
         }
-        
-        public async Task<(bool, string)> SubmitPoints(List<CommunicationPoint> communicationPoints)
+
+        public async Task<(bool, string)> SubmitPoints(IEnumerable<CommunicationPoint> communicationPoints)
         {
             var token = await GetAPITokenAsync();
             const string tokenErrorMessage = "Error retrieving access token. Please, try again later.";
@@ -202,7 +221,7 @@ namespace EctBlazorApp.Client.Graph
             try
             {
                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                var response = await _httpClient.PutAsJsonAsync<List<CommunicationPoint>>($"api/communication/points/update", communicationPoints);
+                var response = await _httpClient.PutAsJsonAsync($"api/communication/points/update", communicationPoints);
                 var serverMessage = await response.Content.ReadAsStringAsync();
                 var isError = false;
                 if (response.IsSuccessStatusCode == false)
@@ -216,7 +235,28 @@ namespace EctBlazorApp.Client.Graph
             }
             return (true, tokenErrorMessage);
         }
-        
+
+        public async Task<(bool, string)> SubmitTeamData(EctTeamRequestDetails teamDetails)
+        {
+            var token = await GetAPITokenAsync();
+            if (token == null)
+                return (false, "Error retrieving access token. Please, try again later.");
+
+            try
+            {
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                var response = await _httpClient.PostAsJsonAsync("api/team/create-team", teamDetails);
+                var serverMessage = await response.Content.ReadAsStringAsync();
+
+                return (response.IsSuccessStatusCode, serverMessage);
+            }
+            catch (AccessTokenNotAvailableException exception)
+            {
+                exception.Redirect();
+                return (false, "Error connecting to services. Please, try again later.");
+            }
+        }
+
         public async Task<string> UpdateDatabaseRecords()
         {
             var accessToken = await GetAccessTokenAsync();
@@ -236,7 +276,7 @@ namespace EctBlazorApp.Client.Graph
 
             return await response.Content.ReadAsStringAsync();
         }
-        
+
 
         private async Task<string> GetAccessTokenAsync()
         {

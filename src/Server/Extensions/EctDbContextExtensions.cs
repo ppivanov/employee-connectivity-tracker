@@ -26,7 +26,7 @@ namespace EctBlazorApp.Server.Extensions
         {
             try
             {
-                EctUser userForUserIdParm = dbContext.Users.First(user => user.Email.Equals(userId));
+                EctUser userForUserIdParm = dbContext.Users.FirstOrDefault(user => user.Email.Equals(userId));
                 return userForUserIdParm;
             }
             catch (Exception)
@@ -67,7 +67,7 @@ namespace EctBlazorApp.Server.Extensions
         {
             try
             {
-                EctUser user = dbContext.Users.First(u => u.Email.Equals(email));
+                EctUser user = dbContext.Users.FirstOrDefault(u => u.Email.Equals(email));
                 bool isLeader = dbContext.Teams.Any(t => t.LeaderId == user.Id);
 
                 return isLeader;
@@ -86,7 +86,7 @@ namespace EctBlazorApp.Server.Extensions
             EctUser user;
             if (String.IsNullOrEmpty(hashedUserId))
             {
-                user = dbContext.Users.First(u => u.Email == userEmail);
+                user = dbContext.Users.FirstOrDefault(u => u.Email == userEmail);
                 return user;
             }
 
@@ -96,14 +96,14 @@ namespace EctBlazorApp.Server.Extensions
 
         public static EctUser GetUserIdIfEmailIsTeamLead(this EctDbContext dbContext, string email, string hashedUserId)
         {
-            EctUser teamLead = dbContext.Users.Include(u => u.LeaderOf).First(u => u.Email.Equals(email));
+            EctUser teamLead = dbContext.Users.Include(u => u.LeaderOf).FirstOrDefault(u => u.Email.Equals(email));
             EctUser userForHashedId = null;
             foreach (var team in teamLead.LeaderOf)                                                                                         // As of now leaders are assigned a single team and this loop runs only once
             {
                 try
                 {
                     var members = dbContext.Users.Where(u => u.MemberOfId == team.Id).ToList();                                             // Get all the users for that team.
-                    userForHashedId = members.First(u => hashedUserId.Equals(ComputeSha256Hash(u.Id.ToString())));                          // Check if any of the members' Id matches {hashedUserId} and return the user.
+                    userForHashedId = members.FirstOrDefault(u => hashedUserId.Equals(ComputeSha256Hash(u.Id.ToString())));                          // Check if any of the members' Id matches {hashedUserId} and return the user.
                     if (userForHashedId != null) return userForHashedId;
                 }
                 catch (Exception)

@@ -25,7 +25,7 @@ namespace EctBlazorApp.Shared.Entities
         {
             try
             {
-                CommunicationPoint queryResult = communicationPoints.First(cp => cp.Medium.ToLower().Contains(medium));
+                CommunicationPoint queryResult = communicationPoints.FirstOrDefault(cp => cp.Medium.ToLower().Contains(medium));
                 return queryResult;
             }
             catch (Exception)

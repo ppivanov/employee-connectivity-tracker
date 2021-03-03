@@ -36,7 +36,7 @@ namespace EctBlazorApp.ServerTests
         [TestMethod]
         public void EditPercentage_NoMediumToggled_Toggled()
         {
-            CommunicationPoint selectedMedium = _componentClass.PointsAndToggles.Keys.First(p => p.Points == 0);
+            CommunicationPoint selectedMedium = _componentClass.PointsAndToggles.Keys.FirstOrDefault(p => p.Points == 0);
 
             _componentClass.EditPoints(selectedMedium);
 

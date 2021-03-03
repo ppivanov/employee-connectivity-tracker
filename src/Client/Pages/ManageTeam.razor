@@ -1,0 +1,107 @@
+﻿@page "/create-team"
+@inherits ManageTeamClass
+
+@using Microsoft.AspNetCore.Authorization
+
+@attribute [Authorize]
+
+<AuthorizeView>
+    <Authorized>
+        <div class="create-team">
+            @if (!initialized)
+            {
+                <p>Loading...</p>
+            }
+            else
+            {
+                if (!isAdmin)
+                {
+                    <p>You do not have access to this page. Click <a href="/">here</a> to go back.</p>
+                }
+                else
+                {
+                    <EditForm Model=teamDetails OnValidSubmit=@SendTeamData Context="formContext">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary style="color: red" />
+
+                        @if (String.IsNullOrEmpty(ServerMessage) == false)
+                        {
+                            <div class="operation-result">
+                                <p style="@ServerMessageInlineStyle">@ServerMessage</p>
+                            </div>
+                        }
+
+                        <div class="left-half">
+                            <div class="create-team-input-pair">
+                                <label>Team name</label>
+                                <InputText @bind-Value=teamDetails.Name class="form-control" id="Name" />
+
+                            </div>
+                            <div class="create-team-input-pair">
+                                <label>Team lead</label>
+                                <select @bind=teamDetails.LeaderNameAndEmail>
+                                    @if (AvailableLeaders.Count == 0)
+                                    {
+                                        <option value="" disabled>No available users</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="">---</option>
+                                        @foreach (var user in AvailableLeaders)
+                                        {
+                                            <option value="@user">@user</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                            <div class="create-team-input-pair">
+                                <label>Available users</label>
+                                <select @bind=CurrentMemberSelection>
+                                    @if (AvailableMembers.Count == 0)
+                                    {
+                                        <option value="" disabled>No available users</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="">---</option>
+                                        @foreach (var user in AvailableMembers)
+                                        {
+                                            <option value="@user">@user</option>
+                                        }
+                                    }
+                                </select>
+                                <button type="button" @onclick="() => AddSelectedMember()" disabled=@isSubmitting class="select-member">Add member</button>
+                            </div>
+                        </div>
+                        <table class="selected-members">
+                            <thead>
+                                <tr>
+                                    <td>
+                                        Selected members
+                                    </td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var member in teamDetails.MemberNamesAndEmails)
+                                {
+                                    <tr>
+                                        <td>
+                                            @member
+                                            <button class="deselect-btn" @onclick="() => RemoveFromSelected(member)">Remove</button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+
+                        <button type="submit" disabled=@isSubmitting class="save-team">Save</button>
+                    </EditForm>
+                }
+            }
+        </div>
+    </Authorized>
+</AuthorizeView>
+
+@code {
+    
+}

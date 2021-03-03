@@ -8,7 +8,7 @@ namespace EctBlazorApp.Client.Graph
 {
     public interface IControllerConnection
     {
-        Task<List<EctUser>> FetchAdminstrators();
+        Task<IEnumerable<EctUser>> FetchAdminstrators();
 
         Task<NotificationOptionsResponse> FetchCurrentNotificationOptions();
 
@@ -20,13 +20,17 @@ namespace EctBlazorApp.Client.Graph
 
         Task<string> GetAPITokenAsync();
 
+        Task<IEnumerable<string>> GetUsersEligibleForMembers();
+
         Task<Boolean> IsProcessingUserAnAdmin();
 
         Task<Boolean> IsProcessingUserALeader();
 
         Task<(bool, string)> SubmitNotificationOptions(NotificationOptionsResponse notificationOptions);
 
-        Task<(bool, string)> SubmitPoints(List<CommunicationPoint> communicationPoints);
+        Task<(bool, string)> SubmitPoints(IEnumerable<CommunicationPoint> communicationPoints);
+
+        Task<(bool, string)> SubmitTeamData(EctTeamRequestDetails teamDetails);
 
         Task<string> UpdateDatabaseRecords();
     }

@@ -14,7 +14,7 @@ namespace EctBlazorApp.Server.CommonMethods
             var tokenS = handler.ReadToken(token) as JwtSecurityToken;
 
             var tokenClaims = tokenS.Claims;
-            var prefferredUsername = tokenClaims.First(c => c.Type == "preferred_username").Value;
+            var prefferredUsername = tokenClaims.FirstOrDefault(c => c.Type == "preferred_username").Value;
 
             return prefferredUsername;
         }

@@ -35,24 +35,22 @@ namespace EctBlazorApp.Server.Controllers
             if (teamDetails.AreDetailsValid() == false)
                 return BadRequest("Invalid team details!");
 
+            string leaderEmail = GetEmailFromFormattedString(teamDetails.LeaderNameAndEmail);
+            EctUser leader = _dbContext.Users.Include(u => u.LeaderOf).FirstOrDefault(u => u.Email.Equals(leaderEmail));
+            List<EctUser> members = _dbContext.Users.Where(u => teamDetails.MemberEmails.Contains(u.Email)).ToList();
+            members.Add(leader);
+            EctTeam newTeam = new()
+            {
+                Name = teamDetails.Name,
+                Leader = leader,
+                Members = members,
+                AdditionalUsersToNotify = new List<string> { teamDetails.LeaderNameAndEmail }
+            };
             try
             {
-                EctUser leader = _dbContext.Users.Include(u => u.LeaderOf).First(u => u.Email.Equals(teamDetails.LeaderEmail));
-                List<EctUser> members = _dbContext.Users.Include(u => u.MemberOf).Where(u => teamDetails.MemberEmails.Contains(u.Email)).ToList();
-                members.Add(leader);
-                string leaderNameAndEmail = FormatFullNameAndEmail(leader.FullName, leader.Email);
-                EctTeam newTeam = new EctTeam
-                {
-                    Name = teamDetails.Name,
-                    Leader = leader,
-                    Members = members,
-                    AdditionalUsersToNotify = new List<string> { leaderNameAndEmail }
-                };
-
                 leader.MakeLeader(newTeam);
                 foreach (var member in members)
                     member.MemberOf = newTeam;
-
                 await _dbContext.SaveChangesAsync();
 
                 return Ok("Team created successfully.");
@@ -69,9 +67,9 @@ namespace EctBlazorApp.Server.Controllers
         public async Task<ActionResult<TeamDashboardResponse>> GetStatsForDashboard([FromQuery] string fromDate, [FromQuery] string toDate)
         {
             string userEmail = await HttpContext.GetPreferredUsername();
-            EctUser teamLead = _dbContext.Users.First(u => u.Email == userEmail);
-            EctTeam assignedTeam = _dbContext.Teams.Include(t => t.Members).First(t => t.LeaderId == teamLead.Id);
-            TeamDashboardResponse response = new TeamDashboardResponse
+            EctUser teamLead = _dbContext.Users.FirstOrDefault(u => u.Email == userEmail);
+            EctTeam assignedTeam = _dbContext.Teams.Include(t => t.Members).FirstOrDefault(t => t.LeaderId == teamLead.Id);
+            TeamDashboardResponse response = new()
             {
                 TeamName = assignedTeam.Name,
                 TeamMembers = new List<EctUser>(),
@@ -95,8 +93,8 @@ namespace EctBlazorApp.Server.Controllers
         public async Task<ActionResult<NotificationOptionsResponse>> GetCurrentPointsThreshold()
         {
             string userEmail = await HttpContext.GetPreferredUsername();
-            int userId = _dbContext.Users.First(u => u.Email == userEmail).Id;
-            EctTeam assignedTeam = _dbContext.Teams.First(t => t.LeaderId == userId);
+            int userId = _dbContext.Users.FirstOrDefault(u => u.Email == userEmail).Id;
+            EctTeam assignedTeam = _dbContext.Teams.FirstOrDefault(t => t.LeaderId == userId);
 
             var notificationOptions = new NotificationOptionsResponse
             {
@@ -113,8 +111,8 @@ namespace EctBlazorApp.Server.Controllers
         public async Task<ActionResult<string>> SetNotificationOptions([FromBody] NotificationOptionsResponse notificationOptions)
         {
             string userEmail = await HttpContext.GetPreferredUsername();
-            int userId = _dbContext.Users.First(u => u.Email == userEmail).Id;
-            EctTeam assignedTeam = _dbContext.Teams.First(t => t.LeaderId == userId);
+            int userId = _dbContext.Users.FirstOrDefault(u => u.Email == userEmail).Id;
+            EctTeam assignedTeam = _dbContext.Teams.FirstOrDefault(t => t.LeaderId == userId);
 
             assignedTeam.PointsThreshold = notificationOptions.PointsThreshold;
             assignedTeam.MarginForNotification = notificationOptions.MarginForNotification;

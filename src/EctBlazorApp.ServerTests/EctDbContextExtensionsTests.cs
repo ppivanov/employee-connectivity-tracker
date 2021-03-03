@@ -44,7 +44,7 @@ namespace EctBlazorApp.ServerTests
         public async Task GetExistingEctUserOrNew_ExistingUserEmail_AliceIsReturned()
         {
             string userEmail = "alice@ect.ie";
-            EctUser expectedUser = _dbContext.Users.First(user => user.Email.Equals(userEmail));
+            EctUser expectedUser = _dbContext.Users.FirstOrDefault(user => user.Email.Equals(userEmail));
             EctUser actualUser = await _dbContext.GetExistingEctUserOrNewAsync(userEmail, _httpClient, _mailKit);
 
             Assert.AreSame(expectedUser, actualUser);
@@ -197,7 +197,7 @@ namespace EctBlazorApp.ServerTests
         public async Task GetUserFromHashOrProcessingUser_HashIsEmpty_ReturnsHomer()
         {
             string hashedUserId = "";
-            EctUser expectedUser = _dbContext.Users.First(u => u.Email.Equals("homer@ect.ie"));
+            EctUser expectedUser = _dbContext.Users.FirstOrDefault(u => u.Email.Equals("homer@ect.ie"));
             
             EctUser actualUser = await _dbContext.GetUserFromHashOrProcessingUser(hashedUserId, MockPreferredUsername_Homer);
 
@@ -207,7 +207,7 @@ namespace EctBlazorApp.ServerTests
         [TestMethod]
         public async Task GetUserFromHashOrProcessingUser_AliceRequestsHomerWithHash_ReturnsHomer()
         {
-            EctUser expectedUser = _dbContext.Users.First(u => u.Email.Equals("homer@ect.ie"));
+            EctUser expectedUser = _dbContext.Users.FirstOrDefault(u => u.Email.Equals("homer@ect.ie"));
             string hashedUserId = ComputeSha256Hash(expectedUser.Id.ToString());
 
             EctUser actualUser = await _dbContext.GetUserFromHashOrProcessingUser(hashedUserId, MockPreferredUsername_Alice);
@@ -218,7 +218,7 @@ namespace EctBlazorApp.ServerTests
         [TestMethod]
         public async Task GetUserFromHashOrProcessingUser_AliceRequestsAdminWithHash_ReturnsNull()
         {
-            EctUser admin = _dbContext.Users.First(u => u.Email.Equals("admin@ect.ie"));
+            EctUser admin = _dbContext.Users.FirstOrDefault(u => u.Email.Equals("admin@ect.ie"));
             string hashedUserId = ComputeSha256Hash(admin.Id.ToString());
 
             EctUser actualUser = await _dbContext.GetUserFromHashOrProcessingUser(hashedUserId, MockPreferredUsername_Alice);

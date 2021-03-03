@@ -35,7 +35,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             {
                 var users = TeamMembers.ToList();
                 users.AddRange(Administrators);
-                users = users.GroupBy(u => u.Email).Select(u => u.First()).ToList();
+                users = users.GroupBy(u => u.Email).Select(u => u.FirstOrDefault()).ToList();
                 foreach (var selectedUser in NewNotificationOptions.UsersToNotify)
                 {
                     var duplicate = users.FirstOrDefault(u => u.Email.Equals(GetEmailFromFormattedString(selectedUser)));
@@ -245,15 +245,16 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             {
                 CurrentNotificationOptions = await ApiConn.FetchCurrentNotificationOptions();
                 NewNotificationOptions = new NotificationOptionsResponse(CurrentNotificationOptions);
-                Administrators = await ApiConn.FetchAdminstrators();
+                Administrators = (await ApiConn.FetchAdminstrators()).ToList();
                 await FetchCommunicationPoints();
                 await UpdateDashboard();
             }
+            initialized = true;
         }
 
         protected void RedirectToDasboard(string userFullName)
         {
-            int userId = TeamMembers.First(u => u.FullName.Equals(userFullName)).Id;
+            int userId = TeamMembers.FirstOrDefault(u => u.FullName.Equals(userFullName)).Id;
             string hasedUserId = ComputeSha256Hash(userId.ToString());
             NavManager.NavigateTo($"/dashboard/{hasedUserId}");
         }

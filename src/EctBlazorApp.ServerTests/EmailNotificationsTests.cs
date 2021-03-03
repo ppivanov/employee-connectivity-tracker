@@ -53,7 +53,7 @@ namespace EctBlazorApp.ServerTests
 
         private EctUser GetUserFromInMemoryDb(string name)
         {
-            var homer = _dbContext.Users.First(u => u.FullName.Contains(name));
+            var homer = _dbContext.Users.FirstOrDefault(u => u.FullName.Contains(name));
             return homer;
         }
     }
