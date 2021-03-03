@@ -16,10 +16,8 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         [Inject]
         protected NavigationManager NavManager { get; set; }
 
-        private bool inputError = false;
-        private bool addNotifyUserInputError = false;
-        private bool serverMessageIsError = false;
-        private List<EctUser> administrators;
+        private bool _inputError = false;
+        private List<EctUser> _administrators;
 
         protected bool allowsEdit = false;
         protected bool isLeader = false;
@@ -27,19 +25,13 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         protected int emailsSent = 0;
         protected int emailsReceived = 0;
         protected string leaderNameAndEmail = "";
-        protected string newUserToNotify_Email = "";
-        protected string newUserToNotify_Name = "";
-        protected string serverMessage = "";
         protected List<EctUser> teamMembers;
-        protected NotificationOptionsResponse currentNotificationOptions = null;
-        protected NotificationOptionsResponse newNotificationOptions = null;
-
 
         protected string AddNotifyUserInputStyle
         {
             get
             {
-                return addNotifyUserInputError ? "border: 1px solid red" : "";
+                return AddNotifyUserInputError ? "border: 1px solid red" : "";
             }
         }
         protected List<EctUser> AvailableUsersForNotification
@@ -47,9 +39,9 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             get
             {
                 var users = teamMembers.ToList();
-                users.AddRange(administrators);
+                users.AddRange(_administrators);
                 users = users.GroupBy(u => u.Email).Select(u => u.First()).ToList();
-                foreach (var selectedUser in newNotificationOptions.UsersToNotify)
+                foreach (var selectedUser in NewNotificationOptions.UsersToNotify)
                 {
                     var duplicate = users.FirstOrDefault(u => u.Email.Equals(GetEmailFromFormattedString(selectedUser)));
                     if (duplicate != null)
@@ -69,41 +61,70 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         {
             get
             {
-                return inputError ? "border: 1px solid red" : "";
+                return _inputError ? "border: 1px solid red" : "";
             }
         }
         protected string ServerMessageInlineStyle
         {
             get
             {
-                return serverMessageIsError ? "color: red;" : "color: green;";
+                return ServerMessageIsError ? "color: red;" : "color: green;";
             }
         }
 
-        protected async Task AddUserToNotify()
+        // public properties for unit tests
+        public bool AddNotifyUserInputError { get; set; } = false;
+        public bool ServerMessageIsError { get; set; } = false;
+        public string UserToNotify_Email { get; set; } = "";
+        public string UserToNotify_Name { get; set; } = "";
+        public string ServerMessage { get; set; } = "";
+        public NotificationOptionsResponse CurrentNotificationOptions { get; set; } = null;
+        public NotificationOptionsResponse NewNotificationOptions { get; set; } = null;
+
+        public MyTeamDashboardClass() { }
+
+        public MyTeamDashboardClass(                                                               // Used to initalize an instance of the class for unit tests
+            List<EctUser> administrators,
+            List<EctUser> teamMembers,
+            NotificationOptionsResponse currentNotificationOptions,
+            NotificationOptionsResponse newNotificationOptions
+            )
         {
-            if (String.IsNullOrWhiteSpace(newUserToNotify_Name)
-                || String.IsNullOrWhiteSpace(newUserToNotify_Email))
-            {
-                addNotifyUserInputError = true;
-                serverMessageIsError = true;
-                serverMessage = "You must provide values for both Name and Email fields.";
+            _administrators = administrators;
+            this.teamMembers = teamMembers;
+            this.CurrentNotificationOptions = currentNotificationOptions;
+            this.NewNotificationOptions = newNotificationOptions;
+        }
+
+        public async Task AddUserToNotify()
+        {
+            if (UserToNotifyFieldsAreEmpty() || UserToNotifyAlreadyInList())
                 return;
-            }
-            string nameAndEmail = FormatFullNameAndEmail(newUserToNotify_Name, newUserToNotify_Email);
-            newNotificationOptions.UsersToNotify.Add(nameAndEmail);
-            newUserToNotify_Name = "";
-            newUserToNotify_Email = "";
+            
+            string nameAndEmail = FormatFullNameAndEmail(UserToNotify_Name, UserToNotify_Email);
+            NewNotificationOptions.UsersToNotify.Add(nameAndEmail);
+            UserToNotify_Name = "";
+            UserToNotify_Email = "";
+            await ResetUserToNotifyFields();
+        }
+
+        public virtual async Task ResetUserToNotifyFields()
+        {
             await JsRuntime.InvokeVoidAsync("resetUserToNotifyEmail");
             await JsRuntime.InvokeVoidAsync("resetUserToNotifyName");
+        }
+
+        public void RemoveUserToNotify(string toRemove)
+        {
+            NewNotificationOptions.UsersToNotify.Remove(toRemove);
         }
 
         protected void CancelEditNotificationOptions()
         {
             allowsEdit = false;
-            newNotificationOptions.PointsThreshold = currentNotificationOptions.PointsThreshold;
-            newNotificationOptions.MarginForNotification = currentNotificationOptions.MarginForNotification;
-            newNotificationOptions.UsersToNotify = currentNotificationOptions.UsersToNotify.ToList();
+            NewNotificationOptions.PointsThreshold = CurrentNotificationOptions.PointsThreshold;
+            NewNotificationOptions.MarginForNotification = CurrentNotificationOptions.MarginForNotification;
+            NewNotificationOptions.UsersToNotify = CurrentNotificationOptions.UsersToNotify.ToList();
         }
 
         protected void EditNotificationOptions()
@@ -207,9 +228,9 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             isLeader = await ApiConn.IsProcessingUserALeader();
             if (isLeader)
             {
-                currentNotificationOptions = await ApiConn.FetchCurrentNotificationOptions();
-                newNotificationOptions = new NotificationOptionsResponse(currentNotificationOptions);
-                administrators = await ApiConn.FetchAdminstrators();
+                CurrentNotificationOptions = await ApiConn.FetchCurrentNotificationOptions();
+                NewNotificationOptions = new NotificationOptionsResponse(CurrentNotificationOptions);
+                _administrators = await ApiConn.FetchAdminstrators();
                 await FetchCommunicationPoints();
                 await UpdateDashboard();
             }
@@ -222,42 +243,37 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             NavManager.NavigateTo($"/dashboard/{hasedUserId}");
         }
 
-        protected void RemoveUserToNotify(string toRemove)
-        {
-            newNotificationOptions.UsersToNotify.Remove(toRemove);
-        }
-
         protected async Task SubmitNotificationOptions()
         {
-            if (newNotificationOptions.PointsThreshold < 0)
+            if (NewNotificationOptions.PointsThreshold < 0)
             {
-                newNotificationOptions.PointsThreshold = 0;
-                serverMessageIsError = true;
-                inputError = true;
-                serverMessage = "You cannot set the threshold below 0.";
+                NewNotificationOptions.PointsThreshold = 0;
+                ServerMessageIsError = true;
+                _inputError = true;
+                ServerMessage = "You cannot set the threshold below 0.";
                 return;
             }
             isSubmitting = true;
-            serverMessageIsError = false;
+            ServerMessageIsError = false;
 
-            var response = await ApiConn.SubmitNotificationOptions(newNotificationOptions);
-            serverMessageIsError = response.Item1;
-            serverMessage = response.Item2;
-            inputError = serverMessageIsError;
+            var response = await ApiConn.SubmitNotificationOptions(NewNotificationOptions);
+            ServerMessageIsError = response.Item1;
+            ServerMessage = response.Item2;
+            _inputError = ServerMessageIsError;
 
             isSubmitting = false;
             allowsEdit = false;
-            if (serverMessageIsError == false) currentNotificationOptions = newNotificationOptions;
+            if (ServerMessageIsError == false) CurrentNotificationOptions = NewNotificationOptions;
         }
 
         protected async Task SetUserToNotifyEmail(ChangeEventArgs args)
         {
-            newUserToNotify_Email = args.Value.ToString();
-            var matchingMember = teamMembers.FirstOrDefault(m => m.Email.Equals(newUserToNotify_Email));
+            UserToNotify_Email = args.Value.ToString();
+            var matchingMember = teamMembers.FirstOrDefault(m => m.Email.Equals(UserToNotify_Email));
             if (matchingMember != null)
             {
                 await JsRuntime.InvokeVoidAsync("setUserToNotifyName", matchingMember.FullName);
-                newUserToNotify_Name = matchingMember.FullName;
+                UserToNotify_Name = matchingMember.FullName;
             }
             else
                 await JsRuntime.InvokeVoidAsync("resetUserToNotifyName");
@@ -265,12 +281,12 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
 
         protected async Task SetUserToNotifyName(ChangeEventArgs args)
         {
-            newUserToNotify_Name = args.Value.ToString();
-            var matchingMember = teamMembers.FirstOrDefault(m => m.FullName.Equals(newUserToNotify_Name));
+            UserToNotify_Name = args.Value.ToString();
+            var matchingMember = teamMembers.FirstOrDefault(m => m.FullName.Equals(UserToNotify_Name));
             if (matchingMember != null)
             {
                 await JsRuntime.InvokeVoidAsync("setUserToNotifyEmail", matchingMember.Email);
-                newUserToNotify_Email = matchingMember.Email;
+                UserToNotify_Email = matchingMember.Email;
             }
             else
                 await JsRuntime.InvokeVoidAsync("resetUserToNotifyEmail");
@@ -292,21 +308,48 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             await JsRuntime.InvokeVoidAsync("loadMyTeamDashboardGraph", (object)GetEmailData(), (object)GetCalendarEventsData());                                                   // GetCalendarEventsData is adding only some of the collaborators to the dictionary
         }
 
-
         private void ResetAttributeValues()
         {
             numberOfMeetings = 0;
             secondsInMeeting = 0;
             collaboratorsDict.Clear();
 
-            serverMessageIsError = false;
-            inputError = false;
+            ServerMessageIsError = false;
+            _inputError = false;
             isSubmitting = false;
             teamMembers = null;
             emailsSent = 0;
             emailsReceived = 0;
-            serverMessage = "";
+            ServerMessage = "";
             leaderNameAndEmail = "";
+        }
+
+        private bool UserToNotifyFieldsAreEmpty()
+        {
+            if (String.IsNullOrWhiteSpace(UserToNotify_Name)
+                || String.IsNullOrWhiteSpace(UserToNotify_Email))
+            {
+                SetNotifyUserInputErrorMessage("You must provide values for both Name and Email fields.");
+                return true;
+            }
+            return false;
+        }
+
+        private bool UserToNotifyAlreadyInList()
+        {
+            if (NewNotificationOptions.UsersToNotify.Any(utn => utn.Contains($"<{UserToNotify_Email}>")))
+            {
+                SetNotifyUserInputErrorMessage("The entered email is already in the list.");
+                return true;
+            }
+            return false;
+        }
+
+        private void SetNotifyUserInputErrorMessage(string message)
+        {
+            AddNotifyUserInputError = true;
+            ServerMessageIsError = true;
+            ServerMessage = message;
         }
     }
 }

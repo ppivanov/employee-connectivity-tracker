@@ -66,33 +66,33 @@
                                 }
                                 else
                                 {
-                                    @if (currentNotificationOptions == null)
+                                    @if (CurrentNotificationOptions == null)
                                     {
                                         <p>Loading current points threshold for notifications...</p>
                                     }
-                                    else if (currentNotificationOptions.PointsThreshold == -1)
+                                    else if (CurrentNotificationOptions.PointsThreshold == -1)
                                     {
                                         <p>There was an error fetching current notifications threshold.</p>
                                     }
                                     else
                                     {
-                                        @if (String.IsNullOrEmpty(serverMessage) == false)
+                                        @if (String.IsNullOrEmpty(ServerMessage) == false)
                                         {
-                                            <p style="@ServerMessageInlineStyle">@serverMessage</p>
+                                            <p style="@ServerMessageInlineStyle">@ServerMessage</p>
                                         }
                                         @if (allowsEdit)                                                                                                     // Edit view
                                         {
-                                            <EditForm Model="newNotificationOptions" OnSubmit="@(async () => await SubmitNotificationOptions())" Context="formContext">
+                                            <EditForm Model="NewNotificationOptions" OnSubmit="@(async () => await SubmitNotificationOptions())" Context="formContext">
                                                 <label>
                                                     Threshold for notifications:
-                                                    <InputNumber @bind-Value="newNotificationOptions.PointsThreshold" class="" style="@InputStyle"
-                                                                 placeholder="@($"Current: {currentNotificationOptions.PointsThreshold}")" />
+                                                    <InputNumber @bind-Value="NewNotificationOptions.PointsThreshold" class="" style="@InputStyle"
+                                                                 placeholder="@($"Current: {CurrentNotificationOptions.PointsThreshold}")" />
                                                 </label>
                                                 <br />
                                                 <label>
                                                     Margin for notifications:
-                                                    <InputNumber @bind-Value="newNotificationOptions.MarginForNotification" class="" style="@InputStyle"
-                                                                 placeholder="@($"Current: {currentNotificationOptions.MarginForNotification}")" />%
+                                                    <InputNumber @bind-Value="NewNotificationOptions.MarginForNotification" class="" style="@InputStyle"
+                                                                 placeholder="@($"Current: {CurrentNotificationOptions.MarginForNotification}")" />%
                                                 </label>
 
                                                 <p>Users to notify:</p>
@@ -120,7 +120,7 @@
                                                     <button @onclick="async () => await AddUserToNotify()" type="button">Add user</button>
                                                 </p>
                                                 <table>
-                                                    @foreach (var nameAndEmail in newNotificationOptions.UsersToNotify)
+                                                    @foreach (var nameAndEmail in NewNotificationOptions.UsersToNotify)
                                                     {
                                                         <tr>
                                                             <td>
@@ -150,11 +150,11 @@
                                         }
                                         else                                                                                                                // Current notification options view
                                         {
-                                            <p>Current threshold for notifications: @currentNotificationOptions.PointsThreshold</p>
-                                            <p>Current margin for notifications: @currentNotificationOptions.MarginForNotification%</p>
+                                            <p>Current threshold for notifications: @CurrentNotificationOptions.PointsThreshold</p>
+                                            <p>Current margin for notifications: @CurrentNotificationOptions.MarginForNotification%</p>
                                             <p>Addtional users to notify:</p>
                                             <table>
-                                                @foreach (var email in newNotificationOptions.UsersToNotify)
+                                                @foreach (var email in NewNotificationOptions.UsersToNotify)
                                                 {
                                                     <tr>
                                                         <td>

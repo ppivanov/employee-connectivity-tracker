@@ -281,61 +281,61 @@ namespace EctBlazorApp.ServerTests
         }
         private static List<ReceivedMail> GetReceivedMailForHomer()    // 12 emails - Jan 1st to 7th
         {
-            return
-                new List<ReceivedMail>
+            List<ReceivedMail> receivedMail = new()
+            {
+                new()
                 {
-                    new ReceivedMail
-                    {
-                        Id = 4,
-                        ReceivedAt = new DateTime(2021, 1, 1, 11, 05, 00)
-                    },
-                    new ReceivedMail
-                    {
-                        Id = 5,
-                        ReceivedAt = new DateTime(2021, 1, 1, 12, 00, 00)
-                    },
-                    new ReceivedMail
-                    {
-                        Id = 6,
-                        ReceivedAt = new DateTime(2021, 1, 1, 12, 32, 00)
-                    },
-                    new ReceivedMail
-                    {
-                        Id = 7, ReceivedAt = new DateTime(2021, 1, 2, 11, 05, 00)
-                    },
-                    new ReceivedMail
-                    {
-                        Id = 8, ReceivedAt = new DateTime(2021, 1, 2, 12, 00, 00)
-                    },
-                    new ReceivedMail
-                    {
-                        Id = 9, ReceivedAt = new DateTime(2021, 1, 5, 12, 32, 00)
-                    },
-                    new ReceivedMail
-                    {
-                        Id = 10, ReceivedAt = new DateTime(2021, 1, 5, 11, 05, 00)
-                    },
-                    new ReceivedMail
-                    {
-                        Id = 11, ReceivedAt = new DateTime(2021, 1, 5, 12, 00, 00)
-                    },
-                    new ReceivedMail
-                    {
-                        Id = 12, ReceivedAt = new DateTime(2021, 1, 5, 12, 32, 00)
-                    },
-                    new ReceivedMail
-                    {
-                        Id = 13, ReceivedAt = new DateTime(2021, 1, 7, 11, 05, 00)
-                    },
-                    new ReceivedMail
-                    {
-                        Id = 14, ReceivedAt = new DateTime(2021, 1, 7, 12, 00, 00)
-                    },
-                    new ReceivedMail
-                    {
-                        Id = 15, ReceivedAt = new DateTime(2021, 1, 7, 12, 32, 00)
-                    },
-                };
+                    Id = 4,
+                    ReceivedAt = new DateTime(2021, 1, 1, 11, 05, 00)
+                },
+                new()
+                {
+                    Id = 5,
+                    ReceivedAt = new DateTime(2021, 1, 1, 12, 00, 00)
+                },
+                new()
+                {
+                    Id = 6,
+                    ReceivedAt = new DateTime(2021, 1, 1, 12, 32, 00)
+                },
+                new()
+                {
+                    Id = 7, ReceivedAt = new DateTime(2021, 1, 2, 11, 05, 00)
+                },
+                new()
+                {
+                    Id = 8, ReceivedAt = new DateTime(2021, 1, 2, 12, 00, 00)
+                },
+                new()
+                {
+                    Id = 9, ReceivedAt = new DateTime(2021, 1, 5, 12, 32, 00)
+                },
+                new()
+                {
+                    Id = 10, ReceivedAt = new DateTime(2021, 1, 5, 11, 05, 00)
+                },
+                new()
+                {
+                    Id = 11, ReceivedAt = new DateTime(2021, 1, 5, 12, 00, 00)
+                },
+                new()
+                {
+                    Id = 12, ReceivedAt = new DateTime(2021, 1, 5, 12, 32, 00)
+                },
+                new()
+                {
+                    Id = 13, ReceivedAt = new DateTime(2021, 1, 7, 11, 05, 00)
+                },
+                new()
+                {
+                    Id = 14, ReceivedAt = new DateTime(2021, 1, 7, 12, 00, 00)
+                },
+                new()
+                {
+                    Id = 15, ReceivedAt = new DateTime(2021, 1, 7, 12, 32, 00)
+                },
+            };
+            return receivedMail;
         }
 
         private static EctTeam GetTeamForParameters(EctUser lead, List<EctUser> members)

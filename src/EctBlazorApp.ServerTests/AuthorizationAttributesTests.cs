@@ -54,23 +54,21 @@ namespace EctBlazorApp.ServerTests
 
         private delegate void AuthorizeAttributeTestDelegate(IActionResult authContextResult);
 
-        private void TestAuthorizationAttribute<T> (string preferredUsername, AuthorizeAttributeTestDelegate method) where T : CustomAuthorizeAttribute
+        private void TestAuthorizationAttribute<T> (
+            string preferredUsername, 
+            AuthorizeAttributeTestDelegate method
+            ) where T : CustomAuthorizeAttribute
         {
             AuthorizationFilterContext filterContext = MockObjects.GetAuthorizationFilterContext();
-            
-            Mock<T> mockAttribute = new Mock<T>()                                                       //Creating an instance of the attribute and mocking the result of GetDbContextFromAuthorizationFilterContext()
-            {
-                CallBase = true
-            };
+
+            Mock<T> mockAttribute = new Mock<T>() { CallBase = true };                                                                  //Creating an instance of the attribute and mocking the result of GetDbContextFromAuthorizationFilterContext()
             mockAttribute.Setup(a => a.GetDbContextFromAuthorizationFilterContext(
                 It.IsAny<AuthorizationFilterContext>())).Returns(_dbContext);
 
-            Mock<IMockableMisc> mockHttpContext = new Mock<IMockableMisc>()                                                                         //Mocking the static method GetPreferredUsername
-            {
-                CallBase = true
-            };
+            Mock<IMockableMisc> mockHttpContext = new Mock<IMockableMisc>() { CallBase = true };                                        //Mocking the static method GetPreferredUsername
             // make testable via the interface IMockable
-            mockHttpContext.Setup(hc => hc.GetPreferredUsername(It.IsAny<HttpContext>())).ReturnsAsync(preferredUsername);
+            mockHttpContext.Setup(hc => hc.GetPreferredUsername(
+                It.IsAny<HttpContext>())).ReturnsAsync(preferredUsername);
             HttpContextExtensions.Implementation = mockHttpContext.Object;
 
             mockAttribute.Object.OnAuthorization(filterContext);
