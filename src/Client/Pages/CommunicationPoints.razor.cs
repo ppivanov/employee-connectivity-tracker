@@ -41,18 +41,12 @@ namespace EctBlazorApp.Client.Pages
 
         protected string PointInputStyle
         {
-            get
-            {
-                return inputError ? "border: 1px solid red" : "";
-            }
+            get => inputError ? "border: 1px solid red" : "";
         }
 
         protected string ServerMessageInlineStyle
         {
-            get
-            {
-                return serverMessageIsError ? "color: red;" : "color: green;";
-            }
+            get => serverMessageIsError ? "color: red;" : "color: green;";
         }
 
         protected override async Task OnInitializedAsync()

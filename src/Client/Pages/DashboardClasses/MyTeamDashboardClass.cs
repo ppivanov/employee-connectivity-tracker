@@ -25,12 +25,9 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         protected int emailsReceived = 0;
         protected string leaderNameAndEmail = "";
 
-        protected string AddNotifyUserInputStyle
+        protected string AddNotifyUserInputStyle 
         {
-            get
-            {
-                return AddNotifyUserInputError ? "border: 1px solid red" : "";
-            }
+            get => AddNotifyUserInputError ? "border: 1px solid red" : ""; 
         }
         protected List<EctUser> AvailableUsersForNotification
         {
@@ -50,24 +47,15 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         }
         protected override int TotalEmailsCount
         {
-            get
-            {
-                return emailsSent + emailsReceived;
-            }
+            get => emailsSent + emailsReceived;
         }
         protected string InputStyle
         {
-            get
-            {
-                return _inputError ? "border: 1px solid red" : "";
-            }
+            get => _inputError ? "border: 1px solid red" : "";
         }
         protected string ServerMessageInlineStyle
         {
-            get
-            {
-                return ServerMessageIsError ? "color: red;" : "color: green;";
-            }
+            get => ServerMessageIsError ? "color: red;" : "color: green;";
         }
 
         // public properties for unit tests

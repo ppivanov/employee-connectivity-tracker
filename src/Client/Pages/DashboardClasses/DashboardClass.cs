@@ -33,20 +33,8 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
 
         protected DateTimeOffset? FromDate { get; set; } = DateTimeOffset.Now; 
         protected DateTimeOffset? ToDate { get; set; } = DateTimeOffset.Now.AddDays(1);
-        protected string FormattedTimeInMeeting
-        {
-            get
-            {
-                return FormatSecondsToHoursAndMinutes(secondsInMeeting);
-            }
-        }
-        protected int TotalMinutesInMeetings
-        {
-            get
-            {
-                return GetMinutesFromSeconds(secondsInMeeting);
-            }
-        }
+        protected string FormattedTimeInMeeting { get => FormatSecondsToHoursAndMinutes(secondsInMeeting); }
+        protected int TotalMinutesInMeetings { get => GetMinutesFromSeconds(secondsInMeeting); }
         protected int TotalPoints
         {
             get

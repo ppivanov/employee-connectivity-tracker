@@ -27,25 +27,16 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
 
         protected override int TotalEmailsCount
         {
-            get
-            {
-                return EmailsSentCount + EmailsReceivedCount;
-            }
+            get => EmailsSentCount + EmailsReceivedCount;
         }
 
         protected int EmailsSentCount
         {
-            get
-            {
-                return sentMail != null ? sentMail.Count : 0;
-            }
+            get => sentMail != null ? sentMail.Count : 0;
         }
         protected int EmailsReceivedCount
         {
-            get
-            {
-                return receivedMail != null ? receivedMail.Count : 0;
-            }
+            get => receivedMail != null ? receivedMail.Count : 0;
         }
 
         protected override async Task OnInitializedAsync()
