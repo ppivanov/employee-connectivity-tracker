@@ -40,7 +40,7 @@
                             <div class="create-team-input-pair">
                                 <label>Team lead</label>
                                 <input id="createTeamLeader" list="leaders"
-                                    @onchange="@(async (args) => await SetLeaderNameEmail(args))" 
+                                    @onchange="@((args) => SetLeaderNameEmail(args))" 
                                     placeholder="Full Name <email@example.com>" style="@LeaderInputStyle" />
                                 <datalist id="leaders">
                                     @foreach (var leader in AvailableLeaders)
@@ -52,7 +52,7 @@
                             <div class="create-team-input-pair">
                                 <label>Member selection</label>
                                 <input id="createTeamMember" list="members"
-                                    @onchange="@(async (args) => await SetMemberNameEmail(args))"
+                                    @onchange="@((args) => SetMemberNameEmail(args))"
                                     placeholder="Full Name <email@example.com>" style="@MemmberInputStyle" />
                                 <datalist id="members">
                                     @foreach (var member in AvailableMembers)

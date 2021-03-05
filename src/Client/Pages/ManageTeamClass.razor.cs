@@ -22,6 +22,7 @@ namespace EctBlazorApp.Client.Pages
 
         private bool serverMessageIsError = false;
         private HashSet<string> AllAvailableLeaders { get; set; }
+        private HashSet<string> MembersFromApi { get; set; }
 
         protected string CurrentMemberSelection { get; set; } = "";
         protected string LeaderInputStyle { get => leaderInputError ? "border: 1px solid red" : ""; }
@@ -38,7 +39,6 @@ namespace EctBlazorApp.Client.Pages
                 return style.ToString();
             }
         }
-        HashSet<string> MembersFromApi { get; set; }
         protected HashSet<string> AvailableLeaders 
         { 
             get 
@@ -70,20 +70,40 @@ namespace EctBlazorApp.Client.Pages
         protected bool memberInputError = false;
         protected EctTeamRequestDetails teamDetails = new EctTeamRequestDetails();
 
-        public async Task SetLeaderNameEmail(ChangeEventArgs args)
+        public virtual async Task JsInterop(string function, string parameter = "")
+        {
+            await JsRuntime.InvokeVoidAsync(function, parameter);
+        }               // Used to mock JavaScript function calls
+
+        public void SetLeaderNameEmail(ChangeEventArgs args)
         {
             ResetErrorMessage();
             teamDetails.LeaderNameAndEmail = args.Value.ToString();
-            // if the email has already been added to the list of members -> display error
         }
 
-        public async Task SetMemberNameEmail(ChangeEventArgs args)
+        public void SetMemberNameEmail(ChangeEventArgs args)
         {
             ResetErrorMessage();
             CurrentMemberSelection = args.Value.ToString();
-            // if the email has already been added to the list of members -> display error
         }
 
+        protected async Task AddSelectedMember()
+        {
+            if (IsCurrentMemberSelectionEmpty()
+                || IsCurrentMemberSelectionFormatted(out string selectedEmail)
+                || IsCurrentMemberSelectionAlreadyLeader(selectedEmail)
+                || IsCurrentMemberSelectionAlreadySelected(selectedEmail)
+                || IsCurrentMemberSelectionEligible(selectedEmail))
+                return;
+
+            teamDetails.MemberNamesAndEmails.Add(CurrentMemberSelection);
+            AllAvailableLeaders = AllAvailableLeaders.Where(a => a.Contains(selectedEmail) == false).ToHashSet();
+            CurrentMemberSelection = "";
+
+            await InvokeAsync(StateHasChanged);
+            await JsInterop("resetCreateTeamMember");
+        }
+        
         protected override async Task OnInitializedAsync()
         {
             await JsRuntime.InvokeVoidAsync("setPageTitle", "Create Team");
@@ -96,35 +116,12 @@ namespace EctBlazorApp.Client.Pages
             initialized = true;
         }
 
-        protected async Task AddSelectedMember()
-        {
-            if (IsCurrentMemberSelectionEmpty()
-                || IsCurrentMemberSelectionFormatted()
-                || IsCurrentMemberSelectionAlreadyLeader()
-                || IsCurrentMemberSelectionAlreadySelected()
-                || IsCurrentMemberSelectionEligible())
-                return;
-
-            string selectedEmail = GetEmailFromFormattedString(CurrentMemberSelection);
-            teamDetails.MemberNamesAndEmails.Add(CurrentMemberSelection);
-            AllAvailableLeaders = AllAvailableLeaders.Where(a => a.Contains(selectedEmail) == false).ToHashSet();
-            CurrentMemberSelection = "";
-
-            await InvokeAsync(StateHasChanged);
-            await JsInterop("resetCreateTeamMember");
-        }
-
         protected async Task GetEligibleUsers()
         {
             var response = await ApiConn.GetUsersEligibleForMembers();
             MembersFromApi = response.ToHashSet();
             AllAvailableLeaders = MembersFromApi.ToHashSet();                                       // Copy the set not the reference
         }
-
-        public virtual async Task JsInterop(string function, string parameter = "")
-        {
-            await JsRuntime.InvokeVoidAsync(function, parameter);
-        }               // Used to mock JavaScript function calls
 
         protected async Task RemoveFromSelected(string member)
         {
@@ -159,6 +156,14 @@ namespace EctBlazorApp.Client.Pages
         }
 
 
+        private void ResetErrorMessage()
+        {
+            leaderInputError = false;
+            memberInputError = false;
+            serverMessageIsError = false;
+            ServerMessage = "";
+        }
+
         private async Task ResetInputFields()
         {
             teamDetails.Name = "";
@@ -181,24 +186,25 @@ namespace EctBlazorApp.Client.Pages
             return false;
         }
 
-        private bool IsCurrentMemberSelectionFormatted()
+        private bool IsCurrentMemberSelectionFormatted(out string selectedEmail)
         {
             if (IsStringInMemberFormat(CurrentMemberSelection) == false)
             {
                 memberInputError = true;
                 serverMessageIsError = true;
                 ServerMessage = "Please, enter the details in the reqired format.";
+                selectedEmail = "";
                 return true;
             }
+            selectedEmail = GetEmailFromFormattedString(CurrentMemberSelection);
             return false;
-        }               // outoput the variable here
+        }
 
-        private bool IsCurrentMemberSelectionAlreadyLeader()
+        private bool IsCurrentMemberSelectionAlreadyLeader(string selectedEmail)
         {
             if (string.IsNullOrWhiteSpace(teamDetails.LeaderNameAndEmail))
                 return false;
 
-            string selectedEmail = GetEmailFromFormattedString(CurrentMemberSelection);
             if (teamDetails.LeaderNameAndEmail.Contains(selectedEmail))
             {
                 memberInputError = true;
@@ -209,10 +215,9 @@ namespace EctBlazorApp.Client.Pages
             return false;
         }
 
-        private bool IsCurrentMemberSelectionAlreadySelected()
+        private bool IsCurrentMemberSelectionAlreadySelected(string selectedEmail)
         {
-            string selectedEmail = GetEmailFromFormattedString(CurrentMemberSelection);
-            if (teamDetails.MemberNamesAndEmails.Contains(selectedEmail))
+            if (teamDetails.MemberNamesAndEmails.Any(ne => ne.Contains(selectedEmail)))
             {
                 memberInputError = true;
                 serverMessageIsError = true;
@@ -222,9 +227,8 @@ namespace EctBlazorApp.Client.Pages
             return false;
         }
 
-        private bool IsCurrentMemberSelectionEligible()
+        private bool IsCurrentMemberSelectionEligible(string selectedEmail)
         {
-            string selectedEmail = GetEmailFromFormattedString(CurrentMemberSelection);
             if (AvailableMembers.Any(a => a.Contains(selectedEmail)) == false)
             {
                 memberInputError = true;
@@ -235,12 +239,5 @@ namespace EctBlazorApp.Client.Pages
             return false;
         }
 
-        private void ResetErrorMessage()
-        {
-            leaderInputError = false;
-            memberInputError = false;
-            serverMessageIsError = false;
-            ServerMessage = "";
-        }
     }
 }
