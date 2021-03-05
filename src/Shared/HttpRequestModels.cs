@@ -17,6 +17,7 @@ namespace EctBlazorApp.Shared
         [StringLength(50, ErrorMessage = "Team name is too long. Please, use less than 50 characters.")]
         public string Name { get; set; }
         [Required (ErrorMessage = "Please, select a team leader.")]
+        [MemberFormat (ErrorMessage = "Incorrect format for team lead.")]
         public string LeaderNameAndEmail { get; set; }
         [CollectionNotEmpty(ErrorMessage = "You must select at least one member.")]
         public List<string> MemberNamesAndEmails { get; set; }
@@ -31,6 +32,9 @@ namespace EctBlazorApp.Shared
             if (string.IsNullOrEmpty(Name) || Name.Length > 50)
                 return false;
 
+            if (IsStringInMemberFormat(LeaderNameAndEmail) == false)
+                return false;
+
             string leaderEmail = GetEmailFromFormattedString(LeaderNameAndEmail);
             if (leaderEmail.IsValidEmail() == false)
                 return false;
@@ -40,6 +44,7 @@ namespace EctBlazorApp.Shared
 
             foreach (var member in MemberNamesAndEmails)
             {
+                if (IsStringInMemberFormat(member) == false) return false;
                 string memberEmail = GetEmailFromFormattedString(member);
                 if (memberEmail.IsValidEmail() == false)
                     return false;
