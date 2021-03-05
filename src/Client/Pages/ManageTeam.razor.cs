@@ -132,15 +132,10 @@ namespace EctBlazorApp.Client.Pages
 
         protected async Task SendTeamData()
         {
-            if (isSubmitting)
+            if (isSubmitting
+                || AreTeamDetailsValid() == false
+                || IsLeaderAlreadySelectedAsMember())
                 return;
-            if(teamDetails.AreDetailsValid() == false)
-            {
-                serverMessageIsError = true;
-                ServerMessage = "Bad request. Please, review inputs and resubmit.";
-                isSubmitting = false;
-                return;
-            }
 
             isSubmitting = true;
 
@@ -155,6 +150,28 @@ namespace EctBlazorApp.Client.Pages
             isSubmitting = false;   
         }
 
+        private bool IsLeaderAlreadySelectedAsMember()
+        {
+            if (teamDetails.MemberEmails.Contains(teamDetails.LeaderEmail) == false)
+                return false;
+
+            serverMessageIsError = true;
+            leaderInputError = true;
+            ServerMessage = "Team lead is already in member list.";
+            isSubmitting = false;
+            return true;
+        }
+
+        private bool AreTeamDetailsValid()
+        {
+            if (teamDetails.AreDetailsValid())
+                return true;
+
+            serverMessageIsError = true;
+            ServerMessage = "Bad request. Please, review inputs and resubmit.";
+            isSubmitting = false;
+            return false;
+        }
 
         private void ResetErrorMessage()
         {
@@ -217,7 +234,7 @@ namespace EctBlazorApp.Client.Pages
 
         private bool IsCurrentMemberSelectionAlreadySelected(string selectedEmail)
         {
-            if (teamDetails.MemberNamesAndEmails.Any(ne => ne.Contains(selectedEmail)))
+            if (teamDetails.MemberEmails.Contains(selectedEmail))
             {
                 memberInputError = true;
                 serverMessageIsError = true;

@@ -22,6 +22,8 @@ namespace EctBlazorApp.Shared
         [CollectionNotEmpty(ErrorMessage = "You must select at least one member.")]
         public List<string> MemberNamesAndEmails { get; set; }
 
+        public string LeaderEmail { get => GetEmailFromFormattedString(LeaderNameAndEmail); }
+
         public IEnumerable<string> MemberEmails 
         {
             get => MemberNamesAndEmails.Select(m => GetEmailFromFormattedString(m));

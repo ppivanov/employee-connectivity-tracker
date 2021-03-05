@@ -52,7 +52,8 @@ namespace EctBlazorApp.Server.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<string>> GetUserEmails()
         {
-            var appUsers = _dbContext.Users.Where(u => u.MemberOfId.HasValue == false).Select(u => FormatFullNameAndEmail(u.FullName, u.Email));
+            var appUsers = _dbContext.Users.Where(u => u.MemberOfId.HasValue == false)
+                .Select(u => FormatFullNameAndEmail(u.FullName, u.Email));
 
             return Ok(appUsers);
         }
