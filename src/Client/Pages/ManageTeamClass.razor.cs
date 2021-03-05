@@ -21,7 +21,8 @@ namespace EctBlazorApp.Client.Pages
         protected HttpClient Http { get; set; }
 
         private bool serverMessageIsError = false;
-        
+        private HashSet<string> AllAvailableLeaders { get; set; }
+
         protected string CurrentMemberSelection { get; set; }
         protected string InputStyle { get => inputError ? "border: 1px solid red" : ""; }
         protected string ServerMessage { get; set; } = "";
@@ -37,12 +38,24 @@ namespace EctBlazorApp.Client.Pages
             }
         }
         HashSet<string> MembersFromApi { get; set; }
-        protected HashSet<string> AvailableLeaders { get; set; }
+        protected HashSet<string> AvailableLeaders 
+        { 
+            get 
+            {
+                if (string.IsNullOrEmpty(CurrentMemberSelection))
+                    return AllAvailableLeaders;
+
+                string selectedEmail = GetEmailFromFormattedString(CurrentMemberSelection);
+                var selectableLeaders = AllAvailableLeaders.Where(a =>
+                    a.Contains(selectedEmail) == false).ToHashSet();                                    // Copy the rest of the available leaders excluding the current member selection
+                return selectableLeaders;
+            } 
+        }
         protected HashSet<string> AvailableMembers
         {
             get
             {
-                var selectableMembers = AvailableLeaders.ToHashSet();                                   // Copy the available set of members
+                var selectableMembers = AllAvailableLeaders.ToHashSet();                                   // Copy the available set of members
                 selectableMembers.Remove(teamDetails.LeaderNameAndEmail);                                      // Remove the selected leader
                 return selectableMembers;
             }
@@ -56,14 +69,15 @@ namespace EctBlazorApp.Client.Pages
 
         public async Task SetLeaderNameEmail(ChangeEventArgs args)
         {
+            ResetErrorMessage();
             teamDetails.LeaderNameAndEmail = args.Value.ToString();
             // if the email has already been added to the list of members -> display error
         }
 
         public async Task SetMemberNameEmail(ChangeEventArgs args)
         {
+            ResetErrorMessage();
             CurrentMemberSelection = args.Value.ToString();
-            //AvailableLeaders.Remove(CurrentMemberSelection);
             // if the email has already been added to the list of members -> display error
         }
 
@@ -87,8 +101,9 @@ namespace EctBlazorApp.Client.Pages
                 || IsCurrentMemberSelectionAlreadySelected())
                 return;
 
+            string selectedEmail = GetEmailFromFormattedString(CurrentMemberSelection);
             teamDetails.MemberNamesAndEmails.Add(CurrentMemberSelection);
-            AvailableLeaders.Remove(CurrentMemberSelection);
+            AllAvailableLeaders = AllAvailableLeaders.Where(a => a.Contains(selectedEmail) == false).ToHashSet();
             CurrentMemberSelection = "";
             await InvokeAsync(StateHasChanged);
         }
@@ -97,7 +112,7 @@ namespace EctBlazorApp.Client.Pages
         {
             var response = await ApiConn.GetUsersEligibleForMembers();
             MembersFromApi = response.ToHashSet();
-            AvailableLeaders = MembersFromApi.ToHashSet();                                      // Copy the set not the reference
+            AllAvailableLeaders = MembersFromApi.ToHashSet();                                       // Copy the set not the reference
         }
 
         protected async Task RemoveFromSelected(string member)
@@ -156,7 +171,8 @@ namespace EctBlazorApp.Client.Pages
 
         private bool IsCurrentMemberSelectionAlreadyLeader()
         {
-            if (CurrentMemberSelection.Equals(teamDetails.LeaderNameAndEmail))
+            string selectedEmail = GetEmailFromFormattedString(CurrentMemberSelection);
+            if (teamDetails.LeaderNameAndEmail.Contains(selectedEmail))
             {
                 inputError = true;
                 serverMessageIsError = true;
@@ -176,6 +192,13 @@ namespace EctBlazorApp.Client.Pages
                 return true;
             }
             return false;
+        }
+
+        private void ResetErrorMessage()
+        {
+            inputError = false;
+            serverMessageIsError = false;
+            ServerMessage = "";
         }
     }
 }
