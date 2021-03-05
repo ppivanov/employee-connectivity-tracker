@@ -79,11 +79,11 @@ namespace EctBlazorApp.Server.Extensions
             if (user == null)
                 return null;
 
-            EctTeam team = dbContext.Teams.Include(t => t.Members).FirstOrDefault(t => 
-                t.LeaderId == user.Id  && ComputeSha256Hash(t.Id.ToString()).Equals(hashedTeamId));
-            if (team == null)
+            EctTeam team = dbContext.Teams.AsEnumerable().FirstOrDefault(t => ComputeSha256Hash(t.Id.ToString()).Equals(hashedTeamId));
+            if (team == null || team.LeaderId != user.Id)
                 return null;
 
+            team.Members = dbContext.Users.Where(u => u.MemberOfId == team.Id).ToList();
             team.Leader = user;
             EctTeamRequestDetails teamDetails = new(team);
 

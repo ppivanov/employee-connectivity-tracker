@@ -20,6 +20,8 @@ namespace EctBlazorApp.Client.Graph
 
         Task<string> GetAPITokenAsync();
 
+        Task<string> GetHashedTeamId();
+
         Task<IEnumerable<string>> GetUsersEligibleForMembers();
 
         Task<bool> IsProcessingUserAnAdmin();

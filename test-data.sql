@@ -1,4 +1,4 @@
-delete from [dbo].[CommunicationPoints];
+﻿delete from [dbo].[CommunicationPoints];
 delete from [dbo].[CalendarEvents];
 delete from [dbo].[ReceivedEmails];
 delete from [dbo].[SentEmails];
@@ -24,7 +24,7 @@ set IDENTITY_INSERT [dbo].[Users] ON
 insert into [dbo].[Users] (Id, Email, FullName, LastSignIn) values (2, 'alice@ect.ie', 'Alice AliceS', '2021-01-29T14:36:39.3900836')
 insert into [dbo].[Users] (Id, Email, FullName, LastSignIn) values (3, 'bob@ect.ie', 'Bob BobS', '2021-01-27T12:37:35.9959879')
 insert into [dbo].[Users] (Id, Email, FullName, LastSignIn) values (4, 'trudy@ect.ie', 'Trudy TrudyS', '2021-01-27T12:37:35.9959879')
--- insert into [dbo].[Users] (Id, Email, FullName, LastSignIn) values (5, 'noimagination1310@outlook.com', 'Admin AdminS', '2021-01-29T14:36:39.3900836')
+insert into [dbo].[Users] (Id, Email, FullName, LastSignIn) values (5, 'x00149863@outlook.com', 'Pavel Ivanov', '2021-01-29T14:36:39.3900836')
 set IDENTITY_INSERT [dbo].[Users] OFF
 
 -- update [dbo].[Users] set MemberOfId = 1;

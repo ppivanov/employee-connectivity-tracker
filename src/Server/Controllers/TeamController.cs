@@ -87,6 +87,25 @@ namespace EctBlazorApp.Server.Controllers
             return response;
         }
 
+        [Route("get-team-id")]
+        [HttpGet]
+        [AuthorizeLeader]
+        public async Task<ActionResult<string>> GetHashedTeamId([FromQuery]string teamName = "")
+        {
+            string userEmail = await HttpContext.GetPreferredUsername();
+            EctUser teamLead = _dbContext.Users.FirstOrDefault(u => u.Email == userEmail);
+            //if (string.IsNullOrEmpty(teamName) == false)
+            //{
+            //    var team = _dbContext.Teams.FirstOrDefault(t => t.Name.ToLower().Equals(teamName.ToLower()));
+            //    if (team == null) return NotFound();
+
+            //    return ComputeSha256Hash(team.Id.ToString());
+            //}
+
+            var team = _dbContext.Teams.FirstOrDefault(t => t.LeaderId == teamLead.Id);
+            return ComputeSha256Hash(team.Id.ToString());
+        }
+
         [Route("get-notification-options")]
         [HttpGet]
         [AuthorizeLeader]

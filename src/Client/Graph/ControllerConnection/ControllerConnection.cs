@@ -155,6 +155,26 @@ namespace EctBlazorApp.Client.Graph
             return null;
         }
 
+        public async Task<string> GetHashedTeamId()
+        {
+            var token = await GetAPITokenAsync();
+            if (token == null)
+                return "";
+
+            try
+            {
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                var response = await _httpClient.GetFromJsonAsync<string>($"api/team/get-team-id");
+
+                return response;
+            }
+            catch (AccessTokenNotAvailableException exception)
+            {
+                exception.Redirect();
+                return "";
+            }
+        }
+
         public async Task<IEnumerable<string>> GetUsersEligibleForMembers()
         {
             var token = await GetAPITokenAsync();

@@ -9,6 +9,7 @@
     @if (isLeader)
     {
         <a href="/my-team" class="menu-option bottom-border">Team</a>
+        <a href="/manage-team/@hashedTeamId" class="menu-option bottom-border">Manage Team</a>
     }
     @if (isAdmin)
     {
@@ -20,10 +21,15 @@
 @code{
     private bool isAdmin = false;
     private bool isLeader = false;
+    private string hashedTeamId = "";
 
     protected override async Task OnInitializedAsync()
     {
         isAdmin = await apiConn.IsProcessingUserAnAdmin();
         isLeader = await apiConn.IsProcessingUserALeader();
+        if (isLeader)
+        {
+            hashedTeamId = await apiConn.GetHashedTeamId();
+        }
     }
 }
