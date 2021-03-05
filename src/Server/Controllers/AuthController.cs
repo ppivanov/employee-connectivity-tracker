@@ -1,4 +1,5 @@
 ﻿using EctBlazorApp.Server.Extensions;
+using EctBlazorApp.Shared;
 using EctBlazorApp.Shared.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -26,7 +27,7 @@ namespace EctBlazorApp.Server.Controllers
 
         [Route("is-admin")]
         [HttpGet]
-        public async Task<ActionResult<Boolean>> IsAdmin()
+        public async Task<ActionResult<bool>> IsAdmin()
         {
             string userEmail = await HttpContext.GetPreferredUsername();
             bool userIsAdmin = _dbContext.IsEmailForAdmin(userEmail);
@@ -34,18 +35,23 @@ namespace EctBlazorApp.Server.Controllers
             return Ok(userIsAdmin);
         }
 
-        [Route("is-leader/{teamId?}")]
+        [Route("is-leader")]
         [HttpGet]
-        public async Task<ActionResult<Boolean>> IsLeader(string teamId = "")
+        public async Task<ActionResult<bool>> IsLeader()
         {
             string userEmail = await HttpContext.GetPreferredUsername();
-            bool userIsLeader = false;
-            if (string.IsNullOrEmpty(teamId))
-                userIsLeader = _dbContext.IsEmailForLeader(userEmail);
-            //else
-            //    userIsLeader = _dbContext.IsLeaderForTeam(userEmail, teamId);
+            bool userIsLeader = _dbContext.IsEmailForLeader(userEmail);
 
             return Ok(userIsLeader);
+        }
+
+        [Route("is-leader-for-team")]
+        public async Task<ActionResult<EctTeamRequestDetails>> IsLeaderForTeam([FromQuery] string TID = "")
+        {
+            string userEmail = await HttpContext.GetPreferredUsername();
+            EctTeamRequestDetails teamDetails = _dbContext.IsLeaderForTeamId(userEmail, TID);
+
+            return Ok(teamDetails);
         }
 
         [Route("get-app-users")]

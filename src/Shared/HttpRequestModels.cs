@@ -1,4 +1,5 @@
-﻿using EctBlazorApp.Shared.ValidationAttributes;
+﻿using EctBlazorApp.Shared.Entities;
+using EctBlazorApp.Shared.ValidationAttributes;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -52,6 +53,16 @@ namespace EctBlazorApp.Shared
                     return false;
             }
             return true;
+        }
+
+        public EctTeamRequestDetails() {  }
+
+        public EctTeamRequestDetails(EctTeam ectTeam)
+        {
+            Name = ectTeam.Name;
+            LeaderNameAndEmail = FormatFullNameAndEmail(ectTeam.Leader.FullName, ectTeam.Leader.Email);
+            MemberNamesAndEmails = ectTeam.Members.Select(m =>
+                FormatFullNameAndEmail(m.FullName, m.Email)).ToList();
         }
     }
 }

@@ -13,6 +13,8 @@ namespace EctBlazorApp.Client.Pages
 {
     public class ManageTeamClass : ComponentBase
     {
+        [Parameter]
+        public string HashedTeamId { get; set; }
         [Inject]
         protected IControllerConnection ApiConn { get; set; }
         [Inject]
@@ -39,6 +41,7 @@ namespace EctBlazorApp.Client.Pages
                 return style.ToString();
             }
         }
+        protected bool TeamNameDisabled { get => string.IsNullOrEmpty(HashedTeamId) == false; }
         protected HashSet<string> AvailableLeaders 
         { 
             get 
@@ -63,12 +66,12 @@ namespace EctBlazorApp.Client.Pages
             }
         }
 
-        protected bool isAdmin = false;
+        protected bool hasAccess = false;
         protected bool isSubmitting = false;
         protected bool initialized = false;
         protected bool leaderInputError = false;
         protected bool memberInputError = false;
-        protected EctTeamRequestDetails teamDetails = new EctTeamRequestDetails();
+        protected EctTeamRequestDetails teamDetails;
 
         public virtual async Task JsInterop(string function, string parameter = "")
         {
@@ -106,12 +109,27 @@ namespace EctBlazorApp.Client.Pages
         
         protected override async Task OnInitializedAsync()
         {
-            await JsRuntime.InvokeVoidAsync("setPageTitle", "Create Team");
-            isAdmin = await ApiConn.IsProcessingUserAnAdmin();
-            if (isAdmin)
+            if (string.IsNullOrEmpty(HashedTeamId))
             {
-                await GetEligibleUsers();
-                teamDetails.MemberNamesAndEmails = new List<string>();
+                await JsInterop("setPageTitle", "Create Team");
+                hasAccess = await ApiConn.IsProcessingUserAnAdmin();
+                if (hasAccess)
+                {
+                    await GetEligibleUsers();
+                    teamDetails = new EctTeamRequestDetails();
+                    teamDetails.MemberNamesAndEmails = new List<string>();
+                }
+            }
+            else
+            {
+                await JsInterop("setPageTitle", "Manage Team");
+                teamDetails = await ApiConn.IsProcessingUserLeaderForTeam(HashedTeamId);
+                if (teamDetails == null) hasAccess = false;
+                if (hasAccess)
+                {
+                    await JsInterop("setPageTitle", teamDetails.Name);
+                    await GetEligibleUsers();
+                }
             }
             initialized = true;
         }

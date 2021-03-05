@@ -22,9 +22,11 @@ namespace EctBlazorApp.Client.Graph
 
         Task<IEnumerable<string>> GetUsersEligibleForMembers();
 
-        Task<Boolean> IsProcessingUserAnAdmin();
+        Task<bool> IsProcessingUserAnAdmin();
 
-        Task<Boolean> IsProcessingUserALeader();
+        Task<bool> IsProcessingUserALeader();
+
+        Task<EctTeamRequestDetails> IsProcessingUserLeaderForTeam(string hashedTeamId);
 
         Task<(bool, string)> SubmitNotificationOptions(NotificationOptionsResponse notificationOptions);
 

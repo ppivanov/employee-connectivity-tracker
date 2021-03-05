@@ -14,11 +14,10 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
 {
     public class PersonalDashboardClass : DashboardClass
     {
-        [Inject]
-        AuthenticationStateProvider AuthenticationStateProvider { get; set; }
-
         [Parameter]
         public string HashedUserId { get; set; }
+        [Inject]
+        AuthenticationStateProvider AuthenticationStateProvider { get; set; }
 
         private List<SentMail> sentMail;
         private List<ReceivedMail> receivedMail;

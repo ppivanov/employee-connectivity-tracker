@@ -174,17 +174,36 @@ namespace EctBlazorApp.Client.Graph
             return new List<string>();
         }
 
-        public async Task<Boolean> IsProcessingUserAnAdmin()
+        public async Task<bool> IsProcessingUserAnAdmin()
         {
             var adminResponse = await IsProcessingUserAuthorizedForRole(UserRoles.admin);
             return adminResponse;
         }
 
-        public async Task<Boolean> IsProcessingUserALeader()
+        public async Task<bool> IsProcessingUserALeader()
         {
             var leaderResponse = await IsProcessingUserAuthorizedForRole(UserRoles.leader);
             return leaderResponse;
         }
+
+        public async Task<EctTeamRequestDetails> IsProcessingUserLeaderForTeam(string hashedTeamId)
+        {
+            var token = await GetAPITokenAsync();
+            if (token == null) return null;
+            try
+            {
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                var response = await _httpClient.GetFromJsonAsync<EctTeamRequestDetails>(
+                    $"api/auth/is-leader-for-team?TID={hashedTeamId}");
+                return response;
+            }
+            catch (AccessTokenNotAvailableException exception)
+            {
+                exception.Redirect();
+                return null;
+            }
+        }
+
 
         public async Task<(bool, string)> SubmitNotificationOptions(NotificationOptionsResponse notificationOptions)
         {

@@ -2,6 +2,7 @@
 using EctBlazorApp.Server.CommonMethods;
 using EctBlazorApp.Server.Extensions;
 using EctBlazorApp.Server.MailKit;
+using EctBlazorApp.Shared;
 using EctBlazorApp.Shared.Entities;
 using EctBlazorApp.Shared.GraphModels;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -169,7 +170,6 @@ namespace EctBlazorApp.ServerTests
         [DataRow("admin@ect.ie", true)]
         [DataRow("doesnt@exist.ie", false)]
         [DataRow("alice@ect.ie", false)]
-        [TestMethod]
         public void IsEmailForAdmin_Parametarized(string userEmail, bool expectedResult)
         {
             bool actualResult = _dbContext.IsEmailForAdmin(userEmail);
@@ -182,12 +182,39 @@ namespace EctBlazorApp.ServerTests
         [DataRow("admin@ect.ie", false)]
         [DataRow("homer@ect.ie", false)]
         [DataRow("doesnt@exist.ie", false)]
-        [TestMethod]
         public void IsEmailForLeader_Parametarized(string userEmail, bool expectedResult)
         {
             bool actualResult = _dbContext.IsEmailForLeader(userEmail);
 
             Assert.AreEqual(expectedResult, actualResult);
+        }
+
+        [DataTestMethod]
+        [DataRow("admin@ect.ie")]
+        [DataRow("homer@ect.ie")]
+        [DataRow("doesnt@exist.ie")]
+        public void IsLeaderForTeamId_UserNotLeader_ReturnsNull(string userEmail)
+        {
+            EctTeamRequestDetails expectedResult = null;
+            string hashedTeamId = ComputeSha256Hash(_dbContext.Teams.FirstOrDefault().Id.ToString());
+
+            var actualResult = _dbContext.IsLeaderForTeamId(userEmail, hashedTeamId);
+
+            Assert.AreEqual(expectedResult, actualResult);
+        }
+
+        [TestMethod]
+        public void IsLeaderForTeamId_AliceIsLeader_ReturnsTeamDetails()
+        {
+            EctTeamRequestDetails expectedResult = new(_dbContext.Teams.FirstOrDefault());
+            string userEmail = "alice@ect.ie";
+            string hashedTeamId = ComputeSha256Hash(_dbContext.Teams.FirstOrDefault().Id.ToString());
+
+            var actualResult = _dbContext.IsLeaderForTeamId(userEmail, hashedTeamId);
+
+            Assert.AreEqual(expectedResult.Name, actualResult.Name);
+            Assert.AreEqual(expectedResult.LeaderNameAndEmail, actualResult.LeaderNameAndEmail);
+            CollectionAssert.AreEquivalent(expectedResult.MemberNamesAndEmails, actualResult.MemberNamesAndEmails);
         }
 
         [TestMethod]

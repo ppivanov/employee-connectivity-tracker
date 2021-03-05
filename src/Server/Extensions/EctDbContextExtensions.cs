@@ -1,4 +1,5 @@
 ﻿using EctBlazorApp.Server.MailKit;
+using EctBlazorApp.Shared;
 using EctBlazorApp.Shared.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -65,18 +66,28 @@ namespace EctBlazorApp.Server.Extensions
 
         public static bool IsEmailForLeader(this EctDbContext dbContext, string email)
         {
-            try
-            {
-                EctUser user = dbContext.Users.FirstOrDefault(u => u.Email.Equals(email));
-                bool isLeader = dbContext.Teams.Any(t => t.LeaderId == user.Id);
+            EctUser user = dbContext.Users.FirstOrDefault(u => u.Email.Equals(email));
+            bool isLeader = dbContext.Teams.Any(t => t.LeaderId == user.Id);
 
-                return isLeader;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            return isLeader;
 
+        }
+
+        public static EctTeamRequestDetails IsLeaderForTeamId(this EctDbContext dbContext, string email, string hashedTeamId)
+        {
+            EctUser user = dbContext.Users.FirstOrDefault(u => u.Email.Equals(email));
+            if (user == null)
+                return null;
+
+            EctTeam team = dbContext.Teams.Include(t => t.Members).FirstOrDefault(t => 
+                t.LeaderId == user.Id  && ComputeSha256Hash(t.Id.ToString()).Equals(hashedTeamId));
+            if (team == null)
+                return null;
+
+            team.Leader = user;
+            EctTeamRequestDetails teamDetails = new(team);
+
+            return teamDetails;
         }
 
         public delegate Task<string> GetPreferredUserName();
