@@ -67,6 +67,9 @@ namespace EctBlazorApp.Server.Extensions
         public static bool IsEmailForLeader(this EctDbContext dbContext, string email)
         {
             EctUser user = dbContext.Users.FirstOrDefault(u => u.Email.Equals(email));
+            if (user == null) 
+                return false;
+
             bool isLeader = dbContext.Teams.Any(t => t.LeaderId == user.Id);
 
             return isLeader;
