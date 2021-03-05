@@ -56,7 +56,7 @@ namespace EctBlazorApp.Server
             services.AddCronJob<NotificationCronJob>(c =>
             {
                 //c.CronExpression = @"0 12 * * Sun";                           // run job every Sunday at 12:00pm
-                c.CronExpression = @"0 14 * * *";                               // run job every day at 2:00pm
+                c.CronExpression = @"0 12 * * *";                               // run job every day at 12:00pm
                 c.TimeZoneInfo = TimeZoneInfo.Local;
             });
 
