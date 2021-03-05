@@ -61,6 +61,26 @@ namespace EctBlazorApp.Server.Controllers
             }
         }
 
+        [Route("update-team")]
+        [HttpPost]
+        [AuthorizeLeader]
+        public async Task<ActionResult> UpdateTeam(EctTeamRequestDetails teamDetails)
+        {
+            if (teamDetails.AreDetailsValid() == false)
+                return BadRequest("Invalid team details!");
+
+            EctTeam team = _dbContext.Teams.Include(t => t.Members).AsEnumerable()
+                .FirstOrDefault(t => ComputeSha256Hash(t.Id.ToString()).Equals(teamDetails.TeamId));
+            if (team == null)
+                return null;
+
+            team.Members = _dbContext.Users.Where(u => teamDetails.MemberEmails.Contains(u.Email)).ToList();
+            team.Leader = _dbContext.Users.FirstOrDefault(u => u.Email.Equals(teamDetails.LeaderEmail));
+            await _dbContext.SaveChangesAsync();
+
+            return Ok("Updated successfully");
+        }
+
         [Route("get-team-stats")]
         [HttpGet]
         [AuthorizeLeader]

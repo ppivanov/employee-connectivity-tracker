@@ -19,6 +19,11 @@ window.resetUserToNotifyName = () => {
     resetInputField('userToNotify_name')
 }
 
+window.setCreateTeamLeader = (nameAndEmail) => {
+    let inputField = document.getElementById('createTeamLeader');
+    inputField.value = nameAndEmail;
+}
+
 window.resetCreateTeamLeader = () => {
     resetInputField('createTeamLeader')
 }

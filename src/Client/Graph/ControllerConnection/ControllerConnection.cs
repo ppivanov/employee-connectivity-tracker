@@ -275,16 +275,17 @@ namespace EctBlazorApp.Client.Graph
             return (true, tokenErrorMessage);
         }
 
-        public async Task<(bool, string)> SubmitTeamData(EctTeamRequestDetails teamDetails)
+        public async Task<(bool, string)> SubmitTeamData(bool isNewTeam, EctTeamRequestDetails teamDetails)
         {
             var token = await GetAPITokenAsync();
             if (token == null)
                 return (false, "Error retrieving access token. Please, try again later.");
 
+            string endpoint = isNewTeam ? "create-team" : "update-team";
             try
             {
                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                var response = await _httpClient.PostAsJsonAsync("api/team/create-team", teamDetails);
+                var response = await _httpClient.PostAsJsonAsync($"api/team/{endpoint}", teamDetails);
                 var serverMessage = await response.Content.ReadAsStringAsync();
 
                 return (response.IsSuccessStatusCode, serverMessage);

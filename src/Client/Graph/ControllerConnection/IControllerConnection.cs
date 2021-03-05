@@ -34,7 +34,7 @@ namespace EctBlazorApp.Client.Graph
 
         Task<(bool, string)> SubmitPoints(IEnumerable<CommunicationPoint> communicationPoints);
 
-        Task<(bool, string)> SubmitTeamData(EctTeamRequestDetails teamDetails);
+        Task<(bool, string)> SubmitTeamData(bool isNewTeam, EctTeamRequestDetails teamDetails);
 
         Task<string> UpdateDatabaseRecords();
     }

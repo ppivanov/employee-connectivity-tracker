@@ -27,6 +27,7 @@ namespace EctBlazorApp.Client.Pages
         private HashSet<string> MembersFromApi { get; set; }
 
         protected string CurrentMemberSelection { get; set; } = "";
+        protected bool HasTeamId { get => string.IsNullOrEmpty(HashedTeamId) == false; }
         protected string LeaderInputStyle { get => leaderInputError ? "border: 1px solid red" : ""; }
         protected string MemmberInputStyle { get => memberInputError ? "border: 1px solid red" : ""; }
         protected string ServerMessage { get; set; } = "";
@@ -42,9 +43,9 @@ namespace EctBlazorApp.Client.Pages
             }
         }
         protected bool TeamNameDisabled { get => string.IsNullOrEmpty(HashedTeamId) == false; }
-        protected HashSet<string> AvailableLeaders 
-        { 
-            get 
+        protected HashSet<string> AvailableLeaders
+        {
+            get
             {
                 if (string.IsNullOrWhiteSpace(CurrentMemberSelection)
                     || IsStringInMemberFormat(CurrentMemberSelection) == false)
@@ -54,7 +55,7 @@ namespace EctBlazorApp.Client.Pages
                 var selectableLeaders = AllAvailableLeaders.Where(a =>
                     a.Contains(selectedEmail) == false).ToHashSet();                                    // Copy the rest of the available leaders excluding the current member selection
                 return selectableLeaders;
-            } 
+            }
         }
         protected HashSet<string> AvailableMembers
         {
@@ -106,34 +107,13 @@ namespace EctBlazorApp.Client.Pages
             await InvokeAsync(StateHasChanged);
             await JsInterop("resetCreateTeamMember");
         }
-        
+
         protected override async Task OnInitializedAsync()
         {
-            if (string.IsNullOrEmpty(HashedTeamId))
-            {
-                await JsInterop("setPageTitle", "Create Team");
-                hasAccess = await ApiConn.IsProcessingUserAnAdmin();
-                if (hasAccess)
-                {
-                    await GetEligibleUsers();
-                    teamDetails = new EctTeamRequestDetails();
-                    teamDetails.MemberNamesAndEmails = new List<string>();
-                }
-            }
+            if (HasTeamId)
+                await InitializeManageTeam();
             else
-            {
-                await JsInterop("setPageTitle", "Manage Team");
-                teamDetails = await ApiConn.IsProcessingUserLeaderForTeam(HashedTeamId);
-                if (teamDetails == null) hasAccess = false;
-                else hasAccess = true;
-
-                if (hasAccess)
-                {
-                    await JsInterop("setPageTitle", teamDetails.Name);
-                    await GetEligibleUsers();
-                }
-            }
-            initialized = true;
+                await InitializeCreateTeam();
         }
 
         protected async Task GetEligibleUsers()
@@ -158,16 +138,18 @@ namespace EctBlazorApp.Client.Pages
                 return;
 
             isSubmitting = true;
+            teamDetails.TeamId = HasTeamId ? HashedTeamId : "";
+            bool isNewTeam = HasTeamId == false;
 
-            var response = await ApiConn.SubmitTeamData(teamDetails);
+            var response = await ApiConn.SubmitTeamData(isNewTeam, teamDetails);
             serverMessageIsError = response.Item1 == false;                                     // is StatusCode of response successful?
             ServerMessage = response.Item2;
             leaderInputError = false;
             memberInputError = false;
 
-            if (serverMessageIsError == false)
+            if (isNewTeam && serverMessageIsError == false)
                 await ResetInputFields();
-            isSubmitting = false;   
+            isSubmitting = false;
         }
 
         private bool IsLeaderAlreadySelectedAsMember()
@@ -209,6 +191,37 @@ namespace EctBlazorApp.Client.Pages
 
             await JsInterop("resetCreateTeamLeader");
             await JsInterop("resetCreateTeamMember");
+        }
+
+        private async Task InitializeCreateTeam()
+        {
+            await JsInterop("setPageTitle", "Create Team");
+            hasAccess = await ApiConn.IsProcessingUserAnAdmin();
+            if (hasAccess)
+            {
+                await GetEligibleUsers();
+                teamDetails = new EctTeamRequestDetails();
+                teamDetails.MemberNamesAndEmails = new List<string>();
+                initialized = true;
+            }
+        }
+
+        private async Task InitializeManageTeam()
+        {
+            await JsInterop("setPageTitle", "Manage Team");
+            teamDetails = await ApiConn.IsProcessingUserLeaderForTeam(HashedTeamId);
+            if (teamDetails == null) hasAccess = false;
+            else hasAccess = true;
+
+            if (hasAccess)
+            {
+                await JsInterop("setPageTitle", teamDetails.Name);
+                await GetEligibleUsers();
+
+                initialized = true;
+                InvokeAsync(StateHasChanged).Wait();
+                await JsInterop("setCreateTeamLeader", teamDetails.LeaderNameAndEmail);
+            }
         }
 
         private bool IsCurrentMemberSelectionEmpty()

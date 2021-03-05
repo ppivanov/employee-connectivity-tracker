@@ -23,6 +23,7 @@ namespace EctBlazorApp.Shared
         [CollectionNotEmpty(ErrorMessage = "You must select at least one member.")]
         public List<string> MemberNamesAndEmails { get; set; }
 
+        public string TeamId { get; set; }
         public string LeaderEmail { get => GetEmailFromFormattedString(LeaderNameAndEmail); }
 
         public IEnumerable<string> MemberEmails 
@@ -61,8 +62,8 @@ namespace EctBlazorApp.Shared
         {
             Name = ectTeam.Name;
             LeaderNameAndEmail = FormatFullNameAndEmail(ectTeam.Leader.FullName, ectTeam.Leader.Email);
-            MemberNamesAndEmails = ectTeam.Members.Select(m =>
-                FormatFullNameAndEmail(m.FullName, m.Email)).ToList();
+            MemberNamesAndEmails = ectTeam.Members.Where(m => m.Email.Equals(ectTeam.Leader.Email) == false)
+                .Select(m => FormatFullNameAndEmail(m.FullName, m.Email)).ToList();
         }
     }
 }
