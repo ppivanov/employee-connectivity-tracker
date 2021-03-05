@@ -23,7 +23,7 @@ namespace EctBlazorApp.Client.Pages
         private bool serverMessageIsError = false;
         private HashSet<string> AllAvailableLeaders { get; set; }
 
-        protected string CurrentMemberSelection { get; set; }
+        protected string CurrentMemberSelection { get; set; } = "";
         protected string InputStyle { get => inputError ? "border: 1px solid red" : ""; }
         protected string ServerMessage { get; set; } = "";
         protected string ServerMessageInlineStyle
@@ -42,7 +42,8 @@ namespace EctBlazorApp.Client.Pages
         { 
             get 
             {
-                if (string.IsNullOrEmpty(CurrentMemberSelection))
+                if (string.IsNullOrWhiteSpace(CurrentMemberSelection)
+                    || IsStringInMemberFormat(CurrentMemberSelection) == false)
                     return AllAvailableLeaders;
 
                 string selectedEmail = GetEmailFromFormattedString(CurrentMemberSelection);
@@ -105,7 +106,9 @@ namespace EctBlazorApp.Client.Pages
             teamDetails.MemberNamesAndEmails.Add(CurrentMemberSelection);
             AllAvailableLeaders = AllAvailableLeaders.Where(a => a.Contains(selectedEmail) == false).ToHashSet();
             CurrentMemberSelection = "";
+
             await InvokeAsync(StateHasChanged);
+            await JsInterop("resetCreateTeamMember");
         }
 
         protected async Task GetEligibleUsers()
@@ -114,6 +117,11 @@ namespace EctBlazorApp.Client.Pages
             MembersFromApi = response.ToHashSet();
             AllAvailableLeaders = MembersFromApi.ToHashSet();                                       // Copy the set not the reference
         }
+
+        public virtual async Task JsInterop(string function, string parameter = "")
+        {
+            await JsRuntime.InvokeVoidAsync(function, parameter);
+        }               // Used to mock JavaScript function calls
 
         protected async Task RemoveFromSelected(string member)
         {
@@ -133,21 +141,25 @@ namespace EctBlazorApp.Client.Pages
             serverMessageIsError = response.Item1 == false;                                     // is StatusCode of response successful?
             ServerMessage = response.Item2;
 
-            ResetInputFields();
-            isSubmitting = false;
+            if(serverMessageIsError == false)
+                await ResetInputFields();
+            isSubmitting = false;   
         }
 
 
-        private void ResetInputFields()
+        private async Task ResetInputFields()
         {
             teamDetails.Name = "";
             teamDetails.LeaderNameAndEmail = "";
             teamDetails.MemberNamesAndEmails = new List<string>();
+
+            await JsInterop("resetCreateTeamLeader");
+            await JsInterop("resetCreateTeamMember");
         }
 
         private bool IsCurrentMemberSelectionEmpty()
         {
-            if (string.IsNullOrEmpty(CurrentMemberSelection))
+            if (string.IsNullOrWhiteSpace(CurrentMemberSelection))
             {
                 inputError = true;
                 serverMessageIsError = true;
@@ -171,6 +183,9 @@ namespace EctBlazorApp.Client.Pages
 
         private bool IsCurrentMemberSelectionAlreadyLeader()
         {
+            if (string.IsNullOrWhiteSpace(teamDetails.LeaderNameAndEmail))
+                return false;
+
             string selectedEmail = GetEmailFromFormattedString(CurrentMemberSelection);
             if (teamDetails.LeaderNameAndEmail.Contains(selectedEmail))
             {

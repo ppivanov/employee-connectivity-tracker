@@ -18,6 +18,14 @@ window.resetUserToNotifyEmail = () => {
 window.resetUserToNotifyName = () => {
     resetInputField('userToNotify_name')
 }
+
+window.resetCreateTeamLeader = () => {
+    resetInputField('createTeamLeader')
+}
+window.resetCreateTeamMember = () => {
+    resetInputField('createTeamMember')
+}
+
 const resetInputField = (elementId) => {
     let inputField = document.getElementById(elementId);
     inputField.value = "";
