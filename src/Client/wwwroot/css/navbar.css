@@ -83,6 +83,7 @@
   padding: 1em;
   text-align: center;
   background-color: rgb(241, 241, 241);
+  z-index: 1;
 }
 
 .header-username {
