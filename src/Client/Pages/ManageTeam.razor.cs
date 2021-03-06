@@ -148,7 +148,10 @@ namespace EctBlazorApp.Client.Pages
             memberInputError = false;
 
             if (isNewTeam && serverMessageIsError == false)
+            {
+                AllAvailableLeaders.Remove(teamDetails.LeaderNameAndEmail);
                 await ResetInputFields();
+            }
             isSubmitting = false;
         }
 
