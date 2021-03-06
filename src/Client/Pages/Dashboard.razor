@@ -10,8 +10,8 @@
 <AuthorizeView>
     <Authorized>
         <div class="dashboard">
-            <div class="topRow">
-                <div class="dateRange">
+            <div class="top-row float-left">
+                <div class="date-range float-left">
                     <DateRangePicker @bind-StartDate="FromDate" @bind-EndDate="ToDate">
                         <ButtonsTemplate Context="pickerContext">
                             <button class="cancelBtn btn btn-sm btn-default"
@@ -30,16 +30,16 @@
                         </ButtonsTemplate>
                     </DateRangePicker>
                 </div>
-                <div class="textSummary">
+                <div class="text-summary float-left">
                     <p>Emails sent: @EmailsSentCount</p>
                     <p>Emails received: @EmailsReceivedCount</p>
                     <p>Number of meetings: @numberOfMeetings</p>
                     <p>Time in meetings: @FormattedTimeInMeeting</p>
                 </div>
             </div>
-            <div class="topCollaborators">
+            <div class="top-collaborators float-left">
                 <h2>Top Collaborators</h2>
-                <div class="collaboratorsList">
+                <div class="collaborators-list">
                     <div class="collaborator">
                         @foreach (var user in Collaborators)
                         {
@@ -48,10 +48,10 @@
                     </div>
                 </div>
             </div>
-            <div class="emails-chart-container">
+            <div class="emails-chart-container float-left">
                 <div id="emails-chart"></div>
             </div>
-            <div class="events-chart-container">
+            <div class="events-chart-container float-left">
                 <div id="events-chart"></div>
             </div>
         </div>

@@ -1,0 +1,62 @@
+/* Adapted from https://www.w3schools.com/howto/tryit.asp?filename=tryhow_js_sidenav*/
+.sidenav {
+  height: 20rem;
+  width: 0;
+  position: fixed;
+  z-index: 1;
+  top: 40vh;
+  left: 0;
+  background-color: rgb(252, 249, 249);
+  overflow-x: hidden;
+  transition: 0.5s;
+  padding-top: 4em;
+  border: 1px solid rgb(233, 233, 233);
+  border-radius: 0 15px 15px 0;
+}
+
+.sidenav a {
+  text-decoration: none;
+  font-size: 1.3em;
+  color: rgb(129, 129, 129);
+  display: block;
+  transition: 0.3s;
+}
+
+.sidenav .closebtn:hover {
+  color: red;
+}
+
+.menu-option {
+  padding: 0.5em 1em;
+  text-align: center;
+}
+
+.menu-option:hover {
+  color: rgb(61, 61, 61);
+  background-color: aqua;
+}
+
+.sidenav .closebtn {
+  position: absolute;
+  top: 0;
+  right: 0.5em;
+  font-size: 2em;
+  margin-left: 50px;
+}
+
+.expand-nav {
+  position: absolute;
+  height: 6vh;
+  width: 2vw;
+  background-color: rgb(196, 195, 195);
+  top: 47vh;
+  left: 0;
+  font-weight: 900;
+  border-radius: 0 15px 15px 0;
+}
+
+.expand-nav:hover {
+  cursor: pointer;
+  background-color: rgb(124, 124, 124);
+  color: white;
+}

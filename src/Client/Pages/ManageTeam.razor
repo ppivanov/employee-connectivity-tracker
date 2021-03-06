@@ -32,7 +32,7 @@
                             </div>
                         }
 
-                        <div class="left-half">
+                        <div class="left-half float-left">
                             <div class="create-team-input-pair">
                                 <label>Team name</label>
                                 <InputText @bind-Value=teamDetails.Name class="form-control" id="Name" disabled="@HasTeamId" />
@@ -64,7 +64,7 @@
                                 <button type="button" @onclick="() => AddSelectedMember()" disabled=@isSubmitting class="select-member">Add member</button>
                             </div>
                         </div>
-                        <table class="selected-members">
+                        <table class="selected-members float-left">
                             <thead>
                                 <tr>
                                     <td>
@@ -78,14 +78,14 @@
                                     <tr>
                                         <td>
                                             @member
-                                            <button class="deselect-btn" @onclick="() => RemoveFromSelected(member)">Remove</button>
+                                            <button class="deselect-btn float-right" @onclick="() => RemoveFromSelected(member)">Remove</button>
                                         </td>
                                     </tr>
                                 }
                             </tbody>
                         </table>
 
-                        <button type="submit" disabled=@isSubmitting class="save-team">Save</button>
+                        <button type="submit" disabled=@isSubmitting class="save-team float-right">Save</button>
                     </EditForm>
                 }
             }

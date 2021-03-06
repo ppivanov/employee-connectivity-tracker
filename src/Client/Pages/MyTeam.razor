@@ -22,8 +22,8 @@
                 else
                 {
                     <div class="dashboard">
-                        <div class="topRow">
-                            <div class="dateRange">
+                        <div class="top-row float-left">
+                            <div class="date-range float-left">
                                 <DateRangePicker @bind-StartDate="FromDate" @bind-EndDate="ToDate">
                                     <ButtonsTemplate Context="pickerContext">
                                         <button class="cancelBtn btn btn-sm btn-default"
@@ -42,16 +42,16 @@
                                     </ButtonsTemplate>
                                 </DateRangePicker>
                             </div>
-                            <div class="textSummary">
+                            <div class="text-summary float-left">
                                 <p>Emails sent: @emailsSent</p>
                                 <p>Emails received: @emailsReceived</p>
                                 <p>Number of meetings: @numberOfMeetings</p>
                                 <p>Time in meetings: @FormattedTimeInMeeting</p>
                             </div>
                         </div>
-                        <div class="topCollaborators">
+                        <div class="top-collaborators float-left">
                             <h2>Activity distribution</h2>
-                            <div class="collaboratorsList">
+                            <div class="collaborators-list">
                                 <div class="collaborator">
                                     @foreach (var user in Collaborators)
                                     {
@@ -97,12 +97,12 @@
 
                                                 <p>Users to notify:</p>
                                                 <p>
-                                                    <input id="userToNotify_name" list="names" 
-                                                           @onchange="@(async (args) => await SetUserToNotifyName(args))" 
-                                                           placeholder="John Doe" style="@AddNotifyUserInputStyle"/>
-                                                    <input id="userToNotify_email" list="emails" 
-                                                           @onchange="@(async (args) => await SetUserToNotifyEmail(args))" 
-                                                           placeholder="email@example.com" style="@AddNotifyUserInputStyle"/>
+                                                    <input id="userToNotify_name" list="names"
+                                                           @onchange="@(async (args) => await SetUserToNotifyName(args))"
+                                                           placeholder="John Doe" style="@AddNotifyUserInputStyle" />
+                                                    <input id="userToNotify_email" list="emails"
+                                                           @onchange="@(async (args) => await SetUserToNotifyEmail(args))"
+                                                           placeholder="email@example.com" style="@AddNotifyUserInputStyle" />
                                                     <datalist id="names">
                                                         @foreach (var member in AvailableUsersForNotification)
                                                         {
@@ -129,12 +129,12 @@
                                                             <td style="width: 100px">
                                                                 @if (nameAndEmail.Equals(leaderNameAndEmail))
                                                                 {
-                                                                    <span class="deselect-btn"
+                                                                    <span class="deselect-btn float-right"
                                                                           style="background-color: green; width: 100px;">Team lead</span>
                                                                 }
                                                                 else
                                                                 {
-                                                                    <button type="button" class="deselect-btn" style="width: 100px"
+                                                                    <button type="button" class="deselect-btn float-right" style="width: 100px"
                                                                             @onclick="() => RemoveUserToNotify(nameAndEmail)">
                                                                         Remove
                                                                     </button>
@@ -169,10 +169,10 @@
                                 }
                             </div>
                         </div>
-                        <div class="emails-chart-container">
+                        <div class="emails-chart-container float-left">
                             <div id="emails-chart"></div>
                         </div>
-                        <div class="events-chart-container">
+                        <div class="events-chart-container float-left">
                             <div id="events-chart"></div>
                         </div>
                     </div>

@@ -1,464 +1,78 @@
-﻿* {
-    margin: 0;
-    box-sizing: border-box;
+* {
+  margin: 0;
+  box-sizing: border-box;
 }
 
 html,
 body {
-    overflow-x: hidden;
-    overflow-y: hidden;
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.main {
+  width: 95%;
+  height: 85vh;
+  margin-top: 1.5em;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* Misc */
 
-.arrow {
-    border: solid black;
-    border-width: 0 1em 1em 0;
-    display: inline-block;
-    padding: 1em;
-    font-size: 30%;
-}
-
-.down {
-    transform: rotate(45deg);
-    -webkit-transform: rotate(45deg);
-}
-
 .display-none {
-    display: none;
+  display: none;
 }
 
 .no-link-style {
-    text-decoration: none;
-    color: inherit;
+  text-decoration: none;
+  color: inherit;
 }
 
 .unselectable {
-    /* Firefox */
-    -moz-user-select: none;
-    /* iOS and Safari */
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    /* IE */
-    -ms-user-select: none;
-    user-select: none;
-    /* Opera  */
-    -o-user-select: none;
-    user-select: none;
+  /* Firefox */
+  -moz-user-select: none;
+  /* iOS and Safari */
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  /* IE */
+  -ms-user-select: none;
+  user-select: none;
+  /* Opera  */
+  -o-user-select: none;
+  user-select: none;
 }
 
 .center-flex {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
+.float-left {
+  float: left;
+}
+
+.float-right {
+  float: right;
+}
 /* END of Misc */
 
-/* Navbar */
-.header {
-    display: flex;
-    width: 90vw;
-    height: 10vh;
-    padding: 1em;
-    margin: auto;
-    border-bottom: 1px solid gray;
-}
-
-.header-logo {
-    width: 20vw;
-    margin: auto;
-}
-
-    .header-logo > .logo {
-        font-size: 2em;
-        color: black;
-        text-decoration: none;
-    }
-
-    .header-logo > #page-title {
-        font-size: 1.5em;
-    }
-
-.login-logout-section {
-    position: fixed;
-    right: 0;
-    width: 25vw;
-    height: 6vh;
-    margin-right: 5vw;
-}
-
-.select-member,
-.save-team,
-.login-button {
-    max-height: 3.5em;
-    max-width: 15em;
-    border: thin solid black;
-}
-
-.select-member {
-    background-color: rgb(255, 187, 0);
-    color: rgb(31, 30, 30);
-}
-
-.save-team,
-.login-button {
-    background-color: rgb(4, 137, 4);
-    color: white;
-}
-
-.login-button {
-    width: 13vw;
-    height: 6vh;
-    background-color: rgb(4, 137, 4);
-    border-radius: 9px;
-}
-
-    .save-team:hover,
-    .login-button:hover {
-        background-color: rgb(1, 82, 1);
-        cursor: pointer;
-    }
-
-.select-member:hover {
-    background-color: rgb(201, 147, 0);
-    cursor: pointer;
-}
-
-.logout-display > p > i {
-    margin-left: 2em;
-}
-
-.logout-display > p:hover {
-    cursor: pointer;
-}
-
-#dropdown {
-    position: absolute;
-    width: 15vw;
-    height: auto;
-    margin-top: 1em;
-    padding: 1em;
-    text-align: center;
-    background-color: rgb(241, 241, 241);
-}
-
-.header-username {
-    position: relative;
-    width: 100%;
-    margin: 0.5em 0;
-    text-transform: uppercase;
-}
-
-.logout-button {
-    background-color: rgb(160, 0, 0);
-    width: 100%;
-    height: 2.5em;
-    margin: 0.5em 0;
-    font-size: 1em;
-    color: white;
-    border-radius: 15px;
-}
-/* END of Navbar */
-
-.main {
-    width: 95%;
-    height: 85vh;
-    margin-top: 1.5em;
-    margin-left: auto;
-    margin-right: auto;
-}
-
 /* Dashboard */
-.dashboard {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-}
 
-.topRow {
-    float: left;
-    width: 100%;
-}
-
-.dateRange {
-    width: 20%;
-    height: 5%;
-    float: left;
-    margin-left: 1em;
-}
-
-.textSummary {
-    float: left;
-    width: 75%;
-}
-
-    .textSummary > p {
-        float: left;
-        margin: 1em 6em;
-    }
-
-.topCollaborators {
-    width: 20%;
-    height: 40%;
-    float: left;
-    margin-top: 5%;
-    margin-left: 1em;
-}
-
-    .topCollaborators > h2 {
-        padding-bottom: 0.5em;
-        border-bottom: 1px solid black;
-    }
-
-.collaboratorsList {
-    width: 100%;
-    height: 80%;
-    margin-top: 1em;
-}
 /* END of Dashboard */
 
-/* Adapted from https://www.w3schools.com/howto/tryit.asp?filename=tryhow_js_sidenav*/
-/* Side menu */
-.sidenav {
-    height: 20rem;
-    width: 0;
-    position: fixed;
-    z-index: 1;
-    top: 40vh;
-    left: 0;
-    background-color: rgb(252, 249, 249);
-    overflow-x: hidden;
-    transition: 0.5s;
-    padding-top: 4em;
-    border: 1px solid rgb(233, 233, 233);
-    border-radius: 0 15px 15px 0;
+/* Login display */
+.arrow {
+  border: solid black;
+  border-width: 0 1em 1em 0;
+  display: inline-block;
+  padding: 1em;
+  font-size: 30%;
 }
 
-    .sidenav a {
-        text-decoration: none;
-        font-size: 1.3em;
-        color: rgb(129, 129, 129);
-        display: block;
-        transition: 0.3s;
-    }
-
-    .sidenav .closebtn:hover {
-        color: red;
-    }
-
-.menu-option {
-    padding: 0.5em 1em;
-    text-align: center;
+.down {
+  transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
 }
-
-    .menu-option:hover {
-        color: rgb(61, 61, 61);
-        background-color: aqua;
-    }
-
-.sidenav .closebtn {
-    position: absolute;
-    top: 0;
-    right: 0.5em;
-    font-size: 2em;
-    margin-left: 50px;
-}
-
-.expand-nav {
-    position: absolute;
-    height: 6vh;
-    width: 2vw;
-    background-color: rgb(196, 195, 195);
-    top: 47vh;
-    left: 0;
-    font-weight: 900;
-    border-radius: 0 15px 15px 0;
-}
-
-    .expand-nav:hover {
-        cursor: pointer;
-        background-color: rgb(124, 124, 124);
-        color: white;
-    }
-/* End of side menu */
-
-.emails-chart-container {
-    width: 40%;
-    height: 45%;
-    float: left;
-    margin: 5em;
-}
-
-.events-chart-container {
-    width: 25%;
-    height: 60%;
-    float: left;
-    margin-top: 5em;
-}
-
-/* Create team */
-.create-team {
-    width: 100%;
-    height: 100%;
-    padding: 2em;
-}
-
-.create-team-heading {
-    width: 10em;
-    text-align: center;
-    margin: auto;
-}
-
-.create-team > form {
-    width: 80%;
-    margin: 0 auto 2em auto;
-}
-
-    .create-team > form > .left-half {
-        width: 50%;
-        float: left;
-    }
-
-.create-team-input-pair {
-    width: 60%;
-    margin: 0 auto 0 auto;
-    padding: 1em;
-}
-
-.create-team .selected-members {
-    width: 50%;
-    float: left;
-}
-
-.create-team .operation-result {
-    width: 20%;
-    margin: 4em auto 0 auto;
-}
-
-/* Code source: (dcode) https://dev.to/dcodeyt/creating-beautiful-html-tables-with-css-428l */
-.create-team .selected-members {
-    border-collapse: collapse;
-    margin: 2em 0;
-    font-family: sans-serif;
-    min-width: 400px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
-}
-
-    .create-team .selected-members thead tr {
-        background-color: rgb(0, 123, 206);
-        color: rgb(255, 255, 255);
-        text-align: left;
-    }
-
-    .create-team .selected-members th,
-    .create-team .selected-members td {
-        padding: 1em 1.3em;
-    }
-
-    .create-team .selected-members tbody tr {
-        border-bottom: thin solid rgb(221, 221, 221);
-    }
-
-        .create-team .selected-members tbody tr:nth-of-type(even) {
-            background-color: rgb(243, 243, 243);
-        }
-
-        .create-team .selected-members tbody tr:last-of-type {
-            border-bottom: thin solid rgb(0, 123, 206);
-        }
-
-        .create-team .selected-members tbody tr:hover {
-            color: rgb(138, 138, 138);
-        }
-/* --- */
-
-/* Code source: (Coyier, Chris) https://codepen.io/chriscoyier/pen/zYYZaGP */
-/* class applies to select element itself, not a wrapper element */
-.create-team-input-pair > input,
-.create-team-input-pair > select {
-    display: block;
-    font-size: 1em;
-    font-family: sans-serif;
-    font-weight: 700;
-    color: rgb(68, 68, 68);
-    line-height: 1.3;
-    padding: 0.6em 1.4em 0.5em 0.8em;
-    width: 100%;
-    max-width: 100%; /* useful when width is set to anything other than 100% */
-    box-sizing: border-box;
-    margin: 0;
-    border: 1px solid rgb(170, 170, 170);
-    box-shadow: 0 1px 0 1px rgba(0, 0, 0, 0.04);
-    border-radius: 0.5em;
-    -moz-appearance: none;
-    -webkit-appearance: none;
-    appearance: none;
-    background-color: rgb(255, 255, 255);
-}
-
-.create-team-input-pair > select {
-    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007CB2%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E"), linear-gradient(to bottom, rgb(255, 255, 255) 0%, rgb(229, 229, 229) 100%);
-    background-repeat: no-repeat, repeat;
-    /* arrow icon position (1em from the right, 50% vertical) , then gradient position*/
-    background-position: right 0.7em top 50%, 0 0;
-    /* icon size, then gradient */
-    background-size: 0.65em auto, 100%;
-}
-/* Hide arrow icon in IE browsers */
-.select-css::-ms-expand {
-    display: none;
-}
-/* Hover style */
-.select-css:hover {
-    border-color: rgb(136, 136, 136);
-}
-/* Focus style */
-.select-css:focus {
-    border-color: rgb(170, 170, 170);
-    /* It'd be nice to use -webkit-focus-ring-color here but it doesn't work on box-shadow */
-    box-shadow: 0 0 1px 3px rgba(59, 153, 252, 0.7);
-    box-shadow: 0 0 0 3px -moz-mac-focusring;
-    color: rgb(34, 34, 34);
-    outline: none;
-}
-/* Set options to normal weight */
-.select-css option {
-    font-weight: normal;
-}
-/* --- */
-
-.deselect-btn {
-    float: right;
-    background-color: rgb(160, 0, 0);
-    width: 10%;
-    padding: 0.7em;
-    font-size: 0.8em;
-    color: white;
-    border-radius: 10px;
-}
-
-    .deselect-btn:hover {
-        background-color: rgb(240, 0, 0);
-    }
-
-.select-member,
-.save-team {
-    display: block;
-    width: 10em;
-    min-width: 50px;
-    padding: 1em;
-    border-radius: 15px;
-}
-
-.select-member {
-    margin: 2em auto 0 auto;
-}
-
-.save-team {
-    float: right;
-    margin-right: 5em;
-}
-
-/* END of create team */
+/* END of Login display */
