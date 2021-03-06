@@ -32,6 +32,10 @@ namespace EctBlazorApp.Server.Controllers
 
         [Route("update-tracking-records")]
         [HttpPut]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> UpdateTrackingRecordsForUser(GraphUserRequestDetails userDetails)
         {
             using var client = new HttpClient();
@@ -59,13 +63,22 @@ namespace EctBlazorApp.Server.Controllers
                 return BadRequest(errorString.ToString());
 
             userForParms.LastSignIn = DateTime.Now;
-            await _dbContext.SaveChangesAsync();
-
-            return Ok("User records up to date");
+            try
+            {
+                await _dbContext.SaveChangesAsync();
+                return Ok("User records up to date");
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal server error. Please, try again later.");
+            }
         }
 
         [Route("get-dashboard-stats")]
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<DashboardResponse>> StatsForDashboard([FromQuery] string fromDate, [FromQuery] string toDate, [FromQuery] string UID = "")
         {
             EctUser user = await _dbContext.GetUserFromHashOrProcessingUser(UID, HttpContext.GetPreferredUsername);
@@ -87,8 +100,8 @@ namespace EctBlazorApp.Server.Controllers
             List<CalendarEvent> calendarEvents = _dbContext.GetCalendarEventsInDateRangeForUserId(user.Id, fromDateTime, toDateTime);
 
             double secondsInMeeting = CalendarEvent.GetTotalSecondsForEvents(calendarEvents);
-            string userFullName = String.IsNullOrEmpty(UID) ? "" : user.FullName;
-            string userEmailAddress = String.IsNullOrEmpty(UID) ? "" : user.Email;
+            string userFullName = string.IsNullOrEmpty(UID) ? "" : user.FullName;
+            string userEmailAddress = string.IsNullOrEmpty(UID) ? "" : user.Email;
             return Ok(new DashboardResponse
                 {
                     CalendarEvents = calendarEvents,
@@ -101,7 +114,7 @@ namespace EctBlazorApp.Server.Controllers
         }
 
         private delegate Task<bool> UpdateMetgodDelegate(HttpClient client, EctDbContext dbContext);
-        private async Task<bool> RetryUpdateMethodIfFails(HttpClient client, EctDbContext dbContext, UpdateMetgodDelegate method)
+        private static async Task<bool> RetryUpdateMethodIfFails(HttpClient client, EctDbContext dbContext, UpdateMetgodDelegate method)
         {
             const int defaultRetryCount = 3;
             int retryCount = 0;

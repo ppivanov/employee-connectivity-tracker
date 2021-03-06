@@ -2,6 +2,7 @@
 using EctBlazorApp.Shared;
 using EctBlazorApp.Shared.Entities;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -27,6 +28,8 @@ namespace EctBlazorApp.Server.Controllers
 
         [Route("is-admin")]
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<bool>> IsAdmin()
         {
             string userEmail = await HttpContext.GetPreferredUsername();
@@ -37,6 +40,8 @@ namespace EctBlazorApp.Server.Controllers
 
         [Route("is-leader")]
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<bool>> IsLeader()
         {
             string userEmail = await HttpContext.GetPreferredUsername();
@@ -46,6 +51,8 @@ namespace EctBlazorApp.Server.Controllers
         }
 
         [Route("is-leader-for-team")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<EctTeamRequestDetails>> IsLeaderForTeam([FromQuery] string TID = "")
         {
             string userEmail = await HttpContext.GetPreferredUsername();
@@ -56,6 +63,8 @@ namespace EctBlazorApp.Server.Controllers
 
         [Route("get-app-users")]
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public ActionResult<IEnumerable<string>> GetUserEmails()
         {
             var appUsers = _dbContext.Users.Where(u => u.MemberOfId.HasValue == false)
@@ -66,24 +75,15 @@ namespace EctBlazorApp.Server.Controllers
 
         [Route("get-administrators")]
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public ActionResult<IEnumerable<EctUser>> GetAdminstrators()
         {
             List<EctUser> administrators = _dbContext.Administrators.Include(a => a.User).Select(a => a.User).ToList();
             if(administrators == null)
-            {
                 administrators = new List<EctUser>();
-            }
 
             return Ok(administrators);
-        }
-
-        [Route("my-email")]
-        [HttpGet]
-        public async Task<ActionResult<string>> GetEmailForProcessingUser()
-        {
-            string userEmail = await HttpContext.GetPreferredUsername();
-
-            return Ok(userEmail);
         }
     }
 }

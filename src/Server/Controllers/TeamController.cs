@@ -3,6 +3,7 @@ using EctBlazorApp.Server.Extensions;
 using EctBlazorApp.Shared;
 using EctBlazorApp.Shared.Entities;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -29,11 +30,19 @@ namespace EctBlazorApp.Server.Controllers
         [Route("create-team")]
         [HttpPost]
         [AuthorizeAdmin]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> CreateNewTeam(EctTeamRequestDetails teamDetails)
         {
 
             if (teamDetails.AreDetailsValid() == false)
                 return BadRequest("Invalid team details!");
+
+            if (_dbContext.Teams.Any(t => t.Name.ToLower().Equals(teamDetails.Name.ToLower())))
+                return Conflict($"A team with the name {teamDetails.Name} already exists.");
 
             string leaderEmail = GetEmailFromFormattedString(teamDetails.LeaderNameAndEmail);
             EctUser leader = _dbContext.Users.Include(u => u.LeaderOf).FirstOrDefault(u => u.Email.Equals(leaderEmail));
@@ -64,6 +73,10 @@ namespace EctBlazorApp.Server.Controllers
         [Route("update-team")]
         [HttpPost]
         [AuthorizeLeader]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> UpdateTeam(EctTeamRequestDetails teamDetails)
         {
             if (teamDetails.AreDetailsValid() == false)
@@ -76,14 +89,22 @@ namespace EctBlazorApp.Server.Controllers
 
             team.Members = _dbContext.Users.Where(u => teamDetails.MemberEmails.Contains(u.Email)).ToList();
             team.Leader = _dbContext.Users.FirstOrDefault(u => u.Email.Equals(teamDetails.LeaderEmail));
-            await _dbContext.SaveChangesAsync();
-
-            return Ok("Updated successfully");
+            try
+            {
+                await _dbContext.SaveChangesAsync();
+                return Ok("Updated successfully");
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal server error. Please, try again later.");
+            }
         }
 
-        [Route("get-team-stats")]
+        [Route("get-team-stats")]   
         [HttpGet]
         [AuthorizeLeader]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<TeamDashboardResponse>> GetStatsForDashboard([FromQuery] string fromDate, [FromQuery] string toDate)
         {
             string userEmail = await HttpContext.GetPreferredUsername();
@@ -104,17 +125,19 @@ namespace EctBlazorApp.Server.Controllers
                 response.TeamMembers.Add(GetCommunicationDataAsNewUserInstance(teamMember, formattedFromDate, formattedToDate));
             }
 
-            return response;
+            return Ok(response);
         }
 
         [Route("get-team-id")]
         [HttpGet]
         [AuthorizeLeader]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<string>> GetHashedTeamId([FromQuery]string teamName = "")
         {
             string userEmail = await HttpContext.GetPreferredUsername();
             EctUser teamLead = _dbContext.Users.FirstOrDefault(u => u.Email == userEmail);
-            //if (string.IsNullOrEmpty(teamName) == false)
+            //if (string.IsNullOrEmpty(teamName) == false)                                                                                                  // If the team lead has more than 1 team associated with them
             //{
             //    var team = _dbContext.Teams.FirstOrDefault(t => t.Name.ToLower().Equals(teamName.ToLower()));
             //    if (team == null) return NotFound();
@@ -123,12 +146,14 @@ namespace EctBlazorApp.Server.Controllers
             //}
 
             var team = _dbContext.Teams.FirstOrDefault(t => t.LeaderId == teamLead.Id);
-            return ComputeSha256Hash(team.Id.ToString());
+            return Ok(ComputeSha256Hash(team.Id.ToString()));
         }
 
         [Route("get-notification-options")]
         [HttpGet]
         [AuthorizeLeader]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<NotificationOptionsResponse>> GetCurrentPointsThreshold()
         {
             string userEmail = await HttpContext.GetPreferredUsername();
@@ -141,12 +166,15 @@ namespace EctBlazorApp.Server.Controllers
                 MarginForNotification = assignedTeam.MarginForNotification,
                 UsersToNotify = assignedTeam.AdditionalUsersToNotify
             };
-            return notificationOptions;
+            return Ok(notificationOptions);
         }
 
         [Route("set-notification-options")]
         [HttpPut]
         [AuthorizeLeader]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<string>> SetNotificationOptions([FromBody] NotificationOptionsResponse notificationOptions)
         {
             string userEmail = await HttpContext.GetPreferredUsername();
@@ -156,9 +184,15 @@ namespace EctBlazorApp.Server.Controllers
             assignedTeam.PointsThreshold = notificationOptions.PointsThreshold;
             assignedTeam.MarginForNotification = notificationOptions.MarginForNotification;
             assignedTeam.AdditionalUsersToNotify = notificationOptions.UsersToNotify;
-            await _dbContext.SaveChangesAsync();
-
-            return Ok("Notification options saved.");
+            try
+            {
+                await _dbContext.SaveChangesAsync();
+                return Ok("Notification options saved.");
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal server error. Please, try again later.");
+            }
         }
 
         private EctUser GetCommunicationDataAsNewUserInstance(EctUser forUser, DateTime fromDate, DateTime toDate)

@@ -91,7 +91,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         protected override async Task UpdateDashboard()
         {
             string queryString = GetDateRangeQueryString(FromDate.Value, ToDate.Value);
-            string userIdQueryString = String.IsNullOrEmpty(HashedUserId) ? "" : $"&UID={HashedUserId}";
+            string userIdQueryString = string.IsNullOrEmpty(HashedUserId) ? "" : $"&UID={HashedUserId}";
 
             var response = await ApiConn.FetchDashboardResponse($"{queryString}{userIdQueryString}");
             await ExtractDataFromResponse(response);
@@ -109,7 +109,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             numberOfMeetings = calendarEvents != null ? calendarEvents.Count : 0;
             userEmailAddress = response.UserEmail;
 
-            if (String.IsNullOrEmpty(response.UserFullName) == false)
+            if (string.IsNullOrEmpty(response.UserFullName) == false)
                 await JsRuntime.InvokeVoidAsync("setPageTitle", response.UserFullName);
         }
 
@@ -153,7 +153,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         private async Task FindAttendeesFromCalendarEvents()
         {
             string emailToFilterOut =
-                String.IsNullOrEmpty(userEmailAddress) ? await GetEmailForProcessingUser() : userEmailAddress;
+                string.IsNullOrEmpty(userEmailAddress) ? await GetEmailForProcessingUser() : userEmailAddress;
             foreach (var meeting in calendarEvents)
             {
                 List<string> attendees = meeting.GetAttendeesExcludingUser(emailToFilterOut);

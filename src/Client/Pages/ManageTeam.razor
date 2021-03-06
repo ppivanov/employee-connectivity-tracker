@@ -25,7 +25,7 @@
                         <DataAnnotationsValidator />
                         <ValidationSummary style="color: red" />
 
-                        @if (String.IsNullOrEmpty(ServerMessage) == false)
+                        @if (string.IsNullOrEmpty(ServerMessage) == false)
                         {
                             <div class="operation-result">
                                 <p style="@ServerMessageInlineStyle">@ServerMessage</p>

@@ -98,7 +98,7 @@ namespace EctBlazorApp.Server.Extensions
         {
             string userEmail = await getPreferredUsername.Invoke();
             EctUser user;
-            if (String.IsNullOrEmpty(hashedUserId))
+            if (string.IsNullOrEmpty(hashedUserId))
             {
                 user = dbContext.Users.FirstOrDefault(u => u.Email == userEmail);
                 return user;
