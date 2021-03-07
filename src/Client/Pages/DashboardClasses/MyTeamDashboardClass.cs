@@ -274,7 +274,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             ServerMessageIsError = false;
 
             var response = await ApiConn.SubmitNotificationOptions(NewNotificationOptions);
-            ServerMessageIsError = response.Item1;
+            ServerMessageIsError = response.Item1 == false;
             ServerMessage = response.Item2;
             _inputError = ServerMessageIsError;
 

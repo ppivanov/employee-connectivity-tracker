@@ -32,7 +32,7 @@ namespace EctBlazorApp.Server.Controllers
             return _dbContext.CommunicationPoints;
         }
 
-        [Route("points/update")]
+        [Route("set-points")]
         [HttpPut]
         [AuthorizeAdmin]
         [ProducesResponseType(StatusCodes.Status200OK)]

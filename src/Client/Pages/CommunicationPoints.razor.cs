@@ -141,7 +141,7 @@ namespace EctBlazorApp.Client.Pages
             var toggledMedium = GetToggledMedium();
             if (toggledMedium != null) PointsAndToggles[toggledMedium] = false;
             var response = await ApiConn.SubmitPoints(PointsAndToggles.Keys.ToList());
-            serverMessageIsError = response.Item1;
+            serverMessageIsError = response.Item1 == false;
             serverMessage = response.Item2;
            
             isSubmitting = false;

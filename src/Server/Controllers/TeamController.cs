@@ -82,7 +82,7 @@ namespace EctBlazorApp.Server.Controllers
         }
 
         [Route("update-team")]
-        [HttpPost]
+        [HttpPut]
         [AuthorizeLeader]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

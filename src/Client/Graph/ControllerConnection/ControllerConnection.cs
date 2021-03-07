@@ -8,6 +8,8 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
+using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace EctBlazorApp.Client.Graph
@@ -31,130 +33,49 @@ namespace EctBlazorApp.Client.Graph
             _httpClient = httpClient;
         }
 
-        public async Task<IEnumerable<EctUser>> FetchAdminstrators()
+        public Task<IEnumerable<EctUser>> FetchAdminstrators()
         {
-            var token = await GetAPITokenAsync();
-            if (token != null)
-            {
-                try
-                {
-                    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                    var administrators = await _httpClient.GetFromJsonAsync<IEnumerable<EctUser>>($"api/auth/get-administrators");
-
-                    return administrators;
-                }
-                catch (AccessTokenNotAvailableException exception)
-                {
-                    exception.Redirect();
-                }
-            }
-            return new List<EctUser>();
+            return HttpGet<IEnumerable<EctUser>>("api/auth/get-administrators", new List<EctUser>());
         }
 
-        public async Task<NotificationOptionsResponse> FetchCurrentNotificationOptions()
+        public Task<NotificationOptionsResponse> FetchCurrentNotificationOptions()
         {
             var errorResponse = new NotificationOptionsResponse
             {
                 PointsThreshold = -1,
                 MarginForNotification = -1
             };
-            var token = await GetAPITokenAsync();
-            if (token == null)
-                return errorResponse;
-
-            try
-            {
-                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                var response = await _httpClient.GetFromJsonAsync<NotificationOptionsResponse>($"api/team/get-notification-options");
-
-                return response;
-            }
-            catch (AccessTokenNotAvailableException exception)
-            {
-                exception.Redirect();
-            }
-            return errorResponse;                                                                                                          // This return should never be executed
+            return HttpGet<NotificationOptionsResponse>("api/team/get-notification-options", errorResponse);
         }
 
         public async Task<(CommunicationPoint, CommunicationPoint)> FetchCommunicationPoints()
         {
-            var token = await GetAPITokenAsync();
-            if (token != null)
+            var defaultResponse = new List<CommunicationPoint>
             {
-                try
-                {
-                    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                    var CommunicationPoints = await _httpClient.GetFromJsonAsync<IEnumerable<CommunicationPoint>>($"api/communication/points");
-                    var emailCommPoints = CommunicationPoint.GetCommunicationPointForMedium(CommunicationPoints, "email");
-                    var meetingCommPoints = CommunicationPoint.GetCommunicationPointForMedium(CommunicationPoints, "meeting");
+                new CommunicationPoint { Medium = "email", Points = 0 },
+                new CommunicationPoint { Medium = "meeting", Points = 0 }
+            };
+            var response = await HttpGet<IEnumerable<CommunicationPoint>>("api/communication/points", defaultResponse);
+            var emailCommPoints = CommunicationPoint.GetCommunicationPointForMedium(response, "email");
+            var meetingCommPoints = CommunicationPoint.GetCommunicationPointForMedium(response, "meeting");
 
-                    return (emailCommPoints, meetingCommPoints);
-                }
-                catch (AccessTokenNotAvailableException exception)
-                {
-                    exception.Redirect();
-                }
-            }
-            return (new CommunicationPoint(), new CommunicationPoint());
+            return (emailCommPoints, meetingCommPoints);
         }
 
-        public async Task<DashboardResponse> FetchDashboardResponse(string queryString)
+        public Task<DashboardResponse> FetchDashboardResponse(string queryString)
         {
-            var token = await GetAPITokenAsync();
-            if (token != null)
-            {
-                try
-                {
-                    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                    var response = await _httpClient.GetFromJsonAsync<DashboardResponse>($"api/main/get-dashboard-stats{queryString}");
-                    return response;
-                }
-                catch (AccessTokenNotAvailableException exception)
-                {
-                    exception.Redirect();
-                }
-            }
-            return new DashboardResponse();
+            return HttpGet<DashboardResponse>($"api/main/get-dashboard-stats{queryString}", new DashboardResponse());
         }
 
-        public async Task<TeamDashboardResponse> FetchTeamDashboardResponse(string queryString)
+        public Task<TeamDashboardResponse> FetchTeamDashboardResponse(string queryString)
         {
-            var token = await GetAPITokenAsync();
-            if (token != null)
-            {
-                try
-                {
-                    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                    var response = await _httpClient.GetFromJsonAsync<TeamDashboardResponse>($"api/team/get-team-stats{queryString}");
-
-                    return response;
-                }
-                catch (AccessTokenNotAvailableException exception)
-                {
-                    exception.Redirect();
-                }
-            }
-            return new TeamDashboardResponse { TeamMembers = new List<EctUser>(), TeamName = "" };
+            var defaultResponse = new TeamDashboardResponse { TeamMembers = new List<EctUser>(), TeamName = "" };
+            return HttpGet<TeamDashboardResponse>($"api/main/get-dashboard-stats{queryString}", defaultResponse);
         }
 
-        public async Task<IEnumerable<EctTeam>> GetAllTeams()
+        public Task<IEnumerable<EctTeam>> GetAllTeams()
         {
-            var token = await GetAPITokenAsync();
-            if (token != null)
-            {
-                try
-                {
-                    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                    var response = await _httpClient.GetFromJsonAsync<IEnumerable<EctTeam>>($"api/team/all");
-
-                    return response;
-                }
-                catch (AccessTokenNotAvailableException exception)
-                {
-                    exception.Redirect();
-                }
-            }
-            return new List<EctTeam>();
+            return HttpGet<IEnumerable<EctTeam>>("api/team/all", new List<EctTeam>());
         }
 
         public async Task<string> GetAPITokenAsync()
@@ -175,43 +96,14 @@ namespace EctBlazorApp.Client.Graph
             return null;
         }
 
-        public async Task<string> GetHashedTeamId()
+        public Task<string> GetHashedTeamId()
         {
-            var token = await GetAPITokenAsync();
-            if (token == null)
-                return "";
-
-            try
-            {
-                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                var response = await _httpClient.GetFromJsonAsync<string>($"api/team/get-team-id");
-
-                return response;
-            }
-            catch (AccessTokenNotAvailableException exception)
-            {
-                exception.Redirect();
-                return "";
-            }
+            return HttpGet<string>("api/team/get-team-id", "");
         }
 
-        public async Task<IEnumerable<string>> GetUsersEligibleForMembers()
+        public Task<IEnumerable<string>> GetUsersEligibleForMembers()
         {
-            var token = await GetAPITokenAsync();
-            if (token != null)
-            {
-                try
-                {
-                    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                    var response = await _httpClient.GetFromJsonAsync<IEnumerable<string>>($"api/auth/get-app-users");
-                    return response;
-                }
-                catch (AccessTokenNotAvailableException exception)
-                {
-                    exception.Redirect();
-                }
-            }
-            return new List<string>();
+            return HttpGet<IEnumerable<string>>("api/auth/get-app-users", new List<string>());
         }
 
         public async Task<bool> IsProcessingUserAnAdmin()
@@ -226,115 +118,39 @@ namespace EctBlazorApp.Client.Graph
             return leaderResponse;
         }
 
-        public async Task<EctTeamRequestDetails> IsProcessingUserLeaderForTeam(string hashedTeamId)
+        public Task<EctTeamRequestDetails> IsProcessingUserLeaderForTeam(string hashedTeamId)
         {
-            var token = await GetAPITokenAsync();
-            if (token == null) return null;
-            try
-            {
-                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                var response = await _httpClient.GetFromJsonAsync<EctTeamRequestDetails>(
-                    $"api/auth/is-leader-for-team?TID={hashedTeamId}");
-                return response;
-            }
-            catch (AccessTokenNotAvailableException exception)
-            {
-                exception.Redirect();
-                return null;
-            }
+            return HttpGet<EctTeamRequestDetails>($"api/auth/is-leader-for-team?TID={hashedTeamId}", null);
         }
 
-
-        public async Task<(bool, string)> SubmitNotificationOptions(NotificationOptionsResponse notificationOptions)
+        public Task<(bool, string)> SubmitNotificationOptions(NotificationOptionsResponse notificationOptions)
         {
-            var token = await GetAPITokenAsync();
-            const string tokenErrorMessage = "Error retrieving access token. Please, try again later.";
-            if (token == null)
-                return (true, tokenErrorMessage);
-
-            try
-            {
-                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                var response = await _httpClient.PutAsJsonAsync($"api/team/set-notification-options", notificationOptions);
-                var serverMessage = await response.Content.ReadAsStringAsync();
-                var isError = false;
-                if (response.IsSuccessStatusCode == false)
-                    isError = true;
-
-                return (isError, serverMessage);
-            }
-            catch (AccessTokenNotAvailableException exception)
-            {
-                exception.Redirect();
-            }
-            return (true, tokenErrorMessage);
+            return HttpPut("api/team/set-notification-options", notificationOptions);
         }
 
-        public async Task<(bool, string)> SubmitPoints(IEnumerable<CommunicationPoint> communicationPoints)
+        public Task<(bool, string)> SubmitPoints(IEnumerable<CommunicationPoint> communicationPoints)
         {
-            var token = await GetAPITokenAsync();
-            const string tokenErrorMessage = "Error retrieving access token. Please, try again later.";
-            if (token == null)
-                return (true, tokenErrorMessage);
-
-            try
-            {
-                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                var response = await _httpClient.PutAsJsonAsync($"api/communication/points/update", communicationPoints);
-                var serverMessage = await response.Content.ReadAsStringAsync();
-                var isError = false;
-                if (response.IsSuccessStatusCode == false)
-                    isError = true;
-
-                return (isError, serverMessage);
-            }
-            catch (AccessTokenNotAvailableException exception)
-            {
-                exception.Redirect();
-            }
-            return (true, tokenErrorMessage);
+            return HttpPut("api/communication/set-points", communicationPoints);
         }
 
-        public async Task<(bool, string)> SubmitTeamData(bool isNewTeam, EctTeamRequestDetails teamDetails)
+        public Task<(bool, string)> SubmitTeamData(bool isNewTeam, EctTeamRequestDetails teamDetails)
         {
-            var token = await GetAPITokenAsync();
-            if (token == null)
-                return (false, "Error retrieving access token. Please, try again later.");
-
-            string endpoint = isNewTeam ? "create-team" : "update-team";
-            try
-            {
-                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                var response = await _httpClient.PostAsJsonAsync($"api/team/{endpoint}", teamDetails);
-                var serverMessage = await response.Content.ReadAsStringAsync();
-
-                return (response.IsSuccessStatusCode, serverMessage);
-            }
-            catch (AccessTokenNotAvailableException exception)
-            {
-                exception.Redirect();
-                return (false, "Error connecting to services. Please, try again later.");
-            }
+            if (isNewTeam)
+                return HttpPost("api/team/create-team", teamDetails);
+            else
+                return HttpPut("api/team/update-team", teamDetails);
         }
 
         public async Task<string> UpdateDatabaseRecords()
         {
             var accessToken = await GetAccessTokenAsync();
-            if (accessToken == null)
-                return "Token missing";
-
             var userDetails = new GraphUserRequestDetails
             {
                 GraphToken = accessToken
             };
-
-            var json = JsonConvert.SerializeObject(userDetails);
-            var data = new StringContent(json, Encoding.UTF8, "application/json");
-
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", await GetAPITokenAsync());
-            var response = await _httpClient.PutAsync($"api/main/update-tracking-records", data);
-
-            return await response.Content.ReadAsStringAsync();
+            var apiResponse = await HttpPut("api/main/update-tracking-records", userDetails, accessToken);
+            
+            return apiResponse.Item2;
         }
 
 
@@ -357,7 +173,11 @@ namespace EctBlazorApp.Client.Graph
             }
             return null;
         }
-        private async Task<Boolean> IsProcessingUserAuthorizedForRole(UserRoles role)
+        private async Task<bool> IsProcessingUserAuthorizedForRole(UserRoles role)
+        {
+            return await HttpGet<bool>($"api/auth/is-{role}", false);
+        }
+        private async Task<T> HttpGet<T>(string endpoint, T defaultResponse)
         {
             var token = await GetAPITokenAsync();
             if (token != null)
@@ -365,15 +185,51 @@ namespace EctBlazorApp.Client.Graph
                 try
                 {
                     _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                    bool authResponse = await _httpClient.GetFromJsonAsync<Boolean>($"api/auth/is-{role}");
-                    return authResponse;
+                    T response = await _httpClient.GetFromJsonAsync<T>(endpoint);
+
+                    return response;
                 }
                 catch (AccessTokenNotAvailableException exception)
                 {
                     exception.Redirect();
                 }
             }
-            return false;
+            return defaultResponse;
+        }
+        private async Task<(bool, string)> HttpPut<T>(string endpoint, T data)
+        {
+            var token = await GetAPITokenAsync();
+            return await HttpPut(endpoint, data, token);
+        }
+        private async Task<(bool, string)> HttpPut<T>(string endpoint, T data, string accessToken)
+        {
+            return await HttpSendData(endpoint, data, accessToken, _httpClient.PutAsJsonAsync);
+        }
+        private async Task<(bool, string)> HttpPost<T>(string endpoint, T data)
+        {
+            var token = await GetAPITokenAsync();
+            return await HttpSendData(endpoint, data, token, _httpClient.PostAsJsonAsync);
+        }
+        private delegate Task<HttpResponseMessage> HttpSendMethod<T>(string endpoint, T data, JsonSerializerOptions options = null, CancellationToken cancellationToken = default);
+        private async Task<(bool, string)> HttpSendData<T>(string endpoint, T data, string accessToken, HttpSendMethod<T> method)
+        {
+            const string tokenErrorMessage = "Error retrieving access token. Please, try again later.";
+            if (accessToken != null)
+            {
+                try
+                {
+                    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                    var response = await method.Invoke(endpoint, data);
+                    var serverMessage = await response.Content.ReadAsStringAsync();
+
+                    return (response.IsSuccessStatusCode, serverMessage);
+                }
+                catch (AccessTokenNotAvailableException exception)
+                {
+                    exception.Redirect();
+                }
+            }
+            return (false, tokenErrorMessage);
         }
     }
 }
