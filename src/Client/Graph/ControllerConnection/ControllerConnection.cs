@@ -137,6 +137,26 @@ namespace EctBlazorApp.Client.Graph
             return new TeamDashboardResponse { TeamMembers = new List<EctUser>(), TeamName = "" };
         }
 
+        public async Task<IEnumerable<EctTeam>> GetAllTeams()
+        {
+            var token = await GetAPITokenAsync();
+            if (token != null)
+            {
+                try
+                {
+                    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    var response = await _httpClient.GetFromJsonAsync<IEnumerable<EctTeam>>($"api/team/all");
+
+                    return response;
+                }
+                catch (AccessTokenNotAvailableException exception)
+                {
+                    exception.Redirect();
+                }
+            }
+            return new List<EctTeam>();
+        }
+
         public async Task<string> GetAPITokenAsync()
         {
             var tokenRequest = await _accessTokenProvider.RequestAccessToken(new AccessTokenRequestOptions

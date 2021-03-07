@@ -18,6 +18,8 @@ namespace EctBlazorApp.Client.Graph
 
         Task<TeamDashboardResponse> FetchTeamDashboardResponse(string queryString);
 
+        Task<IEnumerable<EctTeam>> GetAllTeams();
+
         Task<string> GetAPITokenAsync();
 
         Task<string> GetHashedTeamId();

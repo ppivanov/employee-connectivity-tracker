@@ -34,7 +34,7 @@ namespace EctBlazorApp.Server.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public ActionResult<IEnumerable<EctTeam>> GetAll()
         {
-            return Ok(_dbContext.Teams);
+            return Ok(_dbContext.Teams.Include(t => t.Members).Include(t => t.Leader));
         }
 
 
