@@ -62,15 +62,15 @@ namespace EctBlazorApp.Client.Graph
             return (emailCommPoints, meetingCommPoints);
         }
 
-        public Task<DashboardResponse> FetchDashboardResponse(string queryString)
+        public async Task<DashboardResponse> FetchDashboardResponse(string queryString)
         {
-            return HttpGet<DashboardResponse>($"api/main/get-dashboard-stats{queryString}", new DashboardResponse());
+            return await HttpGet <DashboardResponse>($"api/main/get-dashboard-stats{queryString}", new DashboardResponse());
         }
 
-        public Task<TeamDashboardResponse> FetchTeamDashboardResponse(string queryString)
+        public async Task<TeamDashboardResponse> FetchTeamDashboardResponse(string queryString)
         {
             var defaultResponse = new TeamDashboardResponse { TeamMembers = new List<EctUser>(), TeamName = "" };
-            return HttpGet<TeamDashboardResponse>($"api/main/get-dashboard-stats{queryString}", defaultResponse);
+            return await HttpGet<TeamDashboardResponse>($"api/team/get-team-stats{queryString}", defaultResponse);
         }
 
         public Task<IEnumerable<EctTeam>> GetAllTeams()
