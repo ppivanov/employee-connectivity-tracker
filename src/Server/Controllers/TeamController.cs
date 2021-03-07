@@ -27,6 +27,17 @@ namespace EctBlazorApp.Server.Controllers
             _dbContext = context;
         }
 
+        [Route("all")]
+        [HttpGet]
+        [AuthorizeAdmin]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public ActionResult<IEnumerable<EctTeam>> GetAll()
+        {
+            return Ok(_dbContext.Teams);
+        }
+
+
         [Route("create-team")]
         [HttpPost]
         [AuthorizeAdmin]

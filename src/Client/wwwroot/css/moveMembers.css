@@ -21,6 +21,11 @@
   border-left: 1px solid black;
 }
 
+.move-members > .team > table .member-heading-left {
+    width: 70%;
+    border-right: 1px solid black;
+}
+
 .team-selection {
   width: 20em;
   margin: 2em auto;
