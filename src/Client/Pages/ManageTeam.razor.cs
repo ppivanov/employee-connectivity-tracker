@@ -19,8 +19,6 @@ namespace EctBlazorApp.Client.Pages
         protected IControllerConnection ApiConn { get; set; }
         [Inject]
         protected IJSRuntime JsRuntime { get; set; }
-        [Inject]
-        protected HttpClient Http { get; set; }
 
         private bool serverMessageIsError = false;
         private HashSet<string> AllAvailableLeaders { get; set; }

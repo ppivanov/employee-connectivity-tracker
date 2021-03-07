@@ -17,10 +17,6 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
     {
         [Inject]
         protected IControllerConnection ApiConn { get; set; }
-
-        [Inject]
-        protected HttpClient Http { get; set; }
-
         [Inject]
         protected IJSRuntime JsRuntime { get; set; }
 

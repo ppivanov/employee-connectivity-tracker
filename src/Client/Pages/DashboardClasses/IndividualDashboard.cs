@@ -17,7 +17,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         [Parameter]
         public string HashedUserId { get; set; }
         [Inject]
-        AuthenticationStateProvider AuthenticationStateProvider { get; set; }
+        protected AuthenticationStateProvider AuthenticationStateProvider { get; set; }
 
         private List<SentMail> sentMail;
         private List<ReceivedMail> receivedMail;

@@ -34,7 +34,16 @@ namespace EctBlazorApp.Server.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public ActionResult<IEnumerable<EctTeam>> GetAll()
         {
-            return Ok(_dbContext.Teams.Include(t => t.Members).Include(t => t.Leader));
+            try
+            {
+                var allTeams = _dbContext.Teams.Include(t => t.Members).Include(t => t.Leader).ToList();
+                return Ok(allTeams);
+            }
+            catch(Exception ex)
+            {
+                return StatusCode(500, "Internal server error. Please, try again later.");
+            }
+
         }
 
 

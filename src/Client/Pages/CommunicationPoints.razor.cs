@@ -12,10 +12,9 @@ namespace EctBlazorApp.Client.Pages
     public class CommunicationPointsClass : ComponentBase
     {
         [Inject]
-        IJSRuntime jsRuntime { get; set; }
-
+        protected IControllerConnection ApiConn { get; set; }
         [Inject]
-        IControllerConnection ApiConn { get; set; }
+        protected IJSRuntime JsRuntime { get; set; }
 
         private bool serverMessageIsError = false;
         public const int maxPointsPerMedium = 100;
@@ -51,7 +50,7 @@ namespace EctBlazorApp.Client.Pages
 
         protected override async Task OnInitializedAsync()
         {
-            await jsRuntime.InvokeVoidAsync("setPageTitle", "Communication Points");
+            await JsRuntime.InvokeVoidAsync("setPageTitle", "Communication Points");
             isAdmin = await ApiConn.IsProcessingUserAnAdmin();
             if (isAdmin)
                 await FetchCommunicationPoints();

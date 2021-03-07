@@ -62,18 +62,18 @@ namespace EctBlazorApp.Client.Graph
             return (emailCommPoints, meetingCommPoints);
         }
 
-        public async Task<DashboardResponse> FetchDashboardResponse(string queryString)
+        public Task<DashboardResponse> FetchDashboardResponse(string queryString)
         {
-            return await HttpGet <DashboardResponse>($"api/main/get-dashboard-stats{queryString}", new DashboardResponse());
+            return HttpGet <DashboardResponse>($"api/main/get-dashboard-stats{queryString}", new DashboardResponse());
         }
 
-        public async Task<TeamDashboardResponse> FetchTeamDashboardResponse(string queryString)
+        public Task<TeamDashboardResponse> FetchTeamDashboardResponse(string queryString)
         {
             var defaultResponse = new TeamDashboardResponse { TeamMembers = new List<EctUser>(), TeamName = "" };
-            return await HttpGet<TeamDashboardResponse>($"api/team/get-team-stats{queryString}", defaultResponse);
+            return HttpGet<TeamDashboardResponse>($"api/team/get-team-stats{queryString}", defaultResponse);
         }
 
-        public Task<IEnumerable<EctTeam>> GetAllTeams()
+        public Task<IEnumerable<EctTeam>> FetchAllTeams()
         {
             return HttpGet<IEnumerable<EctTeam>>("api/team/all", new List<EctTeam>());
         }
@@ -106,16 +106,14 @@ namespace EctBlazorApp.Client.Graph
             return HttpGet<IEnumerable<string>>("api/auth/get-app-users", new List<string>());
         }
 
-        public async Task<bool> IsProcessingUserAnAdmin()
+        public Task<bool> IsProcessingUserAnAdmin()
         {
-            var adminResponse = await IsProcessingUserAuthorizedForRole(UserRoles.admin);
-            return adminResponse;
+            return IsProcessingUserAuthorizedForRole(UserRoles.admin);
         }
 
-        public async Task<bool> IsProcessingUserALeader()
+        public Task<bool> IsProcessingUserALeader()
         {
-            var leaderResponse = await IsProcessingUserAuthorizedForRole(UserRoles.leader);
-            return leaderResponse;
+            return IsProcessingUserAuthorizedForRole(UserRoles.leader);
         }
 
         public Task<EctTeamRequestDetails> IsProcessingUserLeaderForTeam(string hashedTeamId)
@@ -173,10 +171,6 @@ namespace EctBlazorApp.Client.Graph
             }
             return null;
         }
-        private async Task<bool> IsProcessingUserAuthorizedForRole(UserRoles role)
-        {
-            return await HttpGet<bool>($"api/auth/is-{role}", false);
-        }
         private async Task<T> HttpGet<T>(string endpoint, T defaultResponse)
         {
             var token = await GetAPITokenAsync();
@@ -196,6 +190,11 @@ namespace EctBlazorApp.Client.Graph
             }
             return defaultResponse;
         }
+        private async Task<(bool, string)> HttpPost<T>(string endpoint, T data)
+        {
+            var token = await GetAPITokenAsync();
+            return await HttpSendData(endpoint, data, token, _httpClient.PostAsJsonAsync);
+        }
         private async Task<(bool, string)> HttpPut<T>(string endpoint, T data)
         {
             var token = await GetAPITokenAsync();
@@ -204,11 +203,6 @@ namespace EctBlazorApp.Client.Graph
         private async Task<(bool, string)> HttpPut<T>(string endpoint, T data, string accessToken)
         {
             return await HttpSendData(endpoint, data, accessToken, _httpClient.PutAsJsonAsync);
-        }
-        private async Task<(bool, string)> HttpPost<T>(string endpoint, T data)
-        {
-            var token = await GetAPITokenAsync();
-            return await HttpSendData(endpoint, data, token, _httpClient.PostAsJsonAsync);
         }
         private delegate Task<HttpResponseMessage> HttpSendMethod<T>(string endpoint, T data, JsonSerializerOptions options = null, CancellationToken cancellationToken = default);
         private async Task<(bool, string)> HttpSendData<T>(string endpoint, T data, string accessToken, HttpSendMethod<T> method)
@@ -230,6 +224,10 @@ namespace EctBlazorApp.Client.Graph
                 }
             }
             return (false, tokenErrorMessage);
+        }
+        private Task<bool> IsProcessingUserAuthorizedForRole(UserRoles role)
+        {
+            return HttpGet<bool>($"api/auth/is-{role}", false);
         }
     }
 }

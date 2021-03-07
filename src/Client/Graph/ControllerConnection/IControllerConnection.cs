@@ -18,7 +18,7 @@ namespace EctBlazorApp.Client.Graph
 
         Task<TeamDashboardResponse> FetchTeamDashboardResponse(string queryString);
 
-        Task<IEnumerable<EctTeam>> GetAllTeams();
+        Task<IEnumerable<EctTeam>> FetchAllTeams();
 
         Task<string> GetAPITokenAsync();
 

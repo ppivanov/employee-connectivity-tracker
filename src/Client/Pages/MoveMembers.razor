@@ -61,9 +61,13 @@
         </table>
     </div>
     <datalist id="teams">
-        <option>team 1</option>
-        <option>team 2</option>
-        <option>team 3</option>
+        @if (InAppTeams != null)
+        {
+            @foreach (var team in InAppTeams)
+            {
+                <option>@(team.Name)</option>
+            }
+        }
     </datalist>
     <button type="button" class="move-members-submit">Submit</button>
 </div>
