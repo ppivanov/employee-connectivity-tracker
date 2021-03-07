@@ -1,76 +1,95 @@
 ﻿@page "/move-members"
 @inherits MoveMembersClass
 
-<div class="move-members">
-    <div class="team float-left">
-        <h2>Team one</h2>
-        <div class="team-selection">
-            <input type="text" placeholder="team name" class="input" list="teams" />
+@using static EctBlazorApp.Shared.SharedMethods;
+
+
+<AuthorizeView>
+    <Authorized>
+        <div class="move-members">
+            <div class="team float-left">
+                <h2>Team one</h2>
+                <div class="team-selection">
+                    <input @bind="LeftTeamSelection" type="text" placeholder="Team name..." class="input" list="teams" />
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <td class="member-heading-left">Members</td>
+                            <td>Actions</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (LeftTeam != null)
+                        {
+                            @foreach (var member in LeftTeam.Members)
+                            {
+                                <tr>
+                                    <td>
+                                        @FormatFullNameAndEmail(member.FullName, member.Email)
+                                    </td>
+                                    <td>
+                                        <button type="button" class="remove-member" @onclick="() => RemoveMember(LeftTeam, member.Email)">
+                                            &times;
+                                        </button>
+                                        <button type="button" class="move-member" @onclick="() => MoveMember(LeftTeam, RightTeam, member.Email)">
+                                            &rarr;
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="team float-right">
+                <h2>Team two</h2>
+                <div class="team-selection">
+                    <input @bind="RightTeamSelection" type="text" placeholder="Team name..." class="input" list="teams" />
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <td>Actions</td>
+                            <td class="member-heading-right">Members</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (RightTeam != null)
+                        {
+                            @foreach (var member in RightTeam.Members)
+                            {
+                                <tr>
+                                    <td>
+                                        <button type="button" class="move-member" @onclick="() => MoveMember(RightTeam, LeftTeam, member.Email)">
+                                            &larr;
+                                        </button>
+                                        <button type="button" class="remove-member" @onclick="() => RemoveMember(RightTeam, member.Email)">
+                                            &times;
+                                        </button>
+                                    </td>
+                                    <td>
+                                        @FormatFullNameAndEmail(member.FullName, member.Email)
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <datalist id="teams">
+                @if (InAppTeams != null)
+                {
+                    @foreach (var team in InAppTeams)
+                    {
+                        <option>@(team.Name)</option>
+                    }
+                }
+            </datalist>
+            <button type="button" class="move-members-submit">Submit</button>
         </div>
-        <table>
-            <thead>
-                <tr>
-                    <td lass="member-heading-left">Members</td>
-                    <td>Actions</td>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>
-                        Member &lt;email@email.com&gt;
-                    </td>
-                    <td>
-                        <button type="button" class="remove-member">
-                            &times;
-                        </button>
-                        <button type="button" class="move-member">
-                            &rarr;
-                        </button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-    <div class="team float-right">
-        <h2>Team two</h2>
-        <div class="team-selection">
-            <input type="text" placeholder="team name" class="input" list="teams" />
-        </div>
-        <table>
-            <thead>
-                <tr>
-                    <td>Actions</td>
-                    <td class="member-heading-right">Members</td>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>
-                        <button type="button" class="move-member">
-                            &larr;
-                        </button>
-                        <button type="button" class="remove-member">
-                            &times;
-                        </button>
-                    </td>
-                    <td>
-                        Member &lt;email@email.com&gt;
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-    <datalist id="teams">
-        @if (InAppTeams != null)
-        {
-            @foreach (var team in InAppTeams)
-            {
-                <option>@(team.Name)</option>
-            }
-        }
-    </datalist>
-    <button type="button" class="move-members-submit">Submit</button>
-</div>
+    </Authorized>
+</AuthorizeView>
 
 @code{
 
