@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Newtonsoft.Json;
 using System;
 
 namespace EctBlazorApp.Server
@@ -60,7 +61,8 @@ namespace EctBlazorApp.Server
                 c.TimeZoneInfo = TimeZoneInfo.Local;
             });
 
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson(options =>
+                options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
 
             services.AddControllersWithViews();
             services.AddRazorPages();
