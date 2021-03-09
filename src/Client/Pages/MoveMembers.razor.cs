@@ -15,10 +15,30 @@ namespace EctBlazorApp.Client.Pages
         [Inject]
         protected IJSRuntime JsRuntime { get; set; }
 
-        protected List<EctTeam> InAppTeams { get; set; }
+        protected IEnumerable<EctTeam> InAppTeams { get; set; }
 
         protected string LeftTeamSelection { get; set; }
         protected string RightTeamSelection { get; set; }
+
+        protected IEnumerable<EctTeam> SelectableTeamsLeft
+        {
+            get
+            {
+                if (InAppTeams == null)
+                    return new List<EctTeam>();
+                return InAppTeams.Where(t => t != RightTeam);
+            }
+        }
+
+        protected IEnumerable<EctTeam> SelectableTeamsRight
+        {
+            get
+            {
+                if (InAppTeams == null)
+                    return new List<EctTeam>();
+                return InAppTeams.Where(t => t != LeftTeam);
+            }
+        }
 
         protected EctTeam LeftTeam
         {
@@ -52,7 +72,7 @@ namespace EctBlazorApp.Client.Pages
         protected override async Task OnInitializedAsync()
         {
             await JsRuntime.InvokeVoidAsync("setPageTitle", "Move Members");
-            InAppTeams = (await ApiConn.FetchAllTeams()).ToList();
+            InAppTeams = await ApiConn.FetchAllTeams();
         }
     }
 }

@@ -10,7 +10,7 @@
             <div class="team float-left">
                 <h2>Team one</h2>
                 <div class="team-selection">
-                    <input @bind="LeftTeamSelection" type="text" placeholder="Team name..." class="input" list="teams" />
+                    <input @bind="LeftTeamSelection" type="text" placeholder="Team name..." class="input" list="teams-left" />
                 </div>
                 <table>
                     <thead>
@@ -45,7 +45,7 @@
             <div class="team float-right">
                 <h2>Team two</h2>
                 <div class="team-selection">
-                    <input @bind="RightTeamSelection" type="text" placeholder="Team name..." class="input" list="teams" />
+                    <input @bind="RightTeamSelection" type="text" placeholder="Team name..." class="input" list="teams-right" />
                 </div>
                 <table>
                     <thead>
@@ -77,13 +77,16 @@
                     </tbody>
                 </table>
             </div>
-            <datalist id="teams">
-                @if (InAppTeams != null)
+            <datalist id="teams-left">
+                @foreach (var team in SelectableTeamsLeft)
                 {
-                    @foreach (var team in InAppTeams)
-                    {
-                        <option>@(team.Name)</option>
-                    }
+                    <option>@(team.Name)</option>
+                }
+            </datalist>
+            <datalist id="teams-right">
+                @foreach (var team in SelectableTeamsRight)
+                {
+                    <option>@(team.Name)</option>
                 }
             </datalist>
             <button type="button" class="move-members-submit">Submit</button>
