@@ -15,6 +15,18 @@ namespace EctBlazorApp.Client.Pages
         [Inject]
         protected IJSRuntime JsRuntime { get; set; }
 
+        private bool SameTeamSelection
+        {
+            get
+            {
+                if (LeftSelectionIsNull || RightSelectionIsNull) return false;
+                return LeftTeamSelection.ToLower().Equals(RightTeamSelection.ToLower());
+            }
+        }
+        private bool LeftSelectionIsNull => string.IsNullOrWhiteSpace(LeftTeamSelection);
+        private bool RightSelectionIsNull => string.IsNullOrWhiteSpace(RightTeamSelection);
+
+
         protected IEnumerable<EctTeam> InAppTeams { get; set; }
 
         protected string LeftTeamSelection { get; set; }
@@ -44,7 +56,8 @@ namespace EctBlazorApp.Client.Pages
         {
             get
             {
-                if (InAppTeams == null || string.IsNullOrWhiteSpace(LeftTeamSelection)) return null;
+                if (InAppTeams == null || string.IsNullOrWhiteSpace(LeftTeamSelection) || SameTeamSelection)                                                                                   // if there are no in-app teams, no text input, or the team has already been selected, return null
+                    return null;
                 return InAppTeams.FirstOrDefault(t => t.Name.ToLower().Equals(LeftTeamSelection.ToLower()));
             }
         }
@@ -52,7 +65,9 @@ namespace EctBlazorApp.Client.Pages
         {
             get
             {
-                if (InAppTeams == null || string.IsNullOrWhiteSpace(RightTeamSelection)) return null;
+                if (InAppTeams == null || string.IsNullOrWhiteSpace(RightTeamSelection) 
+                    || SameTeamSelection)
+                    return null;
                 return InAppTeams.FirstOrDefault(t => t.Name.ToLower().Equals(RightTeamSelection.ToLower()));
             }
         }
