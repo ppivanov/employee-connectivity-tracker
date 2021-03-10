@@ -26,6 +26,7 @@ namespace EctBlazorApp.Client.Pages
         private bool LeftSelectionIsNull => string.IsNullOrWhiteSpace(LeftTeamSelection);
         private bool RightSelectionIsNull => string.IsNullOrWhiteSpace(RightTeamSelection);
 
+        protected bool MemberHasBeenMoved { get; set; } = false;
 
         protected IEnumerable<EctTeam> InAppTeams { get; set; }
 
@@ -65,7 +66,7 @@ namespace EctBlazorApp.Client.Pages
         {
             get
             {
-                if (InAppTeams == null || string.IsNullOrWhiteSpace(RightTeamSelection) 
+                if (InAppTeams == null || string.IsNullOrWhiteSpace(RightTeamSelection)
                     || SameTeamSelection)
                     return null;
                 return InAppTeams.FirstOrDefault(t => t.Name.ToLower().Equals(RightTeamSelection.ToLower()));
@@ -79,6 +80,7 @@ namespace EctBlazorApp.Client.Pages
 
         protected void MoveMember(EctTeam fromTeam, EctTeam toTeam, string emailToRemove)
         {
+            MemberHasBeenMoved = true;
             var userToMove = fromTeam.Members.FirstOrDefault(m => m.Email.Equals(emailToRemove));
             fromTeam.Members = fromTeam.Members.Where(m => m != userToMove).ToList();
             toTeam.Members.Add(userToMove);

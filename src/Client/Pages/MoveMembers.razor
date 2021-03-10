@@ -10,7 +10,7 @@
             <div class="team float-left">
                 <h2>Team one</h2>
                 <div class="team-selection">
-                    <input @bind="LeftTeamSelection" type="text" placeholder="Team name..." class="input" list="teams-left" />
+                    <input @bind="LeftTeamSelection" type="text" placeholder="Team name..." class="input" list="teams-left"  disabled="@MemberHasBeenMoved"/>
                 </div>
                 <table>
                     <thead>
@@ -58,7 +58,7 @@
             <div class="team float-right">
                 <h2>Team two</h2>
                 <div class="team-selection">
-                    <input @bind="RightTeamSelection" type="text" placeholder="Team name..." class="input" list="teams-right" />
+                    <input @bind="RightTeamSelection" type="text" placeholder="Team name..." class="input" list="teams-right" disabled="@MemberHasBeenMoved"/>
                 </div>
                 <table>
                     <thead>
