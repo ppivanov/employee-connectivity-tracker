@@ -22,7 +22,20 @@
                     <tbody>
                         @if (LeftTeam != null)
                         {
-                            @foreach (var member in LeftTeam.Members)
+                            <tr>
+                                <td>
+                                    @FormatFullNameAndEmail(LeftTeam.Leader.FullName, LeftTeam.Leader.Email)
+                                </td>
+                                <td>
+                                    <button type="button" class="remove-member disabled-button" disabled="true" >
+                                        &times;
+                                    </button>
+                                    <button type="button" class="move-member disabled-button" disabled="true">
+                                        &rarr;
+                                    </button>
+                                </td>
+                            </tr>
+                            @foreach (var member in LeftTeam.GetMembersExceptLeader())
                             {
                                 <tr>
                                     <td>
@@ -57,7 +70,20 @@
                     <tbody>
                         @if (RightTeam != null)
                         {
-                            @foreach (var member in RightTeam.Members)
+                            <tr>
+                                <td>
+                                    <button type="button" class="move-member disabled-button" disabled="true">
+                                        &larr;
+                                    </button>
+                                    <button type="button" class="remove-member disabled-button" disabled="true">
+                                        &times;
+                                    </button>
+                                </td>
+                                <td>
+                                    @FormatFullNameAndEmail(RightTeam.Leader.FullName, RightTeam.Leader.Email)
+                                </td>
+                            </tr>
+                            @foreach (var member in RightTeam.GetMembersExceptLeader())
                             {
                                 <tr>
                                     <td>

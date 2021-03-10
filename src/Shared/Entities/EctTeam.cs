@@ -35,5 +35,10 @@ namespace EctBlazorApp.Shared.Entities
                     AdditionalUsersToNotify = value.Split(" | ").ToList();
             }
         }
+
+        public IEnumerable<EctUser> GetMembersExceptLeader()
+        {
+            return Members.Where(m => m.Email.ToLower().Equals(Leader.Email.ToLower()) == false);
+        }
     }
 }
