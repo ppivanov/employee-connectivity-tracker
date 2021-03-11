@@ -54,7 +54,7 @@
                                 <label>Member selection</label>
                                 <input id="createTeamMember" list="members"
                                     @onchange="@((args) => SetMemberNameEmail(args))"
-                                    placeholder="Full Name <email@example.com>" style="@MemmberInputStyle" />
+                                    placeholder="Full Name <email@example.com>" style="@MemberInputStyle" />
                                 <datalist id="members">
                                     @foreach (var member in AvailableMembers)
                                     {

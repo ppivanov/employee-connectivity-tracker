@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using static EctBlazorApp.Shared.SharedMethods;
@@ -27,7 +26,7 @@ namespace EctBlazorApp.Client.Pages
         protected string CurrentMemberSelection { get; set; } = "";
         protected bool HasTeamId { get => string.IsNullOrEmpty(HashedTeamId) == false; }
         protected string LeaderInputStyle { get => leaderInputError ? "border: 1px solid red" : ""; }
-        protected string MemmberInputStyle { get => memberInputError ? "border: 1px solid red" : ""; }
+        protected string MemberInputStyle { get => memberInputError ? "border: 1px solid red" : ""; }
         protected string ServerMessage { get; set; } = "";
         protected string ServerMessageInlineStyle
         {
@@ -92,10 +91,10 @@ namespace EctBlazorApp.Client.Pages
         protected async Task AddSelectedMember()
         {
             if (IsCurrentMemberSelectionEmpty()
-                || IsCurrentMemberSelectionFormatted(out string selectedEmail)
+                || IsCurrentMemberSelectionBadlyFormatted(out string selectedEmail)
                 || IsCurrentMemberSelectionAlreadyLeader(selectedEmail)
                 || IsCurrentMemberSelectionAlreadySelected(selectedEmail)
-                || IsCurrentMemberSelectionEligible(selectedEmail))
+                || IsCurrentMemberSelectionIneligible(selectedEmail))
                 return;
 
             teamDetails.MemberNamesAndEmails.Add(CurrentMemberSelection);
@@ -144,7 +143,11 @@ namespace EctBlazorApp.Client.Pages
         {
             if (isSubmitting
                 || AreTeamDetailsValid() == false
-                || IsLeaderAlreadySelectedAsMember())
+                || string.IsNullOrWhiteSpace(teamDetails.LeaderNameAndEmail)
+                || IsLeaderAlreadySelectedAsMember()
+                || IsCurrentLeaderSelectionBadlyFormatted(out string leaderEmail)
+                || IsCurrentLeaderSelectionIneligible(leaderEmail)
+                )
                 return;
 
             isSubmitting = true;
@@ -249,17 +252,32 @@ namespace EctBlazorApp.Client.Pages
             return false;
         }
 
-        private bool IsCurrentMemberSelectionFormatted(out string selectedEmail)
+        private bool IsCurrentLeaderSelectionBadlyFormatted(out string leaderEmail)
         {
-            if (IsStringInMemberFormat(CurrentMemberSelection) == false)
-            {
+            bool result = IsInputBadlyFormatted(teamDetails.LeaderNameAndEmail, out leaderEmail);
+            if (result)
+                leaderInputError = true;
+
+            return result;
+        }
+        private bool IsCurrentMemberSelectionBadlyFormatted(out string selectedEmail)
+        {
+            bool result = IsInputBadlyFormatted(CurrentMemberSelection, out selectedEmail);
+            if(result)
                 memberInputError = true;
+            
+            return result;
+        }
+        private bool IsInputBadlyFormatted(string input, out string email)                                   // method invoking it needs to set the style of the input
+        {
+            if (IsStringInMemberFormat(input) == false)
+            {
                 serverMessageIsError = true;
                 ServerMessage = "Please, enter the details in the reqired format.";
-                selectedEmail = "";
+                email = "";
                 return true;
             }
-            selectedEmail = GetEmailFromFormattedString(CurrentMemberSelection);
+            email = GetEmailFromFormattedString(input);
             return false;
         }
 
@@ -290,17 +308,31 @@ namespace EctBlazorApp.Client.Pages
             return false;
         }
 
-        private bool IsCurrentMemberSelectionEligible(string selectedEmail)
+        private bool IsCurrentLeaderSelectionIneligible(string selectedEmail)
         {
-            if (AvailableMembers.Any(a => a.Contains(selectedEmail)) == false)
-            {
+            bool result = IsEmailIneligibleForSelection(selectedEmail, AllAvailableLeaders);
+            if (result)
+                leaderInputError = true;
+
+            return result;
+        }
+        private bool IsCurrentMemberSelectionIneligible(string selectedEmail)
+        {
+            bool result = IsEmailIneligibleForSelection(selectedEmail, AvailableMembers);
+            if(result)
                 memberInputError = true;
+
+            return result;
+        }
+        private bool IsEmailIneligibleForSelection(string email, IEnumerable<string> list)
+        {
+            if (list.Any(a => a.Contains(email)) == false)
+            {
                 serverMessageIsError = true;
                 ServerMessage = "This user is not eligible for selection.";
                 return true;
             }
             return false;
         }
-
     }
 }
