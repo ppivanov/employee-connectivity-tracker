@@ -1,6 +1,7 @@
 ﻿using EctBlazorApp.Client.Graph;
 using EctBlazorApp.Shared.Entities;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,6 +26,9 @@ namespace EctBlazorApp.Client.Pages
         }
         private bool LeftSelectionIsNull => string.IsNullOrWhiteSpace(LeftTeamSelection);
         private bool RightSelectionIsNull => string.IsNullOrWhiteSpace(RightTeamSelection);
+        private List<EctUser> InitialLeftTeamRoster;
+        private List<EctUser> InitialRightTeamRoster;
+
 
         protected bool MemberHasBeenMoved { get; set; } = false;
 
@@ -53,25 +57,8 @@ namespace EctBlazorApp.Client.Pages
             }
         }
 
-        protected EctTeam LeftTeam
-        {
-            get
-            {
-                if (InAppTeams == null || string.IsNullOrWhiteSpace(LeftTeamSelection) || SameTeamSelection)                                                                                   // if there are no in-app teams, no text input, or the team has already been selected, return null
-                    return null;
-                return InAppTeams.FirstOrDefault(t => t.Name.ToLower().Equals(LeftTeamSelection.ToLower()));
-            }
-        }
-        protected EctTeam RightTeam
-        {
-            get
-            {
-                if (InAppTeams == null || string.IsNullOrWhiteSpace(RightTeamSelection)
-                    || SameTeamSelection)
-                    return null;
-                return InAppTeams.FirstOrDefault(t => t.Name.ToLower().Equals(RightTeamSelection.ToLower()));
-            }
-        }
+        protected EctTeam LeftTeam { get; set; }
+        protected EctTeam RightTeam { get; set; }
 
         protected void RemoveMember(EctTeam team, string emailToRemove)
         {
@@ -82,9 +69,39 @@ namespace EctBlazorApp.Client.Pages
         {
             MemberHasBeenMoved = true;
             var userToMove = fromTeam.Members.FirstOrDefault(m => m.Email.Equals(emailToRemove));
-            fromTeam.Members = fromTeam.Members.Where(m => m != userToMove).ToList();
+            fromTeam.Members = fromTeam.Members.Where(m => m.Email.Equals(userToMove.Email) == false).ToList();
             toTeam.Members.Add(userToMove);
         }
+
+        protected void ResetTeams()
+        {
+            LeftTeam.Members = InitialLeftTeamRoster.ToList();                                                          // Copying the list as the MoveMember method will modify the 'snapshot' of the original roster state
+            RightTeam.Members = InitialRightTeamRoster.ToList();
+            MemberHasBeenMoved = false;
+        }
+
+        protected void UpdateLeftTeamSelection()
+        {
+            if (InAppTeams == null                                                                                      // if there are no in-app teams, no text input, or the team has already been selected, return null
+                || string.IsNullOrWhiteSpace(LeftTeamSelection) 
+                || SameTeamSelection)
+                return;
+
+            LeftTeam = InAppTeams.FirstOrDefault(t => t.Name.ToLower().Equals(LeftTeamSelection.ToLower()));
+            InitialLeftTeamRoster = LeftTeam.Members.ToList();
+        }
+
+        protected void UpdateRightTeamSelection()
+        {
+            if (InAppTeams == null 
+                || string.IsNullOrWhiteSpace(RightTeamSelection)
+                || SameTeamSelection)
+                return;
+
+            RightTeam = InAppTeams.FirstOrDefault(t => t.Name.ToLower().Equals(RightTeamSelection.ToLower()));
+            InitialRightTeamRoster = RightTeam.Members.ToList();
+        }
+
 
         protected override async Task OnInitializedAsync()
         {

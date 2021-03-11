@@ -10,7 +10,9 @@
             <div class="team float-left">
                 <h2>Team one</h2>
                 <div class="team-selection">
-                    <input @bind="LeftTeamSelection" type="text" placeholder="Team name..." class="input" list="teams-left"  disabled="@MemberHasBeenMoved"/>
+                    <input @bind="LeftTeamSelection" @bind:event="oninput" type="text" 
+                           placeholder="Team name..." class="input" list="teams-left"  
+                           disabled="@MemberHasBeenMoved" @onkeyup="UpdateLeftTeamSelection"/>
                 </div>
                 <table>
                     <thead>
@@ -58,7 +60,9 @@
             <div class="team float-right">
                 <h2>Team two</h2>
                 <div class="team-selection">
-                    <input @bind="RightTeamSelection" type="text" placeholder="Team name..." class="input" list="teams-right" disabled="@MemberHasBeenMoved"/>
+                    <input @bind="RightTeamSelection" @bind:event="oninput" type="text" 
+                           placeholder="Team name..." class="input" list="teams-right" 
+                           disabled="@MemberHasBeenMoved" @onkeyup="UpdateRightTeamSelection"/>
                 </div>
                 <table>
                     <thead>
@@ -115,7 +119,8 @@
                     <option>@(team.Name)</option>
                 }
             </datalist>
-            <button type="button" class="move-members-submit">Submit</button>
+            <button type="button" class="move-members-submit" @onclick="ResetTeams">Submit</button>
+            <button type="button" class="move-members-reset" @onclick="ResetTeams">Reset</button>
         </div>
     </Authorized>
 </AuthorizeView>
