@@ -24,11 +24,10 @@ namespace EctBlazorApp.Client.Pages
                 return LeftTeamSelection.ToLower().Equals(RightTeamSelection.ToLower());
             }
         }
-        private bool LeftSelectionIsNull => string.IsNullOrWhiteSpace(LeftTeamSelection);
-        private bool RightSelectionIsNull => string.IsNullOrWhiteSpace(RightTeamSelection);
         private List<EctUser> InitialLeftTeamRoster;
         private List<EctUser> InitialRightTeamRoster;
-
+        private bool LeftSelectionIsNull => string.IsNullOrWhiteSpace(LeftTeamSelection);
+        private bool RightSelectionIsNull => string.IsNullOrWhiteSpace(RightTeamSelection);
 
         protected bool MemberHasBeenMoved { get; set; } = false;
 
@@ -36,6 +35,10 @@ namespace EctBlazorApp.Client.Pages
 
         protected string LeftTeamSelection { get; set; }
         protected string RightTeamSelection { get; set; }
+
+        private bool serverMessageIsError = false;
+        protected string ServerMessage { get; set; }
+        protected string ServerMessageStyle => serverMessageIsError ? "color:red;" : "color:green";
 
         protected IEnumerable<EctTeam> SelectableTeamsLeft
         {
@@ -102,6 +105,16 @@ namespace EctBlazorApp.Client.Pages
             InitialRightTeamRoster = RightTeam.Members.ToList();
         }
 
+        protected void SubmitChanges()
+        {
+            if(MemberHasBeenMoved == false)
+            {
+                serverMessageIsError = true;
+                ServerMessage = "No members have been moved.";
+                return;
+            }
+            // Send put request to API
+        }
 
         protected override async Task OnInitializedAsync()
         {
