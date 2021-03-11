@@ -108,6 +108,18 @@ namespace EctBlazorApp.Client.Pages
 
         protected override async Task OnInitializedAsync()
         {
+            await Initialize();
+        }
+
+        protected override async void OnParametersSet()
+        {
+            await Initialize();
+        }
+
+        private async Task Initialize()
+        {
+            ResetErrorMessage();
+            ResetInputFields();
             if (HasTeamId)
                 await InitializeManageTeam();
             else
