@@ -69,7 +69,7 @@ namespace EctBlazorApp.Client.Graph
 
         public Task<TeamDashboardResponse> FetchTeamDashboardResponse(string queryString)
         {
-            var defaultResponse = new TeamDashboardResponse { TeamMembers = new List<EctUser>(), TeamName = "" };
+            var defaultResponse = new TeamDashboardResponse { TeamMembers = new List<EctUser>(), TeamName = string.Empty };
             return HttpGet<TeamDashboardResponse>($"api/team/team-stats{queryString}", defaultResponse);
         }
 
@@ -88,17 +88,15 @@ namespace EctBlazorApp.Client.Graph
                 }
             });
 
-            if (tokenRequest.TryGetToken(out var token))
-            {
-                if (token != null)
+            if (tokenRequest.TryGetToken(out var token) && token != null)
                     return token.Value;
-            }
+            
             return null;
         }
 
         public Task<string> GetHashedTeamId()
         {
-            return HttpGet<string>("api/team/team-id", "");
+            return HttpGet<string>("api/team/team-id", string.Empty);
         }
 
         public Task<IEnumerable<string>> GetUsersEligibleForMembers()
@@ -164,11 +162,9 @@ namespace EctBlazorApp.Client.Graph
                 }
             });
 
-            if (tokenRequest.TryGetToken(out var token))
-            {
-                if (token != null)
+            if (tokenRequest.TryGetToken(out var token) && token != null)
                     return token.Value;
-            }
+            
             return null;
         }
         private async Task<T> HttpGet<T>(string endpoint, T defaultResponse)

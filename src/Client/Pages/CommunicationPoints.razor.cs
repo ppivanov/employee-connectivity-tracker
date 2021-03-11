@@ -22,7 +22,7 @@ namespace EctBlazorApp.Client.Pages
         protected bool isSubmitting = false;
         protected bool initialized = false;
         protected bool inputError = false;
-        protected string serverMessage = "";
+        protected string serverMessage = string.Empty;
         public Dictionary<CommunicationPoint, bool> PointsAndToggles { get; set; }          // holds true if user selected for edit
 
         protected int TotalPoints
@@ -40,7 +40,7 @@ namespace EctBlazorApp.Client.Pages
 
         protected string PointInputStyle
         {
-            get => inputError ? "border: 1px solid red" : "";
+            get => inputError ? "border: 1px solid red" : string.Empty;
         }
 
         protected string ServerMessageInlineStyle

@@ -23,7 +23,7 @@ namespace EctBlazorApp.Shared.Entities
             get
             {
                 if (AdditionalUsersToNotify.Count < 1)
-                    return "";
+                    return string.Empty;
 
                 return string.Join(" | ", AdditionalUsersToNotify);
             }

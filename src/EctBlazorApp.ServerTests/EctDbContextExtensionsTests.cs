@@ -220,7 +220,7 @@ namespace EctBlazorApp.ServerTests
         [TestMethod]
         public async Task GetUserFromHashOrProcessingUser_HashIsEmpty_ReturnsHomer()
         {
-            string hashedUserId = "";
+            string hashedUserId = string.Empty;
             EctUser expectedUser = _dbContext.Users.FirstOrDefault(u => u.Email.Equals("homer@ect.ie"));
             
             EctUser actualUser = await _dbContext.GetUserFromHashOrProcessingUser(hashedUserId, MockPreferredUsername_Homer);

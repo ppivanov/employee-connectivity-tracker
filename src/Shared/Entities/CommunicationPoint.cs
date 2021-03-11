@@ -17,7 +17,7 @@ namespace EctBlazorApp.Shared.Entities
 
         public CommunicationPoint()
         {
-            Medium = "";
+            Medium = string.Empty;
             Points = 0;
         }
 

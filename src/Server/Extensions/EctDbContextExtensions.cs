@@ -193,7 +193,7 @@ namespace EctBlazorApp.Server.Extensions
         }
         private static string GenerateNotificationMessage(EctTeam team, EctUser user, int currentWeekPoints, int previousWeekPoints)
         {
-            var emailMessage = new StringBuilder("");
+            StringBuilder emailMessage = new(string.Empty);
             if (currentWeekPoints < team.PointsThreshold)
                 emailMessage.Append($"{user.FullName} is below the threshold" +
                     $" set for their team. {currentWeekPoints}/{team.PointsThreshold}\n");

@@ -23,11 +23,11 @@ namespace EctBlazorApp.Client.Pages
         private HashSet<string> AllAvailableLeaders { get; set; }
         private HashSet<string> MembersFromApi { get; set; }
 
-        protected string CurrentMemberSelection { get; set; } = "";
+        protected string CurrentMemberSelection { get; set; } = string.Empty;
         protected bool HasTeamId { get => string.IsNullOrEmpty(HashedTeamId) == false; }
-        protected string LeaderInputStyle { get => leaderInputError ? "border: 1px solid red" : ""; }
-        protected string MemberInputStyle { get => memberInputError ? "border: 1px solid red" : ""; }
-        protected string ServerMessage { get; set; } = "";
+        protected string LeaderInputStyle { get => leaderInputError ? "border: 1px solid red" : string.Empty; }
+        protected string MemberInputStyle { get => memberInputError ? "border: 1px solid red" : string.Empty; }
+        protected string ServerMessage { get; set; } = string.Empty;
         protected string ServerMessageInlineStyle
         {
             get
@@ -99,7 +99,7 @@ namespace EctBlazorApp.Client.Pages
 
             teamDetails.MemberNamesAndEmails.Add(CurrentMemberSelection);
             AllAvailableLeaders = AllAvailableLeaders.Where(a => a.Contains(selectedEmail) == false).ToHashSet();
-            CurrentMemberSelection = "";
+            CurrentMemberSelection = string.Empty;
 
             await InvokeAsync(StateHasChanged);
             await JsInterop("resetCreateTeamMember");
@@ -117,12 +117,15 @@ namespace EctBlazorApp.Client.Pages
 
         private async Task Initialize()
         {
+            initialized = false;
             ResetErrorMessage();
-            ResetInputFields();
+            await ResetInputFields();
             if (HasTeamId)
                 await InitializeManageTeam();
             else
                 await InitializeCreateTeam();
+
+            await InvokeAsync(StateHasChanged);
         }
 
         protected async Task GetEligibleUsers()
@@ -151,7 +154,7 @@ namespace EctBlazorApp.Client.Pages
                 return;
 
             isSubmitting = true;
-            teamDetails.TeamId = HasTeamId ? HashedTeamId : "";
+            teamDetails.TeamId = HasTeamId ? HashedTeamId : string.Empty;
             bool isNewTeam = HasTeamId == false;
 
             var response = await ApiConn.SubmitTeamData(isNewTeam, teamDetails);
@@ -196,17 +199,22 @@ namespace EctBlazorApp.Client.Pages
             leaderInputError = false;
             memberInputError = false;
             serverMessageIsError = false;
-            ServerMessage = "";
+            ServerMessage = string.Empty;
         }
 
         private async Task ResetInputFields()
         {
-            teamDetails.Name = "";
-            teamDetails.LeaderNameAndEmail = "";
-            teamDetails.MemberNamesAndEmails = new List<string>();
-
-            await JsInterop("resetCreateTeamLeader");
-            await JsInterop("resetCreateTeamMember");
+            if(teamDetails != null)
+            {
+                teamDetails.Name = string.Empty;
+                teamDetails.LeaderNameAndEmail = string.Empty;
+                teamDetails.MemberNamesAndEmails = new List<string>();
+            }
+            if (initialized)
+            {
+                await JsInterop("resetCreateTeamLeader");
+                await JsInterop("resetCreateTeamMember");
+            }
         }
 
         private async Task InitializeCreateTeam()
@@ -216,10 +224,12 @@ namespace EctBlazorApp.Client.Pages
             if (hasAccess)
             {
                 await GetEligibleUsers();
-                teamDetails = new EctTeamRequestDetails();
-                teamDetails.MemberNamesAndEmails = new List<string>();
-                initialized = true;
+                teamDetails = new EctTeamRequestDetails
+                {
+                    MemberNamesAndEmails = new List<string>()
+                };
             }
+            initialized = true;
         }
 
         private async Task InitializeManageTeam()
@@ -234,10 +244,11 @@ namespace EctBlazorApp.Client.Pages
                 await JsInterop("setPageTitle", teamDetails.Name);
                 await GetEligibleUsers();
 
-                initialized = true;
-                InvokeAsync(StateHasChanged).Wait();
+                initialized = true;                                                                         // Reload the componet to reveal the input field to let JavaScript populate it
+                StateHasChanged();
                 await JsInterop("setCreateTeamLeader", teamDetails.LeaderNameAndEmail);
             }
+            initialized = true;
         }
 
         private bool IsCurrentMemberSelectionEmpty()
@@ -274,7 +285,7 @@ namespace EctBlazorApp.Client.Pages
             {
                 serverMessageIsError = true;
                 ServerMessage = "Please, enter the details in the reqired format.";
-                email = "";
+                email = string.Empty;
                 return true;
             }
             email = GetEmailFromFormattedString(input);

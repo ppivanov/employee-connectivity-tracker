@@ -23,11 +23,11 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         protected bool isSubmitting = false;
         protected int emailsSent = 0;
         protected int emailsReceived = 0;
-        protected string leaderNameAndEmail = "";
+        protected string leaderNameAndEmail = string.Empty;
 
         protected string AddNotifyUserInputStyle 
         {
-            get => AddNotifyUserInputError ? "border: 1px solid red" : ""; 
+            get => AddNotifyUserInputError ? "border: 1px solid red" : string.Empty; 
         }
         protected List<EctUser> AvailableUsersForNotification
         {
@@ -51,7 +51,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         }
         protected string InputStyle
         {
-            get => _inputError ? "border: 1px solid red" : "";
+            get => _inputError ? "border: 1px solid red" : string.Empty;
         }
         protected string ServerMessageInlineStyle
         {
@@ -61,9 +61,9 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         // public properties for unit tests
         public bool AddNotifyUserInputError { get; set; } = false;
         public bool ServerMessageIsError { get; set; } = false;
-        public string UserToNotify_Email { get; set; } = "";
-        public string UserToNotify_Name { get; set; } = "";
-        public string ServerMessage { get; set; } = "";
+        public string UserToNotify_Email { get; set; } = string.Empty;
+        public string UserToNotify_Name { get; set; } = string.Empty;
+        public string ServerMessage { get; set; } = string.Empty;
         public List<EctUser> Administrators { get; set; }
         public List<EctUser> TeamMembers { get; set; }
         public NotificationOptionsResponse CurrentNotificationOptions { get; set; } = null;
@@ -91,8 +91,8 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             
             string nameAndEmail = FormatFullNameAndEmail(UserToNotify_Name, UserToNotify_Email);
             NewNotificationOptions.UsersToNotify.Add(nameAndEmail);
-            UserToNotify_Name = "";
-            UserToNotify_Email = "";
+            UserToNotify_Name = string.Empty;
+            UserToNotify_Email = string.Empty;
             await JsInterop("resetUserToNotifyEmail");
             await JsInterop("resetUserToNotifyName");
         }
@@ -311,8 +311,8 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             TeamMembers = null;
             emailsSent = 0;
             emailsReceived = 0;
-            ServerMessage = "";
-            leaderNameAndEmail = "";
+            ServerMessage = string.Empty;
+            leaderNameAndEmail = string.Empty;
         }
 
         private bool UserToNotifyFieldsAreEmpty()

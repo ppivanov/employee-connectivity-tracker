@@ -22,7 +22,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         private List<SentMail> sentMail;
         private List<ReceivedMail> receivedMail;
         private List<CalendarEvent> calendarEvents;
-        private string userEmailAddress = "";
+        private string userEmailAddress = string.Empty;
 
         protected override int TotalEmailsCount
         {
@@ -91,7 +91,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         protected override async Task UpdateDashboard()
         {
             string queryString = GetDateRangeQueryString(FromDate.Value, ToDate.Value);
-            string userIdQueryString = string.IsNullOrEmpty(HashedUserId) ? "" : $"&UID={HashedUserId}";
+            string userIdQueryString = string.IsNullOrEmpty(HashedUserId) ? string.Empty : $"&UID={HashedUserId}";
 
             var response = await ApiConn.FetchDashboardResponse($"{queryString}{userIdQueryString}");
             await ExtractDataFromResponse(response);

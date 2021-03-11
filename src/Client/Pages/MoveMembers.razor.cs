@@ -43,7 +43,7 @@ namespace EctBlazorApp.Client.Pages
 
         protected string ServerMessage { get; set; }
 
-        protected string ServerMessageStyle => serverMessageIsError ? "color:red;" : "color:green";
+        protected string ServerMessageInlineStyle => serverMessageIsError ? "color:red;" : "color:green";
 
         protected IEnumerable<EctTeam> SelectableTeamsLeft
         {
@@ -92,7 +92,7 @@ namespace EctBlazorApp.Client.Pages
             MemberHasBeenMoved = false;
         }
 
-        protected void SubmitChanges()
+        protected async Task SubmitChanges()
         {
             if(MemberHasBeenMoved == false)
             {
@@ -105,24 +105,34 @@ namespace EctBlazorApp.Client.Pages
 
         protected void UpdateLeftTeamSelection()
         {
+            ResetServerMessage();
             if (InAppTeams == null                                                                                      // if there are no in-app teams, no text input, or the team has already been selected, return null
                 || string.IsNullOrWhiteSpace(LeftTeamSelection) 
                 || SameTeamSelection)
                 return;
 
             LeftTeam = InAppTeams.FirstOrDefault(t => t.Name.ToLower().Equals(LeftTeamSelection.ToLower()));
-            InitialLeftTeamRoster = LeftTeam.Members.ToList();
+            if(LeftTeam != null)
+                InitialLeftTeamRoster = LeftTeam.Members.ToList();
         }
 
         protected void UpdateRightTeamSelection()
         {
+            ResetServerMessage();
             if (InAppTeams == null 
                 || string.IsNullOrWhiteSpace(RightTeamSelection)
                 || SameTeamSelection)
                 return;
 
             RightTeam = InAppTeams.FirstOrDefault(t => t.Name.ToLower().Equals(RightTeamSelection.ToLower()));
-            InitialRightTeamRoster = RightTeam.Members.ToList();
+            if(RightTeam != null)
+                InitialRightTeamRoster = RightTeam.Members.ToList();
+        }
+
+        private void ResetServerMessage()
+        {
+            serverMessageIsError = false;
+            ServerMessage = string.Empty;
         }
     }
 }

@@ -70,7 +70,7 @@ namespace EctBlazorApp.ServerTests
                 mockGraphMail[i] = new MicrosoftGraphReceivedMail
                 {
                     ReceivedDateTime = contextUser.LastSignIn.AddDays(1),
-                    Subject = "",
+                    Subject = string.Empty,
                     Sender = new MicrosoftGraphPerson
                     {
                         emailAddress = mailSender
@@ -93,7 +93,7 @@ namespace EctBlazorApp.ServerTests
                 mockGraphMail[i] = new MicrosoftGraphSentMail
                 {
                     SentDateTime = contextUser.LastSignIn.AddDays(1),
-                    Subject = "",
+                    Subject = string.Empty,
                     ToRecipients = new MicrosoftGraphPerson[]
                     {
                         new MicrosoftGraphPerson
@@ -153,14 +153,14 @@ namespace EctBlazorApp.ServerTests
                 ActionDescriptor = new Microsoft.AspNetCore.Mvc.Controllers.ControllerActionDescriptor()
             };
 
-            return new AuthorizationFilterContext(controllerContext, new List<IFilterMetadata>()); ;
+            return new AuthorizationFilterContext(controllerContext, new List<IFilterMetadata>());
         }
 
         public static EctMailKit GetMailKit()
         {
             return new EctMailKit {
                 Sender = "non-existent@email.com",
-                Reciever = "",
+                Reciever = string.Empty,
                 SmtpServer = "smtp.gmail.com",
                 Port = 465,
                 UserName = "non-existent@gmail.com",

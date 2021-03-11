@@ -25,10 +25,10 @@ window.setCreateTeamLeader = (nameAndEmail) => {
 }
 
 window.resetCreateTeamLeader = () => {
-    resetInputField('createTeamLeader')
+    resetInputField('createTeamLeader');
 }
 window.resetCreateTeamMember = () => {
-    resetInputField('createTeamMember')
+    resetInputField('createTeamMember');
 }
 
 const resetInputField = (elementId) => {
@@ -61,7 +61,7 @@ const emailChartHeight = 550;
 google.charts.load('current', { 'packages': ['line', 'bar', 'corechart'] });
 
 // Set a callback to run when the Google Visualization API is loaded.
-window.loadDashboardGraph = (mailList, calendarList) => {                                // TODO - save these in a global letiable to allow for chart resizing (they need to be redrawn)
+window.loadDashboardGraph = (mailList, calendarList) => {                                // These can be saved in a global variable to allow for chart resizing (they need to be redrawn)
     google.charts.setOnLoadCallback(drawEmailLineGraph(mailList));
     if (calendarList.length > 1) {
         google.charts.setOnLoadCallback(drawEventsBarChart(calendarList));
@@ -80,9 +80,6 @@ window.loadMyTeamDashboardGraph = (mailList, calendarList) => {
 
 }
 
-// Callback that creates and populates a data table,
-// instantiates the pie chart, passes in the data and
-// draws it.
 const drawEventsBarChart = (calendarList) => {
     let dataTable = new google.visualization.DataTable();
     dataTable.addColumn('string', 'Event subject');

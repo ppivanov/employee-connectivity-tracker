@@ -23,7 +23,7 @@ namespace EctBlazorApp.Shared.Entities
             get
             {
                 if (Attendees.Count < 1)
-                    return "";
+                    return string.Empty;
 
                 return string.Join(" | ", Attendees);
             }
@@ -43,14 +43,13 @@ namespace EctBlazorApp.Shared.Entities
 
         public CalendarEvent(MicrosoftGraphEvent graphEvent)
         {
-            const int attendeesLimit = 20;
+            const int attendeesLimit = 20;                                                  // This limit is in place to not block the thread with processing a company meeting or similar
 
             Subject = graphEvent.Subject;
             Start = graphEvent.Start.ConvertToLocalDateTime();
             End = graphEvent.End.ConvertToLocalDateTime();
             Organizer = graphEvent.Organizer.ToString();
             Attendees = new List<string>();
-            // TODO -> find a solution or remove the limit???
             Attendees.AddRange(
                 graphEvent.Attendees.Take(attendeesLimit)
                     .Select(a => a.ToString()));

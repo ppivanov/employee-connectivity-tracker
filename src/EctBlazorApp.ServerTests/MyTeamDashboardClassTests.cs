@@ -27,7 +27,7 @@ namespace EctBlazorApp.ServerTests
 
             Assert.IsTrue(_componentClass.ServerMessageIsError);
             Assert.IsTrue(_componentClass.AddNotifyUserInputError);
-            Assert.AreNotEqual("", _componentClass.ServerMessage);
+            Assert.AreNotEqual(string.Empty, _componentClass.ServerMessage);
         }
 
         [TestMethod]
@@ -39,8 +39,8 @@ namespace EctBlazorApp.ServerTests
 
             Assert.IsTrue(_componentClass.ServerMessageIsError);
             Assert.IsTrue(_componentClass.AddNotifyUserInputError);
-            Assert.AreNotEqual("", _componentClass.ServerMessage);
-            Assert.AreNotEqual("", _componentClass.UserToNotify_Name);
+            Assert.AreNotEqual(string.Empty, _componentClass.ServerMessage);
+            Assert.AreNotEqual(string.Empty, _componentClass.UserToNotify_Name);
         }
 
         [TestMethod]
@@ -52,8 +52,8 @@ namespace EctBlazorApp.ServerTests
 
             Assert.IsTrue(_componentClass.ServerMessageIsError);
             Assert.IsTrue(_componentClass.AddNotifyUserInputError);
-            Assert.AreNotEqual("", _componentClass.ServerMessage);
-            Assert.AreNotEqual("", _componentClass.UserToNotify_Email);
+            Assert.AreNotEqual(string.Empty, _componentClass.ServerMessage);
+            Assert.AreNotEqual(string.Empty, _componentClass.UserToNotify_Email);
         }
 
         [TestMethod]
@@ -73,9 +73,9 @@ namespace EctBlazorApp.ServerTests
             Assert.IsTrue(isUserInList);
             Assert.IsFalse(_componentClass.ServerMessageIsError);
             Assert.IsFalse(_componentClass.AddNotifyUserInputError);
-            Assert.AreEqual("", _componentClass.ServerMessage);
-            Assert.AreEqual("", _componentClass.UserToNotify_Email);
-            Assert.AreEqual("", _componentClass.UserToNotify_Name);
+            Assert.AreEqual(string.Empty, _componentClass.ServerMessage);
+            Assert.AreEqual(string.Empty, _componentClass.UserToNotify_Email);
+            Assert.AreEqual(string.Empty, _componentClass.UserToNotify_Name);
         }
 
         [TestMethod]
@@ -94,7 +94,7 @@ namespace EctBlazorApp.ServerTests
             Assert.IsTrue(isUserInList);
             Assert.IsTrue(_componentClass.ServerMessageIsError);
             Assert.IsTrue(_componentClass.AddNotifyUserInputError);
-            Assert.AreNotEqual("", _componentClass.ServerMessage);
+            Assert.AreNotEqual(string.Empty, _componentClass.ServerMessage);
             Assert.AreEqual(email, _componentClass.UserToNotify_Email);
             Assert.AreEqual(name, _componentClass.UserToNotify_Name);
         }
@@ -121,7 +121,7 @@ namespace EctBlazorApp.ServerTests
 
             _componentClass.SetUserToNotifyEmail(args).Wait();
 
-            Assert.AreEqual("", _componentClass.UserToNotify_Name);
+            Assert.AreEqual(string.Empty, _componentClass.UserToNotify_Name);
         }
 
         [TestMethod]
@@ -146,7 +146,7 @@ namespace EctBlazorApp.ServerTests
 
             _componentClass.SetUserToNotifyName(args).Wait();
 
-            Assert.AreEqual("", _componentClass.UserToNotify_Email);
+            Assert.AreEqual(string.Empty, _componentClass.UserToNotify_Email);
         }
 
         [TestMethod]
@@ -204,9 +204,9 @@ namespace EctBlazorApp.ServerTests
             _componentClass = new(administrators, teamMembers, currentNotificationOptions, newNotificationOptions);
             _componentClass.AddNotifyUserInputError = false;
             _componentClass.ServerMessageIsError = false;
-            _componentClass.UserToNotify_Email = "";
-            _componentClass.UserToNotify_Name = "";
-            _componentClass.ServerMessage = "";
+            _componentClass.UserToNotify_Email = string.Empty;
+            _componentClass.UserToNotify_Name = string.Empty;
+            _componentClass.ServerMessage = string.Empty;
         }
 
         private MyTeamDashboardClass MockJsInterop()

@@ -38,7 +38,7 @@ namespace EctBlazorApp.Server.Controllers
                 var allTeams = _dbContext.Teams.Include(t => t.Members).Include(t => t.Leader).ToList();
                 return Ok(allTeams);
             }
-            catch(Exception ex)
+            catch(Exception)
             {
                 return StatusCode(500, "Internal server error. Please, try again later.");
             }

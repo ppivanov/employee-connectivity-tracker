@@ -38,8 +38,8 @@ namespace EctBlazorApp.Server.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> UpdateTrackingRecordsForUser(GraphUserRequestDetails userDetails)
         {
-            using var client = new HttpClient();
-            StringBuilder errorString = new StringBuilder("");
+            using HttpClient client = new();
+            StringBuilder errorString = new(string.Empty);
             if (userDetails == null || userDetails.GraphToken == null)
                 return BadRequest("No inputs");
 
@@ -89,8 +89,8 @@ namespace EctBlazorApp.Server.Controllers
                     ReceivedMail = new List<ReceivedMail>(),
                     SentMail = new List<SentMail>(),
                     SecondsInMeeting = 0,
-                    UserFullName = "",
-                    UserEmail = "",
+                    UserFullName = string.Empty,
+                    UserEmail = string.Empty,
                 });
 
             DateTime fromDateTime = NewDateTimeFromString(fromDate);
@@ -100,8 +100,8 @@ namespace EctBlazorApp.Server.Controllers
             List<CalendarEvent> calendarEvents = _dbContext.GetCalendarEventsInDateRangeForUserId(user.Id, fromDateTime, toDateTime);
 
             double secondsInMeeting = CalendarEvent.GetTotalSecondsForEvents(calendarEvents);
-            string userFullName = string.IsNullOrEmpty(UID) ? "" : user.FullName;
-            string userEmailAddress = string.IsNullOrEmpty(UID) ? "" : user.Email;
+            string userFullName = string.IsNullOrEmpty(UID) ? string.Empty : user.FullName;
+            string userEmailAddress = string.IsNullOrEmpty(UID) ? string.Empty : user.Email;
             return Ok(new DashboardResponse
                 {
                     CalendarEvents = calendarEvents,

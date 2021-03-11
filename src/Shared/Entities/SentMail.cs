@@ -17,7 +17,7 @@ namespace EctBlazorApp.Shared.Entities
             get
             {
                 if (Recipients.Count < 1)
-                    return "";
+                    return string.Empty;
 
                 return string.Join("|", Recipients);
             }

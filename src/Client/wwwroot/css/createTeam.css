@@ -32,6 +32,7 @@
 .create-team .operation-result {
   width: 20%;
   margin: 4em auto 0 auto;
+  text-align: center;
 }
 
 /* Code source: (dcode) https://dev.to/dcodeyt/creating-beautiful-html-tables-with-css-428l */
@@ -91,7 +92,6 @@
   border-radius: 0.5em;
   -moz-appearance: none;
   -webkit-appearance: none;
-  appearance: none;
   background-color: rgb(255, 255, 255);
 }
 
@@ -117,7 +117,7 @@
   border-color: rgb(170, 170, 170);
   /* It'd be nice to use -webkit-focus-ring-color here but it doesn't work on box-shadow */
   box-shadow: 0 0 1px 3px rgba(59, 153, 252, 0.7);
-  box-shadow: 0 0 0 3px -moz-mac-focusring;
+  box-shadow: 0 0 0 3px;
   color: rgb(34, 34, 34);
   outline: none;
 }
