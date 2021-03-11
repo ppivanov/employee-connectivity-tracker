@@ -35,7 +35,7 @@ namespace EctBlazorApp.Client.Graph
 
         public Task<IEnumerable<EctUser>> FetchAdminstrators()
         {
-            return HttpGet<IEnumerable<EctUser>>("api/auth/get-administrators", new List<EctUser>());
+            return HttpGet<IEnumerable<EctUser>>("api/auth/administrators", new List<EctUser>());
         }
 
         public Task<NotificationOptionsResponse> FetchCurrentNotificationOptions()
@@ -45,7 +45,7 @@ namespace EctBlazorApp.Client.Graph
                 PointsThreshold = -1,
                 MarginForNotification = -1
             };
-            return HttpGet<NotificationOptionsResponse>("api/team/get-notification-options", errorResponse);
+            return HttpGet<NotificationOptionsResponse>("api/team/notification-options", errorResponse);
         }
 
         public async Task<(CommunicationPoint, CommunicationPoint)> FetchCommunicationPoints()
@@ -64,18 +64,18 @@ namespace EctBlazorApp.Client.Graph
 
         public Task<DashboardResponse> FetchDashboardResponse(string queryString)
         {
-            return HttpGet <DashboardResponse>($"api/main/get-dashboard-stats{queryString}", new DashboardResponse());
+            return HttpGet<DashboardResponse>($"api/main/dashboard-stats{queryString}", new DashboardResponse());
         }
 
         public Task<TeamDashboardResponse> FetchTeamDashboardResponse(string queryString)
         {
             var defaultResponse = new TeamDashboardResponse { TeamMembers = new List<EctUser>(), TeamName = "" };
-            return HttpGet<TeamDashboardResponse>($"api/team/get-team-stats{queryString}", defaultResponse);
+            return HttpGet<TeamDashboardResponse>($"api/team/team-stats{queryString}", defaultResponse);
         }
 
         public Task<IEnumerable<EctTeam>> FetchAllTeams()
         {
-            return HttpGet<IEnumerable<EctTeam>>("api/team/all", new List<EctTeam>());
+            return HttpGet<IEnumerable<EctTeam>>("api/team", new List<EctTeam>());
         }
 
         public async Task<string> GetAPITokenAsync()
@@ -98,12 +98,12 @@ namespace EctBlazorApp.Client.Graph
 
         public Task<string> GetHashedTeamId()
         {
-            return HttpGet<string>("api/team/get-team-id", "");
+            return HttpGet<string>("api/team/team-id", "");
         }
 
         public Task<IEnumerable<string>> GetUsersEligibleForMembers()
         {
-            return HttpGet<IEnumerable<string>>("api/auth/get-app-users", new List<string>());
+            return HttpGet<IEnumerable<string>>("api/auth/app-users", new List<string>());
         }
 
         public Task<bool> IsProcessingUserAnAdmin()
@@ -123,20 +123,20 @@ namespace EctBlazorApp.Client.Graph
 
         public Task<(bool, string)> SubmitNotificationOptions(NotificationOptionsResponse notificationOptions)
         {
-            return HttpPut("api/team/set-notification-options", notificationOptions);
+            return HttpPut("api/team/notification-options", notificationOptions);
         }
 
         public Task<(bool, string)> SubmitPoints(IEnumerable<CommunicationPoint> communicationPoints)
         {
-            return HttpPut("api/communication/set-points", communicationPoints);
+            return HttpPut("api/communication/points", communicationPoints);
         }
 
         public Task<(bool, string)> SubmitTeamData(bool isNewTeam, EctTeamRequestDetails teamDetails)
         {
             if (isNewTeam)
-                return HttpPost("api/team/create-team", teamDetails);
+                return HttpPost("api/team", teamDetails);
             else
-                return HttpPut("api/team/update-team", teamDetails);
+                return HttpPut("api/team", teamDetails);
         }
 
         public async Task<string> UpdateDatabaseRecords()
@@ -146,7 +146,7 @@ namespace EctBlazorApp.Client.Graph
             {
                 GraphToken = accessToken
             };
-            var apiResponse = await HttpPut("api/main/update-tracking-records", userDetails, accessToken);
+            var apiResponse = await HttpPut("api/main/tracking-records", userDetails, accessToken);
             
             return apiResponse.Item2;
         }

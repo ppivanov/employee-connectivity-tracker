@@ -27,7 +27,6 @@ namespace EctBlazorApp.Server.Controllers
             _dbContext = context;
         }
 
-        [Route("all")]
         [HttpGet]
         [AuthorizeAdmin]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -47,7 +46,6 @@ namespace EctBlazorApp.Server.Controllers
         }
 
 
-        [Route("create-team")]
         [HttpPost]
         [AuthorizeAdmin]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -90,7 +88,6 @@ namespace EctBlazorApp.Server.Controllers
             }
         }
 
-        [Route("update-team")]
         [HttpPut]
         [AuthorizeLeader]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -120,7 +117,7 @@ namespace EctBlazorApp.Server.Controllers
             }
         }
 
-        [Route("get-team-stats")]   
+        [Route("team-stats")]   
         [HttpGet]
         [AuthorizeLeader]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -148,7 +145,7 @@ namespace EctBlazorApp.Server.Controllers
             return Ok(response);
         }
 
-        [Route("get-team-id")]
+        [Route("team-id")]
         [HttpGet]
         [AuthorizeLeader]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -169,7 +166,7 @@ namespace EctBlazorApp.Server.Controllers
             return Ok(ComputeSha256Hash(team.Id.ToString()));
         }
 
-        [Route("get-notification-options")]
+        [Route("notification-options")]
         [HttpGet]
         [AuthorizeLeader]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -189,7 +186,7 @@ namespace EctBlazorApp.Server.Controllers
             return Ok(notificationOptions);
         }
 
-        [Route("set-notification-options")]
+        [Route("notification-options")]
         [HttpPut]
         [AuthorizeLeader]
         [ProducesResponseType(StatusCodes.Status200OK)]

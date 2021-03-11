@@ -30,7 +30,7 @@ namespace EctBlazorApp.Server.Controllers
             _mailKit = mailKit;
         }
 
-        [Route("update-tracking-records")]
+        [Route("tracking-records")]
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -74,7 +74,7 @@ namespace EctBlazorApp.Server.Controllers
             }
         }
 
-        [Route("get-dashboard-stats")]
+        [Route("dashboard-stats")]
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

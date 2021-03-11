@@ -16,6 +16,12 @@ namespace EctBlazorApp.Client.Pages
         [Inject]
         protected IJSRuntime JsRuntime { get; set; }
 
+        private bool serverMessageIsError = false;
+        private List<EctUser> InitialLeftTeamRoster;
+        private List<EctUser> InitialRightTeamRoster;
+
+        private bool LeftSelectionIsNull => string.IsNullOrWhiteSpace(LeftTeamSelection);
+        private bool RightSelectionIsNull => string.IsNullOrWhiteSpace(RightTeamSelection);
         private bool SameTeamSelection
         {
             get
@@ -24,20 +30,19 @@ namespace EctBlazorApp.Client.Pages
                 return LeftTeamSelection.ToLower().Equals(RightTeamSelection.ToLower());
             }
         }
-        private List<EctUser> InitialLeftTeamRoster;
-        private List<EctUser> InitialRightTeamRoster;
-        private bool LeftSelectionIsNull => string.IsNullOrWhiteSpace(LeftTeamSelection);
-        private bool RightSelectionIsNull => string.IsNullOrWhiteSpace(RightTeamSelection);
-
-        protected bool MemberHasBeenMoved { get; set; } = false;
 
         protected IEnumerable<EctTeam> InAppTeams { get; set; }
 
+        protected EctTeam LeftTeam { get; set; }
         protected string LeftTeamSelection { get; set; }
+
+        protected bool MemberHasBeenMoved { get; set; } = false;
+
+        protected EctTeam RightTeam { get; set; }
         protected string RightTeamSelection { get; set; }
 
-        private bool serverMessageIsError = false;
         protected string ServerMessage { get; set; }
+
         protected string ServerMessageStyle => serverMessageIsError ? "color:red;" : "color:green";
 
         protected IEnumerable<EctTeam> SelectableTeamsLeft
@@ -60,13 +65,6 @@ namespace EctBlazorApp.Client.Pages
             }
         }
 
-        protected EctTeam LeftTeam { get; set; }
-        protected EctTeam RightTeam { get; set; }
-
-        protected void RemoveMember(EctTeam team, string emailToRemove)
-        {
-            team.Members = team.Members.Where(m => m.Email.Equals(emailToRemove) == false).ToList();
-        }
 
         protected void MoveMember(EctTeam fromTeam, EctTeam toTeam, string emailToRemove)
         {
@@ -76,11 +74,33 @@ namespace EctBlazorApp.Client.Pages
             toTeam.Members.Add(userToMove);
         }
 
+        protected override async Task OnInitializedAsync()
+        {
+            await JsRuntime.InvokeVoidAsync("setPageTitle", "Move Members");
+            InAppTeams = await ApiConn.FetchAllTeams();
+        }
+
+        protected void RemoveMember(EctTeam team, string emailToRemove)
+        {
+            team.Members = team.Members.Where(m => m.Email.Equals(emailToRemove) == false).ToList();
+        }
+
         protected void ResetTeams()
         {
             LeftTeam.Members = InitialLeftTeamRoster.ToList();                                                          // Copying the list as the MoveMember method will modify the 'snapshot' of the original roster state
             RightTeam.Members = InitialRightTeamRoster.ToList();
             MemberHasBeenMoved = false;
+        }
+
+        protected void SubmitChanges()
+        {
+            if(MemberHasBeenMoved == false)
+            {
+                serverMessageIsError = true;
+                ServerMessage = "No members have been moved.";
+                return;
+            }
+            // Send put request to API
         }
 
         protected void UpdateLeftTeamSelection()
@@ -103,23 +123,6 @@ namespace EctBlazorApp.Client.Pages
 
             RightTeam = InAppTeams.FirstOrDefault(t => t.Name.ToLower().Equals(RightTeamSelection.ToLower()));
             InitialRightTeamRoster = RightTeam.Members.ToList();
-        }
-
-        protected void SubmitChanges()
-        {
-            if(MemberHasBeenMoved == false)
-            {
-                serverMessageIsError = true;
-                ServerMessage = "No members have been moved.";
-                return;
-            }
-            // Send put request to API
-        }
-
-        protected override async Task OnInitializedAsync()
-        {
-            await JsRuntime.InvokeVoidAsync("setPageTitle", "Move Members");
-            InAppTeams = await ApiConn.FetchAllTeams();
         }
     }
 }

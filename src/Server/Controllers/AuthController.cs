@@ -61,7 +61,7 @@ namespace EctBlazorApp.Server.Controllers
             return Ok(teamDetails);
         }
 
-        [Route("get-app-users")]
+        [Route("app-users")]
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -73,7 +73,7 @@ namespace EctBlazorApp.Server.Controllers
             return Ok(appUsers);
         }
 
-        [Route("get-administrators")]
+        [Route("administrators")]
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
