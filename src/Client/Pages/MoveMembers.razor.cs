@@ -99,7 +99,15 @@ namespace EctBlazorApp.Client.Pages
                 ServerMessage = "No members have been moved.";
                 return;
             }
-            // Send put request to API
+            var teams = new List<EctTeam>{ LeftTeam, RightTeam };
+            var response = await ApiConn.SubmitMoveMemberTeams(teams);
+            serverMessageIsError = response.Item1 == false;
+            ServerMessage = response.Item2;
+            if(serverMessageIsError == false)
+            {
+                InitialLeftTeamRoster = LeftTeam.Members.ToList();
+                InitialRightTeamRoster = RightTeam.Members.ToList();
+            }
         }
 
         protected void UpdateLeftTeamSelection()

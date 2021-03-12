@@ -126,7 +126,8 @@ namespace EctBlazorApp.Server.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> MoveMembersBetweenTeams([FromBody] IEnumerable<EctTeam> teamsToUpdate)
         {
-            var originalTeams = _dbContext.Teams.Where(t => teamsToUpdate.Any(tu => tu.AreTeamNamesEqual(t))).ToList();             // Get references to the original teams
+            var originalTeams = _dbContext.Teams.ToList().Where(t =>                                    // Get references to the original teams
+            teamsToUpdate.Any(tu => tu.AreTeamNamesEqual(t))).ToList();             
 
             if (originalTeams.Count < 1) 
                 return BadRequest("No matching teams were found.");
