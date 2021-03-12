@@ -74,6 +74,24 @@ namespace EctBlazorApp.Client.Pages
         protected bool MemberInputError { get; set; } = false;
         protected EctTeamRequestDetails TeamDetails { get; set; }
 
+        public virtual async Task JsInterop(string function, string parameter = "")
+        {
+            await JsRuntime.InvokeVoidAsync(function, parameter);
+        }               // Used to mock JavaScript function calls
+
+        public void SetLeaderNameEmail(ChangeEventArgs args)
+        {
+            ResetErrorMessage();
+            TeamDetails.LeaderNameAndEmail = args.Value.ToString();
+        }
+
+        public void SetMemberNameEmail(ChangeEventArgs args)
+        {
+            ResetErrorMessage();
+            CurrentMemberSelection = args.Value.ToString();
+        }
+
+
         protected async Task AddSelectedMember()
         {
             if (IsCurrentMemberSelectionEmpty()
@@ -98,30 +116,12 @@ namespace EctBlazorApp.Client.Pages
             AllAvailableLeaders = MembersFromApi.ToHashSet();                                       // Copy the set not the reference
         }
 
-        private async Task Initialize()
-        {
-            Initialized = false;
-            ResetErrorMessage();
-            await ResetInputFields();
-            if (HasTeamId)
-                await InitializeManageTeam();
-            else
-                await InitializeCreateTeam();
-
-            await InvokeAsync(StateHasChanged);
-        }
-
-        public virtual async Task JsInterop(string function, string parameter = "")
-        {
-            await JsRuntime.InvokeVoidAsync(function, parameter);
-        }               // Used to mock JavaScript function calls
-
         protected override async Task OnInitializedAsync()
         {
             await Initialize();
         }
 
-        protected override async void OnParametersSet()
+        protected override async Task OnParametersSetAsync()
         {
             await Initialize();
         }
@@ -160,18 +160,6 @@ namespace EctBlazorApp.Client.Pages
                 await ResetInputFields();
             }
             IsSubmitting = false;
-        }
-
-        public void SetLeaderNameEmail(ChangeEventArgs args)
-        {
-            ResetErrorMessage();
-            TeamDetails.LeaderNameAndEmail = args.Value.ToString();
-        }
-
-        public void SetMemberNameEmail(ChangeEventArgs args)
-        {
-            ResetErrorMessage();
-            CurrentMemberSelection = args.Value.ToString();
         }
 
 
@@ -216,6 +204,19 @@ namespace EctBlazorApp.Client.Pages
                 await JsInterop("resetCreateTeamLeader");
                 await JsInterop("resetCreateTeamMember");
             }
+        }
+        private async Task Initialize()
+        {
+            Initialized = false;
+            await AuthState.GetUserPermissions(AuthState, ApiConn);
+            ResetErrorMessage();
+            await ResetInputFields();
+            if (HasTeamId)
+                await InitializeManageTeam();
+            else
+                await InitializeCreateTeam();
+
+            await InvokeAsync(StateHasChanged);
         }
         private async Task InitializeCreateTeam()
         {

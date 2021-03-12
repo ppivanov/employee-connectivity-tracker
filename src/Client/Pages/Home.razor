@@ -24,17 +24,11 @@
     {
         await jsRuntime.InvokeVoidAsync("setPageTitle", "Home");
         await UpdateRecords();
-        await GetUserPermissions();
+        await AuthState.GetUserPermissions(authState, apiConn);
     }
 
     private async Task UpdateRecords()
     {
         Console.WriteLine(await apiConn.UpdateDatabaseRecords());
-    }
-
-    private async Task GetUserPermissions()
-    {
-        authState.SetIsAdmin(await apiConn.IsProcessingUserAnAdmin());
-        authState.SetIsLeader(await apiConn.IsProcessingUserALeader());
     }
 }

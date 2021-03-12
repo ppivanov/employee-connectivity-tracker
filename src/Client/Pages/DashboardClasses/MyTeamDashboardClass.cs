@@ -233,6 +233,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         protected override async Task OnInitializedAsync()
         {
             await JsInterop("setPageTitle", "My Team");
+            await AuthState.GetUserPermissions(AuthState, ApiConn);
             if (IsLeader)
             {
                 CurrentNotificationOptions = await ApiConn.FetchCurrentNotificationOptions();

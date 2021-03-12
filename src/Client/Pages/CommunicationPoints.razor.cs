@@ -60,6 +60,7 @@ namespace EctBlazorApp.Client.Pages
         protected override async Task OnInitializedAsync()
         {
             await JsRuntime.InvokeVoidAsync("setPageTitle", "Communication Points");
+            await AuthState.GetUserPermissions(AuthState, ApiConn);
             if (HasAccess)
                 await FetchCommunicationPoints();
 
