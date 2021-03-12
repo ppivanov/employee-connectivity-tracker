@@ -32,6 +32,8 @@ namespace EctBlazorApp.Client.Graph
 
         Task<EctTeamRequestDetails> IsProcessingUserLeaderForTeam(string hashedTeamId);
 
+        Task<(bool, string)> SubmitMoveMemberTeams(IEnumerable<EctTeam> teams);
+
         Task<(bool, string)> SubmitNotificationOptions(NotificationOptionsResponse notificationOptions);
 
         Task<(bool, string)> SubmitPoints(IEnumerable<CommunicationPoint> communicationPoints);

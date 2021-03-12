@@ -65,7 +65,6 @@ namespace EctBlazorApp.Client.Pages
             }
         }
 
-
         protected void MoveMember(EctTeam fromTeam, EctTeam toTeam, string emailToRemove)
         {
             MemberHasBeenMoved = true;
@@ -128,6 +127,7 @@ namespace EctBlazorApp.Client.Pages
             if(RightTeam != null)
                 InitialRightTeamRoster = RightTeam.Members.ToList();
         }
+
 
         private void ResetServerMessage()
         {

@@ -38,7 +38,7 @@ namespace EctBlazorApp.Server.Controllers
                 var allTeams = _dbContext.Teams.Include(t => t.Members).Include(t => t.Leader).ToList();
                 return Ok(allTeams);
             }
-            catch(Exception)
+            catch (Exception)
             {
                 return StatusCode(500, "Internal server error. Please, try again later.");
             }
@@ -53,7 +53,7 @@ namespace EctBlazorApp.Server.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult> CreateNewTeam(EctTeamRequestDetails teamDetails)
+        public async Task<ActionResult> CreateNewTeam([FromBody] EctTeamRequestDetails teamDetails)
         {
 
             if (teamDetails.AreDetailsValid() == false)
@@ -94,7 +94,7 @@ namespace EctBlazorApp.Server.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult> UpdateTeam(EctTeamRequestDetails teamDetails)
+        public async Task<ActionResult> UpdateTeam([FromBody] EctTeamRequestDetails teamDetails)
         {
             if (teamDetails.AreDetailsValid() == false)
                 return BadRequest("Invalid team details!");
@@ -117,7 +117,39 @@ namespace EctBlazorApp.Server.Controllers
             }
         }
 
-        [Route("team-stats")]   
+        [Route("move-members")]
+        [HttpPut]
+        [AuthorizeAdmin]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult> MoveMembersBetweenTeams([FromBody] IEnumerable<EctTeam> teamsToUpdate)
+        {
+            var originalTeams = _dbContext.Teams.Where(t => teamsToUpdate.Any(tu => tu.AreTeamNamesEqual(t))).ToList();             // Get references to the original teams
+
+            if (originalTeams.Count < 1) 
+                return BadRequest("No matching teams were found.");
+
+            foreach (var originalTeam in originalTeams)                                                 // This n^2 loop should be ok as the number of teams  
+            {   foreach (var newMembersTeam in teamsToUpdate)
+                {
+                    if (newMembersTeam.AreTeamNamesEqual(originalTeam))
+                        originalTeam.Members = newMembersTeam.Members;
+                }
+            }
+            try
+            {
+                await _dbContext.SaveChangesAsync();
+                return Ok("Members moved successfully.");
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal server error. Please, try again later.");
+            }
+        }
+
+        [Route("team-stats")]
         [HttpGet]
         [AuthorizeLeader]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -150,7 +182,7 @@ namespace EctBlazorApp.Server.Controllers
         [AuthorizeLeader]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<ActionResult<string>> GetHashedTeamId([FromQuery]string teamName = "")
+        public async Task<ActionResult<string>> GetHashedTeamId([FromQuery] string teamName = "")
         {
             string userEmail = await HttpContext.GetPreferredUsername();
             EctUser teamLead = _dbContext.Users.FirstOrDefault(u => u.Email == userEmail);

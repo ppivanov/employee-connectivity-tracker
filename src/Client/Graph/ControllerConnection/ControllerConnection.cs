@@ -119,6 +119,11 @@ namespace EctBlazorApp.Client.Graph
             return HttpGet<EctTeamRequestDetails>($"api/auth/is-leader-for-team?TID={hashedTeamId}", null);
         }
 
+        public Task<(bool, string)> SubmitMoveMemberTeams(IEnumerable<EctTeam> teams)
+        {
+            return HttpPut("api/team/move-members", teams);
+        }
+
         public Task<(bool, string)> SubmitNotificationOptions(NotificationOptionsResponse notificationOptions)
         {
             return HttpPut("api/team/notification-options", notificationOptions);
