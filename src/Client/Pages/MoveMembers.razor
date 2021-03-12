@@ -6,128 +6,135 @@
 
 <AuthorizeView>
     <Authorized>
-        <div class="move-members">
-            @if (string.IsNullOrEmpty(ServerMessage) == false)
-            {
-                <div class="operation-result">
-                    <p style="@ServerMessageInlineStyle">@ServerMessage</p>
-                </div>
-            }
-            <div class="team float-left">
-                <h2>Team one</h2>
-                <div class="team-selection">
-                    <input @bind="LeftTeamSelection" @bind:event="oninput" type="text"
-                           placeholder="Team name..." class="input" list="teams-left"
-                           disabled="@MemberHasBeenMoved" @onkeyup="UpdateLeftTeamSelection" />
-                </div>
-                <table>
-                    <thead>
-                        <tr>
-                            <td class="member-heading-left">Members</td>
-                            <td>Actions</td>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (LeftTeam != null)
-                        {
+        @if (HasAccess == false)
+        {
+            <p>You do not have access to this page. Click <a href="/">here</a> to go back.</p>
+        }
+        else
+        {
+            <div class="move-members">
+                @if (string.IsNullOrEmpty(ServerMessage) == false)
+                {
+                    <div class="operation-result">
+                        <p style="@ServerMessageInlineStyle">@ServerMessage</p>
+                    </div>
+                }
+                <div class="team float-left">
+                    <h2>Team one</h2>
+                    <div class="team-selection">
+                        <input @bind="LeftTeamSelection" @bind:event="oninput" type="text"
+                               placeholder="Team name..." class="input" list="teams-left"
+                               disabled="@MemberHasBeenMoved" @onkeyup="UpdateLeftTeamSelection" />
+                    </div>
+                    <table>
+                        <thead>
                             <tr>
-                                <td>
-                                    @FormatFullNameAndEmail(LeftTeam.Leader.FullName, LeftTeam.Leader.Email)
-                                </td>
-                                <td>
-                                    <button type="button" class="remove-member-button disabled-button" disabled="true">
-                                        &times;
-                                    </button>
-                                    <button type="button" class="move-member-button disabled-button" disabled="true">
-                                        &rarr;
-                                    </button>
-                                </td>
+                                <td class="member-heading-left">Members</td>
+                                <td>Actions</td>
                             </tr>
-                            @foreach (var member in LeftTeam.GetMembersExceptLeader())
+                        </thead>
+                        <tbody>
+                            @if (LeftTeam != null)
                             {
                                 <tr>
                                     <td>
-                                        @FormatFullNameAndEmail(member.FullName, member.Email)
+                                        @FormatFullNameAndEmail(LeftTeam.Leader.FullName, LeftTeam.Leader.Email)
                                     </td>
                                     <td>
-                                        <button type="button" class="remove-member-button" @onclick="() => RemoveMember(LeftTeam, member.Email)">
+                                        <button type="button" class="remove-member-button disabled-button" disabled="true">
                                             &times;
                                         </button>
-                                        <button type="button" class="move-member-button" @onclick="() => MoveMember(LeftTeam, RightTeam, member.Email)">
+                                        <button type="button" class="move-member-button disabled-button" disabled="true">
                                             &rarr;
                                         </button>
                                     </td>
                                 </tr>
+                                @foreach (var member in LeftTeam.GetMembersExceptLeader())
+                                {
+                                    <tr>
+                                        <td>
+                                            @FormatFullNameAndEmail(member.FullName, member.Email)
+                                        </td>
+                                        <td>
+                                            <button type="button" class="remove-member-button" @onclick="() => RemoveMember(LeftTeam, member.Email)">
+                                                &times;
+                                            </button>
+                                            <button type="button" class="move-member-button" @onclick="() => MoveMember(LeftTeam, RightTeam, member.Email)">
+                                                &rarr;
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
                             }
-                        }
-                    </tbody>
-                </table>
-            </div>
-            <div class="team float-right">
-                <h2>Team two</h2>
-                <div class="team-selection">
-                    <input @bind="RightTeamSelection" @bind:event="oninput" type="text"
-                           placeholder="Team name..." class="input" list="teams-right"
-                           disabled="@MemberHasBeenMoved" @onkeyup="UpdateRightTeamSelection" />
+                        </tbody>
+                    </table>
                 </div>
-                <table>
-                    <thead>
-                        <tr>
-                            <td>Actions</td>
-                            <td class="member-heading-right">Members</td>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (RightTeam != null)
-                        {
+                <div class="team float-right">
+                    <h2>Team two</h2>
+                    <div class="team-selection">
+                        <input @bind="RightTeamSelection" @bind:event="oninput" type="text"
+                               placeholder="Team name..." class="input" list="teams-right"
+                               disabled="@MemberHasBeenMoved" @onkeyup="UpdateRightTeamSelection" />
+                    </div>
+                    <table>
+                        <thead>
                             <tr>
-                                <td>
-                                    <button type="button" class="move-member-button disabled-button" disabled="true">
-                                        &larr;
-                                    </button>
-                                    <button type="button" class="remove-member-button disabled-button" disabled="true">
-                                        &times;
-                                    </button>
-                                </td>
-                                <td>
-                                    @FormatFullNameAndEmail(RightTeam.Leader.FullName, RightTeam.Leader.Email)
-                                </td>
+                                <td>Actions</td>
+                                <td class="member-heading-right">Members</td>
                             </tr>
-                            @foreach (var member in RightTeam.GetMembersExceptLeader())
+                        </thead>
+                        <tbody>
+                            @if (RightTeam != null)
                             {
                                 <tr>
                                     <td>
-                                        <button type="button" class="move-member-button" @onclick="() => MoveMember(RightTeam, LeftTeam, member.Email)">
+                                        <button type="button" class="move-member-button disabled-button" disabled="true">
                                             &larr;
                                         </button>
-                                        <button type="button" class="remove-member-button" @onclick="() => RemoveMember(RightTeam, member.Email)">
+                                        <button type="button" class="remove-member-button disabled-button" disabled="true">
                                             &times;
                                         </button>
                                     </td>
                                     <td>
-                                        @FormatFullNameAndEmail(member.FullName, member.Email)
+                                        @FormatFullNameAndEmail(RightTeam.Leader.FullName, RightTeam.Leader.Email)
                                     </td>
                                 </tr>
+                                @foreach (var member in RightTeam.GetMembersExceptLeader())
+                                {
+                                    <tr>
+                                        <td>
+                                            <button type="button" class="move-member-button" @onclick="() => MoveMember(RightTeam, LeftTeam, member.Email)">
+                                                &larr;
+                                            </button>
+                                            <button type="button" class="remove-member-button" @onclick="() => RemoveMember(RightTeam, member.Email)">
+                                                &times;
+                                            </button>
+                                        </td>
+                                        <td>
+                                            @FormatFullNameAndEmail(member.FullName, member.Email)
+                                        </td>
+                                    </tr>
+                                }
                             }
-                        }
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                </div>
+                <datalist id="teams-left">
+                    @foreach (var team in SelectableTeamsLeft)
+                    {
+                        <option>@(team.Name)</option>
+                    }
+                </datalist>
+                <datalist id="teams-right">
+                    @foreach (var team in SelectableTeamsRight)
+                    {
+                        <option>@(team.Name)</option>
+                    }
+                </datalist>
+                <button type="button" class="move-members-submit" @onclick="SubmitChanges">Submit</button>
+                <button type="button" class="move-members-reset" @onclick="ResetTeams">Reset</button>
             </div>
-            <datalist id="teams-left">
-                @foreach (var team in SelectableTeamsLeft)
-                {
-                    <option>@(team.Name)</option>
-                }
-            </datalist>
-            <datalist id="teams-right">
-                @foreach (var team in SelectableTeamsRight)
-                {
-                    <option>@(team.Name)</option>
-                }
-            </datalist>
-            <button type="button" class="move-members-submit" @onclick="SubmitChanges">Submit</button>
-            <button type="button" class="move-members-reset" @onclick="ResetTeams">Reset</button>
-        </div>
+        }
     </Authorized>
 </AuthorizeView>
 

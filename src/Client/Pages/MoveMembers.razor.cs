@@ -31,6 +31,8 @@ namespace EctBlazorApp.Client.Pages
             }
         }
 
+        protected bool HasAccess { get; set; } = false;
+
         protected IEnumerable<EctTeam> InAppTeams { get; set; }
 
         protected EctTeam LeftTeam { get; set; }
@@ -76,7 +78,9 @@ namespace EctBlazorApp.Client.Pages
         protected override async Task OnInitializedAsync()
         {
             await JsRuntime.InvokeVoidAsync("setPageTitle", "Move Members");
-            InAppTeams = await ApiConn.FetchAllTeams();
+            HasAccess = await ApiConn.IsProcessingUserAnAdmin();
+            if (HasAccess)
+                InAppTeams = await ApiConn.FetchAllTeams();
         }
 
         protected void RemoveMember(EctTeam team, string emailToRemove)
