@@ -20,36 +20,18 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         [Inject]
         protected IJSRuntime JsRuntime { get; set; }
 
-        protected bool initialized = false;
-        protected int numberOfMeetings = 0;
-        protected double secondsInMeeting = 0;
-        protected CommunicationPoint emailCommPoints;
-        protected CommunicationPoint meetingCommPoints;
-        protected readonly Dictionary<string, double> collaboratorsDict = new Dictionary<string, double>();
+        protected readonly Dictionary<string, double> CollaboratorsDict = new Dictionary<string, double>();
 
-        protected DateTimeOffset? FromDate { get; set; } = DateTimeOffset.Now; 
-        protected DateTimeOffset? ToDate { get; set; } = DateTimeOffset.Now.AddDays(1);
-        protected string FormattedTimeInMeeting { get => FormatSecondsToHoursAndMinutes(secondsInMeeting); }
-        protected int TotalMinutesInMeetings { get => GetMinutesFromSeconds(secondsInMeeting); }
-        protected int TotalPoints
-        {
-            get
-            {
-                double totalMeetingPoints = TotalMinutesInMeetings / 10.0 * meetingCommPoints.Points;
-                int totalEmailPoints = (TotalEmailsCount) * emailCommPoints.Points;
-                return (int)(totalEmailPoints + totalMeetingPoints);
-            }
-        }
         protected IEnumerable<KeyValuePair<string, double>> Collaborators
         {
             get
             {
                 /* Adapted from: https://stackoverflow.com/a/298 */
                 List<KeyValuePair<string, double>> list = new List<KeyValuePair<string, double>>();
-                foreach (var key in collaboratorsDict.Keys)
+                foreach (var key in CollaboratorsDict.Keys)
                 {
-                    double percentage = collaboratorsDict[key] / TotalPoints * 100;
-                    double percentageToAdd = collaboratorsDict[key] > 0 ? percentage : 0;
+                    double percentage = CollaboratorsDict[key] / TotalPoints * 100;
+                    double percentageToAdd = CollaboratorsDict[key] > 0 ? percentage : 0;
                     list.Add(new KeyValuePair<string, double>(key, percentageToAdd));
                 }
 
@@ -62,6 +44,32 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
                 return list.Take(10);
             }
         }
+        protected CommunicationPoint EmailCommPoints { get; set; }
+        protected string FormattedTimeInMeeting { get => FormatSecondsToHoursAndMinutes(SecondsInMeeting); }
+        protected DateTimeOffset? FromDate { get; set; } = DateTimeOffset.Now; 
+        protected bool Initialized { get; set; } = false;
+        protected CommunicationPoint MeetingCommPoints { get; set; }
+        protected int NumberOfMeetings { get; set; } = 0;
+        protected double SecondsInMeeting { get; set; } = 0;
+        protected DateTimeOffset? ToDate { get; set; } = DateTimeOffset.Now.AddDays(1);
+        protected int TotalMinutesInMeetings { get => GetMinutesFromSeconds(SecondsInMeeting); }
+        protected int TotalPoints
+        {
+            get
+            {
+                double totalMeetingPoints = TotalMinutesInMeetings / 10.0 * MeetingCommPoints.Points;
+                int totalEmailPoints = (TotalEmailsCount) * EmailCommPoints.Points;
+                return (int)(totalEmailPoints + totalMeetingPoints);
+            }
+        }
+
+        protected void AddPointsToCollaborators(string fullName, double points)
+        {
+            if (CollaboratorsDict.ContainsKey(fullName))
+                CollaboratorsDict[fullName] += points;
+            else
+                CollaboratorsDict.Add(fullName, points);
+        }
 
         protected async Task CustomApply(MouseEventArgs e, DateRangePicker picker)
         {
@@ -69,6 +77,15 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
 
             await UpdateDashboard();
         }
+
+        protected async Task FetchCommunicationPoints()
+        {
+            var result = await ApiConn.FetchCommunicationPoints();
+
+            EmailCommPoints = result.Item1;
+            MeetingCommPoints = result.Item2;
+        }
+
         protected async Task ResetClick(MouseEventArgs e, DateRangePicker picker)
         {
             FromDate = DateTimeOffset.Now;
@@ -79,22 +96,6 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             await picker.OnRangeSelect.InvokeAsync(new DateRange());
 
             await UpdateDashboard();
-        }
-
-        protected async Task FetchCommunicationPoints()
-        {
-            var result = await ApiConn.FetchCommunicationPoints();
-
-            emailCommPoints = result.Item1;
-            meetingCommPoints = result.Item2;
-        }
-
-        protected void AddPointsToCollaborators(string fullName, double points)
-        {
-            if (collaboratorsDict.ContainsKey(fullName))
-                collaboratorsDict[fullName] += points;
-            else
-                collaboratorsDict.Add(fullName, points);
         }
 
         protected abstract int TotalEmailsCount { get; }

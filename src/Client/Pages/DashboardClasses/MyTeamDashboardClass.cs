@@ -154,7 +154,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             foreach (var member in TeamMembers)
             {
                 int totalEmails = member.SentEmails.Count + member.ReceivedEmails.Count;
-                double pointsToAdd = totalEmails * emailCommPoints.Points;
+                double pointsToAdd = totalEmails * EmailCommPoints.Points;
                 AddPointsToCollaborators(member.FullName, pointsToAdd);
             }
 
@@ -167,7 +167,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
 
             foreach (var member in TeamMembers)
             {
-                int numberOfMeetingsBefore = numberOfMeetings;
+                int numberOfMeetingsBefore = NumberOfMeetings;
                 foreach (var calendarEvent in member.CalendarEvents)
                 {
                     string eventDateTimeRange = $"{calendarEvent.Start}-{calendarEvent.End}";
@@ -176,18 +176,18 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
                         if (eventsBySubject[calendarEvent.Subject].Contains(eventDateTimeRange) == false)                                               // only add if the specific meeting at the specific time has not been added
                         {
                             eventsBySubject[calendarEvent.Subject].Add(eventDateTimeRange);
-                            secondsInMeeting += GetSecondsFromDateTimeRange(calendarEvent.Start, calendarEvent.End);
-                            numberOfMeetings++;
+                            SecondsInMeeting += GetSecondsFromDateTimeRange(calendarEvent.Start, calendarEvent.End);
+                            NumberOfMeetings++;
                         }
                     }
                     else
                     {
                         eventsBySubject.Add(calendarEvent.Subject, new HashSet<string>() { { eventDateTimeRange } });                                   // if none of the meetings so far have had the subject, add a new one and initialize a set for the times
-                        secondsInMeeting += GetSecondsFromDateTimeRange(calendarEvent.Start, calendarEvent.End);
-                        numberOfMeetings++;
+                        SecondsInMeeting += GetSecondsFromDateTimeRange(calendarEvent.Start, calendarEvent.End);
+                        NumberOfMeetings++;
                     }
                 }
-                double pointsToAdd = (numberOfMeetings - numberOfMeetingsBefore) * meetingCommPoints.Points;
+                double pointsToAdd = (NumberOfMeetings - numberOfMeetingsBefore) * MeetingCommPoints.Points;
                 AddPointsToCollaborators(member.FullName, pointsToAdd);
             }
 
@@ -249,7 +249,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
                 await FetchCommunicationPoints();
                 await UpdateDashboard();
             }
-            initialized = true;
+            Initialized = true;
             await InvokeAsync(StateHasChanged);
         }
 
@@ -293,7 +293,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             leaderNameAndEmail = response.LeaderNameAndEmail;
 
             await FindCollaborators();
-            initialized = true;
+            Initialized = true;
             await InvokeAsync(StateHasChanged);                                                                                                                                     // Force a refresh of the component before trying to load the js graphs
             await JsInterop("setPageTitle", response.TeamName);
             await JsRuntime.InvokeVoidAsync("loadMyTeamDashboardGraph", (object)GetEmailData(), (object)GetCalendarEventsData());                                                   // GetCalendarEventsData is adding only some of the collaborators to the dictionary
@@ -301,9 +301,9 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
 
         private void ResetAttributeValues()
         {
-            numberOfMeetings = 0;
-            secondsInMeeting = 0;
-            collaboratorsDict.Clear();
+            NumberOfMeetings = 0;
+            SecondsInMeeting = 0;
+            CollaboratorsDict.Clear();
 
             ServerMessageIsError = false;
             _inputError = false;

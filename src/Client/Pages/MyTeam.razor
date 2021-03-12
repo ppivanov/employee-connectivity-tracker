@@ -9,7 +9,7 @@
     <Authorized>
         <div>
 
-            @if (!initialized)
+            @if (!Initialized)
             {
                 <p>Loading...</p>
             }
@@ -45,7 +45,7 @@
                             <div class="text-summary float-left">
                                 <p>Emails sent: @emailsSent</p>
                                 <p>Emails received: @emailsReceived</p>
-                                <p>Number of meetings: @numberOfMeetings</p>
+                                <p>Number of meetings: @NumberOfMeetings</p>
                                 <p>Time in meetings: @FormattedTimeInMeeting</p>
                             </div>
                         </div>

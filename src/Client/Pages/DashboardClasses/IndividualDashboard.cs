@@ -105,8 +105,8 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             sentMail = response.SentMail;
             receivedMail = response.ReceivedMail;
             calendarEvents = response.CalendarEvents;
-            secondsInMeeting = response.SecondsInMeeting;
-            numberOfMeetings = calendarEvents != null ? calendarEvents.Count : 0;
+            SecondsInMeeting = response.SecondsInMeeting;
+            NumberOfMeetings = calendarEvents != null ? calendarEvents.Count : 0;
             userEmailAddress = response.UserEmail;
 
             if (string.IsNullOrEmpty(response.UserFullName) == false)
@@ -122,7 +122,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
 
         protected override async Task FindCollaborators()
         {
-            collaboratorsDict.Clear();
+            CollaboratorsDict.Clear();
             FindEmailCollaborators();
             await FindAttendeesFromCalendarEvents();
         }
@@ -138,7 +138,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
                 foreach (var recipient in email.Recipients)
                 {
                     string fullName = GetFullNameFromFormattedString(recipient);
-                    AddPointsToCollaborators(fullName, emailCommPoints.Points);
+                    AddPointsToCollaborators(fullName, EmailCommPoints.Points);
                 }
             }
         }
@@ -147,7 +147,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             foreach (var email in receivedMail)
             {
                 string senderFullName = GetFullNameFromFormattedString(email.From);
-                AddPointsToCollaborators(senderFullName, emailCommPoints.Points);
+                AddPointsToCollaborators(senderFullName, EmailCommPoints.Points);
             }
         }
         private async Task FindAttendeesFromCalendarEvents()
@@ -160,7 +160,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
                 foreach (var attendee in attendees)
                 {
                     string fullName = GetFullNameFromFormattedString(attendee);
-                    AddPointsToCollaborators(fullName, meetingCommPoints.Points);
+                    AddPointsToCollaborators(fullName, MeetingCommPoints.Points);
                 }
             }
         }
