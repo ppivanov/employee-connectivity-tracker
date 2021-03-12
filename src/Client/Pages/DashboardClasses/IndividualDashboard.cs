@@ -24,25 +24,15 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         private List<CalendarEvent> calendarEvents;
         private string userEmailAddress = string.Empty;
 
-        protected override int TotalEmailsCount
-        {
-            get => EmailsSentCount + EmailsReceivedCount;
-        }
+        protected int EmailsReceivedCount => receivedMail != null ? receivedMail.Count : 0;
+        protected int EmailsSentCount => sentMail != null ? sentMail.Count : 0;
+        protected override int TotalEmailsCount => EmailsSentCount + EmailsReceivedCount;
 
-        protected int EmailsSentCount
+        protected override async Task FindCollaborators()
         {
-            get => sentMail != null ? sentMail.Count : 0;
-        }
-        protected int EmailsReceivedCount
-        {
-            get => receivedMail != null ? receivedMail.Count : 0;
-        }
-
-        protected override async Task OnInitializedAsync()
-        {
-            await JsRuntime.InvokeVoidAsync("setPageTitle", "Dashboard");
-            await FetchCommunicationPoints();
-            await UpdateDashboard();
+            CollaboratorsDict.Clear();
+            FindEmailCollaborators();
+            await FindAttendeesFromCalendarEvents();
         }
 
         protected override object[][] GetCalendarEventsData()
@@ -71,6 +61,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
 
             return newList;
         }
+
         protected override object[][] GetEmailData()
         {
             var dates = SplitDateRangeToChunks(FromDate.Value, ToDate.Value);
@@ -88,6 +79,13 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             return newList;
         }
 
+        protected override async Task OnInitializedAsync()
+        {
+            await JsRuntime.InvokeVoidAsync("setPageTitle", "Dashboard");
+            await FetchCommunicationPoints();
+            await UpdateDashboard();
+        }
+
         protected override async Task UpdateDashboard()
         {
             string queryString = GetDateRangeQueryString(FromDate.Value, ToDate.Value);
@@ -99,6 +97,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
 
             await JsRuntime.InvokeVoidAsync("loadDashboardGraph", (object)GetEmailData(), (object)GetCalendarEventsData());
         }
+        
 
         private async Task ExtractDataFromResponse(DashboardResponse response)
         {
@@ -112,35 +111,10 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             if (string.IsNullOrEmpty(response.UserFullName) == false)
                 await JsRuntime.InvokeVoidAsync("setPageTitle", response.UserFullName);
         }
-
-        private async Task<string> GetEmailForProcessingUser()
-        {
-            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-            var user = authState.User;
-            return user.GetUserEmail();
-        }
-
-        protected override async Task FindCollaborators()
-        {
-            CollaboratorsDict.Clear();
-            FindEmailCollaborators();
-            await FindAttendeesFromCalendarEvents();
-        }
         private void FindEmailCollaborators()
         {
             FindSentEmailCollaborators();
             FindReceivedEmailCollaborators();
-        }
-        private void FindSentEmailCollaborators()
-        {
-            foreach (var email in sentMail)
-            {
-                foreach (var recipient in email.Recipients)
-                {
-                    string fullName = GetFullNameFromFormattedString(recipient);
-                    AddPointsToCollaborators(fullName, EmailCommPoints.Points);
-                }
-            }
         }
         private void FindReceivedEmailCollaborators()
         {
@@ -163,6 +137,23 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
                     AddPointsToCollaborators(fullName, MeetingCommPoints.Points);
                 }
             }
+        }
+        private void FindSentEmailCollaborators()
+        {
+            foreach (var email in sentMail)
+            {
+                foreach (var recipient in email.Recipients)
+                {
+                    string fullName = GetFullNameFromFormattedString(recipient);
+                    AddPointsToCollaborators(fullName, EmailCommPoints.Points);
+                }
+            }
+        }
+        private async Task<string> GetEmailForProcessingUser()
+        {
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+            return user.GetUserEmail();
         }
     }
 }
