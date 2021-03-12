@@ -6,12 +6,12 @@
     <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
     <a href="/" class="menu-option bottom-border">Home</a>
     <a href="/dashboard" class="menu-option bottom-border">Dashboard</a>
-    @if (isLeader)
+    @if (IsLeader)
     {
         <a href="/my-team" class="menu-option bottom-border">Team</a>
         <a href="/manage-team/@hashedTeamId" class="menu-option bottom-border">Manage Team</a>
     }
-    @if (isAdmin)
+    @if (IsAdmin)
     {
         <a href="/create-team" class="menu-option">Create Team</a>
         <a href="/comm-points" class="menu-option">Manage Mediums</a>
@@ -19,15 +19,16 @@
 </nav>
 
 @code{
-    private bool isAdmin = false;
-    private bool isLeader = false;
+    [Parameter]
+    public bool IsAdmin { get; set; }
+    [Parameter]
+    public bool IsLeader { get; set; }
+
     private string hashedTeamId = string.Empty;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
-        isAdmin = await apiConn.IsProcessingUserAnAdmin();
-        isLeader = await apiConn.IsProcessingUserALeader();
-        if (isLeader)
+        if (IsLeader)
         {
             hashedTeamId = await apiConn.GetHashedTeamId();
         }

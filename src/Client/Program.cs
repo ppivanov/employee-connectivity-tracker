@@ -1,4 +1,5 @@
 using EctBlazorApp.Client.Graph;
+using EctBlazorApp.Client.Shared;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -32,7 +33,11 @@ namespace EctBlazorApp.Client
                 options.ProviderOptions.AdditionalScopesToConsent.Add("https://graph.microsoft.com/Calendars.Read");
                 options.ProviderOptions.AdditionalScopesToConsent.Add("https://graph.microsoft.com/Mail.Read");
             });
+
             builder.Services.AddScoped<IControllerConnection, ControllerConnection>();
+
+            builder.Services.AddSingleton<NavState>();
+
             await builder.Build().RunAsync();
         }
     }

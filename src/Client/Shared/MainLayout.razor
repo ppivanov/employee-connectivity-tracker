@@ -1,4 +1,7 @@
-﻿@inherits LayoutComponentBase
+﻿@inject NavState navState
+@implements IDisposable 
+
+@inherits LayoutComponentBase
 
 <div class="header">
     <div class="header-logo center-flex">
@@ -7,9 +10,21 @@
     <div class="">
         <LoginDisplay />
     </div>
-    <NavMenu />
+    <NavMenu IsAdmin="navState.IsAdmin" IsLeader="navState.IsLeader"/>
 </div>
 
 <div class="main">
     @Body
 </div>
+
+@code{
+    protected override void OnInitialized()
+    {
+        navState.OnChange += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        navState.OnChange -= StateHasChanged;
+    }
+}

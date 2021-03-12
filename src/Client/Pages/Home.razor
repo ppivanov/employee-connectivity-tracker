@@ -1,4 +1,7 @@
 @page "/"
+
+@inject NavState navState
+
 @inject IJSRuntime jsRuntime
 @inject IControllerConnection apiConn
 
@@ -21,10 +24,17 @@
     {
         await jsRuntime.InvokeVoidAsync("setPageTitle", "Home");
         await UpdateRecords();
+        await GetUserPermissions();
     }
 
     private async Task UpdateRecords()
     {
         Console.WriteLine(await apiConn.UpdateDatabaseRecords());
+    }
+
+    private async Task GetUserPermissions()
+    {
+        navState.SetIsAdmin(await apiConn.IsProcessingUserAnAdmin());
+        navState.SetIsLeader(await apiConn.IsProcessingUserALeader());
     }
 }
