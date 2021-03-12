@@ -16,19 +16,24 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         [Inject]
         protected NavigationManager NavManager { get; set; }
 
-        private bool _inputError = false;
+        private bool inputError = false;
 
-        protected bool allowsEdit = false;
-        protected bool isLeader = false;
-        protected bool isSubmitting = false;
-        protected int emailsSent = 0;
-        protected int emailsReceived = 0;
-        protected string leaderNameAndEmail = string.Empty;
+        // public properties for unit tests
+        public bool AddNotifyUserInputError { get; set; } = false;
+        public bool ServerMessageIsError { get; set; } = false;
+        public string UserToNotify_Email { get; set; } = string.Empty;
+        public string UserToNotify_Name { get; set; } = string.Empty;
+        public string ServerMessage { get; set; } = string.Empty;
+        public List<EctUser> Administrators { get; set; }
+        public List<EctUser> TeamMembers { get; set; }
+        public NotificationOptionsResponse CurrentNotificationOptions { get; set; } = null;
+        public NotificationOptionsResponse NewNotificationOptions { get; set; } = null;
 
         protected string AddNotifyUserInputStyle 
         {
             get => AddNotifyUserInputError ? "border: 1px solid red" : string.Empty; 
         }
+        protected bool AllowsEdit { get; set; } = false;
         protected List<EctUser> AvailableUsersForNotification
         {
             get
@@ -45,29 +50,14 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
                 return users;
             }
         }
-        protected override int TotalEmailsCount
-        {
-            get => emailsSent + emailsReceived;
-        }
-        protected string InputStyle
-        {
-            get => _inputError ? "border: 1px solid red" : string.Empty;
-        }
-        protected string ServerMessageInlineStyle
-        {
-            get => ServerMessageIsError ? "color: red;" : "color: green;";
-        }
-
-        // public properties for unit tests
-        public bool AddNotifyUserInputError { get; set; } = false;
-        public bool ServerMessageIsError { get; set; } = false;
-        public string UserToNotify_Email { get; set; } = string.Empty;
-        public string UserToNotify_Name { get; set; } = string.Empty;
-        public string ServerMessage { get; set; } = string.Empty;
-        public List<EctUser> Administrators { get; set; }
-        public List<EctUser> TeamMembers { get; set; }
-        public NotificationOptionsResponse CurrentNotificationOptions { get; set; } = null;
-        public NotificationOptionsResponse NewNotificationOptions { get; set; } = null;
+        protected int EmailsSent { get; set; } = 0;
+        protected int EmailsReceived { get; set; } = 0;
+        protected string InputStyle => inputError ? "border: 1px solid red" : string.Empty;
+        protected bool IsLeader { get; set; } = false;
+        protected bool IsSubmitting { get; set; } = false;
+        protected string LeaderNameAndEmail { get; set; } = string.Empty;
+        protected override int TotalEmailsCount => EmailsSent + EmailsReceived;
+        protected string ServerMessageInlineStyle => ServerMessageIsError ? "color: red;" : "color: green;";
 
         public MyTeamDashboardClass() { }
 
@@ -136,7 +126,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
 
         protected void CancelEditNotificationOptions()
         {
-            allowsEdit = false;
+            AllowsEdit = false;
             NewNotificationOptions.PointsThreshold = CurrentNotificationOptions.PointsThreshold;
             NewNotificationOptions.MarginForNotification = CurrentNotificationOptions.MarginForNotification;
             NewNotificationOptions.UsersToNotify = CurrentNotificationOptions.UsersToNotify.ToList();
@@ -144,7 +134,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
 
         protected void EditNotificationOptions()
         {
-            allowsEdit = true;
+            AllowsEdit = true;
         }
 
         protected override Task FindCollaborators()
@@ -231,8 +221,8 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
 
                 newList[i] = new object[] { tooltipDate, totalSentOnDate,
                     sentMailTooltipText.ToString(), totalReceivedOnDate, receivedMailTooltipText.ToString() };
-                emailsReceived += totalReceivedOnDate;
-                emailsSent += totalSentOnDate;
+                EmailsReceived += totalReceivedOnDate;
+                EmailsSent += totalSentOnDate;
             }
             return newList;
         }
@@ -240,8 +230,8 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         protected override async Task OnInitializedAsync()
         {
             await JsInterop("setPageTitle", "My Team");
-            isLeader = await ApiConn.IsProcessingUserALeader();
-            if (isLeader)
+            IsLeader = await ApiConn.IsProcessingUserALeader();
+            if (IsLeader)
             {
                 CurrentNotificationOptions = await ApiConn.FetchCurrentNotificationOptions();
                 NewNotificationOptions = new NotificationOptionsResponse(CurrentNotificationOptions);
@@ -266,20 +256,20 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             {
                 NewNotificationOptions.PointsThreshold = 0;
                 ServerMessageIsError = true;
-                _inputError = true;
+                inputError = true;
                 ServerMessage = "You cannot set the threshold below 0.";
                 return;
             }
-            isSubmitting = true;
+            IsSubmitting = true;
             ServerMessageIsError = false;
 
             var response = await ApiConn.SubmitNotificationOptions(NewNotificationOptions);
             ServerMessageIsError = response.Item1 == false;
             ServerMessage = response.Item2;
-            _inputError = ServerMessageIsError;
+            inputError = ServerMessageIsError;
 
-            isSubmitting = false;
-            allowsEdit = false;
+            IsSubmitting = false;
+            AllowsEdit = false;
             if (ServerMessageIsError == false) CurrentNotificationOptions = NewNotificationOptions;
         }
 
@@ -290,7 +280,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
 
             var response = await ApiConn.FetchTeamDashboardResponse(queryString);
             TeamMembers = response.TeamMembers;
-            leaderNameAndEmail = response.LeaderNameAndEmail;
+            LeaderNameAndEmail = response.LeaderNameAndEmail;
 
             await FindCollaborators();
             Initialized = true;
@@ -299,6 +289,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             await JsRuntime.InvokeVoidAsync("loadMyTeamDashboardGraph", (object)GetEmailData(), (object)GetCalendarEventsData());                                                   // GetCalendarEventsData is adding only some of the collaborators to the dictionary
         }
 
+
         private void ResetAttributeValues()
         {
             NumberOfMeetings = 0;
@@ -306,15 +297,20 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             CollaboratorsDict.Clear();
 
             ServerMessageIsError = false;
-            _inputError = false;
-            isSubmitting = false;
+            inputError = false;
+            IsSubmitting = false;
             TeamMembers = null;
-            emailsSent = 0;
-            emailsReceived = 0;
+            EmailsSent = 0;
+            EmailsReceived = 0;
             ServerMessage = string.Empty;
-            leaderNameAndEmail = string.Empty;
+            LeaderNameAndEmail = string.Empty;
         }
-
+        private void SetNotifyUserInputErrorMessage(string message)
+        {
+            AddNotifyUserInputError = true;
+            ServerMessageIsError = true;
+            ServerMessage = message;
+        }
         private bool UserToNotifyFieldsAreEmpty()
         {
             if (String.IsNullOrWhiteSpace(UserToNotify_Name)
@@ -325,7 +321,6 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
             }
             return false;
         }
-
         private bool UserToNotifyAlreadyInList()
         {
             if (NewNotificationOptions.UsersToNotify.Any(utn => utn.Contains($"<{UserToNotify_Email}>")))
@@ -334,13 +329,6 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
                 return true;
             }
             return false;
-        }
-
-        private void SetNotifyUserInputErrorMessage(string message)
-        {
-            AddNotifyUserInputError = true;
-            ServerMessageIsError = true;
-            ServerMessage = message;
         }
     }
 }

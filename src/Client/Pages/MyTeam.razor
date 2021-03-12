@@ -15,7 +15,7 @@
             }
             else
             {
-                if (!isLeader)
+                if (!IsLeader)
                 {
                     <p>You do not have access to this page. Click <a href="/">here</a> to go back.</p>
                 }
@@ -43,8 +43,8 @@
                                 </DateRangePicker>
                             </div>
                             <div class="text-summary float-left">
-                                <p>Emails sent: @emailsSent</p>
-                                <p>Emails received: @emailsReceived</p>
+                                <p>Emails sent: @EmailsSent</p>
+                                <p>Emails received: @EmailsReceived</p>
                                 <p>Number of meetings: @NumberOfMeetings</p>
                                 <p>Time in meetings: @FormattedTimeInMeeting</p>
                             </div>
@@ -60,7 +60,7 @@
                                 </div>
                             </div>
                             <div class="points-threshold">
-                                @if (isSubmitting)
+                                @if (IsSubmitting)
                                 {
                                     <p>Submitting, please wait.</p>
                                 }
@@ -80,7 +80,7 @@
                                         {
                                             <p style="@ServerMessageInlineStyle">@ServerMessage</p>
                                         }
-                                        @if (allowsEdit)                                                                                                     // Edit view
+                                        @if (AllowsEdit)                                                                                                     // Edit view
                                         {
                                             <EditForm Model="NewNotificationOptions" OnSubmit="@(async () => await SubmitNotificationOptions())" Context="formContext">
                                                 <label>
@@ -127,7 +127,7 @@
                                                                 <p>@nameAndEmail</p>
                                                             </td>
                                                             <td style="width: 100px">
-                                                                @if (nameAndEmail.Equals(leaderNameAndEmail))
+                                                                @if (nameAndEmail.Equals(LeaderNameAndEmail))
                                                                 {
                                                                     <span class="deselect-btn float-right"
                                                                           style="background-color: green; width: 100px;">Team lead</span>
