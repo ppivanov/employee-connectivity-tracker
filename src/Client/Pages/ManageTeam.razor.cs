@@ -1,4 +1,5 @@
 ﻿using EctBlazorApp.Client.Graph;
+using EctBlazorApp.Client.Shared;
 using EctBlazorApp.Shared;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
@@ -14,6 +15,8 @@ namespace EctBlazorApp.Client.Pages
     {
         [Parameter]
         public string HashedTeamId { get; set; }
+        [Inject]
+        protected AuthState AuthState { get; set; }
         [Inject]
         protected IControllerConnection ApiConn { get; set; }
         [Inject]
@@ -217,7 +220,7 @@ namespace EctBlazorApp.Client.Pages
         private async Task InitializeCreateTeam()
         {
             await JsInterop("setPageTitle", "Create Team");
-            HasAccess = await ApiConn.IsProcessingUserAnAdmin();
+            HasAccess = AuthState.IsAdmin;
             if (HasAccess)
             {
                 await GetEligibleUsers();
@@ -232,6 +235,7 @@ namespace EctBlazorApp.Client.Pages
         {
             await JsInterop("setPageTitle", "Manage Team");
             TeamDetails = await ApiConn.IsProcessingUserLeaderForTeam(HashedTeamId);
+
             if (TeamDetails == null) HasAccess = false;
             else HasAccess = true;
 

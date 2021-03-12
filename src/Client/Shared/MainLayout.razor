@@ -1,4 +1,5 @@
-﻿@inject NavState navState
+﻿@inject AuthState authState
+
 @implements IDisposable 
 
 @inherits LayoutComponentBase
@@ -10,7 +11,7 @@
     <div class="">
         <LoginDisplay />
     </div>
-    <NavMenu IsAdmin="navState.IsAdmin" IsLeader="navState.IsLeader"/>
+    <NavMenu IsAdmin="authState.IsAdmin" IsLeader="authState.IsLeader"/>
 </div>
 
 <div class="main">
@@ -20,11 +21,11 @@
 @code{
     protected override void OnInitialized()
     {
-        navState.OnChange += StateHasChanged;
+        authState.OnChange += StateHasChanged;
     }
 
     public void Dispose()
     {
-        navState.OnChange -= StateHasChanged;
+        authState.OnChange -= StateHasChanged;
     }
 }

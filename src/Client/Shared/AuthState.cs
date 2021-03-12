@@ -2,8 +2,9 @@
 
 namespace EctBlazorApp.Client.Shared
 {
-    public class NavState
+    public class AuthState
     {
+        public bool IsInitialized { get; private set; }
         public bool IsAdmin { get; private set; }
         public bool IsLeader { get; private set; }
 

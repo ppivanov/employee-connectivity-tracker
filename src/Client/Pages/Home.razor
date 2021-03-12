@@ -1,6 +1,6 @@
 @page "/"
 
-@inject NavState navState
+@inject AuthState authState
 
 @inject IJSRuntime jsRuntime
 @inject IControllerConnection apiConn
@@ -34,7 +34,7 @@
 
     private async Task GetUserPermissions()
     {
-        navState.SetIsAdmin(await apiConn.IsProcessingUserAnAdmin());
-        navState.SetIsLeader(await apiConn.IsProcessingUserALeader());
+        authState.SetIsAdmin(await apiConn.IsProcessingUserAnAdmin());
+        authState.SetIsLeader(await apiConn.IsProcessingUserALeader());
     }
 }

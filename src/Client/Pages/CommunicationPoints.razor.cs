@@ -1,16 +1,18 @@
 ﻿using EctBlazorApp.Client.Graph;
+using EctBlazorApp.Client.Shared;
 using EctBlazorApp.Shared.Entities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace EctBlazorApp.Client.Pages
 {
     public class CommunicationPointsClass : ComponentBase
     {
+        [Inject]
+        protected AuthState AuthState { get; set; }
         [Inject]
         protected IControllerConnection ApiConn { get; set; }
         [Inject]
@@ -23,7 +25,7 @@ namespace EctBlazorApp.Client.Pages
 
         protected bool Initialized { get; set; } = false;
         protected bool InputError { get; set; } = false;
-        protected bool IsAdmin { get; set; } = false;
+        protected bool HasAccess => AuthState.IsAdmin;
         protected bool IsSubmitting { get; set; } = false;
         protected string PointInputStyle
         {
@@ -58,8 +60,7 @@ namespace EctBlazorApp.Client.Pages
         protected override async Task OnInitializedAsync()
         {
             await JsRuntime.InvokeVoidAsync("setPageTitle", "Communication Points");
-            IsAdmin = await ApiConn.IsProcessingUserAnAdmin();
-            if (IsAdmin)
+            if (HasAccess)
                 await FetchCommunicationPoints();
 
             Initialized = true;

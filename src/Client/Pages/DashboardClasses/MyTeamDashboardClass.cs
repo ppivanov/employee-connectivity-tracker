@@ -1,4 +1,5 @@
-﻿using EctBlazorApp.Shared;
+﻿using EctBlazorApp.Client.Shared;
+using EctBlazorApp.Shared;
 using EctBlazorApp.Shared.Entities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
@@ -13,6 +14,8 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
 {
     public class MyTeamDashboardClass : DashboardClass
     {
+        [Inject]
+        protected AuthState AuthState { get; set; }
         [Inject]
         protected NavigationManager NavManager { get; set; }
 
@@ -53,7 +56,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         protected int EmailsSent { get; set; } = 0;
         protected int EmailsReceived { get; set; } = 0;
         protected string InputStyle => inputError ? "border: 1px solid red" : string.Empty;
-        protected bool IsLeader { get; set; } = false;
+        protected bool IsLeader => AuthState.IsLeader;
         protected bool IsSubmitting { get; set; } = false;
         protected string LeaderNameAndEmail { get; set; } = string.Empty;
         protected override int TotalEmailsCount => EmailsSent + EmailsReceived;
@@ -230,7 +233,6 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         protected override async Task OnInitializedAsync()
         {
             await JsInterop("setPageTitle", "My Team");
-            IsLeader = await ApiConn.IsProcessingUserALeader();
             if (IsLeader)
             {
                 CurrentNotificationOptions = await ApiConn.FetchCurrentNotificationOptions();
