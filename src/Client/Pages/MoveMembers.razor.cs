@@ -72,6 +72,12 @@ namespace EctBlazorApp.Client.Pages
 
         protected void MoveMember(EctTeam fromTeam, EctTeam toTeam, string emailToRemove)
         {
+            if (toTeam == null)
+            {
+                serverMessageIsError = true;
+                ServerMessage = "Select the other team first.";
+                return;
+            }
             MemberHasBeenMoved = true;
             var userToMove = fromTeam.Members.FirstOrDefault(m => m.Email.Equals(emailToRemove));
             fromTeam.Members = fromTeam.Members.Where(m => m.Email.Equals(userToMove.Email) == false).ToList();
