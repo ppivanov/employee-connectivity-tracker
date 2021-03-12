@@ -9,19 +9,19 @@
 <AuthorizeView>
     <Authorized>
         <div class="create-team">
-            @if (!initialized)
+            @if (!Initialized)
             {
                 <p>Loading...</p>
             }
             else
             {
-                if (!hasAccess)
+                if (!HasAccess)
                 {
                     <p>You do not have access to this page. Click <a href="/">here</a> to go back.</p>
                 }
                 else
                 {
-                    <EditForm Model=teamDetails OnValidSubmit=@SendTeamData Context="formContext">
+                    <EditForm Model=TeamDetails OnValidSubmit=@SendTeamData Context="formContext">
                         <DataAnnotationsValidator />
                         <ValidationSummary style="color: red" />
 
@@ -35,7 +35,7 @@
                         <div class="left-half float-left">
                             <div class="create-team-input-pair">
                                 <label>Team name</label>
-                                <InputText @bind-Value=teamDetails.Name class="form-control" id="Name" disabled="@HasTeamId" />
+                                <InputText @bind-Value=TeamDetails.Name class="form-control" id="Name" disabled="@HasTeamId" />
 
                             </div>
                             <div class="create-team-input-pair">
@@ -61,7 +61,7 @@
                                         <option value="@member" />
                                     }
                                 </datalist>
-                                <button type="button" @onclick="() => AddSelectedMember()" disabled=@isSubmitting class="select-member">Add member</button>
+                                <button type="button" @onclick="() => AddSelectedMember()" disabled=@IsSubmitting class="select-member">Add member</button>
                             </div>
                         </div>
                         <table class="selected-members float-left">
@@ -73,7 +73,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach (var member in teamDetails.MemberNamesAndEmails)
+                                @foreach (var member in TeamDetails.MemberNamesAndEmails)
                                 {
                                     <tr>
                                         <td>
@@ -85,7 +85,7 @@
                             </tbody>
                         </table>
 
-                        <button type="submit" disabled=@isSubmitting class="save-team float-right">Save</button>
+                        <button type="submit" disabled=@IsSubmitting class="save-team float-right">Save</button>
                     </EditForm>
                 }
             }

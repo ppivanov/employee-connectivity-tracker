@@ -23,23 +23,6 @@ namespace EctBlazorApp.Client.Pages
         private HashSet<string> AllAvailableLeaders { get; set; }
         private HashSet<string> MembersFromApi { get; set; }
 
-        protected string CurrentMemberSelection { get; set; } = string.Empty;
-        protected bool HasTeamId { get => string.IsNullOrEmpty(HashedTeamId) == false; }
-        protected string LeaderInputStyle { get => leaderInputError ? "border: 1px solid red" : string.Empty; }
-        protected string MemberInputStyle { get => memberInputError ? "border: 1px solid red" : string.Empty; }
-        protected string ServerMessage { get; set; } = string.Empty;
-        protected string ServerMessageInlineStyle
-        {
-            get
-            {
-                var style = new StringBuilder("text-align: center;");
-                var textColor = serverMessageIsError ? "color: red;" : "color: green;";
-                style.Append(textColor);
-
-                return style.ToString();
-            }
-        }
-        protected bool TeamNameDisabled { get => string.IsNullOrEmpty(HashedTeamId) == false; }
         protected HashSet<string> AvailableLeaders
         {
             get
@@ -59,34 +42,34 @@ namespace EctBlazorApp.Client.Pages
             get
             {
                 var selectableMembers = AllAvailableLeaders.ToHashSet();                                   // Copy the available set of members
-                selectableMembers.Remove(teamDetails.LeaderNameAndEmail);                                      // Remove the selected leader
+                selectableMembers.Remove(TeamDetails.LeaderNameAndEmail);                                      // Remove the selected leader
                 return selectableMembers;
             }
         }
-
-        protected bool hasAccess = false;
-        protected bool isSubmitting = false;
-        protected bool initialized = false;
-        protected bool leaderInputError = false;
-        protected bool memberInputError = false;
-        protected EctTeamRequestDetails teamDetails;
-
-        public virtual async Task JsInterop(string function, string parameter = "")
+        protected string CurrentMemberSelection { get; set; } = string.Empty;
+        protected bool HasTeamId { get => string.IsNullOrEmpty(HashedTeamId) == false; }
+        protected string LeaderInputStyle { get => LeaderInputError ? "border: 1px solid red" : string.Empty; }
+        protected string MemberInputStyle { get => MemberInputError ? "border: 1px solid red" : string.Empty; }
+        protected string ServerMessage { get; set; } = string.Empty;
+        protected string ServerMessageInlineStyle
         {
-            await JsRuntime.InvokeVoidAsync(function, parameter);
-        }               // Used to mock JavaScript function calls
+            get
+            {
+                var style = new StringBuilder("text-align: center;");
+                var textColor = serverMessageIsError ? "color: red;" : "color: green;";
+                style.Append(textColor);
 
-        public void SetLeaderNameEmail(ChangeEventArgs args)
-        {
-            ResetErrorMessage();
-            teamDetails.LeaderNameAndEmail = args.Value.ToString();
+                return style.ToString();
+            }
         }
+        protected bool TeamNameDisabled { get => string.IsNullOrEmpty(HashedTeamId) == false; }
 
-        public void SetMemberNameEmail(ChangeEventArgs args)
-        {
-            ResetErrorMessage();
-            CurrentMemberSelection = args.Value.ToString();
-        }
+        protected bool HasAccess { get; set; } = false;
+        protected bool IsSubmitting { get; set; } = false;
+        protected bool Initialized { get; set; } = false;
+        protected bool LeaderInputError { get; set; } = false;
+        protected bool MemberInputError { get; set; } = false;
+        protected EctTeamRequestDetails TeamDetails { get; set; }
 
         protected async Task AddSelectedMember()
         {
@@ -97,13 +80,38 @@ namespace EctBlazorApp.Client.Pages
                 || IsCurrentMemberSelectionIneligible(selectedEmail))
                 return;
 
-            teamDetails.MemberNamesAndEmails.Add(CurrentMemberSelection);
+            TeamDetails.MemberNamesAndEmails.Add(CurrentMemberSelection);
             AllAvailableLeaders = AllAvailableLeaders.Where(a => a.Contains(selectedEmail) == false).ToHashSet();
             CurrentMemberSelection = string.Empty;
 
             await InvokeAsync(StateHasChanged);
             await JsInterop("resetCreateTeamMember");
         }
+
+        protected async Task GetEligibleUsers()
+        {
+            var response = await ApiConn.GetUsersEligibleForMembers();
+            MembersFromApi = response.ToHashSet();
+            AllAvailableLeaders = MembersFromApi.ToHashSet();                                       // Copy the set not the reference
+        }
+
+        private async Task Initialize()
+        {
+            Initialized = false;
+            ResetErrorMessage();
+            await ResetInputFields();
+            if (HasTeamId)
+                await InitializeManageTeam();
+            else
+                await InitializeCreateTeam();
+
+            await InvokeAsync(StateHasChanged);
+        }
+
+        public virtual async Task JsInterop(string function, string parameter = "")
+        {
+            await JsRuntime.InvokeVoidAsync(function, parameter);
+        }               // Used to mock JavaScript function calls
 
         protected override async Task OnInitializedAsync()
         {
@@ -115,159 +123,145 @@ namespace EctBlazorApp.Client.Pages
             await Initialize();
         }
 
-        private async Task Initialize()
-        {
-            initialized = false;
-            ResetErrorMessage();
-            await ResetInputFields();
-            if (HasTeamId)
-                await InitializeManageTeam();
-            else
-                await InitializeCreateTeam();
-
-            await InvokeAsync(StateHasChanged);
-        }
-
-        protected async Task GetEligibleUsers()
-        {
-            var response = await ApiConn.GetUsersEligibleForMembers();
-            MembersFromApi = response.ToHashSet();
-            AllAvailableLeaders = MembersFromApi.ToHashSet();                                       // Copy the set not the reference
-        }
-
         protected async Task RemoveFromSelected(string member)
         {
-            teamDetails.MemberNamesAndEmails.Remove(member);
+            TeamDetails.MemberNamesAndEmails.Remove(member);
             AvailableLeaders.Add(member);
             await InvokeAsync(StateHasChanged);
         }
 
         protected async Task SendTeamData()
         {
-            if (isSubmitting
+            if (IsSubmitting
                 || AreTeamDetailsValid() == false
-                || string.IsNullOrWhiteSpace(teamDetails.LeaderNameAndEmail)
+                || string.IsNullOrWhiteSpace(TeamDetails.LeaderNameAndEmail)
                 || IsLeaderAlreadySelectedAsMember()
                 || IsCurrentLeaderSelectionBadlyFormatted(out string leaderEmail)
                 || IsCurrentLeaderSelectionIneligible(leaderEmail)
                 )
                 return;
 
-            isSubmitting = true;
-            teamDetails.TeamId = HasTeamId ? HashedTeamId : string.Empty;
+            IsSubmitting = true;
+            TeamDetails.TeamId = HasTeamId ? HashedTeamId : string.Empty;
             bool isNewTeam = HasTeamId == false;
 
-            var response = await ApiConn.SubmitTeamData(isNewTeam, teamDetails);
+            var response = await ApiConn.SubmitTeamData(isNewTeam, TeamDetails);
             serverMessageIsError = response.Item1 == false;                                     // is StatusCode of response successful?
             ServerMessage = response.Item2;
-            leaderInputError = false;
-            memberInputError = false;
+            LeaderInputError = false;
+            MemberInputError = false;
 
             if (isNewTeam && serverMessageIsError == false)
             {
-                AllAvailableLeaders.Remove(teamDetails.LeaderNameAndEmail);
+                AllAvailableLeaders.Remove(TeamDetails.LeaderNameAndEmail);
                 await ResetInputFields();
             }
-            isSubmitting = false;
+            IsSubmitting = false;
         }
+
+        public void SetLeaderNameEmail(ChangeEventArgs args)
+        {
+            ResetErrorMessage();
+            TeamDetails.LeaderNameAndEmail = args.Value.ToString();
+        }
+
+        public void SetMemberNameEmail(ChangeEventArgs args)
+        {
+            ResetErrorMessage();
+            CurrentMemberSelection = args.Value.ToString();
+        }
+
 
         private bool IsLeaderAlreadySelectedAsMember()
         {
-            if (teamDetails.MemberEmails.Contains(teamDetails.LeaderEmail) == false)
+            if (TeamDetails.MemberEmails.Contains(TeamDetails.LeaderEmail) == false)
                 return false;
 
             serverMessageIsError = true;
-            leaderInputError = true;
+            LeaderInputError = true;
             ServerMessage = "Team lead is already in member list.";
-            isSubmitting = false;
+            IsSubmitting = false;
             return true;
         }
-
         private bool AreTeamDetailsValid()
         {
-            if (teamDetails.AreDetailsValid())
+            if (TeamDetails.AreDetailsValid())
                 return true;
 
             serverMessageIsError = true;
             ServerMessage = "Bad request. Please, review inputs and resubmit.";
-            isSubmitting = false;
+            IsSubmitting = false;
             return false;
         }
-
         private void ResetErrorMessage()
         {
-            leaderInputError = false;
-            memberInputError = false;
+            LeaderInputError = false;
+            MemberInputError = false;
             serverMessageIsError = false;
             ServerMessage = string.Empty;
         }
-
         private async Task ResetInputFields()
         {
-            if(teamDetails != null)
+            if(TeamDetails != null)
             {
-                teamDetails.Name = string.Empty;
-                teamDetails.LeaderNameAndEmail = string.Empty;
-                teamDetails.MemberNamesAndEmails = new List<string>();
+                TeamDetails.Name = string.Empty;
+                TeamDetails.LeaderNameAndEmail = string.Empty;
+                TeamDetails.MemberNamesAndEmails = new List<string>();
             }
-            if (initialized)
+            if (Initialized)
             {
                 await JsInterop("resetCreateTeamLeader");
                 await JsInterop("resetCreateTeamMember");
             }
         }
-
         private async Task InitializeCreateTeam()
         {
             await JsInterop("setPageTitle", "Create Team");
-            hasAccess = await ApiConn.IsProcessingUserAnAdmin();
-            if (hasAccess)
+            HasAccess = await ApiConn.IsProcessingUserAnAdmin();
+            if (HasAccess)
             {
                 await GetEligibleUsers();
-                teamDetails = new EctTeamRequestDetails
+                TeamDetails = new EctTeamRequestDetails
                 {
                     MemberNamesAndEmails = new List<string>()
                 };
             }
-            initialized = true;
+            Initialized = true;
         }
-
         private async Task InitializeManageTeam()
         {
             await JsInterop("setPageTitle", "Manage Team");
-            teamDetails = await ApiConn.IsProcessingUserLeaderForTeam(HashedTeamId);
-            if (teamDetails == null) hasAccess = false;
-            else hasAccess = true;
+            TeamDetails = await ApiConn.IsProcessingUserLeaderForTeam(HashedTeamId);
+            if (TeamDetails == null) HasAccess = false;
+            else HasAccess = true;
 
-            if (hasAccess)
+            if (HasAccess)
             {
-                await JsInterop("setPageTitle", teamDetails.Name);
+                await JsInterop("setPageTitle", TeamDetails.Name);
                 await GetEligibleUsers();
 
-                initialized = true;                                                                         // Reload the componet to reveal the input field to let JavaScript populate it
+                Initialized = true;                                                                         // Reload the componet to reveal the input field to let JavaScript populate it
                 StateHasChanged();
-                await JsInterop("setCreateTeamLeader", teamDetails.LeaderNameAndEmail);
+                await JsInterop("setCreateTeamLeader", TeamDetails.LeaderNameAndEmail);
             }
-            initialized = true;
+            Initialized = true;
         }
-
         private bool IsCurrentMemberSelectionEmpty()
         {
             if (string.IsNullOrWhiteSpace(CurrentMemberSelection))
             {
-                memberInputError = true;
+                MemberInputError = true;
                 serverMessageIsError = true;
                 ServerMessage = "Please, select a member first.";
                 return true;
             }
             return false;
         }
-
         private bool IsCurrentLeaderSelectionBadlyFormatted(out string leaderEmail)
         {
-            bool result = IsInputBadlyFormatted(teamDetails.LeaderNameAndEmail, out leaderEmail);
+            bool result = IsInputBadlyFormatted(TeamDetails.LeaderNameAndEmail, out leaderEmail);
             if (result)
-                leaderInputError = true;
+                LeaderInputError = true;
 
             return result;
         }
@@ -275,7 +269,7 @@ namespace EctBlazorApp.Client.Pages
         {
             bool result = IsInputBadlyFormatted(CurrentMemberSelection, out selectedEmail);
             if(result)
-                memberInputError = true;
+                MemberInputError = true;
             
             return result;
         }
@@ -291,39 +285,36 @@ namespace EctBlazorApp.Client.Pages
             email = GetEmailFromFormattedString(input);
             return false;
         }
-
         private bool IsCurrentMemberSelectionAlreadyLeader(string selectedEmail)
         {
-            if (string.IsNullOrWhiteSpace(teamDetails.LeaderNameAndEmail))
+            if (string.IsNullOrWhiteSpace(TeamDetails.LeaderNameAndEmail))
                 return false;
 
-            if (teamDetails.LeaderNameAndEmail.Contains(selectedEmail))
+            if (TeamDetails.LeaderNameAndEmail.Contains(selectedEmail))
             {
-                memberInputError = true;
+                MemberInputError = true;
                 serverMessageIsError = true;
                 ServerMessage = "User already selected as team lead.";
                 return true;
             }
             return false;
         }
-
         private bool IsCurrentMemberSelectionAlreadySelected(string selectedEmail)
         {
-            if (teamDetails.MemberEmails.Contains(selectedEmail))
+            if (TeamDetails.MemberEmails.Contains(selectedEmail))
             {
-                memberInputError = true;
+                MemberInputError = true;
                 serverMessageIsError = true;
                 ServerMessage = "This user has already beeen selected.";
                 return true;
             }
             return false;
         }
-
         private bool IsCurrentLeaderSelectionIneligible(string selectedEmail)
         {
             bool result = IsEmailIneligibleForSelection(selectedEmail, AllAvailableLeaders);
             if (result)
-                leaderInputError = true;
+                LeaderInputError = true;
 
             return result;
         }
@@ -331,7 +322,7 @@ namespace EctBlazorApp.Client.Pages
         {
             bool result = IsEmailIneligibleForSelection(selectedEmail, AvailableMembers);
             if(result)
-                memberInputError = true;
+                MemberInputError = true;
 
             return result;
         }
