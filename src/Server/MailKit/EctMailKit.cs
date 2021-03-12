@@ -24,9 +24,9 @@ namespace EctBlazorApp.Server.MailKit
             return sentSuccessfully;
         }
 
-        public bool SendNotificationEmail(string recipient, string messageContent)
+        public bool SendNotificationEmail(string teamName, string recipient, string messageContent)
         {
-            string subject = "ECT: Isolated teammates";
+            string subject = $"ECT: Isolated teammates ({teamName})";
             bool sentSuccessfully = SendMessage(recipient, subject, messageContent);
 
             return sentSuccessfully;

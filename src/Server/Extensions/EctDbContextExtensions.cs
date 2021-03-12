@@ -145,13 +145,13 @@ namespace EctBlazorApp.Server.Extensions
             DateTime previousWeekEnd = currentWeekStart;                                        // Last week's Monday           Feb  22th
             DateTime previousWeekStart = currentWeekStart.AddDays(-7);                          // The Monday before that       Feb  15th
 
-            var heading = $"Stats for week starting: {currentWeekStart.ToString("dd dddd, MMM yyyy")},\n" +
-                $"compared to week starting: {previousWeekStart.ToString("dd dddd, MMM yyyy")}\n\nPotentially isolated members:\n\n";
-            var emailMessage = new StringBuilder(heading);
+            string heading = $"Stats for week starting: {currentWeekStart:dd dddd, MMM yyyy},\n" +
+                $"compared to week starting: {previousWeekStart:dd dddd, MMM yyyy}\n\nPotentially isolated members:\n\n";
 
             var teams = dbContext.Teams.Include(t => t.Members).ToList();
             foreach (var team in teams)
             {
+                StringBuilder emailMessage = new($"Team: {team.Name}\n{heading}");
                 var members = team.Members.ToList();
                 foreach (var member in members)
                 {
@@ -166,6 +166,7 @@ namespace EctBlazorApp.Server.Extensions
                 if (emailMessage.ToString().Equals(heading)) emailMessage.Append("None\n");
 
                 SendNotificationEmail(emailMessage.ToString(), team, mailKit);
+                emailMessage.Clear();
             }
         }
 
@@ -213,7 +214,7 @@ namespace EctBlazorApp.Server.Extensions
         {
             foreach (var recipient in team.AdditionalUsersToNotify)
             {
-                mailKit.SendNotificationEmail(recipient, messageContent);
+                mailKit.SendNotificationEmail(team.Name, recipient, messageContent);
             }
         }
     }
