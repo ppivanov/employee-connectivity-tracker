@@ -8,22 +8,22 @@
 <AuthorizeView>
     <Authorized>
         <div class="communicaiton-points">
-            @if (!initialized)
+            @if (!Initialized)
             {
                 <p>Loading...</p>
             }
             else
             {
-                if (!isAdmin)
+                if (!IsAdmin)
                 {
                     <p>You do not have access to this page. Click <a href="/">here</a> to go back.</p>
                 }
                 else
                 {
                     <h3>Manage Communcation Mediums</h3>
-                    @if (string.IsNullOrEmpty(serverMessage) == false)
+                    @if (string.IsNullOrEmpty(ServerMessage) == false)
                     {
-                        <p style="@ServerMessageInlineStyle">@serverMessage</p>
+                        <p style="@ServerMessageInlineStyle">@ServerMessage</p>
                     }
                     <EditForm Model="PointsAndToggles" OnSubmit="@(async () => await SubmitPoints())" Context="formContext">
                         @foreach (var medium in PointsAndToggles.Keys)
@@ -57,9 +57,9 @@
                             }
                             <hr />
                         }
-                        <p><b>Note</b>: You cannot assign more than @maxPointsPerMedium to a medium.</p>
+                        <p><b>Note</b>: You cannot assign more than @MaxPointsPerMedium to a medium.</p>
                         <p>Total points: @TotalPoints</p>
-                        <button type="submit" disabled="@isSubmitting">Submit</button>
+                        <button type="submit" disabled="@IsSubmitting">Submit</button>
                     </EditForm>
                 }
             }

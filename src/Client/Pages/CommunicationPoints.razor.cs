@@ -17,86 +17,30 @@ namespace EctBlazorApp.Client.Pages
         protected IJSRuntime JsRuntime { get; set; }
 
         private bool serverMessageIsError = false;
-        public const int maxPointsPerMedium = 100;
-        protected bool isAdmin = false;
-        protected bool isSubmitting = false;
-        protected bool initialized = false;
-        protected bool inputError = false;
-        protected string serverMessage = string.Empty;
+
+        public static int MaxPointsPerMedium => 100;
         public Dictionary<CommunicationPoint, bool> PointsAndToggles { get; set; }          // holds true if user selected for edit
 
+        protected bool Initialized { get; set; } = false;
+        protected bool InputError { get; set; } = false;
+        protected bool IsAdmin { get; set; } = false;
+        protected bool IsSubmitting { get; set; } = false;
+        protected string PointInputStyle
+        {
+            get => InputError ? "border: 1px solid red" : string.Empty;
+        }
+        protected string ServerMessage { get; set; } = string.Empty;
+        protected string ServerMessageInlineStyle => serverMessageIsError ? "color: red;" : "color: green;";
         protected int TotalPoints
         {
             get
             {
                 int total = 0;
                 foreach (var percentage in PointsAndToggles.Keys)
-                {
                     total += percentage.Points;
-                }
+                
                 return total;
             }
-        }
-
-        protected string PointInputStyle
-        {
-            get => inputError ? "border: 1px solid red" : string.Empty;
-        }
-
-        protected string ServerMessageInlineStyle
-        {
-            get => serverMessageIsError ? "color: red;" : "color: green;";
-        }
-
-        protected override async Task OnInitializedAsync()
-        {
-            await JsRuntime.InvokeVoidAsync("setPageTitle", "Communication Points");
-            isAdmin = await ApiConn.IsProcessingUserAnAdmin();
-            if (isAdmin)
-                await FetchCommunicationPoints();
-
-            initialized = true;
-        }
-
-        protected async Task FetchCommunicationPoints()
-        {
-            var response = await ApiConn.FetchCommunicationPoints();
-            var points = new List<CommunicationPoint> { response.Item1, response.Item2 };
-            InitializeDictionary(points);
-        }
-
-        private void InitializeDictionary(List<CommunicationPoint> commPoints)
-        {
-            PointsAndToggles = new Dictionary<CommunicationPoint, bool>();
-            foreach (var medium in commPoints)
-            {
-                PointsAndToggles.Add(medium, false);
-            }
-        }
-
-        protected bool SavePoints(CommunicationPoint selectedMedium)
-        {
-            inputError = false;
-            bool returnValue = false;
-            bool lessThanMax = selectedMedium.Points <= maxPointsPerMedium;
-            if (selectedMedium.Points >= 0 && lessThanMax)
-            {
-                PointsAndToggles[selectedMedium] = false;
-                returnValue = true;
-            }
-            else if (selectedMedium.Points < 0)
-            {
-                selectedMedium.Points = 0;
-                inputError = true;
-                returnValue = false;
-            }
-            else
-            {
-                selectedMedium.Points = maxPointsPerMedium;
-                inputError = true;
-                returnValue = false;
-            }
-            return returnValue;
         }
 
         public void EditPoints(CommunicationPoint selectedMedium)
@@ -111,11 +55,82 @@ namespace EctBlazorApp.Client.Pages
                 PointsAndToggles[selectedMedium] = true;                          // If no previous medium is toggled
         }
 
+        protected override async Task OnInitializedAsync()
+        {
+            await JsRuntime.InvokeVoidAsync("setPageTitle", "Communication Points");
+            IsAdmin = await ApiConn.IsProcessingUserAnAdmin();
+            if (IsAdmin)
+                await FetchCommunicationPoints();
+
+            Initialized = true;
+        }
+
         protected void ClearPoints(CommunicationPoint selectedMedium)
         {
             selectedMedium.Points = 0;
         }
 
+        protected async Task FetchCommunicationPoints()
+        {
+            var response = await ApiConn.FetchCommunicationPoints();
+            var points = new List<CommunicationPoint> { response.Item1, response.Item2 };
+            InitializeDictionary(points);
+        }
+
+        protected bool SavePoints(CommunicationPoint selectedMedium)
+        {
+            InputError = false;
+            bool returnValue = false;
+            bool lessThanMax = selectedMedium.Points <= MaxPointsPerMedium;
+            if (selectedMedium.Points >= 0 && lessThanMax)
+            {
+                PointsAndToggles[selectedMedium] = false;
+                returnValue = true;
+            }
+            else if (selectedMedium.Points < 0)
+            {
+                selectedMedium.Points = 0;
+                InputError = true;
+                returnValue = false;
+            }
+            else
+            {
+                selectedMedium.Points = MaxPointsPerMedium;
+                InputError = true;
+                returnValue = false;
+            }
+            return returnValue;
+        }
+
+        protected async Task SubmitPoints()
+        {
+            if (TotalPoints < 1)
+            {
+                serverMessageIsError = true;
+                ServerMessage = "You must assign at least one point (1 point) before submitting.";
+                return;
+            }
+            IsSubmitting = true;
+            serverMessageIsError = false;
+
+            var toggledMedium = GetToggledMedium();
+            if (toggledMedium != null) PointsAndToggles[toggledMedium] = false;
+            var response = await ApiConn.SubmitPoints(PointsAndToggles.Keys.ToList());
+            serverMessageIsError = response.Item1 == false;
+            ServerMessage = response.Item2;
+           
+            IsSubmitting = false;
+        }
+
+
+        private void InitializeDictionary(List<CommunicationPoint> commPoints)
+        {
+            PointsAndToggles = new Dictionary<CommunicationPoint, bool>();
+            foreach (var medium in commPoints)
+            {
+                PointsAndToggles.Add(medium, false);
+            }
+        }
         private CommunicationPoint GetToggledMedium()
         {
             foreach (var medium in PointsAndToggles.Keys)
@@ -124,26 +139,6 @@ namespace EctBlazorApp.Client.Pages
                     return medium;
             }
             return null;
-        }
-
-        protected async Task SubmitPoints()
-        {
-            if (TotalPoints < 1)
-            {
-                serverMessageIsError = true;
-                serverMessage = "You must assign at least one point (1 point) before submitting.";
-                return;
-            }
-            isSubmitting = true;
-            serverMessageIsError = false;
-
-            var toggledMedium = GetToggledMedium();
-            if (toggledMedium != null) PointsAndToggles[toggledMedium] = false;
-            var response = await ApiConn.SubmitPoints(PointsAndToggles.Keys.ToList());
-            serverMessageIsError = response.Item1 == false;
-            serverMessage = response.Item2;
-           
-            isSubmitting = false;
         }
     }
 }

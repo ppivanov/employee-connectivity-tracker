@@ -58,7 +58,7 @@ namespace EctBlazorApp.ServerTests
         [TestMethod]
         public void EditPercentage_MediumToggledPointsGreaterThanHundred_ToggleNotSwitched()
         {
-            EditPercentageToggleSwitchTest(101, CommunicationPointsClass.maxPointsPerMedium, Assert.IsTrue, Assert.IsFalse);
+            EditPercentageToggleSwitchTest(101, CommunicationPointsClass.MaxPointsPerMedium, Assert.IsTrue, Assert.IsFalse);
         }
 
 
