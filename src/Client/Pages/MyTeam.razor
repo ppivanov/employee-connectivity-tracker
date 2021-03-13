@@ -9,15 +9,15 @@
     <Authorized>
         <div>
 
-            @if (!Initialized)
+            @if (Initialized == false)
             {
                 <p>Loading...</p>
             }
             else
             {
-                if (!IsLeader)
+                if (IsLeader == false)
                 {
-                    <p>You do not have access to this page. Click <a href="/">here</a> to go back.</p>
+                    <NoAccess />
                 }
                 else
                 {

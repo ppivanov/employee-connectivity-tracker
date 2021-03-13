@@ -1,5 +1,5 @@
 ﻿@page "/comm-points"
-@inherits CommunicationPointsClass 
+@inherits CommunicationPointsClass
 
 @using Microsoft.AspNetCore.Authorization
 @attribute [Authorize]
@@ -8,15 +8,15 @@
 <AuthorizeView>
     <Authorized>
         <div class="communicaiton-points">
-            @if (!Initialized)
+            @if (Initialized == false)
             {
                 <p>Loading...</p>
             }
             else
             {
-                if (!HasAccess)
+                if (HasAccess == false)
                 {
-                    <p>You do not have access to this page. Click <a href="/">here</a> to go back.</p>
+                    <NoAccess />
                 }
                 else
                 {
@@ -39,7 +39,7 @@
                                     {
                                         @medium.Points
                                     }
-                                    @(medium.Points > 1 ? "points" : "point") 
+                                    @(medium.Points > 1 ? "points" : "point")
                                 </p>
                             </div>
 
@@ -68,5 +68,5 @@
 </AuthorizeView>
 
 @code {
-    
+
 }

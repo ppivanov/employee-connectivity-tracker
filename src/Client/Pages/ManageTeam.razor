@@ -9,15 +9,15 @@
 <AuthorizeView>
     <Authorized>
         <div class="create-team">
-            @if (!Initialized)
+            @if (Initialized == false)
             {
                 <p>Loading...</p>
             }
             else
             {
-                if (!HasAccess)
+                if (HasAccess == false)
                 {
-                    <p>You do not have access to this page. Click <a href="/">here</a> to go back.</p>
+                    <NoAccess />
                 }
                 else
                 {
@@ -41,8 +41,8 @@
                             <div class="create-team-input-pair">
                                 <label>Team lead</label>
                                 <input id="createTeamLeader" list="leaders"
-                                    @onchange="@((args) => SetLeaderNameEmail(args))" 
-                                    placeholder="Full Name <email@example.com>" style="@LeaderInputStyle" />
+                                       @onchange="@((args) => SetLeaderNameEmail(args))"
+                                       placeholder="Full Name <email@example.com>" style="@LeaderInputStyle" />
                                 <datalist id="leaders">
                                     @foreach (var leader in AvailableLeaders)
                                     {
@@ -53,8 +53,8 @@
                             <div class="create-team-input-pair">
                                 <label>Member selection</label>
                                 <input id="createTeamMember" list="members"
-                                    @onchange="@((args) => SetMemberNameEmail(args))"
-                                    placeholder="Full Name <email@example.com>" style="@MemberInputStyle" />
+                                       @onchange="@((args) => SetMemberNameEmail(args))"
+                                       placeholder="Full Name <email@example.com>" style="@MemberInputStyle" />
                                 <datalist id="members">
                                     @foreach (var member in AvailableMembers)
                                     {
@@ -94,5 +94,5 @@
 </AuthorizeView>
 
 @code {
-    
+
 }
