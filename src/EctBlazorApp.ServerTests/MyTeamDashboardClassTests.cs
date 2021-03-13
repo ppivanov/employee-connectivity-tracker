@@ -1,4 +1,4 @@
-﻿using EctBlazorApp.Client.Pages.DashboardClasses;
+﻿using EctBlazorApp.Client.Pages.Dashboards;
 using EctBlazorApp.Shared;
 using EctBlazorApp.Shared.Entities;
 using Microsoft.AspNetCore.Components;
