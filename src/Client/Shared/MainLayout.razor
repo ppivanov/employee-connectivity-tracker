@@ -1,4 +1,4 @@
-﻿@inject CustomAuthState authState
+﻿@inject CustomAuthState AuthState
 
 @implements IDisposable 
 
@@ -11,7 +11,7 @@
     <div class="">
         <LoginDisplay />
     </div>
-    <NavMenu IsAdmin="authState.IsAdmin" IsLeader="authState.IsLeader"/>
+    <NavMenu IsAdmin="AuthState.IsAdmin" IsLeader="AuthState.IsLeader"/>
 </div>
 
 <div class="main">
@@ -21,11 +21,11 @@
 @code{
     protected override void OnInitialized()
     {
-        authState.OnChange += StateHasChanged;
+        AuthState.OnChange += StateHasChanged;
     }
 
     public void Dispose()
     {
-        authState.OnChange -= StateHasChanged;
+        AuthState.OnChange -= StateHasChanged;
     }
 }
