@@ -40,12 +40,11 @@
                                 </ButtonsTemplate>
                             </DateRangePicker>
                         </div>
-                        <div class="text-summary float-left">
-                            <p>Emails sent: @EmailsSent</p>
-                            <p>Emails received: @EmailsReceived</p>
-                            <p>Number of meetings: @NumberOfMeetings</p>
-                            <p>Time in meetings: @FormattedTimeInMeeting</p>
-                        </div>
+                        <DashboardSummaryStats 
+                            EmailsSentCount="EmailsSent"
+                            EmailsReceivedCount="EmailsReceived"
+                            NumberOfMeetings="NumberOfMeetings"
+                            FormattedTimeInMeeting="@FormattedTimeInMeeting" />
                     </div>
                     <div class="top-collaborators float-left">
                         <h2>Activity distribution</h2>

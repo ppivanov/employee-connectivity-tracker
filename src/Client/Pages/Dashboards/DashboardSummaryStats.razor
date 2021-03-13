@@ -1,0 +1,17 @@
+﻿<div class="text-summary float-left">
+    <p>Emails sent: @EmailsSentCount</p>
+    <p>Emails received: @EmailsReceivedCount</p>
+    <p>Number of meetings: @NumberOfMeetings</p>
+    <p>Time in meetings: @FormattedTimeInMeeting</p>
+</div>
+
+@code {
+    [Parameter]
+    public int EmailsSentCount { get; set; }
+    [Parameter]
+    public int EmailsReceivedCount { get; set; }
+    [Parameter]
+    public int NumberOfMeetings { get; set; }
+    [Parameter]
+    public string FormattedTimeInMeeting { get; set; }
+}

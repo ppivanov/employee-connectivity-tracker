@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static EctBlazorApp.Shared.SharedMethods;
 
-namespace EctBlazorApp.Client.Pages.DashboardClasses
+namespace EctBlazorApp.Client.Pages.Dashboards
 {
     public class MyTeamDashboardClass : DashboardClass
     {

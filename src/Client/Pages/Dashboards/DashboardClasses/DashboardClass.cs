@@ -11,7 +11,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using static EctBlazorApp.Shared.SharedMethods;
 
-namespace EctBlazorApp.Client.Pages.DashboardClasses
+namespace EctBlazorApp.Client.Pages.Dashboards
 {
     public abstract class DashboardClass : ComponentBase
     {

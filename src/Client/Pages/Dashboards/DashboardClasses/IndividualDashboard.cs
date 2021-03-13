@@ -11,7 +11,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using static EctBlazorApp.Shared.SharedMethods;
 
-namespace EctBlazorApp.Client.Pages.DashboardClasses
+namespace EctBlazorApp.Client.Pages.Dashboards
 {
     public class PersonalDashboardClass : DashboardClass
     {
