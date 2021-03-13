@@ -126,12 +126,12 @@
                                                         <td style="width: 100px">
                                                             @if (nameAndEmail.Equals(LeaderNameAndEmail))
                                                             {
-                                                                <span class="deselect-btn float-right"
-                                                                        style="background-color: green; width: 100px;">Team lead</span>
+                                                                <span class="deselect-btn float-right points-threshold-leader">
+                                                                    Team lead</span>
                                                             }
                                                             else
                                                             {
-                                                                <button type="button" class="deselect-btn float-right" style="width: 100px"
+                                                                <button type="button" class="deselect-btn float-right points-threshold-user"
                                                                         @onclick="() => RemoveUserToNotify(nameAndEmail)">
                                                                     Remove
                                                                 </button>
