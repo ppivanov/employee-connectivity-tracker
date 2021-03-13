@@ -30,6 +30,11 @@
   margin-right: 5vw;
 }
 
+.login-logout-section,
+#dropdown {
+  z-index: 2;
+}
+
 .select-member,
 .save-team,
 .login-button {
@@ -100,4 +105,8 @@
   font-size: 1em;
   color: white;
   border-radius: 15px;
+}
+
+.logout-button:hover {
+  cursor: pointer;
 }
