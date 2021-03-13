@@ -15,7 +15,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
     public class MyTeamDashboardClass : DashboardClass
     {
         [Inject]
-        protected AuthState AuthState { get; set; }
+        protected CustomAuthState AuthState { get; set; }
         [Inject]
         protected NavigationManager NavManager { get; set; }
 
@@ -233,7 +233,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         protected override async Task OnInitializedAsync()
         {
             await JsInterop("setPageTitle", "My Team");
-            await AuthState.GetUserPermissions(AuthState, ApiConn);
+            await CustomAuthState.GetUserPermissions(AuthState, ApiConn);
             if (IsLeader)
             {
                 CurrentNotificationOptions = await ApiConn.FetchCurrentNotificationOptions();

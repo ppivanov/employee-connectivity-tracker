@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace EctBlazorApp.Client.Shared
 {
-    public class AuthState
+    public class CustomAuthState
     {
         public bool IsInitialized { get; private set; } = false;
         public bool IsAdmin { get; private set; }
@@ -30,7 +30,7 @@ namespace EctBlazorApp.Client.Shared
             NotifyStateChanged();
         }
 
-        public static async Task GetUserPermissions(AuthState authState, IControllerConnection apiConn)                                     // Refresh the state only if necessary - i.e. the user refreshed the page or navigated via address bar
+        public static async Task GetUserPermissions(CustomAuthState authState, IControllerConnection apiConn)                                     // Refresh the state only if necessary - i.e. the user refreshed the page or navigated via address bar
         {
             if (authState.IsInitialized == false)
             {

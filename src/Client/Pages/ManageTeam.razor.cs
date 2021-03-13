@@ -16,7 +16,7 @@ namespace EctBlazorApp.Client.Pages
         [Parameter]
         public string HashedTeamId { get; set; }
         [Inject]
-        protected AuthState AuthState { get; set; }
+        protected CustomAuthState AuthState { get; set; }
         [Inject]
         protected IControllerConnection ApiConn { get; set; }
         [Inject]
@@ -208,7 +208,7 @@ namespace EctBlazorApp.Client.Pages
         private async Task Initialize()
         {
             Initialized = false;
-            await AuthState.GetUserPermissions(AuthState, ApiConn);
+            await CustomAuthState.GetUserPermissions(AuthState, ApiConn);
             ResetErrorMessage();
             await ResetInputFields();
             if (HasTeamId)

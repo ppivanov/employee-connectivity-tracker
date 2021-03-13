@@ -1,6 +1,6 @@
 @page "/"
 
-@inject AuthState authState
+@inject CustomAuthState authState
 
 @inject IJSRuntime jsRuntime
 @inject IControllerConnection apiConn
@@ -24,7 +24,7 @@
     {
         await jsRuntime.InvokeVoidAsync("setPageTitle", "Home");
         await UpdateRecords();
-        await AuthState.GetUserPermissions(authState, apiConn);
+        await CustomAuthState.GetUserPermissions(authState, apiConn);
     }
 
     private async Task UpdateRecords()

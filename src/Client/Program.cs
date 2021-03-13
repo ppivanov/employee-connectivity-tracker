@@ -36,7 +36,7 @@ namespace EctBlazorApp.Client
 
             builder.Services.AddScoped<IControllerConnection, ControllerConnection>();
 
-            builder.Services.AddSingleton<AuthState>();
+            builder.Services.AddSingleton<CustomAuthState>();
 
             await builder.Build().RunAsync();
         }

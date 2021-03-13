@@ -18,7 +18,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         [Parameter]
         public string HashedUserId { get; set; }
         [Inject]
-        protected AuthState AuthState { get; set; }
+        protected CustomAuthState AuthState { get; set; }
         [Inject]
         protected AuthenticationStateProvider AuthenticationStateProvider { get; set; }
 
@@ -85,7 +85,7 @@ namespace EctBlazorApp.Client.Pages.DashboardClasses
         protected override async Task OnInitializedAsync()
         {
             await JsRuntime.InvokeVoidAsync("setPageTitle", "Dashboard");
-            await AuthState.GetUserPermissions(AuthState, ApiConn);
+            await CustomAuthState.GetUserPermissions(AuthState, ApiConn);
             await FetchCommunicationPoints();
             await UpdateDashboard();
         }

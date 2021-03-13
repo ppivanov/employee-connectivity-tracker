@@ -13,7 +13,7 @@ namespace EctBlazorApp.Client.Pages
     public class MoveMembersClass : ComponentBase
     {
         [Inject]
-        protected AuthState AuthState { get; set; }
+        protected CustomAuthState AuthState { get; set; }
         [Inject]
         protected IControllerConnection ApiConn { get; set; }
         [Inject]
@@ -87,7 +87,7 @@ namespace EctBlazorApp.Client.Pages
         protected override async Task OnInitializedAsync()
         {
             await JsRuntime.InvokeVoidAsync("setPageTitle", "Move Members");
-            await AuthState.GetUserPermissions(AuthState, ApiConn);
+            await CustomAuthState.GetUserPermissions(AuthState, ApiConn);
             HasAccess = AuthState.IsAdmin;
             if (HasAccess)
                 InAppTeams = await ApiConn.FetchAllTeams();

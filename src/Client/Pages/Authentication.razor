@@ -1,7 +1,15 @@
 @page "/authentication/{action}"
+
+@inject CustomAuthState AuthState 
+
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 <RemoteAuthenticatorView Action="@Action" />
 
 @code{
     [Parameter] public string Action { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        AuthState.SetIsInitialized(false);
+    }
 }

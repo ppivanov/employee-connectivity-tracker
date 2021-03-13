@@ -1,5 +1,5 @@
-﻿@inject HttpClient Http
-@inject IControllerConnection apiConn
+﻿@inject IControllerConnection ApiConn
+@inject HttpClient Http
 
 <div class="expand-nav center-flex" onclick="openNav()">>></div>
 <nav id="mySidenav" class="sidenav">
@@ -30,7 +30,7 @@
     {
         if (IsLeader)
         {
-            hashedTeamId = await apiConn.GetHashedTeamId();
+            hashedTeamId = await ApiConn.GetHashedTeamId();
         }
     }
 }
