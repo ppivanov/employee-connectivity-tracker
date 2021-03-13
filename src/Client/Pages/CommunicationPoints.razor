@@ -10,58 +10,55 @@
         <div class="communicaiton-points">
             @if (Initialized == false)
             {
-                <p>Loading...</p>
+                <Loading />
+            }
+            else if (HasAccess == false)
+            {
+                <NoAccess />
             }
             else
             {
-                if (HasAccess == false)
+                <h3>Manage Communcation Mediums</h3>
+                @if (string.IsNullOrEmpty(ServerMessage) == false)
                 {
-                    <NoAccess />
+                    <p style="@ServerMessageInlineStyle">@ServerMessage</p>
                 }
-                else
-                {
-                    <h3>Manage Communcation Mediums</h3>
-                    @if (string.IsNullOrEmpty(ServerMessage) == false)
+                <EditForm Model="PointsAndToggles" OnSubmit="@(async () => await SubmitPoints())" Context="formContext">
+                    @foreach (var medium in PointsAndToggles.Keys)
                     {
-                        <p style="@ServerMessageInlineStyle">@ServerMessage</p>
-                    }
-                    <EditForm Model="PointsAndToggles" OnSubmit="@(async () => await SubmitPoints())" Context="formContext">
-                        @foreach (var medium in PointsAndToggles.Keys)
-                        {
-                            <div class="comms-input-pair">
-                                <p>
-                                    @medium.Medium
-                                    @if (PointsAndToggles[medium])
-                                    {
-                                        <InputNumber @bind-Value=medium.Points class="" id="Weight" style="@PointInputStyle" />
-                                    }
-                                    else
-                                    {
-                                        @medium.Points
-                                    }
-                                    @(medium.Points > 1 ? "points" : "point")
-                                </p>
-                            </div>
-
-                            @if (medium.Medium.Contains("Email") || medium.Medium.Contains("Meetings"))
-                            {
+                        <div class="comms-input-pair">
+                            <p>
+                                @medium.Medium
                                 @if (PointsAndToggles[medium])
                                 {
-                                    <button @onclick="() => SavePoints(medium)" type="button">Save</button>
+                                    <InputNumber @bind-Value=medium.Points class="" id="Weight" style="@PointInputStyle" />
                                 }
                                 else
                                 {
-                                    <button @onclick="() => EditPoints(medium)" type="button">Edit</button>
+                                    @medium.Points
                                 }
-                                <button @onclick="() => ClearPoints(medium)" type="button">Clear</button>
+                                @(medium.Points > 1 ? "points" : "point")
+                            </p>
+                        </div>
+
+                        @if (medium.Medium.Contains("Email") || medium.Medium.Contains("Meetings"))
+                        {
+                            @if (PointsAndToggles[medium])
+                            {
+                                <button @onclick="() => SavePoints(medium)" type="button">Save</button>
                             }
-                            <hr />
+                            else
+                            {
+                                <button @onclick="() => EditPoints(medium)" type="button">Edit</button>
+                            }
+                            <button @onclick="() => ClearPoints(medium)" type="button">Clear</button>
                         }
-                        <p><b>Note</b>: You cannot assign more than @MaxPointsPerMedium to a medium.</p>
-                        <p>Total points: @TotalPoints</p>
-                        <button type="submit" disabled="@IsSubmitting">Submit</button>
-                    </EditForm>
-                }
+                        <hr />
+                    }
+                    <p><b>Note</b>: You cannot assign more than @MaxPointsPerMedium to a medium.</p>
+                    <p>Total points: @TotalPoints</p>
+                    <button type="submit" disabled="@IsSubmitting">Submit</button>
+                </EditForm>
             }
         </div>
     </Authorized>

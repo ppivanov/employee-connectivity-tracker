@@ -11,83 +11,80 @@
         <div class="create-team">
             @if (Initialized == false)
             {
-                <p>Loading...</p>
+                <Loading />
+            }
+            else if (HasAccess == false)
+            {
+                <NoAccess />
             }
             else
             {
-                if (HasAccess == false)
-                {
-                    <NoAccess />
-                }
-                else
-                {
-                    <EditForm Model=TeamDetails OnValidSubmit=@SendTeamData Context="formContext">
-                        <DataAnnotationsValidator />
-                        <ValidationSummary style="color: red" />
+                <EditForm Model=TeamDetails OnValidSubmit=@SendTeamData Context="formContext">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary style="color: red" />
 
-                        @if (string.IsNullOrEmpty(ServerMessage) == false)
-                        {
-                            <div class="operation-result">
-                                <p style="@ServerMessageInlineStyle">@ServerMessage</p>
-                            </div>
-                        }
-
-                        <div class="left-half float-left">
-                            <div class="create-team-input-pair">
-                                <label>Team name</label>
-                                <InputText @bind-Value=TeamDetails.Name class="form-control" id="Name" disabled="@HasTeamId" />
-
-                            </div>
-                            <div class="create-team-input-pair">
-                                <label>Team lead</label>
-                                <input id="createTeamLeader" list="leaders"
-                                       @onchange="@((args) => SetLeaderNameEmail(args))"
-                                       placeholder="Full Name <email@example.com>" style="@LeaderInputStyle" />
-                                <datalist id="leaders">
-                                    @foreach (var leader in AvailableLeaders)
-                                    {
-                                        <option value="@leader" />
-                                    }
-                                </datalist>
-                            </div>
-                            <div class="create-team-input-pair">
-                                <label>Member selection</label>
-                                <input id="createTeamMember" list="members"
-                                       @onchange="@((args) => SetMemberNameEmail(args))"
-                                       placeholder="Full Name <email@example.com>" style="@MemberInputStyle" />
-                                <datalist id="members">
-                                    @foreach (var member in AvailableMembers)
-                                    {
-                                        <option value="@member" />
-                                    }
-                                </datalist>
-                                <button type="button" @onclick="() => AddSelectedMember()" disabled=@IsSubmitting class="select-member">Add member</button>
-                            </div>
+                    @if (string.IsNullOrEmpty(ServerMessage) == false)
+                    {
+                        <div class="operation-result">
+                            <p style="@ServerMessageInlineStyle">@ServerMessage</p>
                         </div>
-                        <table class="selected-members float-left">
-                            <thead>
+                    }
+
+                    <div class="left-half float-left">
+                        <div class="create-team-input-pair">
+                            <label>Team name</label>
+                            <InputText @bind-Value=TeamDetails.Name class="form-control" id="Name" disabled="@HasTeamId" />
+
+                        </div>
+                        <div class="create-team-input-pair">
+                            <label>Team lead</label>
+                            <input id="createTeamLeader" list="leaders"
+                                    @onchange="@((args) => SetLeaderNameEmail(args))"
+                                    placeholder="Full Name <email@example.com>" style="@LeaderInputStyle" />
+                            <datalist id="leaders">
+                                @foreach (var leader in AvailableLeaders)
+                                {
+                                    <option value="@leader" />
+                                }
+                            </datalist>
+                        </div>
+                        <div class="create-team-input-pair">
+                            <label>Member selection</label>
+                            <input id="createTeamMember" list="members"
+                                    @onchange="@((args) => SetMemberNameEmail(args))"
+                                    placeholder="Full Name <email@example.com>" style="@MemberInputStyle" />
+                            <datalist id="members">
+                                @foreach (var member in AvailableMembers)
+                                {
+                                    <option value="@member" />
+                                }
+                            </datalist>
+                            <button type="button" @onclick="() => AddSelectedMember()" disabled=@IsSubmitting class="select-member">Add member</button>
+                        </div>
+                    </div>
+                    <table class="selected-members float-left">
+                        <thead>
+                            <tr>
+                                <td>
+                                    Selected members
+                                </td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var member in TeamDetails.MemberNamesAndEmails)
+                            {
                                 <tr>
                                     <td>
-                                        Selected members
+                                        @member
+                                        <button class="deselect-btn float-right" @onclick="() => RemoveFromSelected(member)">Remove</button>
                                     </td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var member in TeamDetails.MemberNamesAndEmails)
-                                {
-                                    <tr>
-                                        <td>
-                                            @member
-                                            <button class="deselect-btn float-right" @onclick="() => RemoveFromSelected(member)">Remove</button>
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
+                            }
+                        </tbody>
+                    </table>
 
-                        <button type="submit" disabled=@IsSubmitting class="save-team float-right">Save</button>
-                    </EditForm>
-                }
+                    <button type="submit" disabled=@IsSubmitting class="save-team float-right">Save</button>
+                </EditForm>
             }
         </div>
     </Authorized>
