@@ -40,7 +40,7 @@
                             <label>Team lead</label>
                             <input id="createTeamLeader" list="leaders"
                                     @onchange="@((args) => SetLeaderNameEmail(args))"
-                                    placeholder="Full Name <email@example.com>" style="@LeaderInputStyle" />
+                                    placeholder="Full Name <email@example.com>" style="@LeaderInputStyle" disabled="@HasTeamId" />
                             <datalist id="leaders">
                                 @foreach (var leader in AvailableLeaders)
                                 {

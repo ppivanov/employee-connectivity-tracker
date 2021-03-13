@@ -317,6 +317,8 @@ namespace EctBlazorApp.Client.Pages
         }
         private bool IsCurrentLeaderSelectionIneligible(string selectedEmail)
         {
+            if (HasTeamId) return false;
+
             bool result = IsEmailIneligibleForSelection(selectedEmail, AllAvailableLeaders);
             if (result)
                 LeaderInputError = true;
