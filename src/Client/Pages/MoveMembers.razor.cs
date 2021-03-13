@@ -95,13 +95,18 @@ namespace EctBlazorApp.Client.Pages
 
         protected void RemoveMember(EctTeam team, string emailToRemove)
         {
+            MemberHasBeenMoved = true;
             team.Members = team.Members.Where(m => m.Email.Equals(emailToRemove) == false).ToList();
         }
 
         protected void ResetTeams()
         {
-            LeftTeam.Members = InitialLeftTeamRoster.ToList();                                                          // Copying the list as the MoveMember method will modify the 'snapshot' of the original roster state
-            RightTeam.Members = InitialRightTeamRoster.ToList();
+            if(LeftTeam !=null)
+                LeftTeam.Members = InitialLeftTeamRoster.ToList();                                                          // Copying the list as the MoveMember method will modify the 'snapshot' of the original roster state
+
+            if (RightTeam != null)
+                RightTeam.Members = InitialRightTeamRoster.ToList();
+
             MemberHasBeenMoved = false;
         }
 
