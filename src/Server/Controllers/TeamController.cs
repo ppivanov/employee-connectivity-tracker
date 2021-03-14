@@ -127,7 +127,7 @@ namespace EctBlazorApp.Server.Controllers
         public async Task<ActionResult> MoveMembersBetweenTeams([FromBody] IEnumerable<EctTeam> teamsToUpdate)
         {
             var originalTeams = _dbContext.Teams.ToList().Where(t =>                                    // Get references to the original teams
-            teamsToUpdate.Any(tu => tu.AreTeamNamesEqual(t))).ToList();             
+                teamsToUpdate.Any(tu => tu.AreTeamNamesEqual(t))).ToList();             
 
             if (originalTeams.Count < 1) 
                 return BadRequest("No matching teams were found.");

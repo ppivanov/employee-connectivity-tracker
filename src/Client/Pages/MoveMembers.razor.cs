@@ -112,7 +112,7 @@ namespace EctBlazorApp.Client.Pages
 
         protected async Task SubmitChanges()
         {
-            if(MemberHasBeenMoved == false)
+            if(LeftTeam == null || RightTeam == null || MemberHasBeenMoved == false)
             {
                 serverMessageIsError = true;
                 ServerMessage = "No members have been moved.";
