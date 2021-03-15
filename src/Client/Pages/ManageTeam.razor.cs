@@ -247,7 +247,9 @@ namespace EctBlazorApp.Client.Pages
 
 
         private bool AreNotificationOptionsValid()
-        {
+        {   
+            if(HasTeamId == false) return true;
+
             int newPoints = NewNotificationOptions.PointsThreshold;
             int minPoints = NotificationOptionsResponse.MinPoints;
             int maxPoints = NotificationOptionsResponse.MaxPoints;

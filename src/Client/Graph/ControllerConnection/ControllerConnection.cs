@@ -188,6 +188,9 @@ namespace EctBlazorApp.Client.Graph
                 {
                     exception.Redirect();
                 }
+                catch(Exception){
+                    return defaultResponse;
+                }
             }
             return defaultResponse;
         }

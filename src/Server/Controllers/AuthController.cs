@@ -1,4 +1,5 @@
-﻿using EctBlazorApp.Server.Extensions;
+﻿using EctBlazorApp.Server.AuthorizationAttributes;
+using EctBlazorApp.Server.Extensions;
 using EctBlazorApp.Shared;
 using EctBlazorApp.Shared.Entities;
 using Microsoft.AspNetCore.Authorization;
@@ -51,6 +52,7 @@ namespace EctBlazorApp.Server.Controllers
         }
 
         [Route("is-leader-for-team")]
+        [AuthorizeLeader]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<EctTeamRequestDetails>> IsLeaderForTeam([FromQuery] string TID = "")
