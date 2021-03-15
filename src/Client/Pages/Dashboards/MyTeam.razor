@@ -79,7 +79,7 @@
                                     }
                                     @if (AllowsEdit)                                                                                                     // Edit view
                                     {
-                                        <EditForm Model="NewNotificationOptions" OnSubmit="@(async () => await SubmitNotificationOptions())" Context="formContext">
+                                        <EditForm Model="NewNotificationOptions" OnSubmit="@(async () => await SubmitNotificationOptions())" Context="formContext" class="edit-notification-options">
                                             <label>
                                                 Threshold for notifications:
                                                 <InputNumber @bind-Value="NewNotificationOptions.PointsThreshold" class="" style="@InputStyle"
@@ -126,12 +126,12 @@
                                                         <td style="width: 100px">
                                                             @if (nameAndEmail.Equals(LeaderNameAndEmail))
                                                             {
-                                                                <span class="deselect-btn float-right points-threshold-leader">
+                                                                <span class="btn-deselect float-right points-threshold-leader">
                                                                     Team lead</span>
                                                             }
                                                             else
                                                             {
-                                                                <button type="button" class="deselect-btn float-right points-threshold-user"
+                                                                <button type="button" class="btn-deselect float-right points-threshold-user"
                                                                         @onclick="() => RemoveUserToNotify(nameAndEmail)">
                                                                     Remove
                                                                 </button>

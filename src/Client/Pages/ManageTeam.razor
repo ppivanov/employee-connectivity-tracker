@@ -76,14 +76,15 @@
                                 <tr>
                                     <td>
                                         @member
-                                        <button class="deselect-btn float-right" @onclick="() => RemoveFromSelected(member)">Remove</button>
+                                        <button class="btn-deselect float-right" @onclick="() => RemoveFromSelected(member)">Remove</button>
                                     </td>
                                 </tr>
                             }
                         </tbody>
                     </table>
 
-                    <button type="submit" disabled=@IsSubmitting class="save-team float-right">Save</button>
+                    <button type="submit" class="btn-submit-form">Submit</button>
+                    <button type="button" class="btn-reset-form" @onclick="() => {}">Reset</button>
                 </EditForm>
             }
         </div>
