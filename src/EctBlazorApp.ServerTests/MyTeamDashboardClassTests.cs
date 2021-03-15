@@ -1,4 +1,4 @@
-﻿using EctBlazorApp.Client.Pages.Dashboards;
+﻿using EctBlazorApp.Client.Pages;
 using EctBlazorApp.Shared;
 using EctBlazorApp.Shared.Entities;
 using Microsoft.AspNetCore.Components;
@@ -13,9 +13,9 @@ namespace EctBlazorApp.ServerTests
 {
     [TestClass]
     [ExcludeFromCodeCoverage]
-    public class MyTeamDashboardClassTests
+    public class ManageTeamClassTests
     {
-        private MyTeamDashboardClass _componentClass;
+        private ManageTeamClass _componentClass;
 
         [TestInitialize]
         public void BeforeEach() => ResetComponentClassProperties();
@@ -174,48 +174,26 @@ namespace EctBlazorApp.ServerTests
                 }
             };
             NotificationOptionsResponse newNotificationOptions = new(currentNotificationOptions);
-            List<EctUser> administrators = new()
-            {
-                new()
-                {
-                    Email = "admin@ect.ie",
-                    FullName = "Admin AdminS"
-                }
-            };
-            List<EctUser> teamMembers = new()
-            {
-                new()
-                {
-                    Email = "alice@ect.ie",
-                    FullName = "Alice AliceS"
-                },
-                new()
-                {
-                    Email = "bob@ect.ie",
-                    FullName = "Bob BobS"
-                },
-                new()
-                {
-                    Email = "mike@ect.ie",
-                    FullName = "Mike MikeS"
-                }
-            };
 
-            _componentClass = new(administrators, teamMembers, currentNotificationOptions, newNotificationOptions);
-            _componentClass.AddNotifyUserInputError = false;
-            _componentClass.ServerMessageIsError = false;
-            _componentClass.UserToNotify_Email = string.Empty;
-            _componentClass.UserToNotify_Name = string.Empty;
-            _componentClass.ServerMessage = string.Empty;
+            EctTeamRequestDetails teamDetails = new(){
+                CurrentNotificationOptions = currentNotificationOptions,
+                NewNotificationOptions = newNotificationOptions,
+                LeaderNameAndEmail = FormatFullNameAndEmail("Team Lead", "teamlead@ect.ie"),
+                MemberNamesAndEmails = new(){
+                    FormatFullNameAndEmail("Alice AliceS", "alice@ect.ie"),
+                    FormatFullNameAndEmail("Bob BobS", "bob@ect.ie"),
+                    FormatFullNameAndEmail("Mike MikeS", "mike@ect.ie"),
+                },
+                Name = "Team name",
+            };
+            _componentClass = new(teamDetails);
         }
 
-        private MyTeamDashboardClass MockJsInterop()
+        private ManageTeamClass MockJsInterop()
         {
-            Mock<MyTeamDashboardClass> mockInstance = new() { CallBase = true };
+            Mock<ManageTeamClass> mockInstance = new() { CallBase = true };
             mockInstance.Setup(tdc => tdc.JsInterop(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.CompletedTask);
-            mockInstance.Object.Administrators = _componentClass.Administrators;
-            mockInstance.Object.NewNotificationOptions = _componentClass.NewNotificationOptions;
-            mockInstance.Object.TeamMembers = _componentClass.TeamMembers;
+            mockInstance.Object.TeamDetails = _componentClass.TeamDetails;
 
             // Copy over other properties if required
 

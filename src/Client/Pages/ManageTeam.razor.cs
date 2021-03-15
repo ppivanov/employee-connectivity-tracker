@@ -23,13 +23,28 @@ namespace EctBlazorApp.Client.Pages
         [Inject]
         protected IJSRuntime JsRuntime { get; set; }
 
-        private bool serverMessageIsError = false;
+
+        public ManageTeamClass() : base() { }
+
+        public ManageTeamClass(EctTeamRequestDetails teamDetails)
+        {
+            TeamDetails = teamDetails;
+        }
+        
+        // public properties for unit tests
+        public EctTeamRequestDetails TeamDetails { get; set; }
+        public NotificationOptionsResponse NewNotificationOptions => TeamDetails.NewNotificationOptions;
+        public bool ServerMessageIsError { get; private set; } = false;
+        public bool AddNotifyUserInputError { get; private set; } = false;
+        public string ServerMessage { get; private set; } = string.Empty;
+        public string UserToNotify_Email { get; set; } = string.Empty;
+        public string UserToNotify_Name { get; set; } = string.Empty;
+
         private bool pointsInputError = false;
         private bool marginInputError = false;
         private HashSet<string> AllAvailableLeaders { get; set; }
         private HashSet<string> MembersFromApi { get; set; }
 
-        public bool AddNotifyUserInputError { get; set; } = false;
 
         protected HashSet<string> AvailableLeaders
         {
@@ -54,7 +69,7 @@ namespace EctBlazorApp.Client.Pages
                 return selectableMembers;
             }
         }
-        protected string CurrentMemberSelection { get; set; } = string.Empty;
+        protected string CurrentMemberSelection { get; private set; } = string.Empty;
         protected string AddNotifyUserInputStyle 
         {
             get => AddNotifyUserInputError ? "border: 1px solid red" : string.Empty; 
@@ -63,29 +78,26 @@ namespace EctBlazorApp.Client.Pages
         protected bool HasTeamId => string.IsNullOrEmpty(HashedTeamId) == false;
         protected string LeaderInputStyle => LeaderInputError ? "border: 1px solid red" : string.Empty;     
         protected string MemberInputStyle => MemberInputError ? "border: 1px solid red" : string.Empty;    
-        protected string ServerMessage { get; set; } = string.Empty;
         protected string ServerMessageInlineStyle
         {
             get
             {
                 var style = new StringBuilder("text-align: center;");
-                var textColor = serverMessageIsError ? "color: red;" : "color: green;";
+                var textColor = ServerMessageIsError ? "color: red;" : "color: green;";
                 style.Append(textColor);
 
                 return style.ToString();
             }
         }
-        protected bool TeamNameDisabled => string.IsNullOrEmpty(HashedTeamId) == false;
-        protected bool HasAccess { get; set; } = false;
-        protected bool Initialized { get; set; } = false;
+        protected bool HasAccess { get; private set; } = false;
+        protected bool Initialized { get; private set; } = false;
         protected string PointsInputStyle => pointsInputError ? "border: 1px solid red" : string.Empty;         // todo - set
         protected string MarginInputStyle => marginInputError ? "border: 1px solid red" : string.Empty;         // todo - set
-        protected bool IsSubmitting { get; set; } = false;
-        protected bool LeaderInputError { get; set; } = false;
-        protected bool MemberInputError { get; set; } = false;
-        public string UserToNotify_Email { get; set; } = string.Empty;
-        public string UserToNotify_Name { get; set; } = string.Empty;
-        protected EctTeamRequestDetails TeamDetails { get; set; }
+        protected bool IsSubmitting { get; private set; } = false;
+
+        private bool LeaderInputError { get; set; } = false;
+        private bool MemberInputError { get; set; } = false;
+        
 
 
         public async Task AddUserToNotify()
@@ -105,10 +117,12 @@ namespace EctBlazorApp.Client.Pages
         {
             await JsRuntime.InvokeVoidAsync(function, parameter);
         }               // Used to mock JavaScript function calls
+        
         public void RemoveUserToNotify(string toRemove)
         {
             TeamDetails.NewNotificationOptions.UsersToNotify.Remove(toRemove);
         }
+        
         public void SetLeaderNameEmail(ChangeEventArgs args)
         {
             ResetErrorMessage();
@@ -193,12 +207,14 @@ namespace EctBlazorApp.Client.Pages
 
         protected async Task SendTeamData()
         {
+            ResetErrorMessage();
             if (IsSubmitting
                 || AreTeamDetailsValid() == false
                 || string.IsNullOrWhiteSpace(TeamDetails.LeaderNameAndEmail)
                 || IsLeaderAlreadySelectedAsMember()
                 || IsCurrentLeaderSelectionBadlyFormatted(out string leaderEmail)
                 || IsCurrentLeaderSelectionIneligible(leaderEmail)
+                || AreNotificationOptionsValid() == false
                 )
                 return;
 
@@ -207,12 +223,12 @@ namespace EctBlazorApp.Client.Pages
             bool isNewTeam = HasTeamId == false;
 
             var response = await ApiConn.SubmitTeamData(isNewTeam, TeamDetails);
-            serverMessageIsError = response.Item1 == false;                                     // is StatusCode of response successful?
+            ServerMessageIsError = response.Item1 == false;                                     // is StatusCode of response successful?
             ServerMessage = response.Item2;
             LeaderInputError = false;
             MemberInputError = false;
 
-            if (isNewTeam && serverMessageIsError == false)
+            if (isNewTeam && ServerMessageIsError == false)
             {
                 AllAvailableLeaders.Remove(TeamDetails.LeaderNameAndEmail);
                 await ResetInputFields();
@@ -220,15 +236,41 @@ namespace EctBlazorApp.Client.Pages
             IsSubmitting = false;
         }
 
+
         private bool IsLeaderAlreadySelectedAsMember()
         {
             if (TeamDetails.MemberEmails.Contains(TeamDetails.LeaderEmail) == false)
                 return false;
 
-            serverMessageIsError = true;
+            ServerMessageIsError = true;
             LeaderInputError = true;
             ServerMessage = "Team lead is already in member list.";
             IsSubmitting = false;
+            return true;
+        }
+        private bool AreNotificationOptionsValid()
+        {
+            int newPoints = NewNotificationOptions.PointsThreshold;
+            int minPoints = NotificationOptionsResponse.MinPoints;
+            int maxPoints = NotificationOptionsResponse.MaxPoints;
+
+            double newMargin = NewNotificationOptions.MarginForNotification;
+            int minMargin = NotificationOptionsResponse.MinMargin;
+            int maxMargin = NotificationOptionsResponse.MaxMargin;
+
+            if(newPoints < minPoints || newPoints > maxPoints){
+                ServerMessageIsError = true;
+                ServerMessage = NotificationOptionsResponse.PointsErrorMessage;
+                pointsInputError = true;
+                return false;
+            }
+
+            if(newMargin < minMargin || newMargin > maxMargin){
+                ServerMessageIsError = true;
+                ServerMessage = NotificationOptionsResponse.MarginErrorMessage;
+                marginInputError = true;
+                return false;
+            }
             return true;
         }
         private bool AreTeamDetailsValid()
@@ -236,7 +278,7 @@ namespace EctBlazorApp.Client.Pages
             if (TeamDetails.AreDetailsValid())
                 return true;
 
-            serverMessageIsError = true;
+            ServerMessageIsError = true;
             ServerMessage = "Bad request. Please, review inputs and resubmit.";
             IsSubmitting = false;
             return false;
@@ -245,7 +287,10 @@ namespace EctBlazorApp.Client.Pages
         {
             LeaderInputError = false;
             MemberInputError = false;
-            serverMessageIsError = false;
+            pointsInputError = false;
+            marginInputError = false;
+            AddNotifyUserInputError = false;
+            ServerMessageIsError = false;
             ServerMessage = string.Empty;
         }
         private async Task ResetInputFields()
@@ -313,7 +358,7 @@ namespace EctBlazorApp.Client.Pages
             if (string.IsNullOrWhiteSpace(CurrentMemberSelection))
             {
                 MemberInputError = true;
-                serverMessageIsError = true;
+                ServerMessageIsError = true;
                 ServerMessage = "Please, select a member first.";
                 return true;
             }
@@ -339,7 +384,7 @@ namespace EctBlazorApp.Client.Pages
         {
             if (IsStringInMemberFormat(input) == false)
             {
-                serverMessageIsError = true;
+                ServerMessageIsError = true;
                 ServerMessage = "Please, enter the details in the reqired format.";
                 email = string.Empty;
                 return true;
@@ -355,7 +400,7 @@ namespace EctBlazorApp.Client.Pages
             if (TeamDetails.LeaderNameAndEmail.Contains(selectedEmail))
             {
                 MemberInputError = true;
-                serverMessageIsError = true;
+                ServerMessageIsError = true;
                 ServerMessage = "User already selected as team lead.";
                 return true;
             }
@@ -366,7 +411,7 @@ namespace EctBlazorApp.Client.Pages
             if (TeamDetails.MemberEmails.Contains(selectedEmail))
             {
                 MemberInputError = true;
-                serverMessageIsError = true;
+                ServerMessageIsError = true;
                 ServerMessage = "This user has already beeen selected.";
                 return true;
             }
@@ -394,7 +439,7 @@ namespace EctBlazorApp.Client.Pages
         {
             if (list.Any(a => a.Contains(email)) == false)
             {
-                serverMessageIsError = true;
+                ServerMessageIsError = true;
                 ServerMessage = "This user is not eligible for selection.";
                 return true;
             }
@@ -403,7 +448,7 @@ namespace EctBlazorApp.Client.Pages
         private void SetNotifyUserInputErrorMessage(string message)
         {
             AddNotifyUserInputError = true;
-            serverMessageIsError = true;
+            ServerMessageIsError = true;
             ServerMessage = message;
         }
         private bool UserToNotifyFieldsAreEmpty()

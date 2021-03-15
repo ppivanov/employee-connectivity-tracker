@@ -19,12 +19,9 @@ namespace EctBlazorApp.Client.Pages.Dashboards
         [Inject]
         protected NavigationManager NavManager { get; set; }
 
-        // public properties for unit tests
-        public bool ServerMessageIsError { get; set; } = false;
-        public string ServerMessage { get; set; } = string.Empty;
-        public List<EctUser> Administrators { get; set; }
-        public List<EctUser> TeamMembers { get; set; }
-        public NotificationOptionsResponse CurrentNotificationOptions { get; set; } = null;
+        protected List<EctUser> Administrators { get; set; }
+        protected List<EctUser> TeamMembers { get; set; }
+        protected NotificationOptionsResponse CurrentNotificationOptions { get; set; } = null;
         
         protected int EmailsSent { get; set; } = 0;
         protected int EmailsReceived { get; set; } = 0;
@@ -187,12 +184,9 @@ namespace EctBlazorApp.Client.Pages.Dashboards
             SecondsInMeeting = 0;
             CollaboratorsDict.Clear();
 
-            ServerMessageIsError = false;
-            IsSubmitting = false;
             TeamMembers = null;
             EmailsSent = 0;
             EmailsReceived = 0;
-            ServerMessage = string.Empty;
             LeaderNameAndEmail = string.Empty;
         }
     }
