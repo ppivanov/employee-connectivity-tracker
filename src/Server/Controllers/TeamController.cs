@@ -31,18 +31,18 @@ namespace EctBlazorApp.Server.Controllers
         [AuthorizeAdmin]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public ActionResult<IEnumerable<EctTeam>> GetAll()
+        public ActionResult<IEnumerable<EctTeamRequestDetails>> GetAll()
         {
             try
             {
-                var allTeams = _dbContext.Teams.Include(t => t.Members).Include(t => t.Leader).ToList();
+                var allTeams = _dbContext.Teams.Include(t => t.Members).Include(t => t.Leader)
+                    .Select(t => new EctTeamRequestDetails(t)).ToList();
                 return Ok(allTeams);
             }
             catch (Exception)
             {
                 return StatusCode(500, "Internal server error. Please, try again later.");
             }
-
         }
 
 
@@ -124,19 +124,24 @@ namespace EctBlazorApp.Server.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult> MoveMembersBetweenTeams([FromBody] IEnumerable<EctTeam> teamsToUpdate)
+        public async Task<ActionResult> MoveMembersBetweenTeams([FromBody] IEnumerable<EctTeamRequestDetails> teamsToUpdate)
         {
-            var originalTeams = _dbContext.Teams.ToList().Where(t =>                                    // Get references to the original teams
-                teamsToUpdate.Any(tu => tu.AreTeamNamesEqual(t))).ToList();             
+            var originalTeams = _dbContext.Teams.Include(t => t.Members).ToList().Where(t =>                                    // Get references to the original teams
+                teamsToUpdate.Any(tu => tu.Name.Equals(t.Name))).ToList();             
 
             if (originalTeams.Count < 1) 
                 return BadRequest("No matching teams were found.");
 
-            foreach (var originalTeam in originalTeams)                                                 // This n^2 loop should be ok as the number of teams  
+            foreach (var originalTeam in originalTeams)                                                 // This n^2 * m loop should be ok as the number of teams is pretty low and each shouldn't have a lot of members
             {   foreach (var newMembersTeam in teamsToUpdate)
                 {
-                    if (newMembersTeam.AreTeamNamesEqual(originalTeam))
-                        originalTeam.Members = newMembersTeam.Members;
+                    if (newMembersTeam.Name.Equals(originalTeam.Name))
+                    {
+                        originalTeam.Members = _dbContext.Users.ToList()
+                            .Where(u => newMembersTeam.MemberNamesAndEmails
+                                .Contains(FormatFullNameAndEmail(u.FullName, u.Email)) 
+                                || newMembersTeam.LeaderEmail.Equals(u.Email)).ToList();
+                    }
                 }
             }
             try
@@ -144,9 +149,9 @@ namespace EctBlazorApp.Server.Controllers
                 await _dbContext.SaveChangesAsync();
                 return Ok("Members moved successfully.");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return StatusCode(500, "Internal server error. Please, try again later.");
+                return StatusCode(500, ex.Message);
             }
         }
 

@@ -37,7 +37,7 @@
                             {
                                 <tr>
                                     <td>
-                                        @FormatFullNameAndEmail(LeftTeam.Leader.FullName, LeftTeam.Leader.Email)
+                                        @LeftTeam.LeaderNameAndEmail
                                     </td>
                                     <td>
                                         <button type="button" class="remove-member-button disabled-button" disabled="true">
@@ -48,17 +48,17 @@
                                         </button>
                                     </td>
                                 </tr>
-                                @foreach (var member in LeftTeam.GetMembersExceptLeader())
+                                @foreach (var member in LeftTeam.MemberNamesAndEmails)
                                 {
                                     <tr>
                                         <td>
-                                            @FormatFullNameAndEmail(member.FullName, member.Email)
+                                            @member
                                         </td>
                                         <td>
-                                            <button type="button" class="remove-member-button" @onclick="() => RemoveMember(LeftTeam, member.Email)">
+                                            <button type="button" class="remove-member-button" @onclick="() => RemoveMember(LeftTeam, member)">
                                                 &times;
                                             </button>
-                                            <button type="button" class="move-member-button" @onclick="() => MoveMember(LeftTeam, RightTeam, member.Email)">
+                                            <button type="button" class="move-member-button" @onclick="() => MoveMember(LeftTeam, RightTeam, member)">
                                                 &rarr;
                                             </button>
                                         </td>
@@ -95,22 +95,22 @@
                                         </button>
                                     </td>
                                     <td>
-                                        @FormatFullNameAndEmail(RightTeam.Leader.FullName, RightTeam.Leader.Email)
+                                        @RightTeam.LeaderNameAndEmail
                                     </td>
                                 </tr>
-                                @foreach (var member in RightTeam.GetMembersExceptLeader())
+                                @foreach (var member in RightTeam.MemberNamesAndEmails)
                                 {
                                     <tr>
                                         <td>
-                                            <button type="button" class="move-member-button" @onclick="() => MoveMember(RightTeam, LeftTeam, member.Email)">
+                                            <button type="button" class="move-member-button" @onclick="() => MoveMember(RightTeam, LeftTeam, member)">
                                                 &larr;
                                             </button>
-                                            <button type="button" class="remove-member-button" @onclick="() => RemoveMember(RightTeam, member.Email)">
+                                            <button type="button" class="remove-member-button" @onclick="() => RemoveMember(RightTeam, member)">
                                                 &times;
                                             </button>
                                         </td>
                                         <td>
-                                            @FormatFullNameAndEmail(member.FullName, member.Email)
+                                            @member
                                         </td>
                                     </tr>
                                 }

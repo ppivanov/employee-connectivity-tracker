@@ -18,7 +18,7 @@ namespace EctBlazorApp.Client.Graph
 
         Task<TeamDashboardResponse> FetchTeamDashboardResponse(string queryString);
 
-        Task<IEnumerable<EctTeam>> FetchAllTeams();
+        Task<IEnumerable<EctTeamRequestDetails>> FetchAllTeams();
 
         Task<string> GetAPITokenAsync();
 
@@ -32,7 +32,7 @@ namespace EctBlazorApp.Client.Graph
 
         Task<EctTeamRequestDetails> IsProcessingUserLeaderForTeam(string hashedTeamId);
 
-        Task<(bool, string)> SubmitMoveMemberTeams(IEnumerable<EctTeam> teams);
+        Task<(bool, string)> SubmitMoveMemberTeams(IEnumerable<EctTeamRequestDetails> teams);
 
         Task<(bool, string)> SubmitNotificationOptions(NotificationOptionsResponse notificationOptions);
 

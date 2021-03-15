@@ -73,9 +73,9 @@ namespace EctBlazorApp.Client.Graph
             return HttpGet<TeamDashboardResponse>($"api/team/team-stats{queryString}", defaultResponse);
         }
 
-        public Task<IEnumerable<EctTeam>> FetchAllTeams()
+        public Task<IEnumerable<EctTeamRequestDetails>> FetchAllTeams()
         {
-            return HttpGet<IEnumerable<EctTeam>>("api/team", new List<EctTeam>());
+            return HttpGet<IEnumerable<EctTeamRequestDetails>>("api/team", new List<EctTeamRequestDetails>());
         }
 
         public async Task<string> GetAPITokenAsync()
@@ -119,7 +119,7 @@ namespace EctBlazorApp.Client.Graph
             return HttpGet<EctTeamRequestDetails>($"api/auth/is-leader-for-team?TID={hashedTeamId}", null);
         }
 
-        public Task<(bool, string)> SubmitMoveMemberTeams(IEnumerable<EctTeam> teams)
+        public Task<(bool, string)> SubmitMoveMemberTeams(IEnumerable<EctTeamRequestDetails> teams)
         {
             return HttpPut("api/team/move-members", teams);
         }
