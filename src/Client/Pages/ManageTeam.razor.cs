@@ -1,6 +1,7 @@
 ﻿using EctBlazorApp.Client.Graph;
 using EctBlazorApp.Client.Shared;
 using EctBlazorApp.Shared;
+using EctBlazorApp.Shared.Entities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using System.Collections.Generic;
@@ -23,8 +24,12 @@ namespace EctBlazorApp.Client.Pages
         protected IJSRuntime JsRuntime { get; set; }
 
         private bool serverMessageIsError = false;
+        private bool pointsInputError = false;
+        private bool marginInputError = false;
         private HashSet<string> AllAvailableLeaders { get; set; }
         private HashSet<string> MembersFromApi { get; set; }
+
+        public bool AddNotifyUserInputError { get; set; } = false;
 
         protected HashSet<string> AvailableLeaders
         {
@@ -50,9 +55,14 @@ namespace EctBlazorApp.Client.Pages
             }
         }
         protected string CurrentMemberSelection { get; set; } = string.Empty;
-        protected bool HasTeamId { get => string.IsNullOrEmpty(HashedTeamId) == false; }
-        protected string LeaderInputStyle { get => LeaderInputError ? "border: 1px solid red" : string.Empty; }
-        protected string MemberInputStyle { get => MemberInputError ? "border: 1px solid red" : string.Empty; }
+        protected string AddNotifyUserInputStyle 
+        {
+            get => AddNotifyUserInputError ? "border: 1px solid red" : string.Empty; 
+        }
+        protected List<string> PromptUsersForNotification => TeamDetails.MemberNamesAndEmails;
+        protected bool HasTeamId => string.IsNullOrEmpty(HashedTeamId) == false;
+        protected string LeaderInputStyle => LeaderInputError ? "border: 1px solid red" : string.Empty;     
+        protected string MemberInputStyle => MemberInputError ? "border: 1px solid red" : string.Empty;    
         protected string ServerMessage { get; set; } = string.Empty;
         protected string ServerMessageInlineStyle
         {
@@ -65,20 +75,40 @@ namespace EctBlazorApp.Client.Pages
                 return style.ToString();
             }
         }
-        protected bool TeamNameDisabled { get => string.IsNullOrEmpty(HashedTeamId) == false; }
-
+        protected bool TeamNameDisabled => string.IsNullOrEmpty(HashedTeamId) == false;
         protected bool HasAccess { get; set; } = false;
-        protected bool IsSubmitting { get; set; } = false;
         protected bool Initialized { get; set; } = false;
+        protected string PointsInputStyle => pointsInputError ? "border: 1px solid red" : string.Empty;         // todo - set
+        protected string MarginInputStyle => marginInputError ? "border: 1px solid red" : string.Empty;         // todo - set
+        protected bool IsSubmitting { get; set; } = false;
         protected bool LeaderInputError { get; set; } = false;
         protected bool MemberInputError { get; set; } = false;
+        public string UserToNotify_Email { get; set; } = string.Empty;
+        public string UserToNotify_Name { get; set; } = string.Empty;
         protected EctTeamRequestDetails TeamDetails { get; set; }
 
+
+        public async Task AddUserToNotify()
+        {
+            if (UserToNotifyFieldsAreEmpty() || UserToNotifyAlreadyInList())
+                return;
+            
+            string nameAndEmail = FormatFullNameAndEmail(UserToNotify_Name, UserToNotify_Email);
+            TeamDetails.NewNotificationOptions.UsersToNotify.Add(nameAndEmail);
+            UserToNotify_Name = string.Empty;
+            UserToNotify_Email = string.Empty;
+            await JsInterop("resetUserToNotifyEmail");
+            await JsInterop("resetUserToNotifyName");
+        }
+        
         public virtual async Task JsInterop(string function, string parameter = "")
         {
             await JsRuntime.InvokeVoidAsync(function, parameter);
         }               // Used to mock JavaScript function calls
-
+        public void RemoveUserToNotify(string toRemove)
+        {
+            TeamDetails.NewNotificationOptions.UsersToNotify.Remove(toRemove);
+        }
         public void SetLeaderNameEmail(ChangeEventArgs args)
         {
             ResetErrorMessage();
@@ -91,6 +121,34 @@ namespace EctBlazorApp.Client.Pages
             CurrentMemberSelection = args.Value.ToString();
         }
 
+        public async Task SetUserToNotifyEmail(ChangeEventArgs args)
+        {
+            UserToNotify_Email = args.Value.ToString();
+            var matchingMember = PromptUsersForNotification.FirstOrDefault(m => 
+                GetEmailFromFormattedString(m).Equals(UserToNotify_Email));
+            if (matchingMember != null)
+            {
+                UserToNotify_Name = GetFullNameFromFormattedString(matchingMember);
+                await JsInterop("setUserToNotifyName", UserToNotify_Name);
+            }
+            else
+                await JsInterop("resetUserToNotifyName");
+        }
+
+        public async Task SetUserToNotifyName(ChangeEventArgs args)
+        {
+            UserToNotify_Name = args.Value.ToString();
+            var matchingMember = PromptUsersForNotification.FirstOrDefault(m => 
+                GetFullNameFromFormattedString(m).Equals(UserToNotify_Name));
+            if (matchingMember != null)
+            {
+                UserToNotify_Email = GetEmailFromFormattedString(matchingMember);
+                await JsInterop("setUserToNotifyEmail", UserToNotify_Email);
+            }
+            else
+                await JsInterop("resetUserToNotifyEmail");
+        }
+        
 
         protected async Task AddSelectedMember()
         {
@@ -161,7 +219,6 @@ namespace EctBlazorApp.Client.Pages
             }
             IsSubmitting = false;
         }
-
 
         private bool IsLeaderAlreadySelectedAsMember()
         {
@@ -339,6 +396,31 @@ namespace EctBlazorApp.Client.Pages
             {
                 serverMessageIsError = true;
                 ServerMessage = "This user is not eligible for selection.";
+                return true;
+            }
+            return false;
+        }
+        private void SetNotifyUserInputErrorMessage(string message)
+        {
+            AddNotifyUserInputError = true;
+            serverMessageIsError = true;
+            ServerMessage = message;
+        }
+        private bool UserToNotifyFieldsAreEmpty()
+        {
+            if (string.IsNullOrWhiteSpace(UserToNotify_Name)
+                || string.IsNullOrWhiteSpace(UserToNotify_Email))
+            {
+                SetNotifyUserInputErrorMessage("You must provide values for both Name and Email fields.");
+                return true;
+            }
+            return false;
+        }
+        private bool UserToNotifyAlreadyInList()
+        {
+            if (TeamDetails.NewNotificationOptions.UsersToNotify.Any(utn => utn.Contains($"<{UserToNotify_Email}>")))
+            {
+                SetNotifyUserInputErrorMessage("The entered email is already in the list.");
                 return true;
             }
             return false;

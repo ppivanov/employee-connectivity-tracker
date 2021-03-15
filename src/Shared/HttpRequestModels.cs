@@ -23,8 +23,10 @@ namespace EctBlazorApp.Shared
         [CollectionNotEmpty(ErrorMessage = "You must select at least one member.")]
         public List<string> MemberNamesAndEmails { get; set; }
 
-        public string TeamId { get; set; }
+        public NotificationOptionsResponse CurrentNotificationOptions { get; set; }
+        public NotificationOptionsResponse NewNotificationOptions { get; set; }
         public string LeaderEmail { get => GetEmailFromFormattedString(LeaderNameAndEmail); }
+        public string TeamId { get; set; }
 
         public IEnumerable<string> MemberEmails 
         {
@@ -64,6 +66,13 @@ namespace EctBlazorApp.Shared
             LeaderNameAndEmail = FormatFullNameAndEmail(ectTeam.Leader.FullName, ectTeam.Leader.Email);
             MemberNamesAndEmails = ectTeam.Members.Where(m => m.Email.Equals(ectTeam.Leader.Email) == false)
                 .Select(m => FormatFullNameAndEmail(m.FullName, m.Email)).ToList();
+
+            CurrentNotificationOptions = new NotificationOptionsResponse{
+                PointsThreshold = ectTeam.PointsThreshold,
+                MarginForNotification = ectTeam.MarginForNotification,
+                UsersToNotify = ectTeam.AdditionalUsersToNotify
+            };
+            NewNotificationOptions = new NotificationOptionsResponse(CurrentNotificationOptions);
         }
     }
 }

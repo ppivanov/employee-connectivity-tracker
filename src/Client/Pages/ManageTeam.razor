@@ -61,6 +61,72 @@
                             </datalist>
                             <button type="button" @onclick="() => AddSelectedMember()" disabled=@IsSubmitting class="select-member">Add member</button>
                         </div>
+                        @if (HasTeamId)
+                        {
+                        <div class="notification-options">
+                            <div class="notification-pair">
+                                <label>
+                                    Threshold for notifications:
+                                </label>
+                                <InputNumber @bind-Value="TeamDetails.NewNotificationOptions.PointsThreshold" class="" style="@PointsInputStyle"
+                                        placeholder="@($"Current: {TeamDetails.CurrentNotificationOptions.PointsThreshold}")" />
+                            </div>
+                            <div class="notification-pair">
+                                <label>
+                                    Margin for notifications:
+                                </label>
+                                <InputNumber @bind-Value="TeamDetails.NewNotificationOptions.MarginForNotification" class="" style="@MarginInputStyle"
+                                        placeholder="@($"Current: {TeamDetails.CurrentNotificationOptions.MarginForNotification}")" />%
+                            </div>
+                            <p>Users to notify:</p>
+                            <p>
+                                <input id="userToNotify_name" list="names"
+                                        @onchange="@(async (args) => await SetUserToNotifyName(args))"
+                                        placeholder="John Doe" style="@AddNotifyUserInputStyle" />
+                                <input id="userToNotify_email" list="emails"
+                                        @onchange="@(async (args) => await SetUserToNotifyEmail(args))"
+                                        placeholder="email@example.com" style="@AddNotifyUserInputStyle" />
+                                <datalist id="names">
+                                    @foreach (var memberNameAndEmail in PromptUsersForNotification)
+                                    {
+                                        <option value="@GetFullNameFromFormattedString(memberNameAndEmail)"></option>
+                                    }
+                                </datalist>
+                                <datalist id="emails">
+                                    @foreach (var memberNameAndEmail in PromptUsersForNotification)
+                                    {
+                                        <option value="@GetEmailFromFormattedString(memberNameAndEmail)"></option>
+                                    }
+                                </datalist>
+
+                                <button @onclick="async () => await AddUserToNotify()" type="button">Add user</button>
+                            </p>
+                            <table class="users-to-notify">
+                                @foreach (var nameAndEmail in TeamDetails.NewNotificationOptions.UsersToNotify)
+                                {
+                                    <tr>
+                                        <td class="user">
+                                            <p>@nameAndEmail</p>
+                                        </td>
+                                        <td>
+                                            @if (nameAndEmail.Equals(TeamDetails.LeaderNameAndEmail))
+                                            {
+                                                <span class="btn-deselect float-right edit-notification-options-leader">
+                                                    Team lead</span>
+                                            }
+                                            else
+                                            {
+                                                <button type="button" class="btn-deselect float-right edit-notification-options-user"
+                                                        @onclick="() => RemoveUserToNotify(nameAndEmail)">
+                                                    Remove
+                                                </button>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </table>
+                        </div>
+                        }
                     </div>
                     <table class="selected-members float-left">
                         <thead>

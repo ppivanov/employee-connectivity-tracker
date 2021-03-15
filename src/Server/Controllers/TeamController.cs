@@ -106,6 +106,9 @@ namespace EctBlazorApp.Server.Controllers
 
             team.Members = _dbContext.Users.Where(u => teamDetails.MemberEmails.Contains(u.Email)).ToList();
             team.Leader = _dbContext.Users.FirstOrDefault(u => u.Email.Equals(teamDetails.LeaderEmail));
+            team.AdditionalUsersToNotify = teamDetails.NewNotificationOptions.UsersToNotify;
+            team.PointsThreshold = teamDetails.NewNotificationOptions.PointsThreshold;
+            team.MarginForNotification = teamDetails.NewNotificationOptions.MarginForNotification;
             try
             {
                 await _dbContext.SaveChangesAsync();

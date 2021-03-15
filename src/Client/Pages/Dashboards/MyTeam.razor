@@ -73,95 +73,19 @@
                                 }
                                 else
                                 {
-                                    @if (string.IsNullOrEmpty(ServerMessage) == false)
-                                    {
-                                        <p style="@ServerMessageInlineStyle">@ServerMessage</p>
-                                    }
-                                    @if (AllowsEdit)                                                                                                     // Edit view
-                                    {
-                                        <EditForm Model="NewNotificationOptions" OnSubmit="@(async () => await SubmitNotificationOptions())" Context="formContext" class="edit-notification-options">
-                                            <label>
-                                                Threshold for notifications:
-                                                <InputNumber @bind-Value="NewNotificationOptions.PointsThreshold" class="" style="@InputStyle"
-                                                                placeholder="@($"Current: {CurrentNotificationOptions.PointsThreshold}")" />
-                                            </label>
-                                            <br />
-                                            <label>
-                                                Margin for notifications:
-                                                <InputNumber @bind-Value="NewNotificationOptions.MarginForNotification" class="" style="@InputStyle"
-                                                                placeholder="@($"Current: {CurrentNotificationOptions.MarginForNotification}")" />%
-                                            </label>
-
-                                            <p>Users to notify:</p>
-                                            <p>
-                                                <input id="userToNotify_name" list="names"
-                                                        @onchange="@(async (args) => await SetUserToNotifyName(args))"
-                                                        placeholder="John Doe" style="@AddNotifyUserInputStyle" />
-                                                <input id="userToNotify_email" list="emails"
-                                                        @onchange="@(async (args) => await SetUserToNotifyEmail(args))"
-                                                        placeholder="email@example.com" style="@AddNotifyUserInputStyle" />
-                                                <datalist id="names">
-                                                    @foreach (var member in AvailableUsersForNotification)
-                                                    {
-                                                        <option value="@member.FullName"></option>
-                                                    }
-                                                </datalist>
-                                                <datalist id="emails">
-                                                    @foreach (var member in AvailableUsersForNotification)
-                                                    {
-                                                        <option value="@member.Email"></option>
-
-                                                    }
-                                                </datalist>
-
-                                                <button @onclick="async () => await AddUserToNotify()" type="button">Add user</button>
-                                            </p>
-                                            <table>
-                                                @foreach (var nameAndEmail in NewNotificationOptions.UsersToNotify)
-                                                {
-                                                    <tr>
-                                                        <td>
-                                                            <p>@nameAndEmail</p>
-                                                        </td>
-                                                        <td style="width: 100px">
-                                                            @if (nameAndEmail.Equals(LeaderNameAndEmail))
-                                                            {
-                                                                <span class="btn-deselect float-right points-threshold-leader">
-                                                                    Team lead</span>
-                                                            }
-                                                            else
-                                                            {
-                                                                <button type="button" class="btn-deselect float-right points-threshold-user"
-                                                                        @onclick="() => RemoveUserToNotify(nameAndEmail)">
-                                                                    Remove
-                                                                </button>
-                                                            }
-                                                        </td>
-                                                    </tr>
-                                                }
-                                            </table>
-                                            <br />
-                                            <button type="submit">Submit</button>
-                                            <button @onclick="CancelEditNotificationOptions" type="button">Cancel</button>
-                                        </EditForm>
-                                    }
-                                    else                                                                                                                // Current notification options view
-                                    {
-                                        <p>Current threshold for notifications: @CurrentNotificationOptions.PointsThreshold</p>
-                                        <p>Current margin for notifications: @CurrentNotificationOptions.MarginForNotification%</p>
-                                        <p>Addtional users to notify:</p>
-                                        <table>
-                                            @foreach (var email in NewNotificationOptions.UsersToNotify)
-                                            {
-                                                <tr>
-                                                    <td>
-                                                        <p>@email</p>
-                                                    </td>
-                                                </tr>
-                                            }
-                                        </table>
-                                        <button @onclick="EditNotificationOptions">Edit</button>
-                                    }
+                                    <p>Current threshold for notifications: @CurrentNotificationOptions.PointsThreshold</p>
+                                    <p>Current margin for notifications: @CurrentNotificationOptions.MarginForNotification%</p>
+                                    <p>Addtional users to notify:</p>
+                                    <table>
+                                        @foreach (var email in CurrentNotificationOptions.UsersToNotify)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <p>@email</p>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </table>
                                 }
                             }
                         </div>

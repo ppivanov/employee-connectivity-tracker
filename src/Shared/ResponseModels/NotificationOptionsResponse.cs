@@ -6,11 +6,16 @@ namespace EctBlazorApp.Shared
 {
     public class NotificationOptionsResponse
     {
+        const int minPoints = 0;
+        const int maxPoints = 200;
+        const int minMargin = 0;
+        const int maxMargin = 100;
+
         [Required]
-        [Range(0, 200, ErrorMessage = "The points threshold must be between {0} and {1}")]
+        [Range(minPoints, maxPoints, ErrorMessage = "The points threshold must be between {minPoints} and {maxPoints}")]
         public int PointsThreshold { get; set; }
         [Required]
-        [Range(0, 100, ErrorMessage = "The margin for notifications must be between {0}% and {1}%")]
+        [Range(minMargin, maxMargin, ErrorMessage = "The margin for notifications must be between {minMargin}% and {maxMargin}%")]
         public double MarginForNotification { get; set; }
         public List<string> UsersToNotify { get; set; }
 
