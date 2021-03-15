@@ -45,6 +45,7 @@ namespace EctBlazorApp.Client.Pages
         private bool marginInputError = false;
         private bool memberInputError = false;
         private HashSet<string> membersFromApi;
+        private List<string> originalMembers;
         private bool pointsInputError = false;
 
         protected string AddNotifyUserInputStyle 
@@ -203,6 +204,11 @@ namespace EctBlazorApp.Client.Pages
             await InvokeAsync(StateHasChanged);
         }
 
+        protected void ResetTeamDetails() {
+            TeamDetails.NewNotificationOptions = new NotificationOptionsResponse(TeamDetails.CurrentNotificationOptions);
+            TeamDetails.MemberNamesAndEmails = originalMembers.ToList();
+        }
+
         protected async Task SendTeamData()
         {
             ResetErrorMessage();
@@ -230,6 +236,11 @@ namespace EctBlazorApp.Client.Pages
             {
                 allAvailableLeaders.Remove(TeamDetails.LeaderNameAndEmail);
                 await ResetInputFields();
+            } 
+            else 
+            {
+                originalMembers = TeamDetails.MemberNamesAndEmails.ToList();
+                TeamDetails.CurrentNotificationOptions = new NotificationOptionsResponse(NewNotificationOptions);
             }
             IsSubmitting = false;
         }
@@ -331,6 +342,7 @@ namespace EctBlazorApp.Client.Pages
 
             if (HasAccess)
             {
+                originalMembers = TeamDetails.MemberNamesAndEmails.ToList();
                 await JsInterop("setPageTitle", TeamDetails.Name);
                 await GetEligibleUsers();
 

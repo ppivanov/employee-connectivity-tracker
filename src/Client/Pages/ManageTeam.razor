@@ -99,7 +99,7 @@
                                     }
                                 </datalist>
 
-                                <button @onclick="async () => await AddUserToNotify()" type="button">Add user</button>
+                                <button type="button" @onclick="async () => await AddUserToNotify()">Add user</button>
                             </p>
                             <table class="users-to-notify">
                                 @foreach (var nameAndEmail in TeamDetails.NewNotificationOptions.UsersToNotify)
@@ -142,7 +142,7 @@
                                 <tr>
                                     <td>
                                         @member
-                                        <button class="btn-deselect float-right" @onclick="() => RemoveFromSelected(member)">Remove</button>
+                                        <button type="button" class="btn-deselect float-right" @onclick="() => RemoveFromSelected(member)">Remove</button>
                                     </td>
                                 </tr>
                             }
@@ -150,7 +150,10 @@
                     </table>
 
                     <button type="submit" class="btn-submit-form">Submit</button>
-                    <button type="button" class="btn-reset-form" @onclick="() => {}">Reset</button>
+                    @if(HasTeamId)
+                    {
+                        <button type="button" class="btn-reset-form" @onclick="ResetTeamDetails">Reset</button>
+                    }
                 </EditForm>
             }
         </div>
