@@ -153,6 +153,10 @@
                                 </td>
                             </tr>
                         </thead>
+                        <i id="search-icon" class="fas fa-search"></i>
+                        <input @bind="FilterUsersInput" id="filter-users" 
+                            placeholder="Filter..." @onkeyup="StateHasChanged"/>
+                        <tbody>
                             @foreach (var availableMember in AvailableMembers)
                             {
                                 <tr>
@@ -163,6 +167,7 @@
                                     </td>
                                 </tr>
                             }
+                        </tbody>
                     </table>
 
                     <button type="submit" class="btn-submit-form">Submit</button>

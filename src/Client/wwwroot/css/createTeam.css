@@ -92,6 +92,22 @@
 
 /* member selection */
 
+.create-team #search-icon {
+	position: absolute;
+	padding: 1em;
+	margin-top: 1em;
+	min-width: 5em;
+}
+
+.create-team #filter-users {
+	right: 0;
+	width: 100%;
+	padding: 1em;
+	text-align: center;
+	margin-top: 1em;
+	border: 2px solid gray;
+}
+
 .create-team .selected-members,
 .create-team .available-users {
 	width: 30%;
@@ -149,6 +165,18 @@
 
 .create-team .available-users:hover {
 	overflow-y: scroll;
+}
+
+.create-team .available-users > i {
+	position: absolute;
+	padding: 10px;
+	min-width: 40px;
+}
+
+.create-team .available-users > .filter-users {
+	width: 100%;
+	padding: 10px;
+	text-align: center;
 }
 
 /* END of member selection */

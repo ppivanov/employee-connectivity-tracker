@@ -1,14 +1,11 @@
 ﻿using EctBlazorApp.Client.Graph;
 using EctBlazorApp.Client.Shared;
 using EctBlazorApp.Shared;
-using EctBlazorApp.Shared.Entities;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using static EctBlazorApp.Shared.SharedMethods;
 
 namespace EctBlazorApp.Client.Pages
 {

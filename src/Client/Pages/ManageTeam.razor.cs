@@ -1,7 +1,6 @@
 ﻿using EctBlazorApp.Client.Graph;
 using EctBlazorApp.Client.Shared;
 using EctBlazorApp.Shared;
-using EctBlazorApp.Shared.Entities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using System.Collections.Generic;
@@ -57,11 +56,12 @@ namespace EctBlazorApp.Client.Pages
         {
             get
             {
-                var selectableMembers = allAvailableLeaders.ToList();                                   // Copy the available set of members
+                var selectableMembers = allAvailableLeaders.Where(al => al.Contains(FilterUsersInput)).ToList();                                   // Copy the available set of members
                 selectableMembers.Remove(TeamDetails.LeaderNameAndEmail);                                      // Remove the selected leader
                 return selectableMembers;
             }
         }
+        protected string FilterUsersInput {get; set;} = string.Empty;
         protected bool HasAccess { get; private set; } = false;
         protected bool HasTeamId => string.IsNullOrEmpty(HashedTeamId) == false;
         protected bool Initialized { get; private set; } = false;
@@ -81,7 +81,6 @@ namespace EctBlazorApp.Client.Pages
                 return style.ToString();
             }
         }
-        
 
 
         public async Task AddUserToNotify()

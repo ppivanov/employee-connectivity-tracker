@@ -1,8 +1,6 @@
 ﻿@page "/move-members"
 @inherits MoveMembersClass
 
-@using static EctBlazorApp.Shared.SharedMethods;
-
 <AuthorizeView>
     <Authorized>
         @if (HasAccess == false)
@@ -41,7 +39,7 @@
                                     </td>
                                     <td>
                                         <button type="button" class="btn-rm-member-size btn-disabled" disabled="true">
-                                            <i class="fas fa-times"></i>
+                                            <i class="fas fa-user-times"></i>
                                         </button>
                                         <button type="button" class="btn-move-member-size btn-disabled" disabled="true">
                                             <i class="fas fa-angle-double-right"></i>
@@ -56,7 +54,7 @@
                                         </td>
                                         <td>
                                             <button type="button" class="btn-rm-member-size btn-rm-member-color" @onclick="() => RemoveMember(LeftTeam, member)">
-                                                <i class="fas fa-times"></i>
+                                                <i class="fas fa-user-times"></i>
                                             </button>
                                             <button type="button" class="btn-move-member-size btn-move-member-color" @onclick="() => MoveMember(LeftTeam, RightTeam, member)">
                                                 <i class="fas fa-angle-double-right"></i>
@@ -91,7 +89,7 @@
                                             <i class="fas fa-angle-double-left"></i>
                                         </button>
                                         <button type="button" class="btn-rm-member-size btn-disabled" disabled="true">
-                                            <i class="fas fa-times"></i>
+                                            <i class="fas fa-user-times"></i>
                                         </button>
                                     </td>
                                     <td>
@@ -106,7 +104,7 @@
                                                 <i class="fas fa-angle-double-left"></i>
                                             </button>
                                             <button type="button" class="btn-rm-member-size btn-rm-member-color" @onclick="() => RemoveMember(RightTeam, member)">
-                                                <i class="fas fa-times"></i>
+                                                <i class="fas fa-user-times"></i>
                                             </button>
                                         </td>
                                         <td>
