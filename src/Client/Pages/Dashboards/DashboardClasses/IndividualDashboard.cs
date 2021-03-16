@@ -90,6 +90,11 @@ namespace EctBlazorApp.Client.Pages.Dashboards
             await JsRuntime.InvokeVoidAsync("setPageTitle", "Dashboard");
             await CustomAuthState.GetUserPermissions(AuthState, ApiConn);
             await FetchCommunicationPoints();
+        }
+
+        protected override async Task OnParametersSetAsync()
+        {
+            await JsRuntime.InvokeVoidAsync("setPageTitle", "Dashboard");
             await UpdateDashboard();
         }
 
