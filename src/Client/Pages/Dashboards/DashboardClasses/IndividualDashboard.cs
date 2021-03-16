@@ -107,6 +107,8 @@ namespace EctBlazorApp.Client.Pages.Dashboards
                 DashboardState.SetIsDrillDown(true);
                 userIdQueryString = $"&UID={HashedUserId}";
             }
+            else DashboardState.SetIsDrillDown(false);
+
             var response = await ApiConn.FetchDashboardResponse($"{queryString}{userIdQueryString}");
             if (response == null) 
             {

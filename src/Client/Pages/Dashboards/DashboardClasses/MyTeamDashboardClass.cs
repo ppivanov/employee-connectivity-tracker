@@ -140,12 +140,13 @@ namespace EctBlazorApp.Client.Pages.Dashboards
             await InvokeAsync(StateHasChanged);
         }
 
-        protected void RedirectToDasboard(string userFullName)
+        protected async Task RedirectToDasboard(string userFullName)
         {
             DashboardState.SetIsDrillDown(true);
             int userId = TeamMembers.FirstOrDefault(u => u.FullName.Equals(userFullName)).Id;
             string hasedUserId = ComputeSha256Hash(userId.ToString());
-            NavManager.NavigateTo($"/dashboard/{hasedUserId}");
+            await JsRuntime.InvokeVoidAsync("open", $"/dashboard/{hasedUserId}", "_blank");
+            // NavManager.NavigateTo($"/dashboard/{hasedUserId}");
         }
 
         protected override async Task UpdateDashboard()
