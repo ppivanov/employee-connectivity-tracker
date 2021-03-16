@@ -1,0 +1,19 @@
+@* Source: https://chrissainty.com/building-a-simple-tooltip-component-for-blazor-in-under-10-lines-of-code/ *@
+@* Accessed: Mar 15, 2021 *@
+
+<div class="tooltip-wrapper">
+    <span>@Text</span>
+    @if(ChildContent == null)
+    {
+        <i class="fas fa-info-circle"></i>
+    } 
+    else
+    {
+        @ChildContent
+    }
+</div>
+
+@code {
+    [Parameter] public RenderFragment ChildContent { get; set; }
+    [Parameter] public string Text { get; set; }
+}

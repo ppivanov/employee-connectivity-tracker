@@ -163,12 +163,15 @@
 .edit-notification-options-leader,
 .edit-notification-options-user {
 	width: 10em;
+	text-align: center;
+	font-size: 0.8em;
 }
 .edit-notification-options-leader {
 	background-color: green;
 }
 .edit-notification-options-leader:hover {
 	background-color: darkgreen;
+	cursor: pointer;
 }
 
 .users-to-notify {
