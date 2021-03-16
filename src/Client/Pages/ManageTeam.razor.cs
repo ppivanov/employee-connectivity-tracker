@@ -61,7 +61,7 @@ namespace EctBlazorApp.Client.Pages
                 return selectableMembers;
             }
         }
-        protected string FilterUsersInput {get; set;} = string.Empty;
+        protected string FilterUsersInput {get; private set;} = string.Empty;
         protected bool HasAccess { get; private set; } = false;
         protected bool HasTeamId => string.IsNullOrEmpty(HashedTeamId) == false;
         protected bool Initialized { get; private set; } = false;
@@ -70,17 +70,6 @@ namespace EctBlazorApp.Client.Pages
         protected string MarginInputStyle => marginInputError ? "border: 1px solid red" : string.Empty;
         protected string PointsInputStyle => pointsInputError ? "border: 1px solid red" : string.Empty;
         protected List<string> PromptUsersForNotification => TeamDetails.MemberNamesAndEmails;
-        protected string ServerMessageInlineStyle
-        {
-            get
-            {
-                var style = new StringBuilder("text-align: center;");
-                var textColor = ServerMessageIsError ? "color: red;" : "color: green;";
-                style.Append(textColor);
-
-                return style.ToString();
-            }
-        }
 
 
         public async Task AddUserToNotify()
@@ -176,6 +165,7 @@ namespace EctBlazorApp.Client.Pages
 
         protected void ResetTeamDetails()
         {
+            ResetErrorMessage();
             allAvailableLeaders = originalAvailableLeaders.ToList();
             TeamDetails.NewNotificationOptions = new NotificationOptionsResponse(TeamDetails.CurrentNotificationOptions);
             TeamDetails.MemberNamesAndEmails = originalMembers.ToList();

@@ -11,10 +11,9 @@
     <Authorized>
 
         <div class="dashboard">
-        @if(string.IsNullOrWhiteSpace(ServerMessage) == false){
-            <div class="operation-result">
-                <p style="color: red;">@ServerMessage</p>
-            </div>
+        @if(string.IsNullOrWhiteSpace(ServerMessage) == false)
+        {
+            <OperationResultMessage Message="@ServerMessage" />
         }
         else
         {

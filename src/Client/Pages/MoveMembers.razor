@@ -12,9 +12,7 @@
             <div class="move-members">
                 @if (string.IsNullOrEmpty(ServerMessage) == false)
                 {
-                    <div class="operation-result">
-                        <p style="@ServerMessageInlineStyle">@ServerMessage</p>
-                    </div>
+                    <OperationResultMessage Message="@ServerMessage" IsError="@ServerMessageIsError" />
                 }
                 <div class="team float-left">
                     <h2>Team one</h2>

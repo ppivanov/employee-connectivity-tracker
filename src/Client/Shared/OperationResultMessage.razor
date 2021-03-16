@@ -1,0 +1,13 @@
+<div class="operation-result">
+    <p style="@MessageStyle">@Message</p>
+</div>
+
+@code{
+    [Parameter]
+    public string Message { get; set; }
+
+    [Parameter]
+    public bool IsError { get; set; } = true;
+
+    private string MessageStyle => IsError ? "color: red;" : "color: green;";
+}

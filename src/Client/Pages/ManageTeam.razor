@@ -25,9 +25,7 @@
 
                     @if (string.IsNullOrEmpty(ServerMessage) == false)
                     {
-                        <div class="operation-result">
-                            <p style="@ServerMessageInlineStyle">@ServerMessage</p>
-                        </div>
+                        <OperationResultMessage Message="@ServerMessage" IsError="@ServerMessageIsError" />
                     }
 
                     <div class="left-half float-left">

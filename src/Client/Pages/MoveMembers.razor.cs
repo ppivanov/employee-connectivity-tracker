@@ -18,7 +18,6 @@ namespace EctBlazorApp.Client.Pages
         [Inject]
         protected IJSRuntime JsRuntime { get; set; }
 
-        private bool serverMessageIsError = false;
         private List<string> InitialLeftTeamRoster;
         private List<string> InitialRightTeamRoster;
 
@@ -33,21 +32,20 @@ namespace EctBlazorApp.Client.Pages
             }
         }
 
-        protected bool HasAccess { get; set; } = false;
+        protected bool HasAccess { get; private set; } = false;
 
-        protected IEnumerable<EctTeamRequestDetails> InAppTeams { get; set; }
+        protected IEnumerable<EctTeamRequestDetails> InAppTeams { get; private set; }
 
         protected EctTeamRequestDetails LeftTeam { get; set; }
         protected string LeftTeamSelection { get; set; }
 
-        protected bool MemberHasBeenMoved { get; set; } = false;
+        protected bool MemberHasBeenMoved { get; private set; } = false;
 
         protected EctTeamRequestDetails RightTeam { get; set; }
         protected string RightTeamSelection { get; set; }
 
-        protected string ServerMessage { get; set; }
-
-        protected string ServerMessageInlineStyle => serverMessageIsError ? "color:red;" : "color:green";
+        protected string ServerMessage { get; private set; }
+        protected bool ServerMessageIsError { get; private set; } = false;
 
         protected IEnumerable<EctTeamRequestDetails> SelectableTeamsLeft
         {
@@ -73,7 +71,7 @@ namespace EctBlazorApp.Client.Pages
         {
             if (toTeam == null)
             {
-                serverMessageIsError = true;
+                ServerMessageIsError = true;
                 ServerMessage = "Select the other team first.";
                 return;
             }
@@ -117,9 +115,9 @@ namespace EctBlazorApp.Client.Pages
 
             var teams = new List<EctTeamRequestDetails> { LeftTeam, RightTeam };
             var response = await ApiConn.SubmitMoveMemberTeams(teams);
-            serverMessageIsError = response.Item1 == false;
+            ServerMessageIsError = response.Item1 == false;
             ServerMessage = response.Item2;
-            if(serverMessageIsError == false)
+            if(ServerMessageIsError == false)
             {
                 InitialLeftTeamRoster = LeftTeam.MemberNamesAndEmails.ToList();
                 InitialRightTeamRoster = RightTeam.MemberNamesAndEmails.ToList();
@@ -155,14 +153,14 @@ namespace EctBlazorApp.Client.Pages
 
         private void ResetServerMessage()
         {
-            serverMessageIsError = false;
+            ServerMessageIsError = false;
             ServerMessage = string.Empty;
         }
         private bool IsMemberMoved()
         {
             if (LeftTeam == null || RightTeam == null || MemberHasBeenMoved == false)
             {
-                serverMessageIsError = true;
+                ServerMessageIsError = true;
                 ServerMessage = "No members have been moved.";
                 return false;
             }
@@ -173,7 +171,7 @@ namespace EctBlazorApp.Client.Pages
         {
             if(LeftTeam.MemberNamesAndEmails.Count < 1 || RightTeam.MemberNamesAndEmails.Count < 1)
             {
-                serverMessageIsError = true;
+                ServerMessageIsError = true;
                 ServerMessage = "Teams must have at least one member.";
                 return false;
             }

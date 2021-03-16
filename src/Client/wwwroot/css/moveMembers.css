@@ -64,9 +64,3 @@
 	border: rgb(2, 110, 2) solid 1px;
 	cursor: pointer;
 }
-
-.move-members .operation-result {
-	width: 20%;
-	margin: 4em auto 0 auto;
-	text-align: center;
-}

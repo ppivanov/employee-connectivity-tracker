@@ -119,6 +119,12 @@ body {
 	cursor: pointer;
 }
 
+.operation-result {
+	width: 20%;
+	margin: 4em auto 0 auto;
+	text-align: center;
+}
+
 /* Tooltip */
 /* Source: https://chrissainty.com/building-a-simple-tooltip-component-for-blazor-in-under-10-lines-of-code/ */
 /* Accessed: Mar 15, 2021 */
