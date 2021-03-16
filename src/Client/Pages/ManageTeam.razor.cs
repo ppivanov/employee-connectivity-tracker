@@ -56,7 +56,7 @@ namespace EctBlazorApp.Client.Pages
         {
             get
             {
-                var selectableMembers = allAvailableLeaders.Where(al => al.Contains(FilterUsersInput)).ToList();                                   // Copy the available set of members
+                var selectableMembers = allAvailableLeaders.ToList();                                   // Copy the available set of members
                 selectableMembers.Remove(TeamDetails.LeaderNameAndEmail);                                      // Remove the selected leader
                 return selectableMembers;
             }
@@ -215,6 +215,11 @@ namespace EctBlazorApp.Client.Pages
                 TeamDetails.CurrentNotificationOptions = new NotificationOptionsResponse(NewNotificationOptions);
             }
             IsSubmitting = false;
+        }
+
+        protected void UpdateFilterUsersInput(ChangeEventArgs args)
+        {
+            FilterUsersInput = args.Value.ToString();
         }
 
 

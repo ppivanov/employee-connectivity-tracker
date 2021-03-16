@@ -40,7 +40,7 @@
                             <label>Team lead</label>
                             <input id="createTeamLeader" list="leaders"
                                     @onchange="@((args) => SetLeaderNameEmail(args))"
-                                    placeholder="Full Name <email@example.com>" style="@LeaderInputStyle" disabled="@HasTeamId" />
+                                    style="@LeaderInputStyle" disabled="@HasTeamId" />
                             <datalist id="leaders">
                                 @foreach (var leader in AvailableLeaders)
                                 {
@@ -154,10 +154,10 @@
                             </tr>
                         </thead>
                         <i id="search-icon" class="fas fa-search"></i>
-                        <input @bind="FilterUsersInput" id="filter-users" 
-                            placeholder="Filter..." @onkeyup="StateHasChanged"/>
+                        <input id="filter-users" 
+                            placeholder="Filter..." @oninput="(args) => UpdateFilterUsersInput(args)" />
                         <tbody>
-                            @foreach (var availableMember in AvailableMembers)
+                            @foreach (var availableMember in this.AvailableMembers.Where(al => al.Contains(FilterUsersInput)))
                             {
                                 <tr>
                                     <td>
