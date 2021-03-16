@@ -26,6 +26,7 @@
 .back-to-team {
 	width: 10em;
 	height: 6em;
+	z-index: 1;
 }
 
 .back-to-team > button {
@@ -39,6 +40,7 @@
 
 .back-to-team > button:hover {
 	background-color: rgb(219, 219, 219);
+	cursor: pointer;
 }
 
 .login-logout-section {

@@ -4,13 +4,19 @@ using System.Threading.Tasks;
 
 namespace EctBlazorApp.Client.Shared
 {
-    public class CustomAuthState
+    public abstract class CustomState
+    {
+        public event Action OnChange;
+
+        protected void NotifyStateChanged() => OnChange?.Invoke();
+
+    }
+
+    public class CustomAuthState : CustomState
     {
         public bool IsInitialized { get; private set; } = false;
         public bool IsAdmin { get; private set; }
         public bool IsLeader { get; private set; }
-
-        public event Action OnChange;
 
         public void SetIsAdmin(bool isAdmin)
         {
@@ -39,7 +45,15 @@ namespace EctBlazorApp.Client.Shared
                 authState.SetIsInitialized(true);
             }
         }
+    }
 
-        private void NotifyStateChanged() => OnChange?.Invoke();
+    public class DashboardState : CustomState
+    {
+        public bool IsDrillDown { get; private set; } = false;
+        public void SetIsDrillDown(bool isDrillDown)
+        {
+            IsDrillDown = isDrillDown;
+            NotifyStateChanged();
+        }
     }
 }

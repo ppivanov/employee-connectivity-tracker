@@ -1,10 +1,18 @@
 ﻿@inject CustomAuthState AuthState
+@inject DashboardState DashboardState
+@inject NavigationManager NavManager
 
 @implements IDisposable 
 
 @inherits LayoutComponentBase
 
 <div class="header">
+    @if(DashboardState.IsDrillDown){
+        <div class="back-to-team">
+            <button type="button" @onclick="RedirectoToMyTeam"><i class="fas fa-angle-left"></i> Team</button>
+        </div>
+    }
+    
     <div class="header-logo center-flex">
         <a class="logo" href="">Connectivity Tracker</a><span id="page-title"></span>
     </div>
@@ -22,10 +30,17 @@
     protected override void OnInitialized()
     {
         AuthState.OnChange += StateHasChanged;
+        DashboardState.OnChange += StateHasChanged;
     }
 
     public void Dispose()
     {
         AuthState.OnChange -= StateHasChanged;
+    }
+
+    private void RedirectoToMyTeam()
+    {
+        DashboardState.SetIsDrillDown(false);
+        NavManager.NavigateTo("/my-team");
     }
 }

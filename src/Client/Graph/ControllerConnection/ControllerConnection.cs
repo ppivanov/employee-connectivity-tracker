@@ -64,7 +64,7 @@ namespace EctBlazorApp.Client.Graph
 
         public Task<DashboardResponse> FetchDashboardResponse(string queryString)
         {
-            return HttpGet<DashboardResponse>($"api/main/dashboard-stats{queryString}", new DashboardResponse());
+            return HttpGet<DashboardResponse>($"api/main/dashboard-stats{queryString}", null);
         }
 
         public Task<TeamDashboardResponse> FetchTeamDashboardResponse(string queryString)

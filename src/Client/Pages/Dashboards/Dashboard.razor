@@ -9,7 +9,15 @@
 
 <AuthorizeView>
     <Authorized>
+
         <div class="dashboard">
+        @if(string.IsNullOrWhiteSpace(ServerMessage) == false){
+            <div class="operation-result">
+                <p style="color: red;">@ServerMessage</p>
+            </div>
+        }
+        else
+        {
             <div class="top-row float-left">
                 <div class="date-range float-left">
                     <DateRangePicker @bind-StartDate="FromDate" @bind-EndDate="ToDate">
@@ -53,6 +61,7 @@
             <div class="events-chart-container float-left">
                 <div id="events-chart"></div>
             </div>
+        }
         </div>
     </Authorized>
 </AuthorizeView>

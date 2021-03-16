@@ -17,9 +17,9 @@ namespace EctBlazorApp.Client.Pages.Dashboards
         [Inject]
         protected CustomAuthState AuthState { get; set; }
         [Inject]
+        protected DashboardState DashboardState { get; set; }
+        [Inject]
         protected NavigationManager NavManager { get; set; }
-
-        protected List<EctUser> Administrators { get; set; }
         protected List<EctUser> TeamMembers { get; set; }
         protected NotificationOptionsResponse CurrentNotificationOptions { get; set; } = null;
         
@@ -29,19 +29,6 @@ namespace EctBlazorApp.Client.Pages.Dashboards
         protected bool IsSubmitting { get; set; } = false;
         protected string LeaderNameAndEmail { get; set; } = string.Empty;
         protected override int TotalEmailsCount => EmailsSent + EmailsReceived;
-
-        public MyTeamDashboardClass() { }
-
-        public MyTeamDashboardClass(                                                                // Used to initalize an instance of the class for unit tests
-            List<EctUser> administrators,
-            List<EctUser> teamMembers,
-            NotificationOptionsResponse currentNotificationOptions
-            )
-        {
-            Administrators = administrators;
-            this.TeamMembers = teamMembers;
-            this.CurrentNotificationOptions = currentNotificationOptions;
-        }
 
         public virtual async Task JsInterop(string function, string parameter = "")
         {
@@ -146,7 +133,6 @@ namespace EctBlazorApp.Client.Pages.Dashboards
             if (IsLeader)
             {
                 CurrentNotificationOptions = await ApiConn.FetchCurrentNotificationOptions();
-                Administrators = (await ApiConn.FetchAdminstrators()).ToList();
                 await FetchCommunicationPoints();
                 await UpdateDashboard();
             }
@@ -156,6 +142,7 @@ namespace EctBlazorApp.Client.Pages.Dashboards
 
         protected void RedirectToDasboard(string userFullName)
         {
+            DashboardState.SetIsDrillDown(true);
             int userId = TeamMembers.FirstOrDefault(u => u.FullName.Equals(userFullName)).Id;
             string hasedUserId = ComputeSha256Hash(userId.ToString());
             NavManager.NavigateTo($"/dashboard/{hasedUserId}");

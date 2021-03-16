@@ -20,6 +20,8 @@ namespace EctBlazorApp.Client.Pages.Dashboards
         [Inject]
         protected CustomAuthState AuthState { get; set; }
         [Inject]
+        protected DashboardState DashboardState { get; set; }
+        [Inject]
         protected AuthenticationStateProvider AuthenticationStateProvider { get; set; }
 
         private List<SentMail> sentMail;
@@ -30,6 +32,7 @@ namespace EctBlazorApp.Client.Pages.Dashboards
         protected int EmailsReceivedCount => receivedMail != null ? receivedMail.Count : 0;
         protected int EmailsSentCount => sentMail != null ? sentMail.Count : 0;
         protected override int TotalEmailsCount => EmailsSentCount + EmailsReceivedCount;
+        protected string ServerMessage { get; set; }
 
         protected override async Task FindCollaborators()
         {
@@ -93,9 +96,18 @@ namespace EctBlazorApp.Client.Pages.Dashboards
         protected override async Task UpdateDashboard()
         {
             string queryString = GetDateRangeQueryString(FromDate.Value, ToDate.Value);
-            string userIdQueryString = string.IsNullOrEmpty(HashedUserId) ? string.Empty : $"&UID={HashedUserId}";
-
+            string userIdQueryString = string.Empty;
+            if(string.IsNullOrEmpty(HashedUserId) == false)
+            {
+                DashboardState.SetIsDrillDown(true);
+                userIdQueryString = $"&UID={HashedUserId}";
+            }
             var response = await ApiConn.FetchDashboardResponse($"{queryString}{userIdQueryString}");
+            if (response == null) 
+            {
+                ServerMessage = "User not found";
+                return;
+            }
             await ExtractDataFromResponse(response);
             await FindCollaborators();
 
