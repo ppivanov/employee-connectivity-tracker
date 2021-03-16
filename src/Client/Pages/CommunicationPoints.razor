@@ -18,7 +18,7 @@
             }
             else
             {
-                <h3>Manage Communcation Mediums</h3>
+                <h2>Manage Communcation Mediums</h2>
                 @if (string.IsNullOrEmpty(ServerMessage) == false)
                 {
                     <p style="@ServerMessageInlineStyle">@ServerMessage</p>
@@ -39,25 +39,29 @@
                                 }
                                 @(medium.Points > 1 ? "points" : "point")
                             </p>
+                            @if (medium.Medium.Contains("Email") || medium.Medium.Contains("Meetings"))
+                            {
+                                <div class="comms-actions">
+                                    @if (PointsAndToggles[medium])
+                                    {
+                                        <button type="button" class="btn-check" title="Stop editting" @onclick="() => SavePoints(medium)"><i class="fas fa-check"></i></button>
+                                    }
+                                    else
+                                    {
+                                        <button type="button" class="btn-edit" title="Edit" @onclick="() => EditPoints(medium)"><i class="fas fa-edit"></i></button>
+                                    }
+                                    <button type="button" class="btn-erase" title="Clear" @onclick="() => ClearPoints(medium)"><i class="fas fa-eraser"></i></button>
+                                </div>
+                            }
                         </div>
-
-                        @if (medium.Medium.Contains("Email") || medium.Medium.Contains("Meetings"))
-                        {
-                            @if (PointsAndToggles[medium])
-                            {
-                                <button @onclick="() => SavePoints(medium)" type="button">Save</button>
-                            }
-                            else
-                            {
-                                <button @onclick="() => EditPoints(medium)" type="button">Edit</button>
-                            }
-                            <button @onclick="() => ClearPoints(medium)" type="button">Clear</button>
-                        }
-                        <hr />
                     }
-                    <p><b>Note</b>: You cannot assign more than @MaxPointsPerMedium to a medium.</p>
-                    <p>Total points: @TotalPoints</p>
-                    <button type="submit" disabled="@IsSubmitting">Submit</button>
+                    <p class="total-points">Total points: @TotalPoints</p>
+                    <div class="note">
+                        <p>
+                            <b>Note</b>: You cannot assign more than 100 to a medium.
+                        </p>
+                    </div>
+                    <button type="submit" class="btn-submit-form" disabled="@IsSubmitting">Submit</button>
                 </EditForm>
             }
         </div>
