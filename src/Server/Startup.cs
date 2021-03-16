@@ -23,27 +23,30 @@ namespace EctBlazorApp.Server
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer(options =>
-            {
-                options.Authority = Configuration["JwtAuthority"];
-                options.Audience = Configuration["JwtAudience"];
-            });
+            services.AddCors(
+                options =>
+                {
+                    options.AddDefaultPolicy(
+                        cors =>
+                        {
+                            cors.WithOrigins("*")
+                                .AllowAnyHeader()
+                                .AllowAnyMethod();
+                        });
+                });
 
-            services.AddCors(options =>
-            {
-                options.AddPolicy("AllowEveryone",
-                    builder =>
+            services.AddAuthentication(
+                options =>
+                {
+                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer(
+                    options =>
                     {
-                        builder.WithOrigins("*")
-                                            .AllowAnyHeader()
-                                            .AllowAnyMethod();
+                        options.Authority = Configuration["JwtAuthority"];
+                        options.Audience = Configuration["JwtAudience"];
                     });
-            });
 
             services.AddDbContext<EctDbContext>(options =>
             {
