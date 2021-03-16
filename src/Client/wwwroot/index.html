@@ -13,12 +13,20 @@
     <link href="css/moveMembers.css" rel="stylesheet" />
     <link href="css/navbar.css" rel="stylesheet" />
     <link href="css/sideMenu.css" rel="stylesheet" />
+    <link href="css/loader.css" rel="stylesheet" />
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </head>
 
 <body>
-    <app>Loading...</app>
+    <app>
+        <div class="lds-ellipsis">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </app>
 
     <script src="_content/Microsoft.Authentication.WebAssembly.Msal/AuthenticationService.js"></script>
     <script src="_framework/blazor.webassembly.js"></script>
