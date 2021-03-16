@@ -16,15 +16,14 @@
 }
 
 .create-team > form > .left-half {
-	width: 50%;
+	width: 35%;
 }
 
 .create-team-input-pair {
-	width: 60%;
-	margin: 0 auto 0 auto;
+	width: 65%;
+	margin-left: 6em;
 	padding: 1em;
 }
-
 .create-team .selected-members {
 	width: 50%;
 }
@@ -35,43 +34,7 @@
 	text-align: center;
 }
 
-/* Code source: (dcode) https://dev.to/dcodeyt/creating-beautiful-html-tables-with-css-428l */
-.create-team .selected-members {
-	border-collapse: collapse;
-	margin: 2em 0;
-	font-family: sans-serif;
-	min-width: 400px;
-	box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
-}
-
-.create-team .selected-members thead tr {
-	background-color: rgb(0, 123, 206);
-	color: rgb(255, 255, 255);
-	text-align: left;
-}
-
-.create-team .selected-members th,
-.create-team .selected-members td {
-	padding: 1em 1.3em;
-}
-
-.create-team .selected-members tbody tr {
-	border-bottom: thin solid rgb(221, 221, 221);
-}
-
-.create-team .selected-members tbody tr:nth-of-type(even) {
-	background-color: rgb(243, 243, 243);
-}
-
-.create-team .selected-members tbody tr:last-of-type {
-	border-bottom: thin solid rgb(0, 123, 206);
-}
-
-.create-team .selected-members tbody tr:hover {
-	color: rgb(138, 138, 138);
-}
 /* --- */
-
 /* Code source: (Coyier, Chris) https://codepen.io/chriscoyier/pen/zYYZaGP */
 /* class applies to select element itself, not a wrapper element */
 .create-team-input-pair > input,
@@ -127,22 +90,68 @@
 }
 /* --- */
 
-.select-member {
-	display: block;
-	width: 10em;
-	min-width: 50px;
-	margin: 2em auto 0 auto;
-	padding: 1em;
-	border-radius: 15px;
+/* member selection */
+
+.create-team .selected-members,
+.create-team .available-users {
+	width: 30%;
+	display: inline-block;
+	max-height: 30em;
+	overflow: hidden;
+	border-bottom: 1px solid lightgray;
 }
 
-.points-threshold .points-threshold-leader,
-.points-threshold .points-threshold-user {
-	width: 100px;
+.create-team .selected-members tr,
+.create-team .selected-members td,
+.create-team .available-users tr,
+.create-team .available-users td {
+	display: inline-block;
+	width: 100%;
 }
-.points-threshold .points-threshold-leader {
+
+.create-team .selected-members tr,
+.create-team .available-users tr {
+	margin-top: 1em;
+}
+
+.create-team .selected-members td > button,
+.create-team .available-users td > button {
+	margin-top: -0.5em;
+	width: 5em;
+}
+.create-team .available-users td > button {
+	margin-right: 2em;
+}
+
+.create-team .available-users .btn-select {
 	background-color: green;
+	border: rgb(0, 54, 0) solid 1px;
+	width: 10%;
+	padding: 0.7em;
+	font-size: 0.8em;
+	color: white;
+	border-radius: 10px;
 }
+
+.create-team .available-users .btn-select:hover {
+	background-color: rgb(0, 179, 0);
+	border: rgb(2, 110, 2) solid 1px;
+}
+
+.create-team .selected-members thead,
+.create-team .available-users thead {
+	display: block;
+	width: 80%;
+	text-align: center;
+	border-bottom: 1px solid black;
+	padding: 1em;
+}
+
+.create-team .available-users:hover {
+	overflow-y: scroll;
+}
+
+/* END of member selection */
 
 .notification-options .notification-pair {
 	display: block;
@@ -171,7 +180,6 @@
 }
 .edit-notification-options-leader:hover {
 	background-color: darkgreen;
-	cursor: pointer;
 }
 
 .users-to-notify {

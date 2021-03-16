@@ -41,10 +41,10 @@
                                     </td>
                                     <td>
                                         <button type="button" class="btn-rm-member-size btn-disabled" disabled="true">
-                                            &times;
+                                            <i class="fas fa-times"></i>
                                         </button>
                                         <button type="button" class="btn-move-member-size btn-disabled" disabled="true">
-                                            &rarr;
+                                            <i class="fas fa-angle-double-right"></i>
                                         </button>
                                     </td>
                                 </tr>
@@ -56,10 +56,10 @@
                                         </td>
                                         <td>
                                             <button type="button" class="btn-rm-member-size btn-rm-member-color" @onclick="() => RemoveMember(LeftTeam, member)">
-                                                &times;
+                                                <i class="fas fa-times"></i>
                                             </button>
                                             <button type="button" class="btn-move-member-size btn-move-member-color" @onclick="() => MoveMember(LeftTeam, RightTeam, member)">
-                                                &rarr;
+                                                <i class="fas fa-angle-double-right"></i>
                                             </button>
                                         </td>
                                     </tr>
@@ -88,10 +88,10 @@
                                 <tr>
                                     <td>
                                         <button type="button" class="btn-move-member-size btn-disabled" disabled="true">
-                                            &larr;
+                                            <i class="fas fa-angle-double-left"></i>
                                         </button>
                                         <button type="button" class="btn-rm-member-size btn-disabled" disabled="true">
-                                            &times;
+                                            <i class="fas fa-times"></i>
                                         </button>
                                     </td>
                                     <td>
@@ -102,11 +102,11 @@
                                 {
                                     <tr>
                                         <td>
-                                            <button type="button" class="btn-move-member-size" @onclick="() => MoveMember(RightTeam, LeftTeam, member)">
-                                                &larr;
+                                            <button type="button" class="btn-move-member-size btn-move-member-color" @onclick="() => MoveMember(RightTeam, LeftTeam, member)">
+                                                <i class="fas fa-angle-double-left"></i>
                                             </button>
-                                            <button type="button" class="btn-rm-member-size" @onclick="() => RemoveMember(RightTeam, member)">
-                                                &times;
+                                            <button type="button" class="btn-rm-member-size btn-rm-member-color" @onclick="() => RemoveMember(RightTeam, member)">
+                                                <i class="fas fa-times"></i>
                                             </button>
                                         </td>
                                         <td>

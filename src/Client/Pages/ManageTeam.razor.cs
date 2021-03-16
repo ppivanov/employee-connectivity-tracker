@@ -40,49 +40,34 @@ namespace EctBlazorApp.Client.Pages
         public string UserToNotify_Email { get; set; } = string.Empty;
         public string UserToNotify_Name { get; set; } = string.Empty;
 
-        private HashSet<string> allAvailableLeaders;
+        private List<string> allAvailableLeaders;
         private bool leaderInputError = false;
         private bool marginInputError = false;
-        private bool memberInputError = false;
-        private HashSet<string> membersFromApi;
+        private List<string> membersFromApi;
         private List<string> originalMembers;
+        private List<string> originalAvailableLeaders;
         private bool pointsInputError = false;
 
         protected string AddNotifyUserInputStyle 
         {
             get => AddNotifyUserInputError ? "border: 1px solid red" : string.Empty; 
         }
-        protected HashSet<string> AvailableLeaders
+        protected List<string> AvailableLeaders => allAvailableLeaders.ToList();
+        protected List<string> AvailableMembers
         {
             get
             {
-                if (string.IsNullOrWhiteSpace(CurrentMemberSelection)
-                    || IsStringInMemberFormat(CurrentMemberSelection) == false)
-                    return allAvailableLeaders;
-
-                string selectedEmail = GetEmailFromFormattedString(CurrentMemberSelection);
-                var selectableLeaders = allAvailableLeaders.Where(a =>
-                    a.Contains(selectedEmail) == false).ToHashSet();                                    // Copy the rest of the available leaders excluding the current member selection
-                return selectableLeaders;
-            }
-        }
-        protected HashSet<string> AvailableMembers
-        {
-            get
-            {
-                var selectableMembers = allAvailableLeaders.ToHashSet();                                   // Copy the available set of members
+                var selectableMembers = allAvailableLeaders.ToList();                                   // Copy the available set of members
                 selectableMembers.Remove(TeamDetails.LeaderNameAndEmail);                                      // Remove the selected leader
                 return selectableMembers;
             }
         }
-        protected string CurrentMemberSelection { get; private set; } = string.Empty;
         protected bool HasAccess { get; private set; } = false;
         protected bool HasTeamId => string.IsNullOrEmpty(HashedTeamId) == false;
         protected bool Initialized { get; private set; } = false;
         protected bool IsSubmitting { get; private set; } = false;
         protected string LeaderInputStyle => leaderInputError ? "border: 1px solid red" : string.Empty;     
         protected string MarginInputStyle => marginInputError ? "border: 1px solid red" : string.Empty;
-        protected string MemberInputStyle => memberInputError ? "border: 1px solid red" : string.Empty;    
         protected string PointsInputStyle => pointsInputError ? "border: 1px solid red" : string.Empty;
         protected List<string> PromptUsersForNotification => TeamDetails.MemberNamesAndEmails;
         protected string ServerMessageInlineStyle
@@ -128,12 +113,6 @@ namespace EctBlazorApp.Client.Pages
             TeamDetails.LeaderNameAndEmail = args.Value.ToString();
         }
 
-        public void SetMemberNameEmail(ChangeEventArgs args)
-        {
-            ResetErrorMessage();
-            CurrentMemberSelection = args.Value.ToString();
-        }
-
         public async Task SetUserToNotifyEmail(ChangeEventArgs args)
         {
             UserToNotify_Email = args.Value.ToString();
@@ -163,28 +142,20 @@ namespace EctBlazorApp.Client.Pages
         }
         
 
-        protected async Task AddSelectedMember()
+        protected async Task AddSelectedMember(string memberToAdd)
         {
-            if (IsCurrentMemberSelectionEmpty()
-                || IsCurrentMemberSelectionBadlyFormatted(out string selectedEmail)
-                || IsCurrentMemberSelectionAlreadyLeader(selectedEmail)
-                || IsCurrentMemberSelectionAlreadySelected(selectedEmail)
-                || IsCurrentMemberSelectionIneligible(selectedEmail))
-                return;
-
-            TeamDetails.MemberNamesAndEmails.Add(CurrentMemberSelection);
-            allAvailableLeaders = allAvailableLeaders.Where(a => a.Contains(selectedEmail) == false).ToHashSet();
-            CurrentMemberSelection = string.Empty;
+            TeamDetails.MemberNamesAndEmails.Add(memberToAdd);
+            allAvailableLeaders = allAvailableLeaders.Where(a => a.Contains(memberToAdd) == false).ToList();
 
             await InvokeAsync(StateHasChanged);
-            await JsInterop("resetCreateTeamMember");
         }
 
         protected async Task GetEligibleUsers()
         {
             var response = await ApiConn.GetUsersEligibleForMembers();
-            membersFromApi = response.ToHashSet();
-            allAvailableLeaders = membersFromApi.ToHashSet();                                       // Copy the set not the reference
+            membersFromApi = response.ToList();
+            allAvailableLeaders = membersFromApi.ToList();                                       // Copy the set not the reference
+            originalAvailableLeaders = allAvailableLeaders.ToList();
         }
 
         protected override async Task OnInitializedAsync()
@@ -200,11 +171,13 @@ namespace EctBlazorApp.Client.Pages
         protected async Task RemoveFromSelected(string member)
         {
             TeamDetails.MemberNamesAndEmails.Remove(member);
-            AvailableLeaders.Add(member);
+            allAvailableLeaders.Add(member);
             await InvokeAsync(StateHasChanged);
         }
 
-        protected void ResetTeamDetails() {
+        protected void ResetTeamDetails()
+        {
+            allAvailableLeaders = originalAvailableLeaders.ToList();
             TeamDetails.NewNotificationOptions = new NotificationOptionsResponse(TeamDetails.CurrentNotificationOptions);
             TeamDetails.MemberNamesAndEmails = originalMembers.ToList();
         }
@@ -230,7 +203,6 @@ namespace EctBlazorApp.Client.Pages
             ServerMessageIsError = response.Item1 == false;                                     // is StatusCode of response successful?
             ServerMessage = response.Item2;
             leaderInputError = false;
-            memberInputError = false;
 
             if (isNewTeam && ServerMessageIsError == false)
             {
@@ -239,6 +211,7 @@ namespace EctBlazorApp.Client.Pages
             } 
             else 
             {
+                originalAvailableLeaders = allAvailableLeaders.ToList();
                 originalMembers = TeamDetails.MemberNamesAndEmails.ToList();
                 TeamDetails.CurrentNotificationOptions = new NotificationOptionsResponse(NewNotificationOptions);
             }
@@ -286,7 +259,6 @@ namespace EctBlazorApp.Client.Pages
         private void ResetErrorMessage()
         {
             leaderInputError = false;
-            memberInputError = false;
             pointsInputError = false;
             marginInputError = false;
             AddNotifyUserInputError = false;
@@ -304,7 +276,6 @@ namespace EctBlazorApp.Client.Pages
             if (Initialized)
             {
                 await JsInterop("resetCreateTeamLeader");
-                await JsInterop("resetCreateTeamMember");
             }
         }
         private async Task Initialize()
@@ -354,17 +325,6 @@ namespace EctBlazorApp.Client.Pages
             }
             Initialized = true;
         }
-        private bool IsCurrentMemberSelectionEmpty()
-        {
-            if (string.IsNullOrWhiteSpace(CurrentMemberSelection))
-            {
-                memberInputError = true;
-                ServerMessageIsError = true;
-                ServerMessage = "Please, select a member first.";
-                return true;
-            }
-            return false;
-        }
         private bool IsCurrentLeaderSelectionBadlyFormatted(out string leaderEmail)
         {
             bool result = IsInputBadlyFormatted(TeamDetails.LeaderNameAndEmail, out leaderEmail);
@@ -373,39 +333,6 @@ namespace EctBlazorApp.Client.Pages
 
             return result;
         }
-        private bool IsCurrentMemberSelectionBadlyFormatted(out string selectedEmail)
-        {
-            bool result = IsInputBadlyFormatted(CurrentMemberSelection, out selectedEmail);
-            if(result)
-                memberInputError = true;
-            
-            return result;
-        }
-        private bool IsCurrentMemberSelectionAlreadyLeader(string selectedEmail)
-        {
-            if (string.IsNullOrWhiteSpace(TeamDetails.LeaderNameAndEmail))
-                return false;
-
-            if (TeamDetails.LeaderNameAndEmail.Contains(selectedEmail))
-            {
-                memberInputError = true;
-                ServerMessageIsError = true;
-                ServerMessage = "User already selected as team lead.";
-                return true;
-            }
-            return false;
-        }
-        private bool IsCurrentMemberSelectionAlreadySelected(string selectedEmail)
-        {
-            if (TeamDetails.MemberEmails.Contains(selectedEmail))
-            {
-                memberInputError = true;
-                ServerMessageIsError = true;
-                ServerMessage = "This user has already beeen selected.";
-                return true;
-            }
-            return false;
-        }
         private bool IsCurrentLeaderSelectionIneligible(string selectedEmail)
         {
             if (HasTeamId) return false;
@@ -413,14 +340,6 @@ namespace EctBlazorApp.Client.Pages
             bool result = IsEmailIneligibleForSelection(selectedEmail, allAvailableLeaders);
             if (result)
                 leaderInputError = true;
-
-            return result;
-        }
-        private bool IsCurrentMemberSelectionIneligible(string selectedEmail)
-        {
-            bool result = IsEmailIneligibleForSelection(selectedEmail, AvailableMembers);
-            if(result)
-                memberInputError = true;
 
             return result;
         }

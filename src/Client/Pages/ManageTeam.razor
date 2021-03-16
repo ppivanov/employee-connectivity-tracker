@@ -48,19 +48,6 @@
                                 }
                             </datalist>
                         </div>
-                        <div class="create-team-input-pair">
-                            <label>Member selection</label>
-                            <input id="createTeamMember" list="members"
-                                    @onchange="@((args) => SetMemberNameEmail(args))"
-                                    placeholder="Full Name <email@example.com>" style="@MemberInputStyle" />
-                            <datalist id="members">
-                                @foreach (var member in AvailableMembers)
-                                {
-                                    <option value="@member" />
-                                }
-                            </datalist>
-                            <button type="button" @onclick="() => AddSelectedMember()" disabled=@IsSubmitting class="select-member">Add member</button>
-                        </div>
                         @if (HasTeamId)
                         {
                         <div class="notification-options">
@@ -127,7 +114,7 @@
                                             {
                                                 <button type="button" class="btn-deselect float-right edit-notification-options-user"
                                                         @onclick="() => RemoveUserToNotify(nameAndEmail)">
-                                                    Remove
+                                                    <i class="fas fa-user-times"></i>
                                                 </button>
                                             }
                                         </td>
@@ -146,16 +133,36 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var member in TeamDetails.MemberNamesAndEmails)
+                            @foreach (var selectedMember in TeamDetails.MemberNamesAndEmails)
                             {
                                 <tr>
                                     <td>
-                                        @member
-                                        <button type="button" class="btn-deselect float-right" @onclick="() => RemoveFromSelected(member)">Remove</button>
+                                        @selectedMember
+                                        <button type="button" class="btn-deselect float-right" @onclick="() => RemoveFromSelected(selectedMember)">
+                                            <i class="fas fa-user-times"></i></button>
                                     </td>
                                 </tr>
                             }
                         </tbody>
+                    </table>
+                    <table class="available-users float-right">
+                        <thead class="float-right">
+                            <tr>
+                                <td>
+                                    Available for selection
+                                </td>
+                            </tr>
+                        </thead>
+                            @foreach (var availableMember in AvailableMembers)
+                            {
+                                <tr>
+                                    <td>
+                                        <button type="button" class="btn-select float-left" @onclick="() => AddSelectedMember(availableMember)">
+                                            <i class="fas fa-angle-double-left"></i></button>
+                                        @availableMember
+                                    </td>
+                                </tr>
+                            }
                     </table>
 
                     <button type="submit" class="btn-submit-form">Submit</button>
