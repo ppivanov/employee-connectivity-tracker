@@ -1,6 +1,153 @@
+@page "/view-teams"
 @inherits ViewTeamsClass
 
-<h2>View teams</h2>
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+
+<AuthorizeView>
+    <Authorized>
+
+        @if(AuthState.IsAdmin == false)
+        {
+            <NoAccess />
+        }
+        else
+        {
+            <div class="view-teams">
+                <div class="teams-list">
+                    <table>
+                        <thead>
+                            <tr>
+                                <td>
+                                    Teams
+                                </td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="filter-teams">
+                                <td>
+                                    <i id="search-icon" class="fas fa-search"></i>
+                                    <input type="text" id="filter-users">
+                                </td>
+                            </tr>
+                            <tr class="team-summary">
+                                <td>
+                                    <span class="team-name">
+                                        Team 1
+                                    </span>
+                                    <span class="member-count">
+                                        2 members
+                                    </span>
+                                    <span class="team-lead">
+                                        Example User example@email.com
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="selected-team">
+                    <h2>Team 1</h2>
+                    <span class="team-lead">
+                        <h3>Leader:</h3>
+                        <p>Example User example@email.com</p>
+                    </span>
+                    <div class="left-half">
+                        <h3>Members:</h3>
+                        <div class="notification-options">
+                            <h3>Notification options</h3>
+
+                            <p>Points threshold: 1</p>
+                            <p>Margin for notifications: 10%</p>
+                            <p>Notified individuals:</p>
+                            <table>
+                                <tbody>
+                                    <tr class="notified">
+                                        <td>User User user@ect.ie</td>
+                                    </tr>
+                                    <tr class="notified">
+                                        <td>User User user@ect.ie</td>
+                                    </tr>
+                                    <tr class="notified">
+                                        <td>User User user@ect.ie</td>
+                                    </tr>
+                                    <tr class="notified">
+                                        <td>User User user@ect.ie</td>
+                                    </tr>
+                                    <tr class="notified">
+                                        <td>User User user@ect.ie</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="right-half">
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td>Member Member member.member@ect.ie <button type="button"
+                                            class="btn-deselect float-right" title="Remove user"><i
+                                                class="fas fa-user-times"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td>Member Member member.member@ect.ie <button type="button"
+                                            class="btn-deselect float-right" title="Remove user"><i
+                                                class="fas fa-user-times"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td>Member Member member.member@ect.ie <button type="button"
+                                            class="btn-deselect float-right" title="Remove user"><i
+                                                class="fas fa-user-times"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td>Member Member member.member@ect.ie <button type="button"
+                                            class="btn-deselect float-right" title="Remove user"><i
+                                                class="fas fa-user-times"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td>Member Member member.member@ect.ie <button type="button"
+                                            class="btn-deselect float-right" title="Remove user"><i
+                                                class="fas fa-user-times"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td>Member Member member.member@ect.ie <button type="button"
+                                            class="btn-deselect float-right" title="Remove user"><i
+                                                class="fas fa-user-times"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td>Member Member member.member@ect.ie <button type="button"
+                                            class="btn-deselect float-right" title="Remove user"><i
+                                                class="fas fa-user-times"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td>Member Member member.member@ect.ie <button type="button"
+                                            class="btn-deselect float-right" title="Remove user"><i
+                                                class="fas fa-user-times"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td>Member Member member.member@ect.ie <button type="button"
+                                            class="btn-deselect float-right" title="Remove user"><i
+                                                class="fas fa-user-times"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td>Member Member member.member@ect.ie <button type="button"
+                                            class="btn-deselect float-right" title="Remove user"><i
+                                                class="fas fa-user-times"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td>Member Member member.member@ect.ie <button type="button"
+                                            class="btn-deselect float-right" title="Remove user"><i
+                                                class="fas fa-user-times"></i></button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <button class="delete-team btn-reset-form" title="Delete team"><i class="fas fa-trash-alt"></i></button>
+                </div>
+            </div>
+        }
+    </Authorized>
+</AuthorizeView>
 
 @code {
 

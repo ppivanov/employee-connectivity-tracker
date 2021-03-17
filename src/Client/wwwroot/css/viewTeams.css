@@ -1,0 +1,225 @@
+.view-teams {
+	width: 100%;
+	height: 85%;
+}
+
+.view-teams .teams-list {
+	float: left;
+	width: 20%;
+	height: 100%;
+}
+
+.view-teams .teams-list table {
+	width: 70%;
+	height: 100%;
+	margin: auto;
+}
+
+.view-teams .teams-list table > thead {
+	display: block;
+	width: 100%;
+	height: 5%;
+	margin-top: 5%;
+	background-color: lightgray;
+	border-radius: 10px 10px 0 0;
+	font-size: 1.1em;
+}
+.view-teams .teams-list table > thead > tr,
+.view-teams .teams-list table > thead > tr > td {
+	display: block;
+	width: 100%;
+	height: 100%;
+	text-align: center;
+}
+.view-teams .teams-list table > thead > tr > td {
+	padding-top: 0.6em;
+}
+.view-teams .teams-list table > tbody {
+	display: block;
+	width: 100%;
+	min-height: 50em;
+	max-height: 50em;
+	border: 1px solid lightgray;
+	border-top: none;
+	overflow: hidden;
+}
+.view-teams .teams-list table > tbody:hover {
+	overflow-y: scroll;
+}
+
+.view-teams .filter-teams > td {
+	display: block;
+	width: 100%;
+}
+.view-teams .filter-teams {
+	display: block;
+	width: 90%;
+	height: 4em;
+	margin: 0.4em auto 0 auto;
+	padding: 0.5em;
+	border-bottom: 1px solid gray;
+}
+
+.view-teams #search-icon {
+	position: absolute;
+	padding-left: 1.5em;
+	padding-top: 0.8em;
+}
+
+.view-teams #filter-users {
+	display: block;
+	width: 90%;
+	height: 3em;
+	padding: 10px;
+	margin-left: auto;
+	margin-right: auto;
+	text-align: center;
+	border: 1px solid gray;
+}
+
+.view-teams .teams-list table > tbody > .team-summary {
+	display: block;
+	width: 90%;
+	height: 4em;
+	margin: 0.4em auto 0 auto;
+	padding: 0.5em;
+	border-bottom: 1px solid gray;
+}
+
+.view-teams .teams-list table > tbody > .team-summary:hover {
+	background-color: lightgray;
+	cursor: pointer;
+	border-radius: 7px 7px 0 0;
+}
+
+.view-teams .teams-list table > tbody > .team-summary .team-name {
+	float: left;
+	width: 70%;
+	font-size: 1.1em;
+}
+.view-teams .teams-list table > tbody > .team-summary .member-count {
+	float: right;
+	width: 30%;
+	font-size: 0.8em;
+}
+
+.view-teams .teams-list table > tbody > .team-summary .team-lead {
+	float: left;
+	font-size: 0.8em;
+	width: 100%;
+}
+
+.view-teams .selected-team {
+	display: block;
+	float: left;
+	width: 80%;
+	height: 100%;
+	padding: 5em;
+	border: 1px solid rgb(192, 192, 192);
+	border-radius: 5px;
+}
+.view-teams .selected-team > h2 {
+	display: block;
+	width: 100%;
+	text-align: center;
+}
+
+.view-teams .selected-team > .team-lead {
+	display: block;
+	width: 100%;
+	padding: 2em;
+}
+
+.view-teams .selected-team > .team-lead > h3 {
+	float: left;
+	width: 40.5%;
+	padding-right: 1em;
+	text-align: right;
+}
+
+.view-teams .selected-team > .team-lead > p {
+	float: right;
+	width: 59%;
+	font-size: 1.1em;
+	margin-top: 0em;
+	padding-left: 1em;
+	text-align: left;
+}
+
+.view-teams .selected-team > .left-half {
+	display: block;
+	float: left;
+	margin-left: 0;
+	width: 40%;
+	height: 80%;
+	margin-top: 3em;
+}
+
+.view-teams .selected-team > .left-half > h3 {
+	display: block;
+	width: 100%;
+	text-align: right;
+}
+
+.view-teams .selected-team > .left-half > .notification-options {
+	padding: 5%;
+	width: 70%;
+	margin: 3em auto 3em auto;
+}
+
+.view-teams .selected-team > .left-half > .notification-options > h3 {
+	text-align: center;
+	padding: 1em;
+	border-bottom: 1px solid lightgray;
+}
+
+.view-teams .selected-team > .left-half > .notification-options > p {
+	padding: 0.5em;
+}
+.view-teams .selected-team > .left-half > .notification-options > table {
+	margin-left: 20%;
+	width: 80%;
+}
+.view-teams .selected-team > .left-half > .notification-options .notified {
+	display: block;
+	padding: 0.5em;
+}
+
+.view-teams .selected-team > .right-half {
+	display: block;
+	float: left;
+	width: 60%;
+	height: 80%;
+	margin-top: 3em;
+	padding: 0 3em;
+}
+.view-teams .selected-team > .right-half > table {
+	display: block;
+	width: 100%;
+}
+.view-teams .selected-team > .right-half > table > tbody {
+	display: block;
+	width: 100%;
+}
+.view-teams .selected-team > .right-half > table tr {
+	display: block;
+	width: 100%;
+}
+.view-teams .selected-team > .right-half > table td {
+	display: block;
+	padding: 1.3em;
+	width: 60%;
+	border-bottom: 1px solid lightgray;
+	border-radius: 7px 7px 0 0;
+}
+.view-teams .selected-team > .right-half > table td:hover {
+	background-color: lightgray;
+}
+.view-teams .selected-team > .right-half > table td > .btn-deselect {
+	margin-top: -0.5em;
+}
+
+.view-teams .selected-team > .delete-team {
+	position: relative;
+	margin-left: 0;
+}

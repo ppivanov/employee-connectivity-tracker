@@ -1,6 +1,9 @@
 ﻿@page "/move-members"
 @inherits MoveMembersClass
 
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+
 <AuthorizeView>
     <Authorized>
         @if (HasAccess == false)
@@ -36,10 +39,10 @@
                                         @LeftTeam.LeaderNameAndEmail
                                     </td>
                                     <td>
-                                        <button type="button" class="btn-rm-member-size btn-disabled" disabled="true">
+                                        <button type="button" class="btn-rm-member-size btn-disabled" disabled="true" title="Remove">
                                             <i class="fas fa-user-times"></i>
                                         </button>
-                                        <button type="button" class="btn-move-member-size btn-disabled" disabled="true">
+                                        <button type="button" class="btn-move-member-size btn-disabled" disabled="true" title="Move">
                                             <i class="fas fa-angle-double-right"></i>
                                         </button>
                                     </td>
@@ -51,10 +54,10 @@
                                             @member
                                         </td>
                                         <td>
-                                            <button type="button" class="btn-rm-member-size btn-rm-member-color" @onclick="() => RemoveMember(LeftTeam, member)">
+                                            <button type="button" class="btn-rm-member-size btn-rm-member-color" @onclick="() => RemoveMember(LeftTeam, member)" title="Remove">
                                                 <i class="fas fa-user-times"></i>
                                             </button>
-                                            <button type="button" class="btn-move-member-size btn-move-member-color" @onclick="() => MoveMember(LeftTeam, RightTeam, member)">
+                                            <button type="button" class="btn-move-member-size btn-move-member-color" @onclick="() => MoveMember(LeftTeam, RightTeam, member)" title="Move">
                                                 <i class="fas fa-angle-double-right"></i>
                                             </button>
                                         </td>
@@ -83,10 +86,10 @@
                             {
                                 <tr>
                                     <td>
-                                        <button type="button" class="btn-move-member-size btn-disabled" disabled="true">
+                                        <button type="button" class="btn-move-member-size btn-disabled" disabled="true" title="Move">
                                             <i class="fas fa-angle-double-left"></i>
                                         </button>
-                                        <button type="button" class="btn-rm-member-size btn-disabled" disabled="true">
+                                        <button type="button" class="btn-rm-member-size btn-disabled" disabled="true" title="Remove">
                                             <i class="fas fa-user-times"></i>
                                         </button>
                                     </td>
@@ -98,10 +101,10 @@
                                 {
                                     <tr>
                                         <td>
-                                            <button type="button" class="btn-move-member-size btn-move-member-color" @onclick="() => MoveMember(RightTeam, LeftTeam, member)">
+                                            <button type="button" class="btn-move-member-size btn-move-member-color" @onclick="() => MoveMember(RightTeam, LeftTeam, member)" title="Move">
                                                 <i class="fas fa-angle-double-left"></i>
                                             </button>
-                                            <button type="button" class="btn-rm-member-size btn-rm-member-color" @onclick="() => RemoveMember(RightTeam, member)">
+                                            <button type="button" class="btn-rm-member-size btn-rm-member-color" @onclick="() => RemoveMember(RightTeam, member)" title="Remove">
                                                 <i class="fas fa-user-times"></i>
                                             </button>
                                         </td>

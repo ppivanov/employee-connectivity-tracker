@@ -3,7 +3,6 @@
 @inherits ManageTeamClass
 
 @using Microsoft.AspNetCore.Authorization
-
 @attribute [Authorize]
 
 <AuthorizeView>
@@ -111,7 +110,7 @@
                                             else
                                             {
                                                 <button type="button" class="btn-deselect float-right edit-notification-options-user"
-                                                        @onclick="() => RemoveUserToNotify(nameAndEmail)">
+                                                        @onclick="() => RemoveUserToNotify(nameAndEmail)" title="Remove">
                                                     <i class="fas fa-user-times"></i>
                                                 </button>
                                             }
@@ -136,7 +135,7 @@
                                 <tr>
                                     <td>
                                         @selectedMember
-                                        <button type="button" class="btn-deselect float-right" @onclick="() => RemoveFromSelected(selectedMember)">
+                                        <button type="button" class="btn-deselect float-right" @onclick="() => RemoveFromSelected(selectedMember)" title="Remove">
                                             <i class="fas fa-user-times"></i></button>
                                     </td>
                                 </tr>
@@ -159,7 +158,7 @@
                             {
                                 <tr>
                                     <td>
-                                        <button type="button" class="btn-select float-left" @onclick="() => AddSelectedMember(availableMember)">
+                                        <button type="button" class="btn-select float-left" @onclick="() => AddSelectedMember(availableMember)" title="Add as member">
                                             <i class="fas fa-angle-double-left"></i></button>
                                         @availableMember
                                     </td>

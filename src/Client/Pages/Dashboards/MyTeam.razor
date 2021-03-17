@@ -53,7 +53,7 @@
                                 @foreach (var user in Collaborators)
                                 {
                                     <p>@user.Key (@Math.Round(user.Value, 2)%) 
-                                        <button type="button" @onclick="async () => await RedirectToDasboard(user.Key)">
+                                        <button type="button" @onclick="async () => await RedirectToDasboard(user.Key)" title="View data">
                                             <i class="fas fa-external-link-alt"></i></button></p>
                                 }
                             </div>
