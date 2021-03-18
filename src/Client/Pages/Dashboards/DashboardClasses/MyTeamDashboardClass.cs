@@ -130,6 +130,8 @@ namespace EctBlazorApp.Client.Pages.Dashboards
         {
             await JsInterop("setPageTitle", "My Team");
             await CustomAuthState.GetUserPermissions(AuthState, ApiConn);
+            DashboardState.SetIsDrillDown(false);
+            
             if (IsLeader)
             {
                 CurrentNotificationOptions = await ApiConn.FetchCurrentNotificationOptions();

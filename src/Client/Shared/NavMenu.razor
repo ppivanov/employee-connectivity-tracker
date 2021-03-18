@@ -8,14 +8,15 @@
     <a href="/dashboard" class="menu-option bottom-border">Dashboard</a>
     @if (IsLeader)
     {
-        <a href="/my-team" class="menu-option bottom-border">Team</a>
+        <a href="/my-team" class="menu-option bottom-border">My Team</a>
         <a href="/manage-team/@hashedTeamId" class="menu-option bottom-border">Manage Team</a>
     }
     @if (IsAdmin)
     {
         <a href="/create-team" class="menu-option">Create Team</a>
-        <a href="/comm-points" class="menu-option">Manage Mediums</a>
+        <a href="/view-teams" class="menu-option">View Teams</a>
         <a href="/move-members" class="menu-option">Move Members</a>
+        <a href="/comm-points" class="menu-option">Manage Mediums</a>
     }
 </nav>
 

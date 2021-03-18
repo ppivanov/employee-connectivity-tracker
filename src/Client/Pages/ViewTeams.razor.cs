@@ -11,9 +11,12 @@ namespace EctBlazorApp.Client.Pages
         protected CustomAuthState AuthState { get; set; }
         [Inject]
         protected IControllerConnection ApiConn { get; set; }
+        [Inject]
+        protected DashboardState DashboardState { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
+            DashboardState.SetIsDrillDown(false);
             await CustomAuthState.GetUserPermissions(AuthState, ApiConn);
         }
     }
