@@ -69,8 +69,9 @@ namespace EctBlazorApp.Client.Pages
         protected string LeaderInputStyle => leaderInputError ? "border: 1px solid red" : string.Empty;     
         protected string MarginInputStyle => marginInputError ? "border: 1px solid red" : string.Empty;
         protected string PointsInputStyle => pointsInputError ? "border: 1px solid red" : string.Empty;
-        protected List<string> PromptUsersForNotification => TeamDetails.MemberNamesAndEmails;
-
+        protected IEnumerable<string> PromptUsersForNotification => 
+            TeamDetails.MemberNamesAndEmails.Where(
+                    member => NewNotificationOptions.UsersToNotify.Contains(member) == false);
 
         public async Task AddUserToNotify()
         {

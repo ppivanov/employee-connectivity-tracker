@@ -95,7 +95,7 @@
                                 <button type="button" @onclick="async () => await AddUserToNotify()">Add user</button>
                             </p>
                             <table class="users-to-notify">
-                                @foreach (var nameAndEmail in TeamDetails.NewNotificationOptions.UsersToNotify)
+                                @foreach (var nameAndEmail in NewNotificationOptions.UsersToNotify)
                                 {
                                     <tr>
                                         <td class="user">
