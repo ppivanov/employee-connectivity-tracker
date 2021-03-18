@@ -6,7 +6,11 @@
 
 <AuthorizeView>
     <Authorized>
-        @if (HasAccess == false)
+        @if(Initialized == false)
+        {
+            <Loading />
+        }
+        else if (HasAccess == false)
         {
             <NoAccess />
         }

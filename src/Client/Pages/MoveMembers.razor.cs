@@ -36,6 +36,8 @@ namespace EctBlazorApp.Client.Pages
 
         protected IEnumerable<EctTeamRequestDetails> InAppTeams { get; private set; }
 
+        protected bool Initialized { get; private set; } = false;
+
         protected EctTeamRequestDetails LeftTeam { get; set; }
         protected string LeftTeamSelection { get; set; }
 
@@ -83,11 +85,14 @@ namespace EctBlazorApp.Client.Pages
 
         protected override async Task OnInitializedAsync()
         {
+            Initialized = false;
             await JsRuntime.InvokeVoidAsync("setPageTitle", "Move Members");
             await CustomAuthState.GetUserPermissions(AuthState, ApiConn);
             HasAccess = AuthState.IsAdmin;
             if (HasAccess)
                 InAppTeams = await ApiConn.FetchAllTeams();
+
+            Initialized = true;
         }
 
         protected void RemoveMember(EctTeamRequestDetails team, string emailToRemove)
