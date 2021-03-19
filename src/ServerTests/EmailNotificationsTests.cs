@@ -31,11 +31,11 @@ namespace EctBlazorApp.ServerTests
             var homer = GetUserFromInMemoryDb("Homer");
             DateTime fromDate = new(2021, 1, 1);
             DateTime toDate = new(2021, 1, 8);
-            List<int> expectedResult = new(){ 24, 31, 6, 0, 8, 4};
+            List<int> expectedResult = new(){ 24, 31, 6, 0, 8, 0, 4};
 
             List<int> actualResult = _dbContext.GetCommunicationPointsForUser(homer, fromDate, toDate);
 
-            CollectionAssert.AreEquivalent(expectedResult, actualResult);
+            CollectionAssert.AreEqual(expectedResult, actualResult);
         }
 
         [TestMethod]
@@ -49,7 +49,7 @@ namespace EctBlazorApp.ServerTests
             List<int> actualResult = _dbContext.GetCommunicationPointsForUser(alice, fromDate, toDate);
 
 
-            CollectionAssert.AreEquivalent(expectedResult, actualResult);
+            CollectionAssert.AreEqual(expectedResult, actualResult);
         }
 
         private EctUser GetUserFromInMemoryDb(string name)

@@ -17,7 +17,7 @@ namespace EctBlazorApp.Server.MailKit
                 $"<head> <meta charset=\"UTF-8\"> <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">"+
                 $"<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">"+
                 $"<title>ECT Email</title> </head> <body style=\"padding: 1em 3em;\">"+
-                $"<h2 style=\"width: 100%; text-align: center;\">Team name</h2>"+
+                $"<h2 style=\"width: 100%; text-align: center;\">{TeamName}</h2>"+
                 $"<p style=\"width: 100%; text-align: center;\">Isolated teammates</p>"+
                 $"<div style=\"width: 100%; padding: 1em 0.5em\">"+
                 $"<h3>Triggers</h3>"+
