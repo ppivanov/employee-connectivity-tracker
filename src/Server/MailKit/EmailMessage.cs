@@ -16,7 +16,7 @@ namespace EctBlazorApp.Server.MailKit
             mimeMessage.From.Add(Sender);
             mimeMessage.To.Add(Reciever);
             mimeMessage.Subject = Subject;
-            mimeMessage.Body = new TextPart(TextFormat.Text){ Text = Content };
+            mimeMessage.Body = new TextPart(TextFormat.Html){ Text = Content };
             return mimeMessage;
         }
     }

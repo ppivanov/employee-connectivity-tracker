@@ -29,26 +29,27 @@ namespace EctBlazorApp.ServerTests
         public void GetCommunicationPointsForUserId__Homer_1_Jan_2021__73Points()
         {
             var homer = GetUserFromInMemoryDb("Homer");
-            DateTime fromDate = new DateTime(2021, 1, 1);
-            DateTime toDate = new DateTime(2021, 1, 8);
-            int expectedResult = 73;
+            DateTime fromDate = new(2021, 1, 1);
+            DateTime toDate = new(2021, 1, 8);
+            List<int> expectedResult = new(){ 24, 31, 6, 0, 8, 4};
 
-            int actualResult = _dbContext.GetCommunicationPointsForUserId(homer.Id, fromDate, toDate);
+            List<int> actualResult = _dbContext.GetCommunicationPointsForUser(homer, fromDate, toDate);
 
-            Assert.AreEqual(expectedResult, actualResult);
+            CollectionAssert.AreEquivalent(expectedResult, actualResult);
         }
 
         [TestMethod]
         public void GetCommunicationPointsForUserId__Alice_23_Sep_2020__30Points()
         {
             var alice = GetUserFromInMemoryDb("Alice");
-            DateTime fromDate = new DateTime(2020, 9, 23);
-            DateTime toDate = new DateTime(2020, 9, 30);
-            int expectedResult = 30;
+            DateTime fromDate = new(2020, 9, 23);
+            DateTime toDate = new(2020, 9, 30);
+            List<int> expectedResult = new() { 0, 0, 30, 0, 0, 0, 0 };
 
-            int actualResult = _dbContext.GetCommunicationPointsForUserId(alice.Id, fromDate, toDate);
+            List<int> actualResult = _dbContext.GetCommunicationPointsForUser(alice, fromDate, toDate);
 
-            Assert.AreEqual(expectedResult, actualResult);
+
+            CollectionAssert.AreEquivalent(expectedResult, actualResult);
         }
 
         private EctUser GetUserFromInMemoryDb(string name)

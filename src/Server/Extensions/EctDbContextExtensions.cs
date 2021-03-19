@@ -136,51 +136,67 @@ namespace EctBlazorApp.Server.Extensions
 
         /******************** Email notifications ********************/
 
-        // this method should be triggered every Sunday at noon
+        // this method should be triggered every Sunday at noon ----- See Startup.cs to configure the cron expression
         public static void ProcessNotifications(this EctDbContext dbContext, EctMailKit mailKit)
         {                                                                                       //                              Examples:
             DateTime currentWeekEnd = DateTime.Now.AddDays(1);                                  // Following Monday             March 1st
             DateTime currentWeekStart = currentWeekEnd.AddDays(-7);                             // Last week's Monday           Feb  22th
 
-            DateTime previousWeekEnd = currentWeekStart;                                        // Last week's Monday           Feb  22th
-            DateTime previousWeekStart = currentWeekStart.AddDays(-7);                          // The Monday before that       Feb  15th
-
-            string heading = $"Stats for week starting: {currentWeekStart:dd dddd, MMM yyyy},\n" +
-                $"compared to week starting: {previousWeekStart:dd dddd, MMM yyyy}\n\nPotentially isolated members:\n\n";
+            DateTime pastWeekEnd = currentWeekStart;                                        // Last week's Monday           Feb  22th
+            DateTime pastWeekStart = currentWeekStart.AddDays(-7);                          // The Monday before that       Feb  15th
 
             var teams = dbContext.Teams.Include(t => t.Members).ToList();
             foreach (var team in teams)
             {
-                StringBuilder emailMessage = new($"Team: {team.Name}\n{heading}");
+                EmailContents emailContents = new(){
+                    TeamName = team.Name,
+                    PointsThreshold = team.PointsThreshold,
+                    MarginDifference = team.MarginForNotification,
+                    Members = new List<NotificationMemberData>()
+                };
+
                 var members = team.Members.ToList();
                 foreach (var member in members)
                 {
-                    int currentWeekPoints = dbContext.GetCommunicationPointsForUserId(member.Id, currentWeekStart, currentWeekEnd);
-                    int previousWeekPoints = dbContext.GetCommunicationPointsForUserId(member.Id, previousWeekStart, previousWeekEnd);
-                    currentWeekPoints = currentWeekPoints > 0 ? currentWeekPoints : 1;
-                    previousWeekPoints = previousWeekPoints > 0 ? previousWeekPoints : 1;
+                    NotificationMemberData memberData = new() {
+                        Name = member.FullName,
+                        CurrentPoints = dbContext.GetCommunicationPointsForUser(member, currentWeekStart, currentWeekEnd),
+                        PastPoints = dbContext.GetCommunicationPointsForUser(member, pastWeekStart, pastWeekEnd),
+                        CurrentWeek = $"{currentWeekStart:dd, MMM, yyyy} - {currentWeekEnd:dd, MMM, yyyy}",
+                        PastWeek = $"{pastWeekStart:dd MMM, yyyy} - {pastWeekEnd:dd MMM, yyyy}"
+                    };
 
-                    string message = GenerateNotificationMessage(team, member, currentWeekPoints, previousWeekPoints);
-                    emailMessage.Append(message);
+                    if (IsPotentiallyIsolated(team, memberData.CurrentTotal, memberData.PastTotal))
+                        emailContents.Members.Add(memberData);
                 }
-                if (emailMessage.ToString().Equals(heading)) emailMessage.Append("None\n");
 
-                SendNotificationEmail(emailMessage.ToString(), team, mailKit);
-                emailMessage.Clear();
+                SendNotificationEmail(emailContents.ToString(), team, mailKit);
             }
         }
 
-        public static int GetCommunicationPointsForUserId(this EctDbContext dbContext, int userId, DateTime fromDate, DateTime toDate)
+        public static List<int> GetCommunicationPointsForUser(this EctDbContext dbContext, EctUser user, DateTime fromDate, DateTime toDate)
         {
-            List<ReceivedMail> receivedMail = dbContext.GetReceivedMailInDateRangeForUserId(userId, fromDate, toDate);
-            List<SentMail> sentMail = dbContext.GetSentMailInDateRangeForUserId(userId, fromDate, toDate);
-            List<CalendarEvent> calendarEvents = dbContext.GetCalendarEventsInDateRangeForUserId(userId, fromDate, toDate);
+            List<ReceivedMail> receivedMail = dbContext.GetReceivedMailInDateRangeForUserId(user.Id, fromDate, toDate);
+            List<SentMail> sentMail = dbContext.GetSentMailInDateRangeForUserId(user.Id, fromDate, toDate);
+            List<CalendarEvent> calendarEvents = dbContext.GetCalendarEventsInDateRangeForUserId(user.Id, fromDate, toDate);
 
-            int mailCount = receivedMail.Count + sentMail.Count;
-            int minutesInMeetings = CalendarEvent.GetTotalMinutesFromEvents(calendarEvents);
+            List<int> pointsPerDay = new();
 
-            int totalCommunicationPoints = dbContext.CalculateTotalCommunicationPoints(mailCount, minutesInMeetings);
-            return totalCommunicationPoints;
+            while(fromDate < toDate)
+            {
+                int receivedMailOnDate = receivedMail.Where(rm => rm.ReceivedAt.Date == fromDate.Date).ToList().Count;
+                int sentMailOnDate = sentMail.Where(sm => sm.SentAt.Date == fromDate.Date).ToList().Count;
+                List<CalendarEvent> eventsOnDate = calendarEvents.Where(ce => ce.Start.Date == fromDate.Date).ToList();
+
+                int eventMinutesOnDate = CalendarEvent.GetTotalMinutesFromEvents(eventsOnDate);
+                int mailCount = receivedMailOnDate + sentMailOnDate;
+                int totalPointsOnDate = dbContext.CalculateTotalCommunicationPoints(mailCount, eventMinutesOnDate);
+
+                pointsPerDay.Add(totalPointsOnDate);
+                fromDate = fromDate.AddDays(1);
+            }
+
+            return pointsPerDay;
         }
         private static int CalculateTotalCommunicationPoints(this EctDbContext dbContext, int mailCount, int minutesInMeetings)
         {
@@ -192,21 +208,19 @@ namespace EctBlazorApp.Server.Extensions
 
             return totalPoints;
         }
-        private static string GenerateNotificationMessage(EctTeam team, EctUser user, int currentWeekPoints, int previousWeekPoints)
+        private static bool IsPotentiallyIsolated(EctTeam team, int currentWeekPoints, int previousWeekPoints)
         {
-            StringBuilder emailMessage = new(string.Empty);
-            if (currentWeekPoints < team.PointsThreshold)
-                emailMessage.Append($"{user.FullName} is below the threshold" +
-                    $" set for their team. {currentWeekPoints}/{team.PointsThreshold}\n");
+            currentWeekPoints = currentWeekPoints > 0 ? currentWeekPoints : 1;                                                                              // If there are no points set as 1 to avoid division by 0.
+            previousWeekPoints = previousWeekPoints > 0 ? previousWeekPoints : 1;
 
-            float percentDifferenceInPoints = currentWeekPoints / previousWeekPoints * 100 - 100;
-            float realPercentDifference = percentDifferenceInPoints * -1;
-            if (percentDifferenceInPoints < 0 && realPercentDifference >= team.MarginForNotification)
-                emailMessage.Append($"{user.FullName} has been communicating {realPercentDifference}% less this week compared to last week.\n");
+            double percentDifferenceInPoints = currentWeekPoints * 100 / previousWeekPoints - 100;
+            double realPercentDifference = percentDifferenceInPoints * -1;
 
-            if (emailMessage.Length > 0) emailMessage.Append("\n");
+            if (currentWeekPoints <= team.PointsThreshold 
+                || (percentDifferenceInPoints < 0 && realPercentDifference >= team.MarginForNotification))
+                return true;
 
-            return emailMessage.ToString();
+            return false;
         }
         
         

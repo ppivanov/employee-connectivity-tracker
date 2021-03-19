@@ -37,7 +37,7 @@ namespace EctBlazorApp.Server.MailKit
             return SendMessage(recipient.FullName, recipient.Email, subject, messageContent);
         }
 
-        private bool SendMessage(string recipient, string subject, string messageContent)
+        private bool SendMessage(string recipient, string subject, string messageContent)                   // Expects the recipient string to be formatted - firstname lastname <email@example.com>
         {
             var name = GetFullNameFromFormattedString(recipient);
             var email = GetEmailFromFormattedString(recipient);
