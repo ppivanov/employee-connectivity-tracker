@@ -33,6 +33,11 @@ namespace EctBlazorApp.Client.Graph
             _httpClient = httpClient;
         }
 
+        public Task<bool> DeleteTeam(string hashedTeamId)
+        {
+            return HttpDelete($"api/team/{hashedTeamId}");
+        }
+
         public Task<IEnumerable<EctUser>> FetchAdminstrators()
         {
             return HttpGet<IEnumerable<EctUser>>("api/auth/administrators", new List<EctUser>());
@@ -171,6 +176,29 @@ namespace EctBlazorApp.Client.Graph
                     return token.Value;
             
             return null;
+        }
+        private async Task<bool> HttpDelete(string endpoint)
+        {
+            var token = await GetAPITokenAsync();
+            if (token == null) return false;
+            try
+            {
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                var response = await _httpClient.DeleteAsync(endpoint);
+                
+                if(response.IsSuccessStatusCode)
+                    return true;
+                else 
+                    return false;
+            }
+            catch (AccessTokenNotAvailableException exception)
+            {
+                exception.Redirect();
+                return false;
+            }
+            catch(Exception){
+                return false;
+            }
         }
         private async Task<T> HttpGet<T>(string endpoint, T defaultResponse)
         {

@@ -31,12 +31,11 @@ namespace EctBlazorApp.Client.Pages
         protected bool ServerMessageIsError { get; set; } = false;
 
 
-        protected void DeleteSelectedTeam()
+        protected async Task DeleteSelectedTeam()
         {
             string hasedTeamId = ComputeSha256Hash(SelectedTeam.TeamId);
-            // bool success = await ApiConn.DeleteTeam(hasedTeamId);
-            // if (success) 
-            if(true)
+            bool success = await ApiConn.DeleteTeam(hasedTeamId);
+            if (success) 
             {
                 ServerMessage = $"Successfully deleted {SelectedTeam.Name}";
                 ServerMessageIsError = false;

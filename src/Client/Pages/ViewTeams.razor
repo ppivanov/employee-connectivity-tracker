@@ -113,7 +113,7 @@
                                 </tbody>
                             </table>
                         </div>
-                        <button class="delete-team btn-reset-form" title="Delete team" @onclick="DeleteSelectedTeam"><i class="fas fa-trash-alt"></i></button>
+                        <button class="delete-team btn-reset-form" title="Delete team" @onclick="async () => await DeleteSelectedTeam()"><i class="fas fa-trash-alt"></i></button>
                     }
                 </div>
             </div>

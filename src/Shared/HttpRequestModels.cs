@@ -62,6 +62,7 @@ namespace EctBlazorApp.Shared
 
         public EctTeamRequestDetails(EctTeam ectTeam)
         {
+            TeamId = ectTeam.Id.ToString();
             Name = ectTeam.Name;
             LeaderNameAndEmail = FormatFullNameAndEmail(ectTeam.Leader.FullName, ectTeam.Leader.Email);
             MemberNamesAndEmails = ectTeam.Members.Where(m => m.Email.Equals(ectTeam.Leader.Email) == false)

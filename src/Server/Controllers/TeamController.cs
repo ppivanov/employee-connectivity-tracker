@@ -121,6 +121,32 @@ namespace EctBlazorApp.Server.Controllers
             }
         }
 
+        [HttpDelete("{hashedTeamId}")]
+        [AuthorizeAdmin]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult> DeleteTeam([FromRoute] string hashedTeamId)
+        {
+            EctTeam teamToDelete = _dbContext.Teams.Include(t => t.Members).Include(t => t.Leader).ToList()
+                .FirstOrDefault(t => ComputeSha256Hash(t.Id.ToString()).Equals(hashedTeamId));
+
+            if(teamToDelete == null) 
+                return NotFound();
+            
+            _dbContext.Teams.Remove(teamToDelete);
+            try
+            {
+                await _dbContext.SaveChangesAsync();
+                return NoContent();
+            }
+            catch(Exception ex)
+            {
+                return StatusCode(500);
+            }
+        }
+
         [Route("move-members")]
         [HttpPut]
         [AuthorizeAdmin]

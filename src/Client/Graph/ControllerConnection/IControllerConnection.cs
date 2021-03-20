@@ -8,6 +8,8 @@ namespace EctBlazorApp.Client.Graph
 {
     public interface IControllerConnection
     {
+        Task<bool> DeleteTeam(string hashedTeamId);
+
         Task<IEnumerable<EctUser>> FetchAdminstrators();
 
         Task<NotificationOptionsResponse> FetchCurrentNotificationOptions();
