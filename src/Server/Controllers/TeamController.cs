@@ -141,7 +141,7 @@ namespace EctBlazorApp.Server.Controllers
                 await _dbContext.SaveChangesAsync();
                 return NoContent();
             }
-            catch(Exception ex)
+            catch(Exception)
             {
                 return StatusCode(500);
             }

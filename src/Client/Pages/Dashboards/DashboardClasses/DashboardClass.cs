@@ -45,14 +45,14 @@ namespace EctBlazorApp.Client.Pages.Dashboards
             }
         }
         protected CommunicationPoint EmailCommPoints { get; set; }
-        protected string FormattedTimeInMeeting { get => FormatSecondsToHoursAndMinutes(SecondsInMeeting); }
+        protected string FormattedTimeInMeeting => FormatSecondsToHoursAndMinutes(SecondsInMeeting);
         protected DateTimeOffset? FromDate { get; set; } = DateTimeOffset.Now; 
         protected bool Initialized { get; set; } = false;
         protected CommunicationPoint MeetingCommPoints { get; set; }
         protected int NumberOfMeetings { get; set; } = 0;
         protected double SecondsInMeeting { get; set; } = 0;
         protected DateTimeOffset? ToDate { get; set; } = DateTimeOffset.Now.AddDays(1);
-        protected int TotalMinutesInMeetings { get => GetMinutesFromSeconds(SecondsInMeeting); }
+        protected int TotalMinutesInMeetings => GetMinutesFromSeconds(SecondsInMeeting);
         protected int TotalPoints
         {
             get
