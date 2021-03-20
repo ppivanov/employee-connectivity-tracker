@@ -30,19 +30,22 @@
                                     <input type="text" id="filter-users">
                                 </td>
                             </tr>
-                            <tr class="team-summary">
-                                <td>
-                                    <span class="team-name">
-                                        Team 1
-                                    </span>
-                                    <span class="member-count">
-                                        2 members
-                                    </span>
-                                    <span class="team-lead">
-                                        Example User example@email.com
-                                    </span>
-                                </td>
-                            </tr>
+                            @foreach (var team in Teams)
+                            {
+                                <tr class="team-summary">
+                                    <td>
+                                        <span class="team-name">
+                                            @team.Name
+                                        </span>
+                                        <span class="member-count">
+                                            @team.MemberNamesAndEmails.Count members
+                                        </span>
+                                        <span class="team-lead">
+                                            @team.LeaderNameAndEmail
+                                        </span>
+                                    </td>
+                                </tr>
+                            }
                         </tbody>
                     </table>
                 </div>
