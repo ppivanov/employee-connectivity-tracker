@@ -19,7 +19,10 @@ namespace EctBlazorApp.Client.Pages
 
         protected List<EctTeamRequestDetails> Teams { get; set; } = new List<EctTeamRequestDetails>();
 
+        protected string FilterTeamsInput { get; set; } = string.Empty;
+
         protected bool Initialized { get; set; } = false;
+
         protected EctTeamRequestDetails SelectedTeam { get; set; }
 
         protected void ExpandTeam(EctTeamRequestDetails team)
@@ -37,6 +40,11 @@ namespace EctBlazorApp.Client.Pages
             await CustomAuthState.GetUserPermissions(AuthState, ApiConn);
             Teams = (await ApiConn.FetchAllTeams()).ToList();
             Initialized = true;
+        }
+
+        protected void UpdateFilterTeamsInput(ChangeEventArgs args)
+        {
+            FilterTeamsInput = args.Value.ToString();
         }
     }
 }

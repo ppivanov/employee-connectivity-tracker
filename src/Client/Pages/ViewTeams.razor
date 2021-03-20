@@ -30,7 +30,7 @@
                             <tr class="filter-teams">
                                 <td>
                                     <i id="search-icon" class="fas fa-search"></i>
-                                    <input type="text" id="filter-users">
+                                    <input type="text" id="filter-users" placeholder="Filter..." @oninput="(args) => UpdateFilterTeamsInput(args)">
                                 </td>
                             </tr>
                             @if(Teams == null || Teams.Count < 1){
@@ -42,7 +42,7 @@
                             }
                             else 
                             {
-                                @foreach (var team in Teams)
+                                @foreach (var team in Teams.Where(t => t.Name.ToLower().Contains(FilterTeamsInput.ToLower())))
                                 {
                                     <tr class="team-summary" @onclick="() => ExpandTeam(team)">
                                         <td>

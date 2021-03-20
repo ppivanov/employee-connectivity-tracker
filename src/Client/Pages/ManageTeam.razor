@@ -156,7 +156,7 @@
                         </thead>
                         
                         <tbody>
-                            @foreach (var availableMember in this.AvailableMembers.Where(al => al.Contains(FilterUsersInput)))
+                            @foreach (var availableMember in this.AvailableMembers.Where(al => al.ToLower().Contains(FilterUsersInput.ToLower())))
                             {
                                 <tr>
                                     <td>
