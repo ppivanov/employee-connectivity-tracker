@@ -19,6 +19,16 @@ namespace EctBlazorApp.Client.Pages
 
         protected List<EctTeamRequestDetails> Teams { get; set; } = new List<EctTeamRequestDetails>();
 
+        protected EctTeamRequestDetails SelectedTeam { get; set; }
+
+        protected void ExpandTeam(EctTeamRequestDetails team)
+        {
+            if(SelectedTeam == team)
+                SelectedTeam = null;
+            else 
+                SelectedTeam = team;
+        }
+
         protected override async Task OnInitializedAsync()
         {
             DashboardState.SetIsDrillDown(false);
