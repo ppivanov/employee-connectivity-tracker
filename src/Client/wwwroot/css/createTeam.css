@@ -106,8 +106,8 @@
 .create-team .available-users {
 	width: 30%;
 	display: inline-block;
-	max-height: 30em;
-	overflow: hidden;
+	max-height: 45em;
+	margin-top: 1em;
 	border-bottom: 1px solid lightgray;
 }
 
@@ -117,11 +117,36 @@
 .create-team .available-users td {
 	display: inline-block;
 	width: 100%;
+	height: 3em;
 }
 
 .create-team .selected-members tr,
 .create-team .available-users tr {
 	margin-top: 1em;
+}
+
+.create-team .selected-members > tbody,
+.create-team .available-users > tbody {
+	display: block;
+	width: 100%;
+	overflow-x: hidden;
+}
+.create-team .selected-members > tbody {
+	max-height: 39em;
+}
+.create-team .available-users > tbody {
+	max-height: 35em;
+}
+
+.create-team .selected-members > tbody > tr,
+.create-team .available-users > tbody > tr {
+	padding: 0.5em;
+	border-radius: 5px 5px 0 0;
+	border-bottom: 1px solid lightgray;
+}
+.create-team .selected-members > tbody > tr:hover,
+.create-team .available-users > tbody > tr:hover {
+	background-color: lightgray;
 }
 
 .create-team .selected-members td > button,
@@ -131,6 +156,11 @@
 }
 .create-team .available-users td > button {
 	margin-right: 2em;
+}
+
+.create-team .selected-members td > button:hover,
+.create-team .available-users td > button:hover {
+	cursor: pointer;
 }
 
 .create-team .available-users .btn-select {
@@ -153,12 +183,18 @@
 	display: block;
 	width: 80%;
 	text-align: center;
-	border-bottom: 1px solid black;
-	padding: 1em;
 }
 
-.create-team .available-users:hover {
-	overflow-y: scroll;
+.create-team .selected-members thead {
+	border-bottom: 1px solid black;
+}
+
+.create-team .available-users thead tr {
+	height: 7em;
+}
+.create-team .available-users thead td {
+	display: block;
+	width: 100%;
 }
 
 .create-team .available-users > i {
@@ -168,9 +204,10 @@
 }
 
 .create-team .available-users > .filter-users {
+	display: block;
 	width: 100%;
-	padding: 10px;
 	text-align: center;
+	margin-top: -2em;
 }
 
 /* END of member selection */

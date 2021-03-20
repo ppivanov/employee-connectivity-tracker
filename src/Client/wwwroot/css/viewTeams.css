@@ -1,225 +1,259 @@
-.view-teams {
-	width: 100%;
-	height: 85%;
-}
-
-.view-teams .teams-list {
-	float: left;
-	width: 20%;
-	height: 100%;
-}
-
-.view-teams .teams-list table {
-	width: 70%;
-	height: 100%;
-	margin: auto;
-}
-
-.view-teams .teams-list table > thead {
-	display: block;
-	width: 100%;
-	height: 5%;
-	margin-top: 5%;
-	background-color: lightgray;
-	border-radius: 10px 10px 0 0;
-	font-size: 1.1em;
-}
-.view-teams .teams-list table > thead > tr,
-.view-teams .teams-list table > thead > tr > td {
-	display: block;
+.create-team {
 	width: 100%;
 	height: 100%;
-	text-align: center;
-}
-.view-teams .teams-list table > thead > tr > td {
-	padding-top: 0.6em;
-}
-.view-teams .teams-list table > tbody {
-	display: block;
-	width: 100%;
-	min-height: 50em;
-	max-height: 50em;
-	border: 1px solid lightgray;
-	border-top: none;
-	overflow: hidden;
-}
-.view-teams .teams-list table > tbody:hover {
-	overflow-y: scroll;
-}
-
-.view-teams .filter-teams > td {
-	display: block;
-	width: 100%;
-}
-.view-teams .filter-teams {
-	display: block;
-	width: 90%;
-	height: 4em;
-	margin: 0.4em auto 0 auto;
-	padding: 0.5em;
-	border-bottom: 1px solid gray;
-}
-
-.view-teams #search-icon {
-	position: absolute;
-	padding-left: 1.5em;
-	padding-top: 0.8em;
-}
-
-.view-teams #filter-users {
-	display: block;
-	width: 90%;
-	height: 3em;
-	padding: 10px;
-	margin-left: auto;
-	margin-right: auto;
-	text-align: center;
-	border: 1px solid gray;
-}
-
-.view-teams .teams-list table > tbody > .team-summary {
-	display: block;
-	width: 90%;
-	height: 4em;
-	margin: 0.4em auto 0 auto;
-	padding: 0.5em;
-	border-bottom: 1px solid gray;
-}
-
-.view-teams .teams-list table > tbody > .team-summary:hover {
-	background-color: lightgray;
-	cursor: pointer;
-	border-radius: 7px 7px 0 0;
-}
-
-.view-teams .teams-list table > tbody > .team-summary .team-name {
-	float: left;
-	width: 70%;
-	font-size: 1.1em;
-}
-.view-teams .teams-list table > tbody > .team-summary .member-count {
-	float: right;
-	width: 30%;
-	font-size: 0.8em;
-}
-
-.view-teams .teams-list table > tbody > .team-summary .team-lead {
-	float: left;
-	font-size: 0.8em;
-	width: 100%;
-}
-
-.view-teams .selected-team {
-	display: block;
-	float: left;
-	width: 80%;
-	height: 100%;
-	padding: 5em;
-	border: 1px solid rgb(192, 192, 192);
-	border-radius: 5px;
-}
-.view-teams .selected-team > h2 {
-	display: block;
-	width: 100%;
-	text-align: center;
-}
-
-.view-teams .selected-team > .team-lead {
-	display: block;
-	width: 100%;
 	padding: 2em;
 }
 
-.view-teams .selected-team > .team-lead > h3 {
-	float: left;
-	width: 40.5%;
-	padding-right: 1em;
-	text-align: right;
-}
-
-.view-teams .selected-team > .team-lead > p {
-	float: right;
-	width: 59%;
-	font-size: 1.1em;
-	margin-top: 0em;
-	padding-left: 1em;
-	text-align: left;
-}
-
-.view-teams .selected-team > .left-half {
-	display: block;
-	float: left;
-	margin-left: 0;
-	width: 40%;
-	height: 80%;
-	margin-top: 3em;
-}
-
-.view-teams .selected-team > .left-half > h3 {
-	display: block;
-	width: 100%;
-	text-align: right;
-}
-
-.view-teams .selected-team > .left-half > .notification-options {
-	padding: 5%;
-	width: 70%;
-	margin: 3em auto 3em auto;
-}
-
-.view-teams .selected-team > .left-half > .notification-options > h3 {
+.create-team-heading {
+	width: 10em;
 	text-align: center;
-	padding: 1em;
-	border-bottom: 1px solid lightgray;
+	margin: auto;
 }
 
-.view-teams .selected-team > .left-half > .notification-options > p {
-	padding: 0.5em;
-}
-.view-teams .selected-team > .left-half > .notification-options > table {
-	margin-left: 20%;
+.create-team > form {
 	width: 80%;
-}
-.view-teams .selected-team > .left-half > .notification-options .notified {
-	display: block;
-	padding: 0.5em;
+	margin: 0 auto 2em auto;
 }
 
-.view-teams .selected-team > .right-half {
-	display: block;
-	float: left;
-	width: 60%;
-	height: 80%;
-	margin-top: 3em;
-	padding: 0 3em;
+.create-team > form > .left-half {
+	width: 35%;
 }
-.view-teams .selected-team > .right-half > table {
+
+.create-team-input-pair {
+	width: 65%;
+	margin-left: 6em;
+	padding: 1em;
+}
+.create-team .selected-members {
+	width: 50%;
+}
+
+/* --- */
+/* Code source: (Coyier, Chris) https://codepen.io/chriscoyier/pen/zYYZaGP */
+/* class applies to select element itself, not a wrapper element */
+.create-team-input-pair > input,
+.create-team-input-pair > select {
 	display: block;
+	font-size: 1em;
+	font-family: sans-serif;
+	font-weight: 700;
+	color: rgb(68, 68, 68);
+	line-height: 1.3;
+	padding: 0.6em 1.4em 0.5em 0.8em;
 	width: 100%;
+	max-width: 100%; /* useful when width is set to anything other than 100% */
+	box-sizing: border-box;
+	margin: 0;
+	border: 1px solid rgb(170, 170, 170);
+	box-shadow: 0 1px 0 1px rgba(0, 0, 0, 0.04);
+	border-radius: 0.5em;
+	-moz-appearance: none;
+	-webkit-appearance: none;
+	background-color: rgb(255, 255, 255);
 }
-.view-teams .selected-team > .right-half > table > tbody {
-	display: block;
+
+.create-team-input-pair > select {
+	background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007CB2%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'),
+		linear-gradient(to bottom, rgb(255, 255, 255) 0%, rgb(229, 229, 229) 100%);
+	background-repeat: no-repeat, repeat;
+	/* arrow icon position (1em from the right, 50% vertical) , then gradient position*/
+	background-position: right 0.7em top 50%, 0 0;
+	/* icon size, then gradient */
+	background-size: 0.65em auto, 100%;
+}
+/* Hide arrow icon in IE browsers */
+.select-css::-ms-expand {
+	display: none;
+}
+/* Hover style */
+.select-css:hover {
+	border-color: rgb(136, 136, 136);
+}
+/* Focus style */
+.select-css:focus {
+	border-color: rgb(170, 170, 170);
+	/* It'd be nice to use -webkit-focus-ring-color here but it doesn't work on box-shadow */
+	box-shadow: 0 0 1px 3px rgba(59, 153, 252, 0.7);
+	box-shadow: 0 0 0 3px;
+	color: rgb(34, 34, 34);
+	outline: none;
+}
+/* Set options to normal weight */
+.select-css option {
+	font-weight: normal;
+}
+/* --- */
+
+/* member selection */
+
+.create-team #search-icon {
+	position: absolute;
+	padding: 1em;
+	margin-top: 1em;
+	min-width: 5em;
+}
+
+.create-team #filter-users {
+	right: 0;
 	width: 100%;
+	padding: 1em;
+	text-align: center;
+	margin-top: 1em;
+	border: 2px solid gray;
 }
-.view-teams .selected-team > .right-half > table tr {
-	display: block;
-	width: 100%;
-}
-.view-teams .selected-team > .right-half > table td {
-	display: block;
-	padding: 1.3em;
-	width: 60%;
+
+.create-team .selected-members,
+.create-team .available-users {
+	width: 30%;
+	display: inline-block;
+	max-height: 45em;
+	margin-top: 1em;
 	border-bottom: 1px solid lightgray;
-	border-radius: 7px 7px 0 0;
 }
-.view-teams .selected-team > .right-half > table td:hover {
+
+.create-team .selected-members tr,
+.create-team .selected-members td,
+.create-team .available-users tr,
+.create-team .available-users td {
+	display: inline-block;
+	width: 100%;
+	height: 3em;
+}
+
+.create-team .selected-members tr,
+.create-team .available-users tr {
+	margin-top: 1em;
+}
+
+.create-team .selected-members > tbody,
+.create-team .available-users > tbody {
+	display: block;
+	width: 100%;
+	padding-bottom: 0.6em;
+	overflow-x: hidden;
+}
+.create-team .selected-members > tbody {
+	max-height: 39em;
+}
+.create-team .available-users > tbody {
+	max-height: 34em;
+}
+
+.create-team .selected-members > tbody > tr,
+.create-team .available-users > tbody > tr {
+	padding: 0.5em;
+	border-radius: 5px 5px 0 0;
+	border-bottom: 1px solid lightgray;
+}
+.create-team .selected-members > tbody > tr:hover,
+.create-team .available-users > tbody > tr:hover {
 	background-color: lightgray;
 }
-.view-teams .selected-team > .right-half > table td > .btn-deselect {
+
+.create-team .selected-members td > button,
+.create-team .available-users td > button {
 	margin-top: -0.5em;
+	width: 5em;
+}
+.create-team .available-users td > button {
+	margin-right: 2em;
 }
 
-.view-teams .selected-team > .delete-team {
-	position: relative;
-	margin-left: 0;
+.create-team .selected-members td > button:hover,
+.create-team .available-users td > button:hover {
+	cursor: pointer;
+}
+
+.create-team .available-users .btn-select {
+	background-color: green;
+	border: rgb(0, 54, 0) solid 1px;
+	width: 10%;
+	padding: 0.7em;
+	font-size: 0.8em;
+	color: white;
+	border-radius: 10px;
+}
+
+.create-team .available-users .btn-select:hover {
+	background-color: rgb(0, 179, 0);
+	border: rgb(2, 110, 2) solid 1px;
+}
+
+.create-team .selected-members thead,
+.create-team .available-users thead {
+	display: block;
+	width: 80%;
+	text-align: center;
+}
+
+.create-team .selected-members thead {
+	border-bottom: 1px solid black;
+}
+
+.create-team .available-users thead tr {
+	height: 7em;
+}
+.create-team .available-users thead td {
+	display: block;
+	width: 100%;
+}
+
+.create-team .available-users > i {
+	position: absolute;
+	padding: 10px;
+	min-width: 40px;
+}
+
+.create-team .available-users > .filter-users {
+	display: block;
+	width: 100%;
+	text-align: center;
+	margin-top: -2em;
+}
+
+/* END of member selection */
+
+.notification-options .notification-pair {
+	display: block;
+	width: 80%;
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 1em;
+}
+.notification-options .notification-pair > label {
+	display: inline-block;
+	width: 50%;
+}
+.notification-options .notification-pair > input {
+	display: inline-block;
+	width: 10%;
+}
+
+.edit-notification-options-leader,
+.edit-notification-options-user {
+	width: 10em;
+	text-align: center;
+	font-size: 0.8em;
+}
+.edit-notification-options-leader {
+	background-color: green;
+}
+.edit-notification-options-leader:hover {
+	background-color: darkgreen;
+}
+
+.users-to-notify {
+	margin-top: 2em;
+}
+
+.users-to-notify .user {
+	width: 25em;
+}
+
+.create-team .notification-options {
+	width: fit-content;
+	font-size: 1em;
+	margin-left: auto;
+	margin-right: auto;
+	padding: 2em;
 }

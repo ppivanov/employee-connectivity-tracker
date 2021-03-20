@@ -148,11 +148,13 @@
                                 <td>
                                     Available for selection
                                 </td>
+                                <td>
+                                    <i id="search-icon" class="fas fa-search"></i>
+                                    <input id="filter-users" placeholder="Filter..." @oninput="(args) => UpdateFilterUsersInput(args)" />
+                                </td>
                             </tr>
                         </thead>
-                        <i id="search-icon" class="fas fa-search"></i>
-                        <input id="filter-users" 
-                            placeholder="Filter..." @oninput="(args) => UpdateFilterUsersInput(args)" />
+                        
                         <tbody>
                             @foreach (var availableMember in this.AvailableMembers.Where(al => al.Contains(FilterUsersInput)))
                             {
