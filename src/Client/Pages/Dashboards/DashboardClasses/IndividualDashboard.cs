@@ -43,27 +43,25 @@ namespace EctBlazorApp.Client.Pages.Dashboards
 
         protected override object[][] GetCalendarEventsData()
         {
-            Dictionary<string, int> subjectAndCount = new Dictionary<string, int>();
+            Dictionary<string, double> subjectAndCount = new Dictionary<string, double>();
 
             // loop and count using the dict
             foreach (var calendarEvent in calendarEvents)
             {
+                double eventDurationSeconds = CalendarEvent.GetTotalSecondsForSingleEvent(calendarEvent);
+                double eventDurationMinutes = GetMinutesFromSeconds(eventDurationSeconds);
+                SecondsInMeeting += eventDurationSeconds;
+
                 if (subjectAndCount.ContainsKey(calendarEvent.Subject))
-                {
-                    subjectAndCount[calendarEvent.Subject]++;
-                }
+                    subjectAndCount[calendarEvent.Subject] += eventDurationMinutes;
                 else
-                {
-                    subjectAndCount.Add(calendarEvent.Subject, 1);
-                }
+                    subjectAndCount.Add(calendarEvent.Subject, eventDurationMinutes);
             }
 
             object[][] newList = new object[subjectAndCount.Count][];
             int i = 0;
-            foreach (KeyValuePair<string, int> dictionaryEntry in subjectAndCount)
-            {
+            foreach (KeyValuePair<string, double> dictionaryEntry in subjectAndCount)
                 newList[i++] = new object[] { dictionaryEntry.Key, dictionaryEntry.Value };
-            }
 
             return newList;
         }
@@ -100,6 +98,7 @@ namespace EctBlazorApp.Client.Pages.Dashboards
 
         protected override async Task UpdateDashboard()
         {
+            SecondsInMeeting = 0;
             string queryString = GetDateRangeQueryString(FromDate.Value, ToDate.Value);
             string userIdQueryString = string.Empty;
             if(string.IsNullOrEmpty(HashedUserId) == false)
@@ -127,7 +126,7 @@ namespace EctBlazorApp.Client.Pages.Dashboards
             sentMail = response.SentMail;
             receivedMail = response.ReceivedMail;
             calendarEvents = response.CalendarEvents;
-            SecondsInMeeting = response.SecondsInMeeting;
+            // SecondsInMeeting = response.SecondsInMeeting;
             NumberOfMeetings = calendarEvents != null ? calendarEvents.Count : 0;
             userEmailAddress = response.UserEmail;
 

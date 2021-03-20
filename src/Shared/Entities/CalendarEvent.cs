@@ -71,9 +71,14 @@ namespace EctBlazorApp.Shared.Entities
         {
             double seconds = 0;
             foreach (var singleEvent in calendarEvents)
-                seconds += (singleEvent.End - singleEvent.Start).TotalSeconds;
+                seconds += GetTotalSecondsForSingleEvent(singleEvent);
 
             return seconds;
+        }
+
+        public static double GetTotalSecondsForSingleEvent(CalendarEvent singleEvent)
+        {
+            return (singleEvent.End - singleEvent.Start).TotalSeconds;
         }
 
         public static int GetTotalMinutesFromEvents(List<CalendarEvent> calendarEvents)

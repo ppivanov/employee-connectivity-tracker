@@ -82,7 +82,7 @@ window.loadMyTeamDashboardGraph = (mailList, calendarList) => {
 const drawEventsBarChart = (calendarList) => {
 	let dataTable = new google.visualization.DataTable()
 	dataTable.addColumn('string', 'Event subject')
-	dataTable.addColumn('number', 'Number of events')
+	dataTable.addColumn('number', 'Total duration in minutes')
 
 	dataTable.addRows(calendarList)
 
