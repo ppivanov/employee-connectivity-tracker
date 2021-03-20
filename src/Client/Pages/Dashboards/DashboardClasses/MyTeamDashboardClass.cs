@@ -52,27 +52,25 @@ namespace EctBlazorApp.Client.Pages.Dashboards
 
         protected override object[][] GetCalendarEventsData()
         {
-            Dictionary<string, HashSet<string>> eventsBySubject = new Dictionary<string, HashSet<string>>();
-
+            Dictionary<string, HashSet<(DateTime, DateTime)>> eventsBySubject = new Dictionary<string, HashSet<(DateTime, DateTime)>>();
+            
             foreach (var member in TeamMembers)
             {
                 int numberOfMeetingsBefore = NumberOfMeetings;
                 foreach (var calendarEvent in member.CalendarEvents)
                 {
-                    string eventDateTimeRange = $"{calendarEvent.Start}-{calendarEvent.End}";
+                    (DateTime, DateTime) eventDateTimeRange = (calendarEvent.Start, calendarEvent.End);
                     if (eventsBySubject.ContainsKey(calendarEvent.Subject))
                     {
                         if (eventsBySubject[calendarEvent.Subject].Contains(eventDateTimeRange) == false)                                               // only add if the specific meeting at the specific time has not been added
                         {
                             eventsBySubject[calendarEvent.Subject].Add(eventDateTimeRange);
-                            SecondsInMeeting += GetSecondsFromDateTimeRange(calendarEvent.Start, calendarEvent.End);
                             NumberOfMeetings++;
                         }
                     }
                     else
                     {
-                        eventsBySubject.Add(calendarEvent.Subject, new HashSet<string>() { { eventDateTimeRange } });                                   // if none of the meetings so far have had the subject, add a new one and initialize a set for the times
-                        SecondsInMeeting += GetSecondsFromDateTimeRange(calendarEvent.Start, calendarEvent.End);
+                        eventsBySubject.Add(calendarEvent.Subject, new HashSet<(DateTime, DateTime)>() { { eventDateTimeRange } });                                   // if none of the meetings so far have had the subject, add a new one and initialize a set for the times
                         NumberOfMeetings++;
                     }
                 }
@@ -83,10 +81,18 @@ namespace EctBlazorApp.Client.Pages.Dashboards
             // loop over the dictionary and count the number of elements in the set
             object[][] newList = new object[eventsBySubject.Count][];
             int i = 0;
-            foreach (KeyValuePair<string, HashSet<string>> dictionaryEntry in eventsBySubject)
+            foreach (KeyValuePair<string, HashSet<(DateTime, DateTime)>> dictionaryEntry in eventsBySubject)
             {
-                int count = dictionaryEntry.Value.Count;
-                newList[i++] = new object[] { dictionaryEntry.Key, count };
+                int totalDurationSeconds = 0;
+                int totalDurationMinutes = 0;
+                foreach (var dateRange in dictionaryEntry.Value)
+                {
+                    int singleEventDurationSeconds = GetSecondsFromDateTimeRange(dateRange.Item1, dateRange.Item2);
+                    totalDurationSeconds += singleEventDurationSeconds;
+                }
+                SecondsInMeeting += totalDurationSeconds;
+                totalDurationMinutes = GetMinutesFromSeconds(totalDurationSeconds);
+                newList[i++] = new object[] { dictionaryEntry.Key, totalDurationMinutes };
             }
             return newList;
         }
@@ -144,10 +150,10 @@ namespace EctBlazorApp.Client.Pages.Dashboards
 
         protected async Task RedirectToDasboard(string userFullName)
         {
-            DashboardState.SetIsDrillDown(true);
             int userId = TeamMembers.FirstOrDefault(u => u.FullName.Equals(userFullName)).Id;
             string hasedUserId = ComputeSha256Hash(userId.ToString());
             await JsRuntime.InvokeVoidAsync("open", $"/dashboard/{hasedUserId}", "_blank");
+            // DashboardState.SetIsDrillDown(true);
             // NavManager.NavigateTo($"/dashboard/{hasedUserId}");
         }
 

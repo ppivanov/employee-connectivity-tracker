@@ -61,22 +61,12 @@ google.charts.load('current', { packages: ['line', 'bar', 'corechart'] })
 window.loadDashboardGraph = (mailList, calendarList) => {
 	// These can be saved in a global variable to allow for chart resizing (they need to be redrawn)
 	google.charts.setOnLoadCallback(drawEmailLineGraph(mailList))
-	if (calendarList.length > 1) {
-		google.charts.setOnLoadCallback(drawEventsBarChart(calendarList))
-	} else {
-		document.getElementById(eventsChartDivId).innerHTML =
-			'There are no events in the selected range'
-	}
+	google.charts.setOnLoadCallback(drawEventsBarChart(calendarList))
 }
 
 window.loadMyTeamDashboardGraph = (mailList, calendarList) => {
 	google.charts.setOnLoadCallback(drawEmailLineGraphCustomTooltip(mailList))
-	if (calendarList.length > 1) {
-		google.charts.setOnLoadCallback(drawEventsBarChart(calendarList))
-	} else {
-		document.getElementById(eventsChartDivId).innerHTML =
-			'There are no events in the selected range'
-	}
+	google.charts.setOnLoadCallback(drawEventsBarChart(calendarList))
 }
 
 const drawEventsBarChart = (calendarList) => {
