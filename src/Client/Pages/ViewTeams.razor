@@ -7,7 +7,10 @@
 <AuthorizeView>
     <Authorized>
 
-        @if(AuthState.IsAdmin == false)
+        @if(Initialized == false){
+            <Loading />
+        }
+        else if(AuthState.IsAdmin == false)
         {
             <NoAccess />
         }
@@ -30,21 +33,31 @@
                                     <input type="text" id="filter-users">
                                 </td>
                             </tr>
-                            @foreach (var team in Teams)
-                            {
-                                <tr class="team-summary" @onclick="() => ExpandTeam(team)">
+                            @if(Teams == null || Teams.Count < 1){
+                                <tr>
                                     <td>
-                                        <span class="team-name">
-                                            @team.Name
-                                        </span>
-                                        <span class="member-count">
-                                            @team.MemberNamesAndEmails.Count members
-                                        </span>
-                                        <span class="team-lead">
-                                            @team.LeaderNameAndEmail
-                                        </span>
+                                        No teams available
                                     </td>
                                 </tr>
+                            }
+                            else 
+                            {
+                                @foreach (var team in Teams)
+                                {
+                                    <tr class="team-summary" @onclick="() => ExpandTeam(team)">
+                                        <td>
+                                            <span class="team-name">
+                                                @team.Name
+                                            </span>
+                                            <span class="member-count">
+                                                @team.MemberNamesAndEmails.Count members
+                                            </span>
+                                            <span class="team-lead">
+                                                @team.LeaderNameAndEmail
+                                            </span>
+                                        </td>
+                                    </tr>
+                                }
                             }
                         </tbody>
                     </table>
