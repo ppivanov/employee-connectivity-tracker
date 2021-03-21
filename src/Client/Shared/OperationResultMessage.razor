@@ -1,6 +1,10 @@
-<div class="operation-result">
-    <p style="@MessageStyle">@Message</p>
-</div>
+
+@if (string.IsNullOrEmpty(Message) == false)
+{
+    <div class="operation-result">
+        <p style="@MessageStyle">@Message</p>
+    </div>
+}
 
 @code{
     [Parameter]

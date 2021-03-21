@@ -22,10 +22,7 @@
                     <DataAnnotationsValidator />
                     <ValidationSummary style="color: red" />
 
-                    @if (string.IsNullOrEmpty(ServerMessage) == false)
-                    {
-                        <OperationResultMessage Message="@ServerMessage" IsError="@ServerMessageIsError" />
-                    }
+                    <OperationResultMessage Message="@ServerMessage" IsError="@ServerMessageIsError" />
 
                     <div class="left-half float-left">
                         <div class="create-team-input-pair">

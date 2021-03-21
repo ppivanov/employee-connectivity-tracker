@@ -15,10 +15,8 @@ else if (HasAccess == false)
 else
 {
     <div class="move-members">
-        @if (string.IsNullOrEmpty(ServerMessage) == false)
-        {
-            <OperationResultMessage Message="@ServerMessage" IsError="@ServerMessageIsError" />
-        }
+        <OperationResultMessage Message="@ServerMessage" IsError="@ServerMessageIsError" />
+
         <div class="team float-left">
             <h2>Team one</h2>
             <div class="team-selection">
