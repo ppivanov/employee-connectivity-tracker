@@ -15,8 +15,8 @@ namespace EctBlazorApp.Client.Shared
     public class CustomAuthState : CustomState
     {
         public bool IsInitialized { get; private set; } = false;
-        public bool IsAdmin { get; private set; }
-        public bool IsLeader { get; private set; }
+        public virtual bool IsAdmin { get; private set; }
+        public virtual bool IsLeader { get; private set; }
 
         public void SetIsAdmin(bool isAdmin)
         {

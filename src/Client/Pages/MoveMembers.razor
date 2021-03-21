@@ -4,141 +4,137 @@
 @using Microsoft.AspNetCore.Authorization
 @attribute [Authorize]
 
-<AuthorizeView>
-    <Authorized>
-        @if(Initialized == false)
+@if(Initialized == false)
+{
+    <Loading />
+}
+else if (HasAccess == false)
+{
+    <NoAccess />
+}
+else
+{
+    <div class="move-members">
+        @if (string.IsNullOrEmpty(ServerMessage) == false)
         {
-            <Loading />
+            <OperationResultMessage Message="@ServerMessage" IsError="@ServerMessageIsError" />
         }
-        else if (HasAccess == false)
-        {
-            <NoAccess />
-        }
-        else
-        {
-            <div class="move-members">
-                @if (string.IsNullOrEmpty(ServerMessage) == false)
-                {
-                    <OperationResultMessage Message="@ServerMessage" IsError="@ServerMessageIsError" />
-                }
-                <div class="team float-left">
-                    <h2>Team one</h2>
-                    <div class="team-selection">
-                        <input @bind="LeftTeamSelection" @bind:event="oninput" type="text"
-                               placeholder="Team name..." class="input" list="teams-left"
-                               disabled="@MemberHasBeenMoved" @onkeyup="UpdateLeftTeamSelection" />
-                    </div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <td class="member-heading-left">Members</td>
-                                <td>Actions</td>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @if (LeftTeam != null)
-                            {
-                                <tr>
-                                    <td>
-                                        @LeftTeam.LeaderNameAndEmail
-                                    </td>
-                                    <td>
-                                        <button type="button" class="btn-rm-member-size btn-disabled" disabled="true" title="Remove">
-                                            <i class="fas fa-user-times"></i>
-                                        </button>
-                                        <button type="button" class="btn-move-member-size btn-disabled" disabled="true" title="Move">
-                                            <i class="fas fa-angle-double-right"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                @foreach (var member in LeftTeam.MemberNamesAndEmails)
-                                {
-                                    <tr>
-                                        <td>
-                                            @member
-                                        </td>
-                                        <td>
-                                            <button type="button" class="btn-rm-member-size btn-rm-member-color" @onclick="() => RemoveMember(LeftTeam, member)" title="Remove">
-                                                <i class="fas fa-user-times"></i>
-                                            </button>
-                                            <button type="button" class="btn-move-member-size btn-move-member-color" @onclick="() => MoveMember(LeftTeam, RightTeam, member)" title="Move">
-                                                <i class="fas fa-angle-double-right"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                }
-                            }
-                        </tbody>
-                    </table>
-                </div>
-                <div class="team float-right">
-                    <h2>Team two</h2>
-                    <div class="team-selection">
-                        <input @bind="RightTeamSelection" @bind:event="oninput" type="text"
-                               placeholder="Team name..." class="input" list="teams-right"
-                               disabled="@MemberHasBeenMoved" @onkeyup="UpdateRightTeamSelection" />
-                    </div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <td>Actions</td>
-                                <td class="member-heading-right">Members</td>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @if (RightTeam != null)
-                            {
-                                <tr>
-                                    <td>
-                                        <button type="button" class="btn-move-member-size btn-disabled" disabled="true" title="Move">
-                                            <i class="fas fa-angle-double-left"></i>
-                                        </button>
-                                        <button type="button" class="btn-rm-member-size btn-disabled" disabled="true" title="Remove">
-                                            <i class="fas fa-user-times"></i>
-                                        </button>
-                                    </td>
-                                    <td>
-                                        @RightTeam.LeaderNameAndEmail
-                                    </td>
-                                </tr>
-                                @foreach (var member in RightTeam.MemberNamesAndEmails)
-                                {
-                                    <tr>
-                                        <td>
-                                            <button type="button" class="btn-move-member-size btn-move-member-color" @onclick="() => MoveMember(RightTeam, LeftTeam, member)" title="Move">
-                                                <i class="fas fa-angle-double-left"></i>
-                                            </button>
-                                            <button type="button" class="btn-rm-member-size btn-rm-member-color" @onclick="() => RemoveMember(RightTeam, member)" title="Remove">
-                                                <i class="fas fa-user-times"></i>
-                                            </button>
-                                        </td>
-                                        <td>
-                                            @member
-                                        </td>
-                                    </tr>
-                                }
-                            }
-                        </tbody>
-                    </table>
-                </div>
-                <datalist id="teams-left">
-                    @foreach (var team in SelectableTeamsLeft)
-                    {
-                        <option>@(team.Name)</option>
-                    }
-                </datalist>
-                <datalist id="teams-right">
-                    @foreach (var team in SelectableTeamsRight)
-                    {
-                        <option>@(team.Name)</option>
-                    }
-                </datalist>
-                <button type="button" class="btn-submit-form" @onclick="SubmitChanges">Submit</button>
-                <button type="button" class="btn-reset-form" @onclick="ResetTeams">Reset</button>
+        <div class="team float-left">
+            <h2>Team one</h2>
+            <div class="team-selection">
+                <input @bind="LeftTeamSelection" @bind:event="oninput" type="text"
+                        placeholder="Team name..." class="input" list="teams-left"
+                        disabled="@MemberHasBeenMoved" @onkeyup="UpdateLeftTeamSelection" />
             </div>
-        }
-    </Authorized>
-</AuthorizeView>
+            <table>
+                <thead>
+                    <tr>
+                        <td class="member-heading-left">Members</td>
+                        <td>Actions</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (LeftTeam != null)
+                    {
+                        <tr>
+                            <td>
+                                @LeftTeam.LeaderNameAndEmail
+                            </td>
+                            <td>
+                                <button type="button" class="btn-rm-member-size btn-disabled" disabled="true" title="Remove">
+                                    <i class="fas fa-user-times"></i>
+                                </button>
+                                <button type="button" class="btn-move-member-size btn-disabled" disabled="true" title="Move">
+                                    <i class="fas fa-angle-double-right"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        @foreach (var member in LeftTeam.MemberNamesAndEmails)
+                        {
+                            <tr>
+                                <td>
+                                    @member
+                                </td>
+                                <td>
+                                    <button type="button" class="btn-rm-member-size btn-rm-member-color" @onclick="() => RemoveMember(LeftTeam, member)" title="Remove">
+                                        <i class="fas fa-user-times"></i>
+                                    </button>
+                                    <button type="button" class="btn-move-member-size btn-move-member-color" @onclick="() => MoveMember(LeftTeam, RightTeam, member)" title="Move">
+                                        <i class="fas fa-angle-double-right"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="team float-right">
+            <h2>Team two</h2>
+            <div class="team-selection">
+                <input @bind="RightTeamSelection" @bind:event="oninput" type="text"
+                        placeholder="Team name..." class="input" list="teams-right"
+                        disabled="@MemberHasBeenMoved" @onkeyup="UpdateRightTeamSelection" />
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <td>Actions</td>
+                        <td class="member-heading-right">Members</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (RightTeam != null)
+                    {
+                        <tr>
+                            <td>
+                                <button type="button" class="btn-move-member-size btn-disabled" disabled="true" title="Move">
+                                    <i class="fas fa-angle-double-left"></i>
+                                </button>
+                                <button type="button" class="btn-rm-member-size btn-disabled" disabled="true" title="Remove">
+                                    <i class="fas fa-user-times"></i>
+                                </button>
+                            </td>
+                            <td>
+                                @RightTeam.LeaderNameAndEmail
+                            </td>
+                        </tr>
+                        @foreach (var member in RightTeam.MemberNamesAndEmails)
+                        {
+                            <tr>
+                                <td>
+                                    <button type="button" class="btn-move-member-size btn-move-member-color" @onclick="() => MoveMember(RightTeam, LeftTeam, member)" title="Move">
+                                        <i class="fas fa-angle-double-left"></i>
+                                    </button>
+                                    <button type="button" class="btn-rm-member-size btn-rm-member-color" @onclick="() => RemoveMember(RightTeam, member)" title="Remove">
+                                        <i class="fas fa-user-times"></i>
+                                    </button>
+                                </td>
+                                <td>
+                                    @member
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+        <datalist id="teams-left">
+            @foreach (var team in SelectableTeamsLeft)
+            {
+                <option>@(team.Name)</option>
+            }
+        </datalist>
+        <datalist id="teams-right">
+            @foreach (var team in SelectableTeamsRight)
+            {
+                <option>@(team.Name)</option>
+            }
+        </datalist>
+        <button type="button" class="btn-submit-form" @onclick="SubmitChanges">Submit</button>
+        <button type="button" class="btn-reset-form" @onclick="ResetTeams">Reset</button>
+    </div>
+}
 
 @code{
 
