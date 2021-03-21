@@ -1,7 +1,7 @@
 /* Adapted from https://www.w3schools.com/howto/tryit.asp?filename=tryhow_js_sidenav*/
 .sidenav {
-	/* height: 23rem; */
-	width: 0;
+	min-height: 20rem;
+	width: 0px;
 	position: fixed;
 	z-index: 1;
 	top: 40vh;

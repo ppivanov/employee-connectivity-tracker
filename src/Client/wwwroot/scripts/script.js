@@ -40,11 +40,30 @@ const toggleUserDropdown = () => {
 }
 
 const openNav = () => {
-	document.getElementById('mySidenav').style.width = '20em'
+	if (
+		document.getElementById('mySidenav').style.width !== '0px' &&
+		document.getElementById('mySidenav').style.width !== ''
+	) {
+		closeNav()
+	} else {
+		document.getElementById('mySidenav').style.width = '20em'
+		window.addEventListener(
+			'click',
+			() => {
+				if (
+					document.getElementById('mySidenav').style.width !== '0px' &&
+					document.getElementById('mySidenav').style.width !== ''
+				) {
+					closeNav()
+				}
+			},
+			true
+		)
+	}
 }
 
 const closeNav = () => {
-	document.getElementById('mySidenav').style.width = '0'
+	document.getElementById('mySidenav').style.width = '0px'
 }
 
 const eventsChartDivId = 'events-chart'
