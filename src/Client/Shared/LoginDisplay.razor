@@ -8,11 +8,11 @@
         <AuthorizeView>
             <Authorized>
                 <div class="logout-display unselectable">
-                    <p onclick="toggleUserDropdown()">
+                    <p id="logout-display-toggle" onclick="toggleUserDropdown()">
                         @context.User.GetUserEmail()
                         <i class="arrow down"></i>
                     </p>
-                    <div id="dropdown" class="display-none">
+                    <div id="dropdown">
                         @for (int i = 0; i < GetSplitUserDisplayName(context).Length; i++)
                         {
                             <div class="header-username">

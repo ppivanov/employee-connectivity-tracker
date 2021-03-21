@@ -21,10 +21,6 @@ body {
 
 /* Misc */
 
-.display-none {
-	display: none;
-}
-
 .no-link-style {
 	text-decoration: none;
 	color: inherit;

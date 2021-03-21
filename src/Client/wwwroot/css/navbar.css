@@ -103,6 +103,7 @@
 
 #dropdown {
 	position: absolute;
+	display: none;
 	width: 15vw;
 	height: auto;
 	margin-top: 1em;

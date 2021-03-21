@@ -35,35 +35,51 @@ const resetInputField = (elementId) => {
 }
 
 const toggleUserDropdown = () => {
-	let element = document.getElementById('dropdown')
-	element.classList.toggle('display-none')
+	if (isUserDropdownOpen()) {
+		closeUserDropdown()
+	} else {
+		openUserDropdown()
+	}
+}
+const openUserDropdown = () => {
+	document.getElementById('dropdown').style.display = 'block'
+	window.addEventListener(
+		'click',
+		(e) => {
+			if (e.target.id != 'logout-display-toggle') {
+				closeUserDropdown()
+			}
+		},
+		true
+	)
+}
+const closeUserDropdown = () => {
+	document.getElementById('dropdown').style.display = 'none'
+}
+const isUserDropdownOpen = () => {
+	const dropdownDisplay = document.getElementById('dropdown').style.display
+	const isOpen = dropdownDisplay !== 'none' && dropdownDisplay !== ''
+	return isOpen
 }
 
 const openNav = () => {
-	if (
-		document.getElementById('mySidenav').style.width !== '0px' &&
-		document.getElementById('mySidenav').style.width !== ''
-	) {
-		closeNav()
-	} else {
-		document.getElementById('mySidenav').style.width = '20em'
-		window.addEventListener(
-			'click',
-			() => {
-				if (
-					document.getElementById('mySidenav').style.width !== '0px' &&
-					document.getElementById('mySidenav').style.width !== ''
-				) {
-					closeNav()
-				}
-			},
-			true
-		)
-	}
+	document.getElementById('mySidenav').style.width = '20em'
+	window.addEventListener(
+		'click',
+		() => {
+			closeNav()
+		},
+		true
+	)
 }
-
 const closeNav = () => {
 	document.getElementById('mySidenav').style.width = '0px'
+}
+const isNavOpen = () => {
+	const isOpen =
+		document.getElementById('mySidenav').style.width !== '0px' &&
+		document.getElementById('mySidenav').style.width !== ''
+	return isOpen
 }
 
 const eventsChartDivId = 'events-chart'
