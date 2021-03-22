@@ -1,0 +1,22 @@
+<div class="view-notification-options">
+    <h3>Notification options</h3>
+
+    <p>Points threshold: @Options.PointsThreshold</p>
+    <p>Margin for notifications: @(Options.MarginForNotification)%</p>
+    <p>Notified individuals:</p>
+    <table>
+        <tbody>
+            @foreach (var notifiedUser in Options.UsersToNotify)
+            {
+                <tr class="notified">
+                    <td>@notifiedUser</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@code{
+    [Parameter]
+    public NotificationOptionsResponse Options { get; set; }
+}

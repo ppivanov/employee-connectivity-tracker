@@ -53,8 +53,8 @@
 
 .collaborators-list p {
 	float: left;
-	font-size: 1.2em;
-	padding: 0.5em;
+	font-size: 1.1em;
+	padding: 0.2em;
 	margin-left: 10%;
 	width: 100%;
 	height: 3em;
@@ -93,4 +93,11 @@
 	width: 25%;
 	height: 60%;
 	margin-top: 5em;
+}
+.dashboard .notification-options {
+	width: 40em;
+	height: 25em;
+	margin-top: -12em;
+	margin-left: 0em;
+	float: left;
 }

@@ -79,21 +79,7 @@
                         <div class="left-half">
                             <h3>Members:</h3>
                             <div class="notification-options">
-                                <h3>Notification options</h3>
-
-                                <p>Points threshold: @SelectedTeam.CurrentNotificationOptions.PointsThreshold</p>
-                                <p>Margin for notifications: @(SelectedTeam.CurrentNotificationOptions.MarginForNotification)%</p>
-                                <p>Notified individuals:</p>
-                                <table>
-                                    <tbody>
-                                        @foreach (var notifiedUser in SelectedTeam.CurrentNotificationOptions.UsersToNotify)
-                                        {
-                                            <tr class="notified">
-                                                <td>@notifiedUser</td>
-                                            </tr>
-                                        }
-                                    </tbody>
-                                </table>
+                                <NotificationOptions Options="@SelectedTeam.CurrentNotificationOptions" />
                             </div>
                         </div>
                         <div class="right-half">

@@ -1,0 +1,17 @@
+.view-notification-options > h3 {
+	text-align: center;
+	padding: 1em;
+	border-bottom: 1px solid lightgray;
+}
+
+.view-notification-options > p {
+	padding: 0.5em;
+}
+.view-notification-options > table {
+	margin-left: 20%;
+	width: 80%;
+}
+.view-notification-options .notified {
+	display: block;
+	padding: 0.5em;
+}

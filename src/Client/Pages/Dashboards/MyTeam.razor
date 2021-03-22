@@ -58,45 +58,15 @@
                                 }
                             </div>
                         </div>
-                        <div class="points-threshold">
-                            @if (IsSubmitting)
-                            {
-                                <p>Submitting, please wait.</p>
-                            }
-                            else
-                            {
-                                @if (CurrentNotificationOptions == null)
-                                {
-                                    <p>Loading current points threshold for notifications...</p>
-                                }
-                                else if (CurrentNotificationOptions.PointsThreshold == -1)
-                                {
-                                    <p>There was an error fetching current notifications threshold.</p>
-                                }
-                                else
-                                {
-                                    <p>Current threshold for notifications: @CurrentNotificationOptions.PointsThreshold</p>
-                                    <p>Current margin for notifications: @CurrentNotificationOptions.MarginForNotification%</p>
-                                    <p>Addtional users to notify:</p>
-                                    <table>
-                                        @foreach (var email in CurrentNotificationOptions.UsersToNotify)
-                                        {
-                                            <tr>
-                                                <td>
-                                                    <p>@email</p>
-                                                </td>
-                                            </tr>
-                                        }
-                                    </table>
-                                }
-                            }
-                        </div>
                     </div>
                     <div class="emails-chart-container float-left">
                         <div id="emails-chart"></div>
                     </div>
                     <div class="events-chart-container float-left">
                         <div id="events-chart"></div>
+                    </div>
+                    <div class="notification-options">
+                        <NotificationOptions Options="@CurrentNotificationOptions" />
                     </div>
                 </div>
             }
