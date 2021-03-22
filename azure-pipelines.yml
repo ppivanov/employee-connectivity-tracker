@@ -36,10 +36,15 @@ stages:
         command: 'build'
         projects: '**/EctBlazorApp.Server.csproj'
     - task: DotNetCoreCLI@2
-      displayName: Run Tests
+      displayName: Run Server UTs
       inputs:
         command: 'test'
         projects: '**/EctBlazorApp.ServerTests.csproj'
+    - task: DotNetCoreCLI@2
+      displayName: Run Blazor components UTs
+      inputs:
+        command: 'test'
+        projects: '**/EctBlazorApp.ClientTests.csproj'
 
 - stage: Release  
   displayName: Release stage
