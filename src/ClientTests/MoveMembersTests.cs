@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.JSInterop;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -83,7 +84,24 @@ namespace EctBlazorApp.ClientTests
         }
 
         [TestMethod]
-        public void SelectTeam()
+        [ExpectedException(typeof(ElementNotFoundException))]
+        public void SelectTeam_NoMatch()
+        {
+            AddScopedServices(isAdmin: true, isLeader: false);
+            mockApi.Setup(ma => ma.FetchAllTeams()).Returns(MockAllTeamsResponseFromApi());
+
+            var component = testContext.RenderComponent<CascadingAuthenticationState>(x => x.AddChildContent<MoveMembers>());
+
+            var leftTeamInputField = component.Find("#rt-selection");                                                       // get the right team selection input field
+
+            const string testTeam = "test ";
+            leftTeamInputField.Input(testTeam);                                                                             // enter 'test '
+
+            component.Find("#rt-leader-name-email");                                                                        // find the table cell with the leader's name and email
+        }
+
+        [TestMethod]
+        public void SelectTeam_Match_MembersDisplayed()
         {
             AddScopedServices(isAdmin: true, isLeader: false);
             mockApi.Setup(ma => ma.FetchAllTeams()).Returns(MockAllTeamsResponseFromApi());
@@ -92,11 +110,11 @@ namespace EctBlazorApp.ClientTests
 
             var leftTeamInputField = component.Find("#lt-selection");                                                       // get the left team selection input field
 
-            var testTeam = "test team";
+            const string testTeam = "test team";
             leftTeamInputField.Input(testTeam);                                                                             // enter 'test team'
 
             var testTeamLeader = "TT Leader &lt;tt.leader@ect.ie&gt;";
-            var leader = component.Find("#lt-leader-name-email");                                                       // find the table cell with the leader's name and email
+            var leader = component.Find("#lt-leader-name-email");                                                           // find the table cell with the leader's name and email
 
             var expectedListOfMembers = GetFiveMembersForTeam(testTeam, htmlEncoded: true);
             var actualListOfMembers = component.FindAll(".lt-member-name-email");
@@ -110,7 +128,138 @@ namespace EctBlazorApp.ClientTests
             Assert.IsTrue(leader.InnerHtml.Contains(testTeamLeader));
         }
 
-        // todo: select teams, move member, delete member, submit + error messages
+        [TestMethod]
+        public void MoveMember_SecondTeamNotSelected_ErrorMessage()
+        {
+            AddScopedServices(isAdmin: true, isLeader: false);
+            mockApi.Setup(ma => ma.FetchAllTeams()).Returns(MockAllTeamsResponseFromApi());
+
+            var component = testContext.RenderComponent<CascadingAuthenticationState>(x => x.AddChildContent<MoveMembers>());
+
+            var leftTeamInputField = component.Find("#lt-selection");                                                       // get the left team selection input field
+
+            const string testTeam = "test team";
+            leftTeamInputField.Input(testTeam);
+
+            var moveButton = component.Find(".lt-move-member");                                                             // get the move button for the first member in the list
+            moveButton.Click();
+
+            var messageComponent = component.FindComponent<OperationResultMessage>();
+            var messageElement = messageComponent.Find("p");
+            Assert.IsTrue(messageElement.InnerHtml.Contains("Select the other team first"));
+        }
+
+        [TestMethod]
+        public void MoveMember_Ok_MemberMoved()
+        {
+            AddScopedServices(isAdmin: true, isLeader: false);
+            mockApi.Setup(ma => ma.FetchAllTeams()).Returns(MockAllTeamsResponseFromApi());
+
+            var component = testContext.RenderComponent<CascadingAuthenticationState>(x => x.AddChildContent<MoveMembers>());
+
+            const string testTeam = "test team";
+            component.Find("#lt-selection").Input(testTeam);                                                       // select 'test team' on the left side
+
+            const string legends = "legends";
+            component.Find("#rt-selection").Input(legends);                                                      // select 'legends' on the right side
+
+            var memberNameEmailElement = component.Find(".lt-member-name-email");                                           // extract the name and email of the first member
+            var memberNameAndEmail = memberNameEmailElement.InnerHtml;
+            component.Find(".lt-move-member").Click();                                                                      // click the move button for the first member
+
+            var rightTeamMembers = component.FindAll(".rt-member-name-email");
+
+            bool isPresent = false;
+            foreach (var rightMember in rightTeamMembers)
+            {
+                isPresent = rightMember.InnerHtml.Contains(memberNameAndEmail);
+                if (isPresent) break;
+            }
+
+            Assert.IsTrue(isPresent);
+        }
+
+        [TestMethod]
+        public void SubmitChanges_Ok_Saved()
+        {
+            const string fakeApiResponse = "Success";
+            AddScopedServices(isAdmin: true, isLeader: false);
+            mockApi.Setup(ma => ma.FetchAllTeams()).Returns(MockAllTeamsResponseFromApi());
+            mockApi.Setup(ma => ma.SubmitMoveMemberTeams(It.IsAny<List<EctTeamRequestDetails>>()))
+                .Returns(Task.FromResult((true, fakeApiResponse)));
+
+            var component = testContext.RenderComponent<CascadingAuthenticationState>(x => x.AddChildContent<MoveMembers>());
+
+            const string testTeam = "test team";
+            component.Find("#lt-selection").Input(testTeam);                                                                // select 'test team' on the left side
+
+            const string legends = "legends";
+            component.Find("#rt-selection").Input(legends);                                                                 // select 'legends' on the right side
+
+            component.Find(".lt-move-member").Click();                                                                      // click the move button for the first member
+
+            component.Find(".btn-submit-form").Click();                                                                     // click the submit button
+
+            var messageComponent = component.FindComponent<OperationResultMessage>();
+            var messageElement = messageComponent.Find("p");
+            Assert.IsTrue(messageElement.InnerHtml.Contains(fakeApiResponse));
+        }
+
+        [TestMethod]
+        public void SubmitChanges_NoChanges_ErrorMessage()
+        {
+            AddScopedServices(isAdmin: true, isLeader: false);
+
+            var component = testContext.RenderComponent<CascadingAuthenticationState>(x => x.AddChildContent<MoveMembers>());
+
+            component.Find(".btn-submit-form").Click();                                                                     // click the submit button
+
+            var messageComponent = component.FindComponent<OperationResultMessage>();
+            var messageElement = messageComponent.Find("p");
+            Assert.IsTrue(messageElement.InnerHtml.Contains("No members have been moved"));
+        }
+
+        [TestMethod]
+        public void ResetTeams_Ok_MembersMovedBack()
+        {
+            const string fakeApiResponse = "Success";
+            AddScopedServices(isAdmin: true, isLeader: false);
+            mockApi.Setup(ma => ma.FetchAllTeams()).Returns(MockAllTeamsResponseFromApi());
+            mockApi.Setup(ma => ma.SubmitMoveMemberTeams(It.IsAny<List<EctTeamRequestDetails>>()))
+                .Returns(Task.FromResult((true, fakeApiResponse)));
+
+            var component = testContext.RenderComponent<CascadingAuthenticationState>(x => x.AddChildContent<MoveMembers>());
+
+            const string testTeam = "test team";
+            component.Find("#lt-selection").Input(testTeam);                                                                // select 'test team' on the left side
+
+            const string legends = "legends";
+            component.Find("#rt-selection").Input(legends);                                                                 // select 'legends' on the right side
+
+            var leftMoveButtons = component.FindAll(".lt-move-member");                                                     // Move all members from 'Test team' to Legends
+            foreach (var moveButton in leftMoveButtons)
+                moveButton.Click();
+
+            try
+            {
+                component.FindAll(".lt-member-name-email");
+                Assert.Fail();                                                                                              // there shouldn't be any members left in 'Test team'
+            }
+            catch (Exception)
+            {
+                // ok
+            }
+
+            component.Find(".btn-reset-form").Click();                                                                     // click the reset button
+
+            var leftMembers = component.FindAll(".lt-member-name-email");
+            var expectedMemberName = GetMemberFirstNameFromTeamName(testTeam).ToUpper();
+            const int expectedMemberCount = 5;
+            Assert.AreEqual(expectedMemberCount, leftMembers.Count);
+
+            foreach (var member in leftMembers)
+                Assert.IsTrue(member.InnerHtml.Contains($"{expectedMemberName} Member"));
+        }
 
         private void AddScopedServices(bool isAdmin, bool isLeader)
         {

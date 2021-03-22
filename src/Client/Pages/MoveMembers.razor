@@ -54,10 +54,10 @@ else
                                     @member
                                 </td>
                                 <td>
-                                    <button type="button" class="btn-rm-member-size btn-rm-member-color" @onclick="() => RemoveMember(LeftTeam, member)" title="Remove">
+                                    <button type="button" class="lt-rm-member btn-rm-member-size btn-rm-member-color" @onclick="() => RemoveMember(LeftTeam, member)" title="Remove">
                                         <i class="fas fa-user-times"></i>
                                     </button>
-                                    <button type="button" class="btn-move-member-size btn-move-member-color" @onclick="() => MoveMember(LeftTeam, RightTeam, member)" title="Move">
+                                    <button type="button" class="lt-move-member btn-move-member-size btn-move-member-color" @onclick="() => MoveMember(LeftTeam, RightTeam, member)" title="Move">
                                         <i class="fas fa-angle-double-right"></i>
                                     </button>
                                 </td>
@@ -101,14 +101,14 @@ else
                         {
                             <tr>
                                 <td>
-                                    <button type="button" class="btn-move-member-size btn-move-member-color" @onclick="() => MoveMember(RightTeam, LeftTeam, member)" title="Move">
+                                    <button type="button" class="rt-move-member btn-move-member-size btn-move-member-color" @onclick="() => MoveMember(RightTeam, LeftTeam, member)" title="Move">
                                         <i class="fas fa-angle-double-left"></i>
                                     </button>
-                                    <button type="button" class="btn-rm-member-size btn-rm-member-color" @onclick="() => RemoveMember(RightTeam, member)" title="Remove">
+                                    <button type="button" class="rt-rm-member btn-rm-member-size btn-rm-member-color" @onclick="() => RemoveMember(RightTeam, member)" title="Remove">
                                         <i class="fas fa-user-times"></i>
                                     </button>
                                 </td>
-                                <td>
+                                <td class="rt-member-name-email">
                                     @member
                                 </td>
                             </tr>
