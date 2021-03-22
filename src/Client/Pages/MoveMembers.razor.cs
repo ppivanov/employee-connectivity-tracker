@@ -132,12 +132,12 @@ namespace EctBlazorApp.Client.Pages
             }
         }
 
-        protected void UpdateLeftTeamSelection()
+        protected void UpdateLeftTeamSelection(ChangeEventArgs args)
         {
+            LeftTeamSelection = args.Value.ToString();
+
             ResetServerMessage();
-            if (InAppTeams == null                                                                                      // if there are no in-app teams, no text input, or the team has already been selected, return null
-                || string.IsNullOrWhiteSpace(LeftTeamSelection) 
-                || SameTeamSelection)
+            if (InAppTeams == null || SameTeamSelection)                                                                                     // if there are no in-app teams, no text input, or the team has already been selected, return null
                 return;
 
             LeftTeam = InAppTeams.FirstOrDefault(t => t.Name.ToLower().Equals(LeftTeamSelection.ToLower()));
@@ -145,12 +145,12 @@ namespace EctBlazorApp.Client.Pages
                 InitialLeftTeamRoster = LeftTeam.MemberNamesAndEmails.ToList();
         }
 
-        protected void UpdateRightTeamSelection()
+        protected void UpdateRightTeamSelection(ChangeEventArgs args)
         {
+            RightTeamSelection = args.Value.ToString();
+
             ResetServerMessage();
-            if (InAppTeams == null 
-                || string.IsNullOrWhiteSpace(RightTeamSelection)
-                || SameTeamSelection)
+            if (InAppTeams == null || SameTeamSelection)
                 return;
 
             RightTeam = InAppTeams.FirstOrDefault(t => t.Name.ToLower().Equals(RightTeamSelection.ToLower()));
