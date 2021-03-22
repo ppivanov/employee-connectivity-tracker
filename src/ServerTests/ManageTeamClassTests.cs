@@ -1,10 +1,8 @@
 ﻿using EctBlazorApp.Client.Pages;
 using EctBlazorApp.Shared;
-using EctBlazorApp.Shared.Entities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using static EctBlazorApp.Shared.SharedMethods;

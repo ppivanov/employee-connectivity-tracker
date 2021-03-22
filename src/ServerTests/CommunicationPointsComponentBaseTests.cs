@@ -1,7 +1,6 @@
 ﻿using EctBlazorApp.Client.Pages;
 using EctBlazorApp.Shared.Entities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
