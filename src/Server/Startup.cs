@@ -85,6 +85,12 @@ namespace EctBlazorApp.Server
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+            app.Use(async (context, next) =>
+            {
+                context.Response.Headers.Add("X-Frame-Options", "SAMEORIGIN");
+                context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
+                await next();
+            });
 
             app.UseHttpsRedirection();
             app.UseBlazorFrameworkFiles();
@@ -93,6 +99,7 @@ namespace EctBlazorApp.Server
             app.UseRouting();
 
             app.UseCors();
+
 
             app.UseAuthentication();
             app.UseAuthorization();
