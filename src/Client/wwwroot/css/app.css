@@ -177,3 +177,10 @@ body {
 	-webkit-transform: rotate(45deg);
 }
 /* END of Login display */
+
+@media only screen and (max-width: 1920px) {
+	.btn-reset-form,
+	.btn-submit-form {
+		margin-bottom: 2em;
+	}
+}
