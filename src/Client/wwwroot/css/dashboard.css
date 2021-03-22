@@ -101,3 +101,26 @@
 	margin-left: 0em;
 	float: left;
 }
+
+@media only screen and (max-width: 1920px) {
+	.top-collaborators {
+		width: 25em;
+		height: 36em;
+		margin-top: 1em;
+		margin-left: 1em;
+	}
+
+	.collaborators-list p {
+		font-size: 1em;
+		padding: 0.1em;
+		height: 2.5em;
+	}
+
+	.collaborators-list button {
+		margin-top: 0em;
+	}
+	.dashboard .notification-options {
+		margin-top: -15em;
+		font-size: 0.9em;
+	}
+}
