@@ -1,0 +1,26 @@
+.home {
+	margin-top: 15em;
+	text-align: center;
+}
+.home > a,
+.home > p {
+	font-size: 1.2em;
+	text-align: center;
+	margin: 5em auto auto auto;
+}
+
+.home > a {
+	display: block;
+	width: 9em;
+	text-align: center;
+	text-decoration: none;
+	color: white;
+	background-color: rgb(4, 137, 4);
+	border: thin solid black;
+	border-radius: 5px;
+	padding: 0.8em 1.5em;
+}
+
+.home > a:hover {
+	background-color: rgb(1, 82, 1);
+}
