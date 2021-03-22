@@ -4,105 +4,100 @@
 @using Microsoft.AspNetCore.Authorization
 @attribute [Authorize]
 
-<AuthorizeView>
-    <Authorized>
+@if(Initialized == false)
+{
+    <Loading />
+}
+else if(AuthState.IsAdmin == false)
+{
+    <NoAccess />
+}
+else
+{
+    <OperationResultMessage Message="@ServerMessage" IsError="@ServerMessageIsError" />
 
-        @if(Initialized == false)
-        {
-            <Loading />
-        }
-        else if(AuthState.IsAdmin == false)
-        {
-            <NoAccess />
-        }
-        else
-        {
-            <OperationResultMessage Message="@ServerMessage" IsError="@ServerMessageIsError" />
-
-            <div class="view-teams">
-                <div class="teams-list">
+    <div class="view-teams">
+        <div class="teams-list">
+            <table>
+                <thead>
+                    <tr>
+                        <td>
+                            Teams
+                        </td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="filter-teams">
+                        <td>
+                            <i id="search-icon" class="fas fa-search"></i>
+                            <input type="text" id="filter-users" placeholder="Filter..." @oninput="(args) => UpdateFilterTeamsInput(args)">
+                        </td>
+                    </tr>
+                    @if(Teams == null || Teams.Count < 1){
+                        <tr>
+                            <td>
+                                No teams available
+                            </td>
+                        </tr>
+                    }
+                    else 
+                    {
+                        @foreach (var team in Teams.Where(t => t.Name.ToLower().Contains(FilterTeamsInput.ToLower())))
+                        {
+                            <tr class="team-summary" @onclick="() => ExpandTeam(team)">
+                                <td>
+                                    <span class="team-name">
+                                        @team.Name
+                                    </span>
+                                    <span class="member-count">
+                                        @team.MemberNamesAndEmails.Count members
+                                    </span>
+                                    <span class="team-lead">
+                                        @team.LeaderNameAndEmail
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="selected-team">
+            @if(SelectedTeam == null){
+                <h2>Please, select a team.</h2>
+            } 
+            else 
+            {
+                <h2>@SelectedTeam.Name</h2>
+                <span class="team-lead">
+                    <h3>Leader:</h3>
+                    <p>@SelectedTeam.LeaderNameAndEmail</p>
+                </span>
+                <div class="left-half">
+                    <h3>Members:</h3>
+                    <div class="notification-options">
+                        <NotificationOptions Options="@SelectedTeam.CurrentNotificationOptions" />
+                    </div>
+                </div>
+                <div class="right-half">
                     <table>
-                        <thead>
-                            <tr>
-                                <td>
-                                    Teams
-                                </td>
-                            </tr>
-                        </thead>
                         <tbody>
-                            <tr class="filter-teams">
-                                <td>
-                                    <i id="search-icon" class="fas fa-search"></i>
-                                    <input type="text" id="filter-users" placeholder="Filter..." @oninput="(args) => UpdateFilterTeamsInput(args)">
-                                </td>
-                            </tr>
-                            @if(Teams == null || Teams.Count < 1){
-                                <tr>
+                            @foreach (var member in SelectedTeam.MemberNamesAndEmails)
+                            {
+                                    <tr>
                                     <td>
-                                        No teams available
+                                        @member
                                     </td>
                                 </tr>
-                            }
-                            else 
-                            {
-                                @foreach (var team in Teams.Where(t => t.Name.ToLower().Contains(FilterTeamsInput.ToLower())))
-                                {
-                                    <tr class="team-summary" @onclick="() => ExpandTeam(team)">
-                                        <td>
-                                            <span class="team-name">
-                                                @team.Name
-                                            </span>
-                                            <span class="member-count">
-                                                @team.MemberNamesAndEmails.Count members
-                                            </span>
-                                            <span class="team-lead">
-                                                @team.LeaderNameAndEmail
-                                            </span>
-                                        </td>
-                                    </tr>
-                                }
                             }
                         </tbody>
                     </table>
                 </div>
-                <div class="selected-team">
-                    @if(SelectedTeam == null){
-                        <h2>Please, select a team.</h2>
-                    } 
-                    else 
-                    {
-                        <h2>@SelectedTeam.Name</h2>
-                        <span class="team-lead">
-                            <h3>Leader:</h3>
-                            <p>@SelectedTeam.LeaderNameAndEmail</p>
-                        </span>
-                        <div class="left-half">
-                            <h3>Members:</h3>
-                            <div class="notification-options">
-                                <NotificationOptions Options="@SelectedTeam.CurrentNotificationOptions" />
-                            </div>
-                        </div>
-                        <div class="right-half">
-                            <table>
-                                <tbody>
-                                    @foreach (var member in SelectedTeam.MemberNamesAndEmails)
-                                    {
-                                         <tr>
-                                            <td>
-                                                @member
-                                            </td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
-                        <button class="delete-team btn-reset-form" title="Delete team" @onclick="async () => await DeleteSelectedTeam()"><i class="fas fa-trash-alt"></i></button>
-                    }
-                </div>
-            </div>
-        }
-    </Authorized>
-</AuthorizeView>
+                <button class="delete-team btn-reset-form" title="Delete team" @onclick="async () => await DeleteSelectedTeam()"><i class="fas fa-trash-alt"></i></button>
+            }
+        </div>
+    </div>
+}
 
 @code {
 

@@ -5,177 +5,173 @@
 @using Microsoft.AspNetCore.Authorization
 @attribute [Authorize]
 
-<AuthorizeView>
-    <Authorized>
-        <div class="create-team">
-            @if (Initialized == false)
-            {
-                <Loading />
-            }
-            else if (HasAccess == false)
-            {
-                <NoAccess />
-            }
-            else
-            {
-                <EditForm Model=TeamDetails OnValidSubmit=@SendTeamData Context="formContext">
-                    <DataAnnotationsValidator />
-                    <ValidationSummary style="color: red" />
+<div class="create-team">
+    @if (Initialized == false)
+    {
+        <Loading />
+    }
+    else if (HasAccess == false)
+    {
+        <NoAccess />
+    }
+    else
+    {
+        <EditForm Model=TeamDetails OnValidSubmit=@SendTeamData Context="formContext">
+            <DataAnnotationsValidator />
+            <ValidationSummary style="color: red" />
 
-                    <OperationResultMessage Message="@ServerMessage" IsError="@ServerMessageIsError" />
+            <OperationResultMessage Message="@ServerMessage" IsError="@ServerMessageIsError" />
 
-                    <div class="left-half float-left">
-                        <div class="create-team-input-pair">
-                            <label>Team name</label>
-                            <InputText @bind-Value=TeamDetails.Name class="form-control" id="Name" disabled="@HasTeamId" />
+            <div class="left-half float-left">
+                <div class="create-team-input-pair">
+                    <label>Team name</label>
+                    <InputText @bind-Value=TeamDetails.Name class="form-control" id="Name" disabled="@HasTeamId" />
 
-                        </div>
-                        <div class="create-team-input-pair">
-                            <label>Team lead</label>
-                            <input id="createTeamLeader" list="leaders"
-                                    @onchange="@((args) => SetLeaderNameEmail(args))"
-                                    style="@LeaderInputStyle" disabled="@HasTeamId" />
-                            <datalist id="leaders">
-                                @foreach (var leader in GetAvailableLeaders())
-                                {
-                                    <option value="@leader" />
-                                }
-                            </datalist>
-                        </div>
-                        @if (HasTeamId)
+                </div>
+                <div class="create-team-input-pair">
+                    <label>Team lead</label>
+                    <input id="createTeamLeader" list="leaders"
+                            @onchange="@((args) => SetLeaderNameEmail(args))"
+                            style="@LeaderInputStyle" disabled="@HasTeamId" />
+                    <datalist id="leaders">
+                        @foreach (var leader in GetAvailableLeaders())
                         {
-                        <div class="notification-options">
-                            <div class="notification-pair">
-                                <label>
-                                    Threshold for notifications:
-                                </label>
-                                <InputNumber @bind-Value="TeamDetails.NewNotificationOptions.PointsThreshold" class="" style="@PointsInputStyle"
-                                        placeholder="@($"{TeamDetails.CurrentNotificationOptions.PointsThreshold}")" />
-                                <span style="visibility: hidden;">%</span>
-                                <i>
-                                    <Tooltip Text="If any member generates less than the points specified in this field, the notification email will include their name." />
-                                </i>
-                            </div>
-                            <div class="notification-pair">
-                                <label>
-                                    Margin for notifications:
-                                </label>
-                                <InputNumber @bind-Value="TeamDetails.NewNotificationOptions.MarginForNotification" class="" style="@MarginInputStyle"
-                                        placeholder="@($"{TeamDetails.CurrentNotificationOptions.MarginForNotification}")" />
-                                <span>%</span>
-                                <i>
-                                    <Tooltip Text="The maximum percent difference for each member and their data generated in the past week and the week before that. 
-                                        For example: John generated 4 points in the past week and 10 in the week before. John has 60% less points." />
-                                </i>
-                            </div>
-                            <p>Users to notify:</p>
-                            <p>
-                                <input id="userToNotify_name" list="names"
-                                        @onchange="@(async (args) => await SetUserToNotifyName(args))"
-                                        placeholder="John Doe" style="@AddNotifyUserInputStyle" />
-                                <input id="userToNotify_email" list="emails"
-                                        @onchange="@(async (args) => await SetUserToNotifyEmail(args))"
-                                        placeholder="email@example.com" style="@AddNotifyUserInputStyle" />
-                                <datalist id="names">
-                                    @foreach (var memberNameAndEmail in PromptUsersForNotification)
-                                    {
-                                        <option value="@GetFullNameFromFormattedString(memberNameAndEmail)"></option>
-                                    }
-                                </datalist>
-                                <datalist id="emails">
-                                    @foreach (var memberNameAndEmail in PromptUsersForNotification)
-                                    {
-                                        <option value="@GetEmailFromFormattedString(memberNameAndEmail)"></option>
-                                    }
-                                </datalist>
-
-                                <button type="button" @onclick="async () => await AddUserToNotify()">Add user</button>
-                            </p>
-                            <table class="users-to-notify">
-                                @foreach (var nameAndEmail in NewNotificationOptions.UsersToNotify)
-                                {
-                                    <tr>
-                                        <td class="user">
-                                            <p>@nameAndEmail</p>
-                                        </td>
-                                        <td>
-                                            @if (nameAndEmail.Equals(TeamDetails.LeaderNameAndEmail))
-                                            {
-                                                <span class="btn-deselect float-right edit-notification-options-leader">
-                                                    Team lead</span>
-                                            }
-                                            else
-                                            {
-                                                <button type="button" class="btn-deselect float-right edit-notification-options-user"
-                                                        @onclick="() => RemoveUserToNotify(nameAndEmail)" title="Remove">
-                                                    <i class="fas fa-user-times"></i>
-                                                </button>
-                                            }
-                                        </td>
-                                    </tr>
-                                }
-                            </table>
-                        </div>
+                            <option value="@leader" />
                         }
+                    </datalist>
+                </div>
+                @if (HasTeamId)
+                {
+                <div class="notification-options">
+                    <div class="notification-pair">
+                        <label>
+                            Threshold for notifications:
+                        </label>
+                        <InputNumber @bind-Value="TeamDetails.NewNotificationOptions.PointsThreshold" class="" style="@PointsInputStyle"
+                                placeholder="@($"{TeamDetails.CurrentNotificationOptions.PointsThreshold}")" />
+                        <span style="visibility: hidden;">%</span>
+                        <i>
+                            <Tooltip Text="If any member generates less than the points specified in this field, the notification email will include their name." />
+                        </i>
                     </div>
-                    <table class="selected-members float-left">
-                        <thead>
-                            <tr>
-                                <td>
-                                    Selected members
-                                </td>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var selectedMember in TeamDetails.MemberNamesAndEmails)
+                    <div class="notification-pair">
+                        <label>
+                            Margin for notifications:
+                        </label>
+                        <InputNumber @bind-Value="TeamDetails.NewNotificationOptions.MarginForNotification" class="" style="@MarginInputStyle"
+                                placeholder="@($"{TeamDetails.CurrentNotificationOptions.MarginForNotification}")" />
+                        <span>%</span>
+                        <i>
+                            <Tooltip Text="The maximum percent difference for each member and their data generated in the past week and the week before that. 
+                                For example: John generated 4 points in the past week and 10 in the week before. John has 60% less points." />
+                        </i>
+                    </div>
+                    <p>Users to notify:</p>
+                    <p>
+                        <input id="userToNotify_name" list="names"
+                                @onchange="@(async (args) => await SetUserToNotifyName(args))"
+                                placeholder="John Doe" style="@AddNotifyUserInputStyle" />
+                        <input id="userToNotify_email" list="emails"
+                                @onchange="@(async (args) => await SetUserToNotifyEmail(args))"
+                                placeholder="email@example.com" style="@AddNotifyUserInputStyle" />
+                        <datalist id="names">
+                            @foreach (var memberNameAndEmail in PromptUsersForNotification)
                             {
-                                <tr>
-                                    <td>
-                                        @selectedMember
-                                        <button type="button" class="btn-deselect float-right" @onclick="() => RemoveFromSelected(selectedMember)" title="Remove">
-                                            <i class="fas fa-user-times"></i></button>
-                                    </td>
-                                </tr>
+                                <option value="@GetFullNameFromFormattedString(memberNameAndEmail)"></option>
                             }
-                        </tbody>
-                    </table>
-                    <table class="available-users float-right">
-                        <thead class="float-right">
-                            <tr>
-                                <td>
-                                    Available for selection
-                                </td>
-                                <td>
-                                    <i id="search-icon" class="fas fa-search"></i>
-                                    <input id="filter-users" placeholder="Filter..." @oninput="(args) => UpdateFilterUsersInput(args)" />
-                                </td>
-                            </tr>
-                        </thead>
-                        
-                        <tbody>
-                            @foreach (var availableMember in this.AvailableMembers.Where(al => al.ToLower().Contains(FilterUsersInput.ToLower())))
+                        </datalist>
+                        <datalist id="emails">
+                            @foreach (var memberNameAndEmail in PromptUsersForNotification)
                             {
-                                <tr>
-                                    <td>
-                                        <button type="button" class="btn-select float-left" @onclick="() => AddSelectedMember(availableMember)" title="Add as member">
-                                            <i class="fas fa-angle-double-left"></i></button>
-                                        @availableMember
-                                    </td>
-                                </tr>
+                                <option value="@GetEmailFromFormattedString(memberNameAndEmail)"></option>
                             }
-                        </tbody>
-                    </table>
+                        </datalist>
 
-                    <button type="submit" class="btn-submit-form">Submit</button>
-                    @if(HasTeamId)
+                        <button type="button" @onclick="async () => await AddUserToNotify()">Add user</button>
+                    </p>
+                    <table class="users-to-notify">
+                        @foreach (var nameAndEmail in NewNotificationOptions.UsersToNotify)
+                        {
+                            <tr>
+                                <td class="user">
+                                    <p>@nameAndEmail</p>
+                                </td>
+                                <td>
+                                    @if (nameAndEmail.Equals(TeamDetails.LeaderNameAndEmail))
+                                    {
+                                        <span class="btn-deselect float-right edit-notification-options-leader">
+                                            Team lead</span>
+                                    }
+                                    else
+                                    {
+                                        <button type="button" class="btn-deselect float-right edit-notification-options-user"
+                                                @onclick="() => RemoveUserToNotify(nameAndEmail)" title="Remove">
+                                            <i class="fas fa-user-times"></i>
+                                        </button>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </table>
+                </div>
+                }
+            </div>
+            <table class="selected-members float-left">
+                <thead>
+                    <tr>
+                        <td>
+                            Selected members
+                        </td>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var selectedMember in TeamDetails.MemberNamesAndEmails)
                     {
-                        <button type="button" class="btn-reset-form" @onclick="ResetTeamDetails">Reset</button>
+                        <tr>
+                            <td>
+                                @selectedMember
+                                <button type="button" class="btn-deselect float-right" @onclick="() => RemoveFromSelected(selectedMember)" title="Remove">
+                                    <i class="fas fa-user-times"></i></button>
+                            </td>
+                        </tr>
                     }
-                </EditForm>
+                </tbody>
+            </table>
+            <table class="available-users float-right">
+                <thead class="float-right">
+                    <tr>
+                        <td>
+                            Available for selection
+                        </td>
+                        <td>
+                            <i id="search-icon" class="fas fa-search"></i>
+                            <input id="filter-users" placeholder="Filter..." @oninput="(args) => UpdateFilterUsersInput(args)" />
+                        </td>
+                    </tr>
+                </thead>
+                
+                <tbody>
+                    @foreach (var availableMember in this.AvailableMembers.Where(al => al.ToLower().Contains(FilterUsersInput.ToLower())))
+                    {
+                        <tr>
+                            <td>
+                                <button type="button" class="btn-select float-left" @onclick="() => AddSelectedMember(availableMember)" title="Add as member">
+                                    <i class="fas fa-angle-double-left"></i></button>
+                                @availableMember
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <button type="submit" class="btn-submit-form">Submit</button>
+            @if(HasTeamId)
+            {
+                <button type="button" class="btn-reset-form" @onclick="ResetTeamDetails">Reset</button>
             }
-        </div>
-    </Authorized>
-</AuthorizeView>
+        </EditForm>
+    }
+</div>
 
 @code {
 

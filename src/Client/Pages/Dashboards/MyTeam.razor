@@ -5,75 +5,69 @@
 @using Microsoft.AspNetCore.Authorization
 @attribute [Authorize]
 
-<AuthorizeView>
-    <Authorized>
-        <div>
-
-            @if (Initialized == false)
-            {
-                <Loading />
-            }
-            else if (IsLeader == false)
-            {
-                <NoAccess />
-            }
-            else
-            {
-                <div class="dashboard">
-                    <div class="top-row float-left">
-                        <div class="date-range float-left">
-                            <DateRangePicker @bind-StartDate="FromDate" @bind-EndDate="ToDate">
-                                <ButtonsTemplate Context="pickerContext">
-                                    <button class="cancelBtn btn btn-sm btn-default"
-                                            @onclick="@pickerContext.ClickCancel" type="button">
-                                        Cancel
-                                    </button>
-                                    <button class="cancelBtn btn btn-sm btn-default"
-                                            @onclick="@(e => ResetClick(e, pickerContext))" type="button">
-                                        Reset
-                                    </button>
-                                    <button class="applyBtn btn btn-sm btn-primary" @onclick="@(e => CustomApply(e, pickerContext))"
-                                            disabled="@(pickerContext.TStartDate == null || pickerContext.TEndDate == null)"
-                                            type="button">
-                                        Apply
-                                    </button>
-                                </ButtonsTemplate>
-                            </DateRangePicker>
-                        </div>
-                        <DashboardSummaryStats 
-                            EmailsSentCount="EmailsSent"
-                            EmailsReceivedCount="EmailsReceived"
-                            NumberOfMeetings="NumberOfMeetings"
-                            FormattedTimeInMeeting="@FormattedTimeInMeeting" />
-                    </div>
-                    <div class="top-collaborators float-left">
-                        <h2>Activity distribution</h2>
-                        <div class="collaborators-list">
-                            <div class="collaborator">
-                                @foreach (var user in CollaboratorsDict)
-                                {
-                                    <p>@user.Key (@Math.Round(user.Value, 2) points) 
-                                        <button type="button" @onclick="async () => await RedirectToDasboard(user.Key)" title="View data">
-                                            <i class="fas fa-external-link-alt"></i></button></p>
-                                }
-                            </div>
-                        </div>
-                    </div>
-                    <div class="emails-chart-container float-left">
-                        <div id="emails-chart"></div>
-                    </div>
-                    <div class="events-chart-container float-left">
-                        <div id="events-chart"></div>
-                    </div>
-                    <div class="notification-options">
-                        <NotificationOptions Options="@CurrentNotificationOptions" />
+<div>
+    @if (Initialized == false)
+    {
+        <Loading />
+    }
+    else if (IsLeader == false)
+    {
+        <NoAccess />
+    }
+    else
+    {
+        <div class="dashboard">
+            <div class="top-row float-left">
+                <div class="date-range float-left">
+                    <DateRangePicker @bind-StartDate="FromDate" @bind-EndDate="ToDate">
+                        <ButtonsTemplate Context="pickerContext">
+                            <button class="cancelBtn btn btn-sm btn-default"
+                                    @onclick="@pickerContext.ClickCancel" type="button">
+                                Cancel
+                            </button>
+                            <button class="cancelBtn btn btn-sm btn-default"
+                                    @onclick="@(e => ResetClick(e, pickerContext))" type="button">
+                                Reset
+                            </button>
+                            <button class="applyBtn btn btn-sm btn-primary" @onclick="@(e => CustomApply(e, pickerContext))"
+                                    disabled="@(pickerContext.TStartDate == null || pickerContext.TEndDate == null)"
+                                    type="button">
+                                Apply
+                            </button>
+                        </ButtonsTemplate>
+                    </DateRangePicker>
+                </div>
+                <DashboardSummaryStats 
+                    EmailsSentCount="EmailsSent"
+                    EmailsReceivedCount="EmailsReceived"
+                    NumberOfMeetings="NumberOfMeetings"
+                    FormattedTimeInMeeting="@FormattedTimeInMeeting" />
+            </div>
+            <div class="top-collaborators float-left">
+                <h2>Activity distribution</h2>
+                <div class="collaborators-list">
+                    <div class="collaborator">
+                        @foreach (var user in CollaboratorsDict)
+                        {
+                            <p>@user.Key (@Math.Round(user.Value, 2) points) 
+                                <button type="button" @onclick="async () => await RedirectToDasboard(user.Key)" title="View data">
+                                    <i class="fas fa-external-link-alt"></i></button></p>
+                        }
                     </div>
                 </div>
-            }
+            </div>
+            <div class="emails-chart-container float-left">
+                <div id="emails-chart"></div>
+            </div>
+            <div class="events-chart-container float-left">
+                <div id="events-chart"></div>
+            </div>
+            <div class="notification-options">
+                <NotificationOptions Options="@CurrentNotificationOptions" />
+            </div>
         </div>
-    </Authorized>
-</AuthorizeView>
-
+    }
+</div>
 
 @code {
 

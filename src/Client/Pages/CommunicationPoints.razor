@@ -4,68 +4,64 @@
 @using Microsoft.AspNetCore.Authorization
 @attribute [Authorize]
 
-<AuthorizeView>
-    <Authorized>
-        <div class="communicaiton-points">
-            @if (Initialized == false)
+<div class="communicaiton-points">
+    @if (Initialized == false)
+    {
+        <Loading />
+    }
+    else if (HasAccess == false)
+    {
+        <NoAccess />
+    }
+    else
+    {
+        <h2>Manage Communcation Mediums</h2>
+        @if (string.IsNullOrEmpty(ServerMessage) == false)
+        {
+            <p style="@ServerMessageInlineStyle">@ServerMessage</p>
+        }
+        <EditForm Model="PointsAndToggles" OnSubmit="@(async () => await SubmitPoints())" Context="formContext">
+            @foreach (var medium in PointsAndToggles.Keys)
             {
-                <Loading />
-            }
-            else if (HasAccess == false)
-            {
-                <NoAccess />
-            }
-            else
-            {
-                <h2>Manage Communcation Mediums</h2>
-                @if (string.IsNullOrEmpty(ServerMessage) == false)
-                {
-                    <p style="@ServerMessageInlineStyle">@ServerMessage</p>
-                }
-                <EditForm Model="PointsAndToggles" OnSubmit="@(async () => await SubmitPoints())" Context="formContext">
-                    @foreach (var medium in PointsAndToggles.Keys)
+                <div class="comms-input-pair">
+                    <p>
+                        @medium.Medium
+                        @if (PointsAndToggles[medium])
+                        {
+                            <InputNumber @bind-Value=medium.Points class="" id="Weight" style="@PointInputStyle" />
+                        }
+                        else
+                        {
+                            @medium.Points
+                        }
+                        @(medium.Points > 1 ? "points" : "point")
+                    </p>
+                    @if (medium.Medium.Contains("Email") || medium.Medium.Contains("Meetings"))
                     {
-                        <div class="comms-input-pair">
-                            <p>
-                                @medium.Medium
-                                @if (PointsAndToggles[medium])
-                                {
-                                    <InputNumber @bind-Value=medium.Points class="" id="Weight" style="@PointInputStyle" />
-                                }
-                                else
-                                {
-                                    @medium.Points
-                                }
-                                @(medium.Points > 1 ? "points" : "point")
-                            </p>
-                            @if (medium.Medium.Contains("Email") || medium.Medium.Contains("Meetings"))
+                        <div class="comms-actions">
+                            @if (PointsAndToggles[medium])
                             {
-                                <div class="comms-actions">
-                                    @if (PointsAndToggles[medium])
-                                    {
-                                        <button type="button" class="btn-check" title="Stop editting" @onclick="() => SavePoints(medium)"><i class="fas fa-check"></i></button>
-                                    }
-                                    else
-                                    {
-                                        <button type="button" class="btn-edit" title="Edit" @onclick="() => EditPoints(medium)"><i class="fas fa-edit"></i></button>
-                                    }
-                                    <button type="button" class="btn-erase" title="Clear" @onclick="() => ClearPoints(medium)"><i class="fas fa-eraser"></i></button>
-                                </div>
+                                <button type="button" class="btn-check" title="Stop editting" @onclick="() => SavePoints(medium)"><i class="fas fa-check"></i></button>
                             }
+                            else
+                            {
+                                <button type="button" class="btn-edit" title="Edit" @onclick="() => EditPoints(medium)"><i class="fas fa-edit"></i></button>
+                            }
+                            <button type="button" class="btn-erase" title="Clear" @onclick="() => ClearPoints(medium)"><i class="fas fa-eraser"></i></button>
                         </div>
                     }
-                    <p class="total-points">Total points: @TotalPoints</p>
-                    <div class="note">
-                        <p>
-                            <b>Note</b>: You cannot assign more than 100 to a medium.
-                        </p>
-                    </div>
-                    <button type="submit" class="btn-submit-form" disabled="@IsSubmitting">Submit</button>
-                </EditForm>
+                </div>
             }
-        </div>
-    </Authorized>
-</AuthorizeView>
+            <p class="total-points">Total points: @TotalPoints</p>
+            <div class="note">
+                <p>
+                    <b>Note</b>: You cannot assign more than 100 to a medium.
+                </p>
+            </div>
+            <button type="submit" class="btn-submit-form" disabled="@IsSubmitting">Submit</button>
+        </EditForm>
+    }
+</div>
 
 @code {
 

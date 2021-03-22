@@ -7,64 +7,58 @@
 @using Microsoft.AspNetCore.Authorization
 @attribute [Authorize]
 
-<AuthorizeView>
-    <Authorized>
-
-        <div class="dashboard">
-        @if(string.IsNullOrWhiteSpace(ServerMessage) == false)
-        {
-            <OperationResultMessage Message="@ServerMessage" />
-        }
-        else
-        {
-            <div class="top-row float-left">
-                <div class="date-range float-left">
-                    <DateRangePicker @bind-StartDate="FromDate" @bind-EndDate="ToDate">
-                        <ButtonsTemplate Context="pickerContext">
-                            <button class="cancelBtn btn btn-sm btn-default"
-                                    @onclick="@pickerContext.ClickCancel" type="button">
-                                Cancel
-                            </button>
-                            <button class="cancelBtn btn btn-sm btn-default"
-                                    @onclick="@(e => ResetClick(e, pickerContext))" type="button">
-                                Reset
-                            </button>
-                            <button class="applyBtn btn btn-sm btn-primary" @onclick="@(e => CustomApply(e, pickerContext))"
-                                    disabled="@(pickerContext.TStartDate == null || pickerContext.TEndDate == null)"
-                                    type="button">
-                                Apply
-                            </button>
-                        </ButtonsTemplate>
-                    </DateRangePicker>
-                </div>
-                <DashboardSummaryStats 
-                    EmailsSentCount="EmailsSentCount" 
-                    EmailsReceivedCount="EmailsReceivedCount" 
-                    NumberOfMeetings="NumberOfMeetings" 
-                    FormattedTimeInMeeting="@FormattedTimeInMeeting" />
+<div class="dashboard">
+    @if(string.IsNullOrWhiteSpace(ServerMessage) == false)
+    {
+        <OperationResultMessage Message="@ServerMessage" />
+    }
+    else
+    {
+        <div class="top-row float-left">
+            <div class="date-range float-left">
+                <DateRangePicker @bind-StartDate="FromDate" @bind-EndDate="ToDate">
+                    <ButtonsTemplate Context="pickerContext">
+                        <button class="cancelBtn btn btn-sm btn-default"
+                                @onclick="@pickerContext.ClickCancel" type="button">
+                            Cancel
+                        </button>
+                        <button class="cancelBtn btn btn-sm btn-default"
+                                @onclick="@(e => ResetClick(e, pickerContext))" type="button">
+                            Reset
+                        </button>
+                        <button class="applyBtn btn btn-sm btn-primary" @onclick="@(e => CustomApply(e, pickerContext))"
+                                disabled="@(pickerContext.TStartDate == null || pickerContext.TEndDate == null)"
+                                type="button">
+                            Apply
+                        </button>
+                    </ButtonsTemplate>
+                </DateRangePicker>
             </div>
-            <div class="top-collaborators float-left">
-                <h2>Top Collaborators</h2>
-                <div class="collaborators-list">
-                    <div class="collaborator">
-                        @foreach (var user in Collaborators)
-                        {
-                            <p>@user.Key (@Math.Round(user.Value, 2)%)</p>
-                        }
-                    </div>
-                </div>
-            </div>
-            <div class="emails-chart-container float-left">
-                <div id="emails-chart"></div>
-            </div>
-            <div class="events-chart-container float-left">
-                <div id="events-chart"></div>
-            </div>
-        }
+            <DashboardSummaryStats 
+                EmailsSentCount="EmailsSentCount" 
+                EmailsReceivedCount="EmailsReceivedCount" 
+                NumberOfMeetings="NumberOfMeetings" 
+                FormattedTimeInMeeting="@FormattedTimeInMeeting" />
         </div>
-    </Authorized>
-</AuthorizeView>
-
+        <div class="top-collaborators float-left">
+            <h2>Top Collaborators</h2>
+            <div class="collaborators-list">
+                <div class="collaborator">
+                    @foreach (var user in Collaborators)
+                    {
+                        <p>@user.Key (@Math.Round(user.Value, 2)%)</p>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="emails-chart-container float-left">
+            <div id="emails-chart"></div>
+        </div>
+        <div class="events-chart-container float-left">
+            <div id="events-chart"></div>
+        </div>
+    }
+</div>
 
 @code {
 
