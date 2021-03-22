@@ -129,7 +129,7 @@ namespace EctBlazorApp.Server.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> DeleteTeam([FromRoute] string hashedTeamId)
         {
-            EctTeam teamToDelete = _dbContext.Teams.Include(t => t.Members).Include(t => t.Leader).ToList()
+            EctTeam teamToDelete = _dbContext.Teams.Include(t => t.Members).Include(t => t.Leader).AsEnumerable()
                 .FirstOrDefault(t => ComputeSha256Hash(t.Id.ToString()).Equals(hashedTeamId));
 
             if(teamToDelete == null) 
@@ -156,7 +156,7 @@ namespace EctBlazorApp.Server.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> MoveMembersBetweenTeams([FromBody] IEnumerable<EctTeamRequestDetails> teamsToUpdate)
         {
-            var originalTeams = _dbContext.Teams.Include(t => t.Members).ToList().Where(t =>                                    // Get references to the original teams
+            var originalTeams = _dbContext.Teams.Include(t => t.Members).AsEnumerable().Where(t =>                                    // Get references to the original teams
                 teamsToUpdate.Any(tu => tu.Name.Equals(t.Name))).ToList();             
 
             if (originalTeams.Count < 1) 
@@ -167,7 +167,7 @@ namespace EctBlazorApp.Server.Controllers
                 {
                     if (newMembersTeam.Name.Equals(originalTeam.Name))
                     {
-                        originalTeam.Members = _dbContext.Users.ToList()
+                        originalTeam.Members = _dbContext.Users.AsEnumerable()
                             .Where(u => newMembersTeam.MemberNamesAndEmails
                                 .Contains(FormatFullNameAndEmail(u.FullName, u.Email)) 
                                 || newMembersTeam.LeaderEmail.Equals(u.Email)).ToList();

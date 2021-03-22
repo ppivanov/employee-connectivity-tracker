@@ -44,7 +44,6 @@ namespace EctBlazorApp.Client.Pages
         private List<string> allAvailableLeaders;
         private bool leaderInputError = false;
         private bool marginInputError = false;
-        private List<string> membersFromApi;
         private List<string> originalMembers;
         private List<string> originalAvailableLeaders;
         private bool pointsInputError = false;
@@ -53,7 +52,7 @@ namespace EctBlazorApp.Client.Pages
         {
             get => AddNotifyUserInputError ? "border: 1px solid red" : string.Empty; 
         }
-        protected List<string> AvailableLeaders => allAvailableLeaders.ToList();
+        protected List<string> GetAvailableLeaders() => allAvailableLeaders.ToList();
         protected List<string> AvailableMembers
         {
             get
@@ -144,8 +143,7 @@ namespace EctBlazorApp.Client.Pages
         protected async Task GetEligibleUsers()
         {
             var response = await ApiConn.GetUsersEligibleForMembers();
-            membersFromApi = response.ToList();
-            allAvailableLeaders = membersFromApi.ToList();                                       // Copy the set not the reference
+            allAvailableLeaders = response.ToList();
             originalAvailableLeaders = allAvailableLeaders.ToList();
         }
 

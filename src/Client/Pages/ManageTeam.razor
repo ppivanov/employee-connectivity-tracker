@@ -36,7 +36,7 @@
                                     @onchange="@((args) => SetLeaderNameEmail(args))"
                                     style="@LeaderInputStyle" disabled="@HasTeamId" />
                             <datalist id="leaders">
-                                @foreach (var leader in AvailableLeaders)
+                                @foreach (var leader in GetAvailableLeaders())
                                 {
                                     <option value="@leader" />
                                 }

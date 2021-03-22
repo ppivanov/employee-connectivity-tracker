@@ -153,8 +153,6 @@ namespace EctBlazorApp.Client.Pages.Dashboards
             int userId = TeamMembers.FirstOrDefault(u => u.FullName.Equals(userFullName)).Id;
             string hasedUserId = ComputeSha256Hash(userId.ToString());
             await JsRuntime.InvokeVoidAsync("open", $"/dashboard/{hasedUserId}", "_blank");
-            // DashboardState.SetIsDrillDown(true);
-            // NavManager.NavigateTo($"/dashboard/{hasedUserId}");
         }
 
         protected override async Task UpdateDashboard()

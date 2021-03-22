@@ -20,8 +20,4 @@
     <ProjectReference Include="..\Client\EctBlazorApp.Client.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Authori\" />
-  </ItemGroup>
-
 </Project>
