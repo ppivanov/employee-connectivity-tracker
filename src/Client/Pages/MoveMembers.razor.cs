@@ -16,8 +16,6 @@ namespace EctBlazorApp.Client.Pages
         [Inject]
         protected IControllerConnection ApiConn { get; set; }
         [Inject]
-        protected DashboardState DashboardState { get; set; }
-        [Inject]
         protected IJSRuntime JsRuntime { get; set; }
 
         private List<string> InitialLeftTeamRoster;
@@ -90,7 +88,6 @@ namespace EctBlazorApp.Client.Pages
             Initialized = false;
             await JsRuntime.InvokeVoidAsync("setPageTitle", "Move Members");
             await CustomAuthState.GetUserPermissions(AuthState, ApiConn);
-            DashboardState.SetIsDrillDown(false);
             HasAccess = AuthState.IsAdmin;
             if (HasAccess)
                 InAppTeams = await ApiConn.FetchAllTeams();

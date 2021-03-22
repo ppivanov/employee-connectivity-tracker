@@ -16,8 +16,6 @@ namespace EctBlazorApp.Client.Pages
         protected CustomAuthState AuthState { get; set; }
         [Inject]
         protected IControllerConnection ApiConn { get; set; }
-        [Inject]
-        protected DashboardState DashboardState { get; set; }
 
         protected List<EctTeamRequestDetails> Teams { get; set; } = new List<EctTeamRequestDetails>();
 
@@ -60,7 +58,7 @@ namespace EctBlazorApp.Client.Pages
         protected override async Task OnInitializedAsync()
         {  
             Initialized = false;
-            DashboardState.SetIsDrillDown(false);
+            
             await CustomAuthState.GetUserPermissions(AuthState, ApiConn);
             Teams = (await ApiConn.FetchAllTeams()).ToList();
             Initialized = true;

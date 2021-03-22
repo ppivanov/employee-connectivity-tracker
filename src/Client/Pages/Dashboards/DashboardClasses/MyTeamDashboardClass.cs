@@ -17,8 +17,6 @@ namespace EctBlazorApp.Client.Pages.Dashboards
         [Inject]
         protected CustomAuthState AuthState { get; set; }
         [Inject]
-        protected DashboardState DashboardState { get; set; }
-        [Inject]
         protected NavigationManager NavManager { get; set; }
         protected List<EctUser> TeamMembers { get; set; }
         protected NotificationOptionsResponse CurrentNotificationOptions { get; set; } = null;
@@ -136,7 +134,6 @@ namespace EctBlazorApp.Client.Pages.Dashboards
         {
             await JsInterop("setPageTitle", "My Team");
             await CustomAuthState.GetUserPermissions(AuthState, ApiConn);
-            DashboardState.SetIsDrillDown(false);
             
             if (IsLeader)
             {

@@ -20,8 +20,6 @@ namespace EctBlazorApp.Client.Pages
         [Inject]
         protected IControllerConnection ApiConn { get; set; }
         [Inject]
-        protected DashboardState DashboardState { get; set; }
-        [Inject]
         protected IJSRuntime JsRuntime { get; set; }
 
 
@@ -277,7 +275,6 @@ namespace EctBlazorApp.Client.Pages
         {
             Initialized = false;
             await CustomAuthState.GetUserPermissions(AuthState, ApiConn);
-            DashboardState.SetIsDrillDown(false);
             ResetErrorMessage();
             await ResetInputFields();
             if (HasTeamId)

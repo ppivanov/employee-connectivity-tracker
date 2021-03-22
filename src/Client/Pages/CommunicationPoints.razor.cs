@@ -16,8 +16,6 @@ namespace EctBlazorApp.Client.Pages
         [Inject]
         protected IControllerConnection ApiConn { get; set; }
         [Inject]
-        protected DashboardState DashboardState { get; set; }
-        [Inject]
         protected IJSRuntime JsRuntime { get; set; }
 
         private bool serverMessageIsError = false;
@@ -63,7 +61,6 @@ namespace EctBlazorApp.Client.Pages
         {
             await JsRuntime.InvokeVoidAsync("setPageTitle", "Communication Points");
             await CustomAuthState.GetUserPermissions(AuthState, ApiConn);
-            DashboardState.SetIsDrillDown(false);
             
             if (HasAccess)
                 await FetchCommunicationPoints();
