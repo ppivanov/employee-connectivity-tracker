@@ -8,12 +8,12 @@
 <div class="home">
     <AuthorizeView>
         <Authorized>
-            <h2>Hi @context.User.GetUserDisplayName()!</h2>
+            <h1>Hi @context.User.GetUserDisplayName()!</h1>
             <p>Welcome to ECT!</p>
         </Authorized>
         <NotAuthorized>
-            <h2>Welcome to Employee Connectivity Tracker!</h2>
-            <p>Please, <a href="authentication/login">Log in</a> to continue</p>
+            <h1>Welcome to Employee Connectivity Tracker!</h1>
+            <a href="authentication/login">Log in</a>
         </NotAuthorized>
     </AuthorizeView>
 </div>
