@@ -6,6 +6,6 @@ namespace EctBlazorApp.Shared.Entities
     {
         public int Id { get; set; }
         [Required]
-        public EctUser User { get; set; }
+        public virtual EctUser User { get; set; }
     }
 }

@@ -16,12 +16,12 @@ namespace EctBlazorApp.Shared.Entities
         public DateTime LastSignIn { get; set; }
 
         public int? MemberOfId { get; set; }
-        public EctTeam MemberOf { get; set; }
+        public virtual EctTeam MemberOf { get; set; }
 
-        public ICollection<CalendarEvent> CalendarEvents { get; set; }
-        public ICollection<EctTeam> LeaderOf { get; set; }
-        public ICollection<ReceivedMail> ReceivedEmails { get; set; }
-        public ICollection<SentMail> SentEmails { get; set; }
+        public virtual ICollection<CalendarEvent> CalendarEvents { get; set; }
+        public virtual ICollection<EctTeam> LeaderOf { get; set; }
+        public virtual ICollection<ReceivedMail> ReceivedEmails { get; set; }
+        public virtual ICollection<SentMail> SentEmails { get; set; }
 
         public EctUser() { }
 

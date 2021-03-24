@@ -11,11 +11,11 @@ namespace EctBlazorApp.Shared.Entities
         public string Name { get; set; }
         [Required]
         public int LeaderId { get; set; }
-        public EctUser Leader { get; set; }
+        public virtual EctUser Leader { get; set; }
         public int PointsThreshold { get; set; }
         public double MarginForNotification { get; set; }
 
-        public ICollection<EctUser> Members { get; set; }
+        public virtual ICollection<EctUser> Members { get; set; }
 
         public List<string> AdditionalUsersToNotify { get; set; }
         public string AdditionalUsersToNotifyAsAtring
