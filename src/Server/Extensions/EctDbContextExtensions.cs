@@ -13,15 +13,47 @@ namespace EctBlazorApp.Server.Extensions
 {
     public static class EctDbContextExtensions
     {
+        /******************** Communication data for dates ********************/
+
         public static List<CalendarEvent> GetCalendarEventsInDateRangeForUserId(this EctDbContext dbContext, int userId, DateTime fromDate, DateTime toDate)
         {
-            var calendarEvents =
-                     dbContext.CalendarEvents.Where(c =>
-                        c.EctUserId == userId
-                        && c.Start >= fromDate
-                        && c.End < toDate).ToList();
-            return calendarEvents;
+            var user = dbContext.Users.FirstOrDefault(user => user.Id == userId);
+            return dbContext.GetCalendarEventsInDateRangeForUser(user, fromDate, toDate);
         }
+        private static List<CalendarEvent> GetCalendarEventsInDateRangeForUser(this EctDbContext dbContext, EctUser user, DateTime fromDate, DateTime toDate)
+        {
+            return user.CalendarEvents.Where(c =>
+                c.Start >= fromDate &&
+                    c.End < toDate).ToList();
+        }
+
+        public static List<ReceivedMail> GetReceivedMailInDateRangeForUserId(this EctDbContext dbContext, int userId, DateTime fromDate, DateTime toDate)
+        {
+            var user = dbContext.Users.FirstOrDefault(user => user.Id == userId);
+            return dbContext.GetReceivedMailInDateRangeForUser(user, fromDate, toDate);
+        }
+        private static List<ReceivedMail> GetReceivedMailInDateRangeForUser(this EctDbContext dbContext, EctUser user, DateTime fromDate, DateTime toDate)
+        {
+            return user.ReceivedEmails.Where(mail =>
+                mail.ReceivedAt >= fromDate &&
+                    mail.ReceivedAt < toDate).ToList();
+        }
+
+        public static List<SentMail> GetSentMailInDateRangeForUserId(this EctDbContext dbContext, int userId, DateTime fromDate, DateTime toDate)
+        {
+            var user = dbContext.Users.FirstOrDefault(user => user.Id == userId);
+            return dbContext.GetSentMailInDateRangeForUser(user, fromDate, toDate);
+        }
+        private static List<SentMail> GetSentMailInDateRangeForUser(this EctDbContext dbContext, EctUser user, DateTime fromDate, DateTime toDate)
+        {
+            return user.SentEmails.Where(mail =>
+                mail.SentAt >= fromDate
+                    && mail.SentAt < toDate).ToList();
+        }
+
+
+        /******************** User-related extensions ********************/
+
         public static async Task<EctUser> GetExistingEctUserOrNewAsync(this EctDbContext dbContext, string userId, HttpClient client, EctMailKit mailKit)
         {
             try
@@ -37,24 +69,6 @@ namespace EctBlazorApp.Server.Extensions
                 return addUserResult;
             }
         }
-        public static List<ReceivedMail> GetReceivedMailInDateRangeForUserId(this EctDbContext dbContext, int userId, DateTime fromDate, DateTime toDate)
-        {
-            var receivedMail =
-                dbContext.ReceivedEmails.Where(mail =>
-                    mail.EctUserId == userId
-                    && mail.ReceivedAt >= fromDate
-                    && mail.ReceivedAt < toDate).ToList();
-            return receivedMail;
-        }
-        public static List<SentMail> GetSentMailInDateRangeForUserId(this EctDbContext dbContext, int userId, DateTime fromDate, DateTime toDate)
-        {
-            var sentMail =
-                dbContext.SentEmails.Where(mail =>
-                    mail.EctUserId == userId
-                    && mail.SentAt >= fromDate
-                    && mail.SentAt < toDate).ToList();
-            return sentMail;
-        }
 
         public static bool IsEmailForAdmin(this EctDbContext dbContext, string email)
         {
@@ -65,29 +79,20 @@ namespace EctBlazorApp.Server.Extensions
 
         public static bool IsEmailForLeader(this EctDbContext dbContext, string email)
         {
-            EctUser user = dbContext.Users.FirstOrDefault(u => u.Email.Equals(email));
-            if (user == null) 
-                return false;
-
-            bool isLeader = dbContext.Teams.Any(t => t.LeaderId == user.Id);
+            bool isLeader = dbContext.Teams.Any(t => t.Leader.Email.Equals(email));
 
             return isLeader;
-
         }
 
         public static EctTeamRequestDetails IsLeaderForTeamId(this EctDbContext dbContext, string email, string hashedTeamId)
         {
-            EctUser user = dbContext.Users.FirstOrDefault(u => u.Email.Equals(email));
-            if (user == null)
-                return null;
+            EctUser leader = dbContext.Users.FirstOrDefault(user => user.Email.Equals(email));
+            if (leader == null) return null;
 
-            EctTeam team = dbContext.Teams.AsEnumerable().FirstOrDefault(t => ComputeSha256Hash(t.Id.ToString()).Equals(hashedTeamId));
-            if (team == null || team.LeaderId != user.Id)
-                return null;
-
-            team.Members = dbContext.Users.Where(u => u.MemberOfId == team.Id).ToList();
-            team.Leader = user;
-            EctTeamRequestDetails teamDetails = new(team);
+            EctTeamRequestDetails teamDetails = null;
+            EctTeam team = leader.LeaderOf.FirstOrDefault(team => ComputeSha256Hash(team.Id.ToString()).Equals(hashedTeamId));
+            if (team != null)
+                teamDetails = new(team);
 
             return teamDetails;
         }
@@ -103,33 +108,40 @@ namespace EctBlazorApp.Server.Extensions
                 return user;
             }
 
-            user = dbContext.GetUserIdIfEmailIsTeamLead(userEmail, hashedUserId);
+            user = dbContext.GetUserIfEmailIsTeamLead(userEmail, hashedUserId);
             return user;
         }
 
-        public static EctUser GetUserIdIfEmailIsTeamLead(this EctDbContext dbContext, string email, string hashedUserId)
+        public static EctUser GetUserIfEmailIsTeamLead(this EctDbContext dbContext, string email, string hashedUserId)                      // return a user if the email parameter is their team lead
         {
-            EctUser teamLead = dbContext.Users.Include(u => u.LeaderOf).FirstOrDefault(u => u.Email.Equals(email));
-            EctUser userForHashedId = null;
-            foreach (var team in teamLead.LeaderOf)                                                                                         // As of now leaders are assigned a single team and this loop runs only once
-            {
-                try
-                {
-                    var members = dbContext.Users.Where(u => u.MemberOfId == team.Id).ToList();                                             // Get all the users for that team.
-                    userForHashedId = members.FirstOrDefault(u => hashedUserId.Equals(ComputeSha256Hash(u.Id.ToString())));                          // Check if any of the members' Id matches {hashedUserId} and return the user.
-                    if (userForHashedId != null) return userForHashedId;
-                }
-                catch (Exception)
-                {
-                    // It's ok the hashedId didn't match any of the members.
-                }
-            }
+            EctUser member = dbContext.Users.ToList().FirstOrDefault(user =>                                                                // Query utilizing the lazy loading proxy
+                user.MemberOf.Leader.Email.Equals(email) &&                                                                                 // Below query may be faster when working with a bigger dataset
+                        ComputeSha256Hash(user.Id.ToString()).Equals(hashedUserId));
+
+            return member;
+
+            //EctUser teamLead = dbContext.Users.FirstOrDefault(u => u.Email.Equals(email));
+            //EctUser userForHashedId = null;
+            //foreach (var team in teamLead.LeaderOf)                                                                                         // As of now leaders are assigned a single team and this loop runs only once
+            //{
+            //    try
+            //    {
+            //        var members = dbContext.Users.Where(member => member.MemberOfId == team.Id).AsEnumerable();                                       // Get all the users for that team.
+            //        userForHashedId = members.FirstOrDefault(member => hashedUserId.Equals(ComputeSha256Hash(member.Id.ToString())));                 // Check if any of the members' Id matches {hashedUserId} and return the user.
+            //        if (userForHashedId != null)
+            //            return userForHashedId;
+            //    }
+            //    catch (Exception)
+            //    {
+            //        // It's ok the hashedId didn't match any of the members.
+            //    }
+            //}
+            //return null;
+
 
             //bool isTeamLeadForUserWithId = dbContext.Users.Include(u => u.MemberOf)                                                       // This query may be slow as it hashes every user's Id until it finds a match. T(n) = n * [ComputeSha256Hash() + ...]
             //    .Any(u => hashedUserId.Equals(ComputeSha256Hash(u.Id.ToString()))                                                         // Does the user's Id match the requested {userId}?
             //        && u.MemberOf.LeaderId == teamLead.Id);                                                                               // Are they a member of a team led by {email}?
-
-            return null;
         }
 
 
@@ -144,7 +156,7 @@ namespace EctBlazorApp.Server.Extensions
             DateTime pastWeekEnd = currentWeekStart;                                        // Last week's Monday           Feb  22th
             DateTime pastWeekStart = currentWeekStart.AddDays(-7);                          // The Monday before that       Feb  15th
 
-            var teams = dbContext.Teams.Include(t => t.Members).ToList();
+            var teams = dbContext.Teams.ToList();
             foreach (var team in teams)
             {
                 EmailContents emailContents = new(){
@@ -175,9 +187,9 @@ namespace EctBlazorApp.Server.Extensions
 
         public static List<int> GetCommunicationPointsForUser(this EctDbContext dbContext, EctUser user, DateTime fromDate, DateTime toDate)
         {
-            List<ReceivedMail> receivedMail = dbContext.GetReceivedMailInDateRangeForUserId(user.Id, fromDate, toDate);
-            List<SentMail> sentMail = dbContext.GetSentMailInDateRangeForUserId(user.Id, fromDate, toDate);
-            List<CalendarEvent> calendarEvents = dbContext.GetCalendarEventsInDateRangeForUserId(user.Id, fromDate, toDate);
+            List<ReceivedMail> receivedMail = dbContext.GetReceivedMailInDateRangeForUser(user, fromDate, toDate);
+            List<SentMail> sentMail = dbContext.GetSentMailInDateRangeForUser(user, fromDate, toDate);
+            List<CalendarEvent> calendarEvents = dbContext.GetCalendarEventsInDateRangeForUser(user, fromDate, toDate);
 
             List<int> pointsPerDay = new();
 
@@ -199,7 +211,7 @@ namespace EctBlazorApp.Server.Extensions
         }
         private static int CalculateTotalCommunicationPoints(this EctDbContext dbContext, int mailCount, int minutesInMeetings)
         {
-            IEnumerable<CommunicationPoint> commPoints = dbContext.CommunicationPoints;
+            var commPoints = dbContext.CommunicationPoints;
             int emailPoints = CommunicationPoint.GetCommunicationPointForMedium(commPoints, "email").Points;
             int meetingPoints = CommunicationPoint.GetCommunicationPointForMedium(commPoints, "meeting").Points;
 

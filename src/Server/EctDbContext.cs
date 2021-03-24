@@ -44,7 +44,7 @@ namespace EctBlazorApp.Server
             GraphUserResponse graphUser = await client.GetGraphUser(userId);
             try
             {
-                EctUser newUser = new EctUser(graphUser);
+                EctUser newUser = new(graphUser);
                 Users.Add(newUser);
                 await SaveChangesAsync();
                 return newUser;
