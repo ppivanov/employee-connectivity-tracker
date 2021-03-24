@@ -50,7 +50,8 @@ namespace EctBlazorApp.Server
 
             services.AddDbContext<EctDbContext>(options =>
             {
-                options.UseSqlServer(Configuration["DefaultDbConnection"]);
+                options.UseLazyLoadingProxies()
+                    .UseSqlServer(Configuration["DefaultDbConnection"]);
             });
 
             services.AddSingleton(
