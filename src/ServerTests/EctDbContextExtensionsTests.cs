@@ -103,7 +103,7 @@ namespace EctBlazorApp.ServerTests
         [TestMethod]
         public void GetCalendarEventsInDateRangeForUserId_NonexistentUserId_ReturnsEmptyList()
         {
-            List<CalendarEvent> expectedList = new List<CalendarEvent>();
+            List<CalendarEvent> expectedList = new();
             List<CalendarEvent> actualList;
             int userId = 999;
             DateTime startOfOctober = new(2020, 10, 1);

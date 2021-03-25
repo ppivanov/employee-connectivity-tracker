@@ -18,6 +18,8 @@ namespace EctBlazorApp.Server.Extensions
         public static List<CalendarEvent> GetCalendarEventsInDateRangeForUserId(this EctDbContext dbContext, int userId, DateTime fromDate, DateTime toDate)
         {
             var user = dbContext.Users.FirstOrDefault(user => user.Id == userId);
+            if (user == null) return new();
+
             return dbContext.GetCalendarEventsInDateRangeForUser(user, fromDate, toDate);
         }
         private static List<CalendarEvent> GetCalendarEventsInDateRangeForUser(this EctDbContext dbContext, EctUser user, DateTime fromDate, DateTime toDate)
@@ -30,6 +32,8 @@ namespace EctBlazorApp.Server.Extensions
         public static List<ReceivedMail> GetReceivedMailInDateRangeForUserId(this EctDbContext dbContext, int userId, DateTime fromDate, DateTime toDate)
         {
             var user = dbContext.Users.FirstOrDefault(user => user.Id == userId);
+            if (user == null) return new();
+
             return dbContext.GetReceivedMailInDateRangeForUser(user, fromDate, toDate);
         }
         private static List<ReceivedMail> GetReceivedMailInDateRangeForUser(this EctDbContext dbContext, EctUser user, DateTime fromDate, DateTime toDate)
@@ -42,6 +46,8 @@ namespace EctBlazorApp.Server.Extensions
         public static List<SentMail> GetSentMailInDateRangeForUserId(this EctDbContext dbContext, int userId, DateTime fromDate, DateTime toDate)
         {
             var user = dbContext.Users.FirstOrDefault(user => user.Id == userId);
+            if (user == null) return new();
+
             return dbContext.GetSentMailInDateRangeForUser(user, fromDate, toDate);
         }
         private static List<SentMail> GetSentMailInDateRangeForUser(this EctDbContext dbContext, EctUser user, DateTime fromDate, DateTime toDate)
@@ -87,7 +93,7 @@ namespace EctBlazorApp.Server.Extensions
         public static EctTeamRequestDetails IsLeaderForTeamId(this EctDbContext dbContext, string email, string hashedTeamId)
         {
             EctUser leader = dbContext.Users.FirstOrDefault(user => user.Email.Equals(email));
-            if (leader == null) return null;
+            if (leader == null || leader.LeaderOf == null) return null;
 
             EctTeamRequestDetails teamDetails = null;
             EctTeam team = leader.LeaderOf.FirstOrDefault(team => ComputeSha256Hash(team.Id.ToString()).Equals(hashedTeamId));
@@ -114,29 +120,31 @@ namespace EctBlazorApp.Server.Extensions
 
         public static EctUser GetUserIfEmailIsTeamLead(this EctDbContext dbContext, string email, string hashedUserId)                      // return a user if the email parameter is their team lead
         {
-            EctUser member = dbContext.Users.ToList().FirstOrDefault(user =>                                                                // Query utilizing the lazy loading proxy
-                user.MemberOf.Leader.Email.Equals(email) &&                                                                                 // Below query may be faster when working with a bigger dataset
-                        ComputeSha256Hash(user.Id.ToString()).Equals(hashedUserId));
 
-            return member;
+            EctUser teamLead = dbContext.Users.FirstOrDefault(u => u.Email.Equals(email));
+            EctUser userForHashedId = null;
+            foreach (var team in teamLead.LeaderOf)                                                                                         // As of now leaders are assigned a single team and this loop runs only once
+            {
+                try
+                {
+                    var members = dbContext.Users.Where(member => member.MemberOfId == team.Id).AsEnumerable();                                       // Get all the users for that team.
+                    userForHashedId = members.FirstOrDefault(member => hashedUserId.Equals(ComputeSha256Hash(member.Id.ToString())));                 // Check if any of the members' Id matches {hashedUserId} and return the user.
+                    if (userForHashedId != null)
+                        return userForHashedId;
+                }
+                catch (Exception)
+                {
+                    // It's ok the hashedId didn't match any of the members.
+                }
+            }
+            return null;
 
-            //EctUser teamLead = dbContext.Users.FirstOrDefault(u => u.Email.Equals(email));
-            //EctUser userForHashedId = null;
-            //foreach (var team in teamLead.LeaderOf)                                                                                         // As of now leaders are assigned a single team and this loop runs only once
-            //{
-            //    try
-            //    {
-            //        var members = dbContext.Users.Where(member => member.MemberOfId == team.Id).AsEnumerable();                                       // Get all the users for that team.
-            //        userForHashedId = members.FirstOrDefault(member => hashedUserId.Equals(ComputeSha256Hash(member.Id.ToString())));                 // Check if any of the members' Id matches {hashedUserId} and return the user.
-            //        if (userForHashedId != null)
-            //            return userForHashedId;
-            //    }
-            //    catch (Exception)
-            //    {
-            //        // It's ok the hashedId didn't match any of the members.
-            //    }
-            //}
-            //return null;
+
+            //EctUser member = dbContext.Users.ToList().FirstOrDefault(user =>                                                                // Same query but utilizing the lazy loading proxy
+            //    user.MemberOf.Leader.Email.Equals(email) &&
+            //            ComputeSha256Hash(user.Id.ToString()).Equals(hashedUserId));
+
+            //return member;
 
 
             //bool isTeamLeadForUserWithId = dbContext.Users.Include(u => u.MemberOf)                                                       // This query may be slow as it hashes every user's Id until it finds a match. T(n) = n * [ComputeSha256Hash() + ...]
