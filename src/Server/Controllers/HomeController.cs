@@ -39,32 +39,21 @@ namespace EctBlazorApp.Server.Controllers
         public async Task<ActionResult> UpdateTrackingRecordsForUser(GraphUserRequestDetails userDetails)
         {
             using HttpClient client = new();
-            StringBuilder errorString = new(string.Empty);
             if (userDetails == null || userDetails.GraphToken == null)
                 return BadRequest("No inputs");
 
             string userId = await HttpContext.GetPreferredUsername();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", userDetails.GraphToken);
+
             EctUser userForParms = await _dbContext.GetExistingEctUserOrNewAsync(userId, client, _mailKit);
+            string errorString = await UpdateCommunicationRecordsForUser(client, userForParms);
 
-            bool eventsSaved = await RetryUpdateMethodIfFails(client, _dbContext, userForParms.UpdateCalendarEventRecordsAsync);
-            if (!eventsSaved)
-                errorString.Append("Failed: Could not update calendar event records\n");
-
-            bool receivedEmails = await RetryUpdateMethodIfFails(client, _dbContext, userForParms.UpdateReceivedMailRecordsAsync);
-            if (!receivedEmails)
-                errorString.Append("Failed: Could not update received email records\n");
-
-            bool sentEmails = await RetryUpdateMethodIfFails(client, _dbContext, userForParms.UpdateSentMailRecordsAsync);
-            if (!sentEmails)
-                errorString.Append("Failed: Could not update sent email records\n");
-
-            if (errorString.Length > 1)
+            if (string.IsNullOrEmpty(errorString) == false)
                 return BadRequest(errorString.ToString());
 
-            userForParms.LastSignIn = DateTime.Now;
             try
             {
+                userForParms.LastSignIn = DateTime.Now;
                 await _dbContext.SaveChangesAsync();
                 return Ok("User records up to date");
             }
@@ -93,11 +82,8 @@ namespace EctBlazorApp.Server.Controllers
                     UserEmail = string.Empty,
                 });
 
-            DateTime fromDateTime = NewDateTimeFromString(fromDate);
-            DateTime toDateTime = NewDateTimeFromString(toDate);
-            List<ReceivedMail> receivedMail = _dbContext.GetReceivedMailInDateRangeForUserId(user.Id, fromDateTime, toDateTime);
-            List<SentMail> sentMail = _dbContext.GetSentMailInDateRangeForUserId(user.Id, fromDateTime, toDateTime);
-            List<CalendarEvent> calendarEvents = _dbContext.GetCalendarEventsInDateRangeForUserId(user.Id, fromDateTime, toDateTime);
+            OutputCommunicationRecordsInRange(fromDate, toDate, user, 
+                out List<ReceivedMail> receivedMail, out List<SentMail> sentMail, out List<CalendarEvent> calendarEvents);          // output
 
             double secondsInMeeting = CalendarEvent.GetTotalSecondsForEvents(calendarEvents);
             string userFullName = string.IsNullOrEmpty(UID) ? string.Empty : user.FullName;
@@ -113,6 +99,35 @@ namespace EctBlazorApp.Server.Controllers
                 });
         }
 
+        // modifies the list parameters
+        private static void OutputCommunicationRecordsInRange(string fromDate, string toDate, EctUser user, out List<ReceivedMail> receivedMail, out List<SentMail> sentMail, out List<CalendarEvent> calendarEvents)
+        {
+            DateTime fromDateTime = NewDateTimeFromString(fromDate);
+            DateTime toDateTime = NewDateTimeFromString(toDate);
+
+            receivedMail = user.GetReceivedMailInDateRangeForUser(fromDateTime, toDateTime);
+            sentMail = user.GetSentMailInDateRangeForUser(fromDateTime, toDateTime);
+            calendarEvents = user.GetCalendarEventsInDateRangeForUser(fromDateTime, toDateTime);
+        }
+
+        private async Task<string> UpdateCommunicationRecordsForUser(HttpClient client, EctUser user)
+        {
+            StringBuilder errorString = new(string.Empty);
+            bool eventsSaved = await RetryUpdateMethodIfFails(client, _dbContext, user.UpdateCalendarEventRecordsAsync);
+            if (!eventsSaved)
+                errorString.Append("Failed: Could not update calendar event records\n");
+
+            bool receivedEmails = await RetryUpdateMethodIfFails(client, _dbContext, user.UpdateReceivedMailRecordsAsync);
+            if (!receivedEmails)
+                errorString.Append("Failed: Could not update received email records\n");
+
+            bool sentEmails = await RetryUpdateMethodIfFails(client, _dbContext, user.UpdateSentMailRecordsAsync);
+            if (!sentEmails)
+                errorString.Append("Failed: Could not update sent email records\n");
+
+            return errorString.ToString();
+        }
+
         private delegate Task<bool> UpdateMetgodDelegate(HttpClient client, EctDbContext dbContext);
         private static async Task<bool> RetryUpdateMethodIfFails(HttpClient client, EctDbContext dbContext, UpdateMetgodDelegate method)
         {
@@ -123,6 +138,7 @@ namespace EctBlazorApp.Server.Controllers
                 bool operationSuccessful = await method.Invoke(client, dbContext);
                 if (operationSuccessful)
                     return true;
+
                 retryCount++;
             }
             return false;

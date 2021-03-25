@@ -14,19 +14,14 @@ namespace EctBlazorApp.Server.Extensions
     public static class EctDbContextExtensions
     {
         /******************** Communication data for dates ********************/
+        /****************** It may be safe to remove these ?? ******************/
 
         public static List<CalendarEvent> GetCalendarEventsInDateRangeForUserId(this EctDbContext dbContext, int userId, DateTime fromDate, DateTime toDate)
         {
             var user = dbContext.Users.FirstOrDefault(user => user.Id == userId);
             if (user == null) return new();
 
-            return dbContext.GetCalendarEventsInDateRangeForUser(user, fromDate, toDate);
-        }
-        private static List<CalendarEvent> GetCalendarEventsInDateRangeForUser(this EctDbContext dbContext, EctUser user, DateTime fromDate, DateTime toDate)
-        {
-            return user.CalendarEvents.Where(c =>
-                c.Start >= fromDate &&
-                    c.End < toDate).ToList();
+            return user.GetCalendarEventsInDateRangeForUser(fromDate, toDate);
         }
 
         public static List<ReceivedMail> GetReceivedMailInDateRangeForUserId(this EctDbContext dbContext, int userId, DateTime fromDate, DateTime toDate)
@@ -34,13 +29,7 @@ namespace EctBlazorApp.Server.Extensions
             var user = dbContext.Users.FirstOrDefault(user => user.Id == userId);
             if (user == null) return new();
 
-            return dbContext.GetReceivedMailInDateRangeForUser(user, fromDate, toDate);
-        }
-        private static List<ReceivedMail> GetReceivedMailInDateRangeForUser(this EctDbContext dbContext, EctUser user, DateTime fromDate, DateTime toDate)
-        {
-            return user.ReceivedEmails.Where(mail =>
-                mail.ReceivedAt >= fromDate &&
-                    mail.ReceivedAt < toDate).ToList();
+            return user.GetReceivedMailInDateRangeForUser(fromDate, toDate);
         }
 
         public static List<SentMail> GetSentMailInDateRangeForUserId(this EctDbContext dbContext, int userId, DateTime fromDate, DateTime toDate)
@@ -48,13 +37,7 @@ namespace EctBlazorApp.Server.Extensions
             var user = dbContext.Users.FirstOrDefault(user => user.Id == userId);
             if (user == null) return new();
 
-            return dbContext.GetSentMailInDateRangeForUser(user, fromDate, toDate);
-        }
-        private static List<SentMail> GetSentMailInDateRangeForUser(this EctDbContext dbContext, EctUser user, DateTime fromDate, DateTime toDate)
-        {
-            return user.SentEmails.Where(mail =>
-                mail.SentAt >= fromDate
-                    && mail.SentAt < toDate).ToList();
+            return user.GetSentMailInDateRangeForUser(fromDate, toDate);
         }
 
 
@@ -195,9 +178,9 @@ namespace EctBlazorApp.Server.Extensions
 
         public static List<int> GetCommunicationPointsForUser(this EctDbContext dbContext, EctUser user, DateTime fromDate, DateTime toDate)
         {
-            List<ReceivedMail> receivedMail = dbContext.GetReceivedMailInDateRangeForUser(user, fromDate, toDate);
-            List<SentMail> sentMail = dbContext.GetSentMailInDateRangeForUser(user, fromDate, toDate);
-            List<CalendarEvent> calendarEvents = dbContext.GetCalendarEventsInDateRangeForUser(user, fromDate, toDate);
+            List<ReceivedMail> receivedMail = user.GetReceivedMailInDateRangeForUser(fromDate, toDate);
+            List<SentMail> sentMail = user.GetSentMailInDateRangeForUser(fromDate, toDate);
+            List<CalendarEvent> calendarEvents = user.GetCalendarEventsInDateRangeForUser(fromDate, toDate);
 
             List<int> pointsPerDay = new();
 

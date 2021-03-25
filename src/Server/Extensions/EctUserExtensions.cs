@@ -2,6 +2,7 @@
 using EctBlazorApp.Shared.GraphModels;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -9,6 +10,27 @@ namespace EctBlazorApp.Server.Extensions
 {
     public static class EctUserExtensions
     {
+        public static List<SentMail> GetSentMailInDateRangeForUser(this EctUser user, DateTime fromDate, DateTime toDate)
+        {
+            return user.SentEmails.Where(mail =>
+                mail.SentAt >= fromDate
+                    && mail.SentAt < toDate).ToList();
+        }
+
+        public static List<ReceivedMail> GetReceivedMailInDateRangeForUser(this EctUser user, DateTime fromDate, DateTime toDate)
+        {
+            return user.ReceivedEmails.Where(mail =>
+                mail.ReceivedAt >= fromDate &&
+                    mail.ReceivedAt < toDate).ToList();
+        }
+
+        public static List<CalendarEvent> GetCalendarEventsInDateRangeForUser(this EctUser user, DateTime fromDate, DateTime toDate)
+        {
+            return user.CalendarEvents.Where(c =>
+                c.Start >= fromDate &&
+                    c.End < toDate).ToList();
+        }
+
         public static async Task<bool> UpdateCalendarEventRecordsAsync(this EctUser user, HttpClient client, EctDbContext dbContext)
         {
             try
