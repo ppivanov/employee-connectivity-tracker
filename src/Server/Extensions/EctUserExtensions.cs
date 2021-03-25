@@ -5,26 +5,38 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using static EctBlazorApp.Shared.SharedMethods;
 
 namespace EctBlazorApp.Server.Extensions
 {
     public static class EctUserExtensions
     {
-        public static List<SentMail> GetSentMailInDateRangeForUser(this EctUser user, DateTime fromDate, DateTime toDate)
+        // modifies the list parameters
+        public static void OutputCommunicationRecordsInRange(this EctUser user, string fromDate, string toDate, out List<ReceivedMail> receivedMail, out List<SentMail> sentMail, out List<CalendarEvent> calendarEvents)
+        {
+            DateTime fromDateTime = NewDateTimeFromString(fromDate);
+            DateTime toDateTime = NewDateTimeFromString(toDate);
+
+            receivedMail = user.GetReceivedMailInDateRange(fromDateTime, toDateTime);
+            sentMail = user.GetSentMailInDateRange(fromDateTime, toDateTime);
+            calendarEvents = user.GetCalendarEventsInDateRange(fromDateTime, toDateTime);
+        }
+
+        public static List<SentMail> GetSentMailInDateRange(this EctUser user, DateTime fromDate, DateTime toDate)
         {
             return user.SentEmails.Where(mail =>
                 mail.SentAt >= fromDate
                     && mail.SentAt < toDate).ToList();
         }
 
-        public static List<ReceivedMail> GetReceivedMailInDateRangeForUser(this EctUser user, DateTime fromDate, DateTime toDate)
+        public static List<ReceivedMail> GetReceivedMailInDateRange(this EctUser user, DateTime fromDate, DateTime toDate)
         {
             return user.ReceivedEmails.Where(mail =>
                 mail.ReceivedAt >= fromDate &&
                     mail.ReceivedAt < toDate).ToList();
         }
 
-        public static List<CalendarEvent> GetCalendarEventsInDateRangeForUser(this EctUser user, DateTime fromDate, DateTime toDate)
+        public static List<CalendarEvent> GetCalendarEventsInDateRange(this EctUser user, DateTime fromDate, DateTime toDate)
         {
             return user.CalendarEvents.Where(c =>
                 c.Start >= fromDate &&

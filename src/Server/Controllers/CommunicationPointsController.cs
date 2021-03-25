@@ -40,12 +40,12 @@ namespace EctBlazorApp.Server.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<string>> UpdateWeights([FromBody] IEnumerable<CommunicationPoint> mediums)
         {
-            _dbContext.CommunicationPoints.RemoveRange(_dbContext.CommunicationPoints);       // Delete all existing records.
-
-            _dbContext.CommunicationPoints.AddRange(mediums);                                  // Add the updated list.
             try
             {
+                _dbContext.CommunicationPoints.RemoveRange(_dbContext.CommunicationPoints);       // Delete all existing records.
+                _dbContext.CommunicationPoints.AddRange(mediums);                                  // Add the updated list.
                 await _dbContext.SaveChangesAsync();
+
                 return Ok("Communication mediums updated successfully");
             }
             catch (Exception)

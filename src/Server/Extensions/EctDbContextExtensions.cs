@@ -13,6 +13,24 @@ namespace EctBlazorApp.Server.Extensions
 {
     public static class EctDbContextExtensions
     {
+        public static EctTeam GetTeamForTeamId(this EctDbContext dbContext, string hashedTeamId)
+        {
+            return dbContext.Teams.Include(t => t.Members).Include(t => t.Leader).AsEnumerable()
+                .FirstOrDefault(t => ComputeSha256Hash(t.Id.ToString()).Equals(hashedTeamId));
+        }
+
+        public static List<EctUser> GetMembersFromStringListAndLeader(this EctDbContext dbContext, List<string> memberNamesAndEmails, string leaderNameAndEmail)
+        {
+            return dbContext.Users.AsEnumerable()                                                                                           // Return all the users that match completely with either of the input variables
+                .Where(u => {
+                    var currentUser = FormatFullNameAndEmail(u.FullName, u.Email);
+
+                    return (memberNamesAndEmails
+                        .Contains(currentUser) ||
+                            leaderNameAndEmail.Contains(currentUser));
+                    }).ToList();
+        }
+
         /******************** Communication data for dates ********************/
         /****************** It may be safe to remove these ?? ******************/
 
@@ -21,7 +39,7 @@ namespace EctBlazorApp.Server.Extensions
             var user = dbContext.Users.FirstOrDefault(user => user.Id == userId);
             if (user == null) return new();
 
-            return user.GetCalendarEventsInDateRangeForUser(fromDate, toDate);
+            return user.GetCalendarEventsInDateRange(fromDate, toDate);
         }
 
         public static List<ReceivedMail> GetReceivedMailInDateRangeForUserId(this EctDbContext dbContext, int userId, DateTime fromDate, DateTime toDate)
@@ -29,7 +47,7 @@ namespace EctBlazorApp.Server.Extensions
             var user = dbContext.Users.FirstOrDefault(user => user.Id == userId);
             if (user == null) return new();
 
-            return user.GetReceivedMailInDateRangeForUser(fromDate, toDate);
+            return user.GetReceivedMailInDateRange(fromDate, toDate);
         }
 
         public static List<SentMail> GetSentMailInDateRangeForUserId(this EctDbContext dbContext, int userId, DateTime fromDate, DateTime toDate)
@@ -37,7 +55,7 @@ namespace EctBlazorApp.Server.Extensions
             var user = dbContext.Users.FirstOrDefault(user => user.Id == userId);
             if (user == null) return new();
 
-            return user.GetSentMailInDateRangeForUser(fromDate, toDate);
+            return user.GetSentMailInDateRange(fromDate, toDate);
         }
 
 
@@ -178,9 +196,9 @@ namespace EctBlazorApp.Server.Extensions
 
         public static List<int> GetCommunicationPointsForUser(this EctDbContext dbContext, EctUser user, DateTime fromDate, DateTime toDate)
         {
-            List<ReceivedMail> receivedMail = user.GetReceivedMailInDateRangeForUser(fromDate, toDate);
-            List<SentMail> sentMail = user.GetSentMailInDateRangeForUser(fromDate, toDate);
-            List<CalendarEvent> calendarEvents = user.GetCalendarEventsInDateRangeForUser(fromDate, toDate);
+            List<ReceivedMail> receivedMail = user.GetReceivedMailInDateRange(fromDate, toDate);
+            List<SentMail> sentMail = user.GetSentMailInDateRange(fromDate, toDate);
+            List<CalendarEvent> calendarEvents = user.GetCalendarEventsInDateRange(fromDate, toDate);
 
             List<int> pointsPerDay = new();
 
@@ -200,6 +218,7 @@ namespace EctBlazorApp.Server.Extensions
 
             return pointsPerDay;
         }
+       
         private static int CalculateTotalCommunicationPoints(this EctDbContext dbContext, int mailCount, int minutesInMeetings)
         {
             var commPoints = dbContext.CommunicationPoints;
@@ -210,6 +229,7 @@ namespace EctBlazorApp.Server.Extensions
 
             return totalPoints;
         }
+        
         private static bool IsPotentiallyIsolated(EctTeam team, int currentWeekPoints, int previousWeekPoints)
         {
             currentWeekPoints = currentWeekPoints > 0 ? currentWeekPoints : 1;                                                                              // If there are no points set as 1 to avoid division by 0.
@@ -224,7 +244,6 @@ namespace EctBlazorApp.Server.Extensions
 
             return false;
         }
-        
         
         private static void SendNotificationEmail(string messageContent, EctTeam team, EctMailKit mailKit)                                  // Not a DbContext extension method. Move to a more suitable place.
         {

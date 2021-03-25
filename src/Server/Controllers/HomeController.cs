@@ -11,7 +11,6 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using static EctBlazorApp.Shared.SharedMethods;
 
 namespace EctBlazorApp.Server.Controllers
 {
@@ -82,7 +81,7 @@ namespace EctBlazorApp.Server.Controllers
                     UserEmail = string.Empty,
                 });
 
-            OutputCommunicationRecordsInRange(fromDate, toDate, user, 
+            user.OutputCommunicationRecordsInRange(fromDate, toDate, 
                 out List<ReceivedMail> receivedMail, out List<SentMail> sentMail, out List<CalendarEvent> calendarEvents);          // output
 
             double secondsInMeeting = CalendarEvent.GetTotalSecondsForEvents(calendarEvents);
@@ -97,17 +96,6 @@ namespace EctBlazorApp.Server.Controllers
                     UserFullName = userFullName,
                     UserEmail = userEmailAddress
                 });
-        }
-
-        // modifies the list parameters
-        private static void OutputCommunicationRecordsInRange(string fromDate, string toDate, EctUser user, out List<ReceivedMail> receivedMail, out List<SentMail> sentMail, out List<CalendarEvent> calendarEvents)
-        {
-            DateTime fromDateTime = NewDateTimeFromString(fromDate);
-            DateTime toDateTime = NewDateTimeFromString(toDate);
-
-            receivedMail = user.GetReceivedMailInDateRangeForUser(fromDateTime, toDateTime);
-            sentMail = user.GetSentMailInDateRangeForUser(fromDateTime, toDateTime);
-            calendarEvents = user.GetCalendarEventsInDateRangeForUser(fromDateTime, toDateTime);
         }
 
         private async Task<string> UpdateCommunicationRecordsForUser(HttpClient client, EctUser user)
