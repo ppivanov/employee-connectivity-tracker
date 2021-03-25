@@ -10,35 +10,7 @@ namespace EctBlazorApp.Server.CommonMethods
     public class GraphMethods : IMockableGraphMethods
     {
         private const string baseGraphUrl = "https://graph.microsoft.com/v1.0";
-        private static string ConstructGraphUrlForEvents(EctUser user)
-        {
-            string formattedFromDate = user.LastSignIn.ToString("s");
-            string formattedToDate = DateTime.Now.ToString("s");
-            string eventsEndpoint = $"{baseGraphUrl}/users/{user.Email}/events?$filter=start/datetime ge '{formattedFromDate}' " +
-                $"and end/datetime le '{formattedToDate}'&$select=subject,organizer,attendees,start,end&$top=999";
 
-            return eventsEndpoint;
-        }
-        private static string ConstructGraphUrlForReceivedMail(EctUser user)
-        {
-            string formattedFromDate = user.LastSignIn.ToString("s");
-            string inboxEndpoint = $"{baseGraphUrl}/users/{user.Email}/mailFolders/inbox/messages?$filter=receivedDateTime ge {formattedFromDate}Z " +
-                "&$select=receivedDateTime,subject,sender&$top=999";
-            return inboxEndpoint;
-        }
-        private static string ConstructGraphUrlForSentMail(EctUser user)
-        {
-            string formattedFromDate = user.LastSignIn.ToString("s");
-            string sentItemsEndpoint = $"{baseGraphUrl}/users/{user.Email}/mailFolders/sentitems/messages?$filter=receivedDateTime ge {formattedFromDate}Z " +
-                "&$select=sentDateTime,subject,toRecipients&$top=999";
-            return sentItemsEndpoint;
-        }
-        private static string ConstructGraphUrlForUser(string userId)
-        {
-            string userEndpoint = $"{baseGraphUrl}/users/{userId}?$select=displayName,id,userPrincipalName";
-
-            return userEndpoint;
-        }
 
         public async Task<GraphUserResponse> GetGraphUser(HttpClient client, string userId)
         {
@@ -88,6 +60,39 @@ namespace EctBlazorApp.Server.CommonMethods
             GraphSentMailResponse graphSentMail = JsonConvert.DeserializeObject<GraphSentMailResponse>(contentAsString);
 
             return graphSentMail;
+        }
+
+        private static string ConstructGraphUrlForEvents(EctUser user)
+        {
+            string formattedFromDate = user.LastSignIn.ToString("s");
+            string formattedToDate = DateTime.Now.ToString("s");
+            string eventsEndpoint = $"{baseGraphUrl}/users/{user.Email}/events?$filter=start/datetime ge '{formattedFromDate}' " +
+                $"and end/datetime le '{formattedToDate}'&$select=subject,organizer,attendees,start,end&$top=999";
+
+            return eventsEndpoint;
+        }
+
+        private static string ConstructGraphUrlForReceivedMail(EctUser user)
+        {
+            string formattedFromDate = user.LastSignIn.ToString("s");
+            string inboxEndpoint = $"{baseGraphUrl}/users/{user.Email}/mailFolders/inbox/messages?$filter=receivedDateTime ge {formattedFromDate}Z " +
+                "&$select=receivedDateTime,subject,sender&$top=999";
+            return inboxEndpoint;
+        }
+
+        private static string ConstructGraphUrlForSentMail(EctUser user)
+        {
+            string formattedFromDate = user.LastSignIn.ToString("s");
+            string sentItemsEndpoint = $"{baseGraphUrl}/users/{user.Email}/mailFolders/sentitems/messages?$filter=receivedDateTime ge {formattedFromDate}Z " +
+                "&$select=sentDateTime,subject,toRecipients&$top=999";
+            return sentItemsEndpoint;
+        }
+
+        private static string ConstructGraphUrlForUser(string userId)
+        {
+            string userEndpoint = $"{baseGraphUrl}/users/{userId}?$select=displayName,id,userPrincipalName";
+
+            return userEndpoint;
         }
     }
 }

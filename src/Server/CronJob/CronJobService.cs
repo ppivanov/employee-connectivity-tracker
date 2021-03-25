@@ -67,9 +67,6 @@ namespace EctBlazorApp.Server.CronJob
             await Task.CompletedTask;
         }
 
-        public virtual void Dispose()
-        {
-            _timer?.Dispose();
-        }
+        public virtual void Dispose() => _timer?.Dispose();
     }
 }

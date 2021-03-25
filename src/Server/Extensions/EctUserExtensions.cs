@@ -12,7 +12,8 @@ namespace EctBlazorApp.Server.Extensions
     public static class EctUserExtensions
     {
         // modifies the list parameters
-        public static void OutputCommunicationRecordsInRange(this EctUser user, string fromDate, string toDate, out List<ReceivedMail> receivedMail, out List<SentMail> sentMail, out List<CalendarEvent> calendarEvents)
+        public static void OutputCommunicationRecordsInRange(this EctUser user, string fromDate, string toDate, 
+            out List<ReceivedMail> receivedMail, out List<SentMail> sentMail, out List<CalendarEvent> calendarEvents)
         {
             DateTime fromDateTime = NewDateTimeFromString(fromDate);
             DateTime toDateTime = NewDateTimeFromString(toDate);
