@@ -42,6 +42,27 @@ namespace EctBlazorApp.ServerTests
         }
 
         [TestMethod]
+        public void GetTeamForTeamId_ExistingTeamIdHash_TeamIsReturned()
+        {
+            EctTeam expectedResult = _dbContext.Teams.FirstOrDefault();
+            string hashedTeamId = ComputeSha256Hash(expectedResult.Id.ToString());
+
+            EctTeam actualResult = _dbContext.GetTeamForTeamId(hashedTeamId);
+
+            Assert.AreEqual(expectedResult, actualResult);
+        }
+
+        [TestMethod]
+        public void GetTeamForTeamId_BadTeamIdHash_ReturnsNull()
+        {
+            string hashedTeamId = ComputeSha256Hash("-1");
+
+            EctTeam actualResult = _dbContext.GetTeamForTeamId(hashedTeamId);
+
+            Assert.AreEqual(null, actualResult);
+        }
+
+        [TestMethod]
         public async Task GetExistingEctUserOrNew_ExistingUserEmail_AliceIsReturned()
         {
             string userEmail = "alice@ect.ie";
@@ -248,6 +269,70 @@ namespace EctBlazorApp.ServerTests
             EctUser actualUser = await _dbContext.GetUserFromHashOrProcessingUser(hashedUserId, MockPreferredUsername_Alice);
 
             Assert.AreEqual(null, actualUser);
+        }
+
+        [TestMethod]
+        public void IsMemberPotentiallyIsolated_Current8_PercentDifference20_TeamDefaults_ReturnsFalse()
+        {
+            EctTeam team = new() { PointsThreshold = 0, MarginForNotification = 100 };
+            NotificationMemberData memberData = new() 
+            { 
+                CurrentPoints = new() { 2, 2, 2, 2, 0, 0, 0 }, 
+                PastPoints = new() { 2, 2, 0, 2, 0, 4, 0 } 
+            };
+            bool expectedResult = false;
+
+            bool actualResult = EctDbContextExtensions.IsMemberPotentiallyIsolated(team, memberData);
+
+            Assert.AreEqual(expectedResult, actualResult);
+        }
+
+        [TestMethod]
+        public void IsMemberPotentiallyIsolated_Current8_PercentDifference20_UnderThreshold_ReturnsTrue()
+        {
+            EctTeam team = new() { PointsThreshold = 10, MarginForNotification = 100 };
+            NotificationMemberData memberData = new()
+            {
+                CurrentPoints = new() { 2, 2, 2, 2, 0, 0, 0 },
+                PastPoints = new() { 2, 2, 0, 2, 0, 4, 0 }
+            };
+            bool expectedResult = true;
+
+            bool actualResult = EctDbContextExtensions.IsMemberPotentiallyIsolated(team, memberData);
+
+            Assert.AreEqual(expectedResult, actualResult);
+        }
+
+        [TestMethod]
+        public void IsMemberPotentiallyIsolated_Current8_PercentDifference20_OverMaxMargin_ReturnsTrue()
+        {
+            EctTeam team = new() { PointsThreshold = 0, MarginForNotification = 10 };
+            NotificationMemberData memberData = new()
+            {
+                CurrentPoints = new() { 2, 2, 2, 2, 0, 0, 0 },
+                PastPoints = new() { 2, 2, 0, 2, 0, 4, 0 }
+            };
+            bool expectedResult = true;
+
+            bool actualResult = EctDbContextExtensions.IsMemberPotentiallyIsolated(team, memberData);
+
+            Assert.AreEqual(expectedResult, actualResult);
+        }
+
+        [TestMethod]
+        public void IsMemberPotentiallyIsolated_Current8_PercentDifference20_UnderThreshold_OverMaxMargin_ReturnsTrue()
+        {
+            EctTeam team = new() { PointsThreshold = 10, MarginForNotification = 10 };
+            NotificationMemberData memberData = new()
+            {
+                CurrentPoints = new() { 2, 2, 2, 2, 0, 0, 0 },
+                PastPoints = new() { 2, 2, 0, 2, 0, 4, 0 }
+            };
+            bool expectedResult = true;
+
+            bool actualResult = EctDbContextExtensions.IsMemberPotentiallyIsolated(team, memberData);
+
+            Assert.AreEqual(expectedResult, actualResult);
         }
 
         private Task<string> MockPreferredUsername(string email)
