@@ -32,7 +32,7 @@ namespace EctBlazorApp.Server.Extensions
         }
 
         /******************** Communication data for dates ********************/
-        /****************** It may be safe to remove these ?? ******************/
+        /****************** It may be safe to remove these ?? ******************/                                   // It is safe to remove these but refactoring the unit tests will make them more complicated than they should be
 
         public static List<CalendarEvent> GetCalendarEventsInDateRangeForUserId(this EctDbContext dbContext, int userId, DateTime fromDate, DateTime toDate)
         {
