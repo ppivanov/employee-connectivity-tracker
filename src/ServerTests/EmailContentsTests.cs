@@ -1,17 +1,15 @@
 ﻿using EctBlazorApp.Server.MailKit;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text.RegularExpressions;
-using static EctBlazorApp.Shared.SharedMethods;
 
 namespace EctBlazorApp.ServerTests
 {
     [TestClass]
     [ExcludeFromCodeCoverage]
-    public class EmailContentsTests
+    public class EmailContentsTests : IDisposable
     {
         private const string ANY = @".+";
         private const string TEAM_NAME = "Test Team";
@@ -22,8 +20,7 @@ namespace EctBlazorApp.ServerTests
 
         private EmailContents emailContents;
 
-        [TestInitialize]
-        public void Setup()
+        public EmailContentsTests()
         {
             emailContents = new()
             {
@@ -48,8 +45,7 @@ namespace EctBlazorApp.ServerTests
             };
         }
 
-        [TestCleanup]
-        public void Teardown()
+        public void Dispose()
         {
             emailContents = null;
         }
@@ -61,9 +57,8 @@ namespace EctBlazorApp.ServerTests
             Regex regex = new(pattern);
 
             string contents = emailContents.ToString();
-            Match regexTest = regex.Match(contents);
 
-            Assert.IsTrue(regexTest.Success);
+            StringAssert.Matches(contents, regex);
         }
 
         [DataTestMethod]
@@ -76,9 +71,8 @@ namespace EctBlazorApp.ServerTests
             Regex regex = new(memberPattern);
 
             string contents = member.ToString();
-            Match regexTest = regex.Match(contents);
 
-            Assert.IsTrue(regexTest.Success);
+            StringAssert.Matches(contents, regex);
         }
     }
 }

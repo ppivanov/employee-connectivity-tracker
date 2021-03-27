@@ -27,10 +27,7 @@ namespace EctBlazorApp.ServerTests
         }
 
         [TestInitialize]
-        public void BeforeEach()
-        {
-            ResetPointsAndToggles();
-        }
+        public void BeforeEach() => ResetPointsAndToggles();
 
         [TestMethod]
         public void EditPercentage_NoMediumToggled_Toggled()

@@ -19,15 +19,14 @@ namespace EctBlazorApp.ClientTests
 {
     [TestClass]
     [ExcludeFromCodeCoverage]
-    public sealed class MoveMembersTests
+    public sealed class MoveMembersTests : IDisposable
     {
-        private Bunit.TestContext testContext;
-        private Mock<IControllerConnection> mockApi;
-        private Mock<IJSRuntime> jsRuntime;
-        private Mock<CustomAuthState> authState;
+        private readonly Bunit.TestContext testContext;
+        private readonly Mock<IControllerConnection> mockApi;
+        private readonly Mock<IJSRuntime> jsRuntime;
+        private readonly Mock<CustomAuthState> authState;
 
-        [TestInitialize]
-        public void Setup()
+        public MoveMembersTests()
         {
             testContext = new();
             mockApi = new();
@@ -35,8 +34,7 @@ namespace EctBlazorApp.ClientTests
             authState = new();
         }
 
-        [TestCleanup]
-        public void Teardown()
+        public void Dispose()
         {
             testContext.Dispose();
         }

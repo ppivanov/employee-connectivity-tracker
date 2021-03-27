@@ -17,7 +17,7 @@ namespace EctBlazorApp.ServerTests
         public void NewDateTimeFromStringTest(int year, int month, int day)
         {
             string dateStringIn = $"{year}-{month}-{day}";
-            DateTime expectedDateTime = new DateTime(year, month, day);
+            DateTime expectedDateTime = new(year, month, day);
 
             DateTime actualDateTime = NewDateTimeFromString(dateStringIn);
 
@@ -62,9 +62,9 @@ namespace EctBlazorApp.ServerTests
         [DataRow(2020, 9, 4, 2021, 9, 5)]
         public void GetDateRangeQueryStringTest(int fromYear, int fromMonth, int fromDay, int toYear, int toMonth, int toDay)
         {
-            DateTimeOffset fromDate = new DateTimeOffset(new DateTime(fromYear, fromMonth, fromDay));
-            DateTimeOffset toDate = new DateTimeOffset(new DateTime(toYear, toMonth, toDay));
-            string expectedResult = $"?fromDate={fromDate.ToString("yyyy-MM-dd")}&toDate={toDate.ToString("yyyy-MM-dd")}";
+            DateTimeOffset fromDate = new(new DateTime(fromYear, fromMonth, fromDay));
+            DateTimeOffset toDate = new(new DateTime(toYear, toMonth, toDay));
+            string expectedResult = $"?fromDate={fromDate:yyyy-MM-dd}&toDate={toDate:yyyy-MM-dd}";
 
             string actualResult = GetDateRangeQueryString(fromDate, toDate);
 
@@ -88,8 +88,8 @@ namespace EctBlazorApp.ServerTests
         [DataRow(13, 20, 14, 10, 3000)]
         public void GetSecondsFromDateTimeRangeTest(int fromHour, int fromMinutes, int toHour, int toMinutes, int expectedResult)
         {
-            DateTime from = new DateTime(2021, 1, 1, fromHour, fromMinutes, 0);
-            DateTime to = new DateTime(2021, 1, 1, toHour, toMinutes, 0);
+            DateTime from = new(2021, 1, 1, fromHour, fromMinutes, 0);
+            DateTime to = new(2021, 1, 1, toHour, toMinutes, 0);
             int actualResult = GetSecondsFromDateTimeRange(from, to);
 
             Assert.AreEqual(expectedResult, actualResult);
@@ -99,10 +99,10 @@ namespace EctBlazorApp.ServerTests
         public void SplitDateRangeToChunksTest()
         {
             const int daysToAdd = 10;
-            DateTime startDateTime = new DateTime(2020, 12, 12);
+            DateTime startDateTime = new(2020, 12, 12);
             DateTime endDateTime = startDateTime.AddDays(daysToAdd);
-            DateTimeOffset fromDate = new DateTimeOffset(startDateTime);
-            DateTimeOffset toDate = new DateTimeOffset(endDateTime);
+            DateTimeOffset fromDate = new(startDateTime);
+            DateTimeOffset toDate = new(endDateTime);
 
             List<DateTime> result = SplitDateRangeToChunks(fromDate, toDate);
 
