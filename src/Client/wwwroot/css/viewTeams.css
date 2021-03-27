@@ -214,7 +214,7 @@
 	height: 100vh;
 	width: 100vw;
 	background-color: rgba(128, 128, 128, 0.5);
-	display: block;
+	display: none;
 }
 
 #delete-confirm-modal {
@@ -226,7 +226,7 @@
 	margin: 27em 34.37vw;
 	background-color: rgb(233, 233, 233);
 	border-radius: 15px;
-	display: block;
+	display: none;
 }
 
 #delete-confirm-modal > h2 {

@@ -172,13 +172,13 @@ namespace EctBlazorApp.Client.Pages
         protected async Task SendTeamData()
         {
             ResetErrorMessage();
-            if (IsSubmitting
-                || AreTeamDetailsValid() == false
-                || string.IsNullOrWhiteSpace(TeamDetails.LeaderNameAndEmail)
-                || IsLeaderAlreadySelectedAsMember()
-                || IsCurrentLeaderSelectionBadlyFormatted(out string leaderEmail)
-                || IsCurrentLeaderSelectionIneligible(leaderEmail)
-                || AreNotificationOptionsValid() == false
+            if (IsSubmitting || 
+                AreTeamDetailsValid() == false || 
+                string.IsNullOrWhiteSpace(TeamDetails.LeaderNameAndEmail) || 
+                IsLeaderAlreadySelectedAsMember() || 
+                IsCurrentLeaderSelectionBadlyFormatted() || 
+                IsCurrentLeaderSelectionIneligible() || 
+                AreNotificationOptionsValid() == false
                 )
                 return;
 
@@ -317,27 +317,27 @@ namespace EctBlazorApp.Client.Pages
             }
             Initialized = true;
         }
-        private bool IsCurrentLeaderSelectionBadlyFormatted(out string leaderEmail)
+        private bool IsCurrentLeaderSelectionBadlyFormatted()
         {
-            bool result = IsInputBadlyFormatted(TeamDetails.LeaderNameAndEmail, out leaderEmail);
+            bool result = IsInputBadlyFormatted(TeamDetails.LeaderNameAndEmail);
             if (result)
                 leaderInputError = true;
 
             return result;
         }
-        private bool IsCurrentLeaderSelectionIneligible(string selectedEmail)
+        private bool IsCurrentLeaderSelectionIneligible()
         {
             if (HasTeamId) return false;
 
-            bool result = IsEmailIneligibleForSelection(selectedEmail, allAvailableLeaders);
+            bool result = IsUserIneligibleForSelection(TeamDetails.LeaderNameAndEmail, allAvailableLeaders);
             if (result)
                 leaderInputError = true;
 
             return result;
         }
-        private bool IsEmailIneligibleForSelection(string email, IEnumerable<string> list)
+        private bool IsUserIneligibleForSelection(string user, IEnumerable<string> list)
         {
-            if (list.Any(a => a.Contains(email)) == false)
+            if (list.Any(a => a.Contains(user)) == false)
             {
                 ServerMessageIsError = true;
                 ServerMessage = "This user is not eligible for selection.";
@@ -345,16 +345,14 @@ namespace EctBlazorApp.Client.Pages
             }
             return false;
         }
-        private bool IsInputBadlyFormatted(string input, out string email)                                   // method invoking it needs to set the style of the input
+        private bool IsInputBadlyFormatted(string input)
         {
             if (IsStringInMemberFormat(input) == false)
             {
                 ServerMessageIsError = true;
                 ServerMessage = "Please, enter the details in the reqired format.";
-                email = string.Empty;
                 return true;
             }
-            email = GetEmailFromFormattedString(input);
             return false;
         }
         private bool IsLeaderAlreadySelectedAsMember()
@@ -376,8 +374,8 @@ namespace EctBlazorApp.Client.Pages
         }
         private bool UserToNotifyFieldsAreEmpty()
         {
-            if (string.IsNullOrWhiteSpace(UserToNotify_Name)
-                || string.IsNullOrWhiteSpace(UserToNotify_Email))
+            if (string.IsNullOrWhiteSpace(UserToNotify_Name) || 
+                string.IsNullOrWhiteSpace(UserToNotify_Email))
             {
                 SetNotifyUserInputErrorMessage("You must provide values for both Name and Email fields.");
                 return true;

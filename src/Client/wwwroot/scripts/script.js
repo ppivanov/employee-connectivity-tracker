@@ -91,8 +91,7 @@ const openDeleteConfirmation = () => {
 		'click',
 		(e) => {
 			const elementId = e.target.id
-			console.log(elementId)
-			if (elementId === 'delete-confirm-background' || elementId === 'confirm-deletion')
+			if (elementId === 'delete-confirm-background')
 				closeDeleteConfirmation()
 		},
 		true
@@ -102,6 +101,7 @@ const closeDeleteConfirmation = () => {
 	document.getElementById('delete-confirm-background').style.display = 'none'
 	document.getElementById('delete-confirm-modal').style.display = 'none'
 }
+window.closeDeleteConfirmation = () => closeDeleteConfirmation();
 
 const eventsChartDivId = 'events-chart'
 const eventsChartHeight = 550

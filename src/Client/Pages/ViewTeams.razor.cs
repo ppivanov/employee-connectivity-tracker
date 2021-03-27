@@ -5,6 +5,7 @@ using EctBlazorApp.Client.Graph;
 using EctBlazorApp.Client.Shared;
 using EctBlazorApp.Shared;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using static EctBlazorApp.Shared.SharedMethods;
 
 namespace EctBlazorApp.Client.Pages
@@ -15,6 +16,8 @@ namespace EctBlazorApp.Client.Pages
         protected CustomAuthState AuthState { get; set; }
         [Inject]
         protected IControllerConnection ApiConn { get; set; }
+        [Inject]
+        protected IJSRuntime JsRuntime { get; set; }
 
         protected List<EctTeamRequestDetails> Teams { get; set; } = new List<EctTeamRequestDetails>();
 
@@ -38,6 +41,7 @@ namespace EctBlazorApp.Client.Pages
                 ServerMessageIsError = false;
                 Teams = Teams.Where(t => t.TeamId != SelectedTeam.TeamId).ToList();
                 SelectedTeam = null;
+                await JsRuntime.InvokeVoidAsync("closeDeleteConfirmation");
             }
             else
             {
