@@ -204,3 +204,65 @@
 	width: 70%;
 	margin: 3em auto 3em auto;
 }
+
+/* Delete confirmation modal */
+
+#delete-confirm-background {
+	position: fixed;
+	top: 0;
+	left: 0;
+	height: 100vh;
+	width: 100vw;
+	background-color: rgba(128, 128, 128, 0.5);
+	display: block;
+}
+
+#delete-confirm-modal {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 50em;
+	height: 20em;
+	margin: 27em 34.37vw;
+	background-color: rgb(233, 233, 233);
+	border-radius: 15px;
+	display: block;
+}
+
+#delete-confirm-modal > h2 {
+	text-align: center;
+	padding-top: 1.5em;
+	padding-bottom: 1.5em;
+	border-bottom: 3px solid rgb(173, 172, 172);
+	border-radius: 0 0 15px 15px;
+}
+
+#delete-confirm-modal > p {
+	font-size: 1.2em;
+	text-align: center;
+	padding-top: 2em;
+}
+
+#delete-confirm-modal > .btn-delete {
+	position: relative;
+	float: right;
+	margin: 2em;
+}
+
+#delete-confirm-modal > .btn-cancel {
+	background-color: rgb(66, 103, 178);
+	border-color: rgb(41, 76, 146);
+	position: relative;
+	float: left;
+	margin: 2em;
+}
+
+#delete-confirm-modal > .btn-cancel:hover {
+	background-color: rgb(41, 76, 146);
+}
+
+@media only screen and (max-width: 1920px) {
+	#delete-confirm-modal {
+		margin: 24em 29.15vw;
+	}
+}

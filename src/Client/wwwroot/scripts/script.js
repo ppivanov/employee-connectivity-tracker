@@ -82,6 +82,27 @@ const isNavOpen = () => {
 	return isOpen
 }
 
+const openDeleteConfirmation = () => {
+	let backgroundElement = document.getElementById('delete-confirm-background');
+	let modalElement = document.getElementById('delete-confirm-modal');
+	backgroundElement.style.display = 'block'
+	modalElement.style.display = 'block'
+	backgroundElement.addEventListener(
+		'click',
+		(e) => {
+			const elementId = e.target.id
+			console.log(elementId)
+			if (elementId === 'delete-confirm-background' || elementId === 'confirm-deletion')
+				closeDeleteConfirmation()
+		},
+		true
+	)
+}
+const closeDeleteConfirmation = () => {
+	document.getElementById('delete-confirm-background').style.display = 'none'
+	document.getElementById('delete-confirm-modal').style.display = 'none'
+}
+
 const eventsChartDivId = 'events-chart'
 const eventsChartHeight = 550
 
