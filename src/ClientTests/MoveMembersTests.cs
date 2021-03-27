@@ -19,30 +19,14 @@ namespace EctBlazorApp.ClientTests
 {
     [TestClass]
     [ExcludeFromCodeCoverage]
-    public sealed class MoveMembersTests : IDisposable
+    public sealed class MoveMembersTests : ComponentTests
     {
-        private readonly Bunit.TestContext testContext;
-        private readonly Mock<IControllerConnection> mockApi;
-        private readonly Mock<IJSRuntime> jsRuntime;
-        private readonly Mock<CustomAuthState> authState;
-
-        public MoveMembersTests()
-        {
-            testContext = new();
-            mockApi = new();
-            jsRuntime = new();
-            authState = new();
-        }
-
-        public void Dispose()
-        {
-            testContext.Dispose();
-        }
+        public MoveMembersTests() : base() { }
 
         [TestMethod]
         public void NormalUser_NoAccess()
         {
-            AddScopedServices(isAdmin: false, isLeader: false);
+            AddScopedServices(isAdmin: false, isLeader: false, isAuthorized: true);
 
             var component = testContext.RenderComponent<CascadingAuthenticationState>(x => x.AddChildContent<MoveMembers>());
 
@@ -54,7 +38,7 @@ namespace EctBlazorApp.ClientTests
         [TestMethod]
         public void TeamLead_NoAccess()
         {
-            AddScopedServices(isAdmin: false, isLeader: true);
+            AddScopedServices(isAdmin: false, isLeader: true, isAuthorized: true);
 
             var component = testContext.RenderComponent<CascadingAuthenticationState>(x => x.AddChildContent<MoveMembers>());
 
@@ -66,25 +50,26 @@ namespace EctBlazorApp.ClientTests
         [TestMethod]
         public void Admin_HasAccess()
         {
-            AddScopedServices(isAdmin: true, isLeader: false);
+            AddScopedServices(isAdmin: true, isLeader: false, isAuthorized: true);
 
             var component = testContext.RenderComponent<CascadingAuthenticationState>(x => x.AddChildContent<MoveMembers>());
             var expectedNumberOfInputFields = 2;
+            var expectedNumberOfTeamElements = 2;
 
             var actualNumberOfInputFields = component.FindAll("input").Count;
+            var actualNumberOfTeamElements = component.FindAll(".team").Count;
 
-            Assert.IsTrue(component.Markup.Contains("class=\"move-members\""));
-            Assert.IsTrue(component.Markup.Contains("class=\"team float-left\""));
-            Assert.IsTrue(component.Markup.Contains("class=\"team float-right\""));
+            component.Find(".move-members");
 
             Assert.AreEqual(expectedNumberOfInputFields, actualNumberOfInputFields);
+            Assert.AreEqual(actualNumberOfTeamElements, expectedNumberOfTeamElements);
         }
 
         [TestMethod]
         [ExpectedException(typeof(ElementNotFoundException))]
         public void SelectTeam_NoMatch()
         {
-            AddScopedServices(isAdmin: true, isLeader: false);
+            AddScopedServices(isAdmin: true, isLeader: false, isAuthorized: true);
             mockApi.Setup(ma => ma.FetchAllTeams()).Returns(MockAllTeamsResponseFromApi());
 
             var component = testContext.RenderComponent<CascadingAuthenticationState>(x => x.AddChildContent<MoveMembers>());
@@ -100,7 +85,7 @@ namespace EctBlazorApp.ClientTests
         [TestMethod]
         public void SelectTeam_Match_MembersDisplayed()
         {
-            AddScopedServices(isAdmin: true, isLeader: false);
+            AddScopedServices(isAdmin: true, isLeader: false, isAuthorized: true);
             mockApi.Setup(ma => ma.FetchAllTeams()).Returns(MockAllTeamsResponseFromApi());
 
             var component = testContext.RenderComponent<CascadingAuthenticationState>(x => x.AddChildContent<MoveMembers>());
@@ -128,7 +113,7 @@ namespace EctBlazorApp.ClientTests
         [TestMethod]
         public void MoveMember_SecondTeamNotSelected_ErrorMessage()
         {
-            AddScopedServices(isAdmin: true, isLeader: false);
+            AddScopedServices(isAdmin: true, isLeader: false, isAuthorized: true);
             mockApi.Setup(ma => ma.FetchAllTeams()).Returns(MockAllTeamsResponseFromApi());
 
             var component = testContext.RenderComponent<CascadingAuthenticationState>(x => x.AddChildContent<MoveMembers>());
@@ -149,7 +134,7 @@ namespace EctBlazorApp.ClientTests
         [TestMethod]
         public void MoveMember_Ok_MemberMoved()
         {
-            AddScopedServices(isAdmin: true, isLeader: false);
+            AddScopedServices(isAdmin: true, isLeader: false, isAuthorized: true);
             mockApi.Setup(ma => ma.FetchAllTeams()).Returns(MockAllTeamsResponseFromApi());
 
             var component = testContext.RenderComponent<CascadingAuthenticationState>(x => x.AddChildContent<MoveMembers>());
@@ -180,7 +165,7 @@ namespace EctBlazorApp.ClientTests
         public void SubmitChanges_Ok_Saved()
         {
             const string fakeApiResponse = "Success";
-            AddScopedServices(isAdmin: true, isLeader: false);
+            AddScopedServices(isAdmin: true, isLeader: false, isAuthorized: true);
             mockApi.Setup(ma => ma.FetchAllTeams()).Returns(MockAllTeamsResponseFromApi());
             mockApi.Setup(ma => ma.SubmitMoveMemberTeams(It.IsAny<List<EctTeamRequestDetails>>()))
                 .Returns(Task.FromResult((true, fakeApiResponse)));
@@ -205,8 +190,7 @@ namespace EctBlazorApp.ClientTests
         [TestMethod]
         public void SubmitChanges_NoChanges_ErrorMessage()
         {
-            AddScopedServices(isAdmin: true, isLeader: false);
-
+            AddScopedServices(isAdmin: true, isLeader: false, isAuthorized: true);
             var component = testContext.RenderComponent<CascadingAuthenticationState>(x => x.AddChildContent<MoveMembers>());
 
             component.Find(".btn-submit-form").Click();                                                                     // click the submit button
@@ -220,7 +204,7 @@ namespace EctBlazorApp.ClientTests
         public void ResetTeams_Ok_MembersMovedBack()
         {
             const string fakeApiResponse = "Success";
-            AddScopedServices(isAdmin: true, isLeader: false);
+            AddScopedServices(isAdmin: true, isLeader: false, isAuthorized: true);
             mockApi.Setup(ma => ma.FetchAllTeams()).Returns(MockAllTeamsResponseFromApi());
             mockApi.Setup(ma => ma.SubmitMoveMemberTeams(It.IsAny<List<EctTeamRequestDetails>>()))
                 .Returns(Task.FromResult((true, fakeApiResponse)));
@@ -233,19 +217,22 @@ namespace EctBlazorApp.ClientTests
             const string legends = "legends";
             component.Find("#rt-selection").Input(legends);                                                                 // select 'legends' on the right side
 
-            var leftMoveButtons = component.FindAll(".lt-move-member");                                                     // Move all members from 'Test team' to Legends
-            foreach (var moveButton in leftMoveButtons)
-                moveButton.Click();
+            try                                                                                                             // Move all members from 'Test team' to Legends
+            {
+                while (component.Find(".lt-move-member") != null)
+                    component.Find(".lt-move-member").Click();
+            }
+            catch (ElementNotFoundException)
+            {
+                // It's ok. There are no more members.
+            }
 
-            try
-            {
-                component.FindAll(".lt-member-name-email");
-                Assert.Fail();                                                                                              // there shouldn't be any members left in 'Test team'
-            }
-            catch (Exception)
-            {
-                // ok
-            }
+            //var leftMoveButtons = component.FindAll(".lt-move-member");                                                   // Initial attempt to move all members - only first button is clicked
+            //foreach (var moveButton in leftMoveButtons)
+            //    moveButton.Click();
+
+            var result = component.FindAll(".lt-member-name-email");
+            Assert.AreEqual(0, result.Count);                                                                               // there shouldn't be any members left in 'Test team'
 
             component.Find(".btn-reset-form").Click();                                                                     // click the reset button
 
@@ -256,20 +243,6 @@ namespace EctBlazorApp.ClientTests
 
             foreach (var member in leftMembers)
                 Assert.IsTrue(member.InnerHtml.Contains($"{expectedMemberName} Member"));
-        }
-
-        private void AddScopedServices(bool isAdmin, bool isLeader)
-        {
-            authState.SetupGet(x => x.IsAdmin).Returns(isAdmin);
-            authState.SetupGet(x => x.IsLeader).Returns(isLeader);
-
-            testContext.Services.AddScoped(tc => new DashboardState());
-            testContext.Services.AddScoped(tc => authState.Object);
-            testContext.Services.AddScoped(tc => mockApi.Object);
-            testContext.Services.AddScoped(tc => jsRuntime.Object);
-
-            var authContext = testContext.Services.AddTestAuthorization();
-            authContext.SetAuthorized("Test User");
         }
 
         private static Task<IEnumerable<EctTeamRequestDetails>> MockAllTeamsResponseFromApi()
@@ -311,19 +284,5 @@ namespace EctBlazorApp.ClientTests
             return members;
         }
 
-        private static string GetMemberFirstNameFromTeamName(string teamName)
-        {
-            string memberFirstName = string.Empty;
-            var splitTeamName = teamName.Split(" ");
-            if (splitTeamName.Length < 2)
-                memberFirstName = teamName;
-            else
-            {
-                foreach (var word in splitTeamName)
-                    memberFirstName += word.ElementAt(0);
-            }
-
-            return memberFirstName;
-        }
     }
 }

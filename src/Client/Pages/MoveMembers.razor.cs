@@ -69,7 +69,7 @@ namespace EctBlazorApp.Client.Pages
             }
         }
 
-        protected void MoveMember(EctTeamRequestDetails fromTeam, EctTeamRequestDetails toTeam, string emailToRemove)
+        protected void MoveMember(EctTeamRequestDetails fromTeam, EctTeamRequestDetails toTeam, string emailToMove)
         {
             if (toTeam == null)
             {
@@ -78,7 +78,7 @@ namespace EctBlazorApp.Client.Pages
                 return;
             }
             MemberHasBeenMoved = true;
-            var userToMove = fromTeam.MemberNamesAndEmails.FirstOrDefault(m => m.Equals(emailToRemove));
+            var userToMove = fromTeam.MemberNamesAndEmails.FirstOrDefault(m => m.Equals(emailToMove));
             fromTeam.MemberNamesAndEmails = fromTeam.MemberNamesAndEmails.Where(m => m.Equals(userToMove) == false).ToList();
             toTeam.MemberNamesAndEmails.Add(userToMove);
         }
