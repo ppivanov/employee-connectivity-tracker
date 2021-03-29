@@ -36,7 +36,7 @@
                     <datalist id="leaders">
                         @foreach (var leader in GetAvailableLeaders())
                         {
-                            <option value="@leader" />
+                            <option class="leader-option" value="@leader" />
                         }
                     </datalist>
                 </div>
@@ -127,9 +127,9 @@
                 <tbody>
                     @foreach (var selectedMember in TeamDetails.MemberNamesAndEmails)
                     {
-                        <tr>
+                        <tr class="selected-member">
                             <td>
-                                @selectedMember
+                                <span class="selected-member-name-email">@selectedMember</span>
                                 <button type="button" class="btn-deselect float-right" @onclick="() => RemoveFromSelected(selectedMember)" title="Remove">
                                     <i class="fas fa-user-times"></i></button>
                             </td>
@@ -151,13 +151,13 @@
                 </thead>
                 
                 <tbody>
-                    @foreach (var availableMember in this.AvailableMembers.Where(al => al.ToLower().Contains(FilterUsersInput.ToLower())))
+                    @foreach (var availableMember in AvailableMembers.Where(al => al.ToLower().Contains(FilterUsersInput.ToLower())))
                     {
-                        <tr>
+                        <tr class="available-user">
                             <td>
                                 <button type="button" class="btn-select float-left" @onclick="() => AddSelectedMember(availableMember)" title="Add as member">
                                     <i class="fas fa-angle-double-left"></i></button>
-                                @availableMember
+                                <span class="available-user-name-email">@availableMember</span>
                             </td>
                         </tr>
                     }

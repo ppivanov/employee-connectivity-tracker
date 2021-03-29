@@ -29,7 +29,7 @@ namespace EctBlazorApp.ClientTests
             testContext.Dispose();
         }
 
-        protected void AddScopedServices(bool isAdmin, bool isLeader, bool isAuthorized)
+        protected void AddScopedServices(bool isAdmin, bool isLeader, bool isAuthorized = true)
         {
             authState.SetupGet(x => x.IsAdmin).Returns(isAdmin);
             authState.SetupGet(x => x.IsLeader).Returns(isLeader);

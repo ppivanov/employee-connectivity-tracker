@@ -27,8 +27,7 @@ namespace EctBlazorApp.ClientTests
         [TestMethod]
         public void NormalUser_NoAccess()
         {
-            AddScopedServices(isAdmin: false, isLeader: false, isAuthorized: true);
-
+            AddScopedServices(isAdmin: false, isLeader: false);
             var component = testContext.RenderComponent<CascadingAuthenticationState>(x => x.AddChildContent<ManageTeam>());
 
             var actualNestedComponent = component.FindComponent<NoAccess>();
@@ -39,8 +38,7 @@ namespace EctBlazorApp.ClientTests
         [TestMethod]
         public void TeamLead_NoAccess()
         {
-            AddScopedServices(isAdmin: false, isLeader: true, isAuthorized: true);
-
+            AddScopedServices(isAdmin: false, isLeader: true);
             var component = testContext.RenderComponent<CascadingAuthenticationState>(x => x.AddChildContent<ManageTeam>());
 
             var actualNestedComponent = component.FindComponent<NoAccess>();
@@ -51,10 +49,9 @@ namespace EctBlazorApp.ClientTests
         [TestMethod]
         public void Admin_HasAccess()
         {
-            AddScopedServices(isAdmin: true, isLeader: false, isAuthorized: true);
-
+            AddScopedServices(isAdmin: true, isLeader: false);
             var component = testContext.RenderComponent<CascadingAuthenticationState>(x => x.AddChildContent<ManageTeam>());
-            var expectedNumberOfInputFields = 3;                                                                                // Team name / Team lead / Filter available users
+            const int expectedNumberOfInputFields = 3;                                                                                // Team name / Team lead / Filter available users
 
             var actualNumberOfInputFields = component.FindAll("input").Count;
 
@@ -65,12 +62,106 @@ namespace EctBlazorApp.ClientTests
             Assert.AreEqual(expectedNumberOfInputFields, actualNumberOfInputFields);
         }
 
+        [TestMethod]
+        public void AllAvailableMembersDisplayed()
+        {
+            AddScopedServices(isAdmin: true, isLeader: false);
+            mockApi.Setup(x => x.GetUsersEligibleForMembers()).Returns(GetFiveAvailableMembers(htmlEncoded: false));
+            var component = testContext.RenderComponent<CascadingAuthenticationState>(x => x.AddChildContent<ManageTeam>());
+            const int expectedNumberOfUsers = 5;
 
-        private static List<string> GetFiveAvailableMembers(bool htmlEncoded)
+            var actualNumberOfUsers = component.FindAll(".available-user").Count;
+            var actualNumberOfLeaderOptions = component.FindAll(".leader-option").Count;
+
+            Assert.AreEqual(expectedNumberOfUsers, actualNumberOfUsers);
+            Assert.AreEqual(expectedNumberOfUsers, actualNumberOfLeaderOptions);
+        }
+
+        [TestMethod]
+        public void MoveUserToSelected()
+        {
+            AddScopedServices(isAdmin: true, isLeader: false);
+            mockApi.Setup(x => x.GetUsersEligibleForMembers()).Returns(GetFiveAvailableMembers(htmlEncoded: false));
+            var component = testContext.RenderComponent<CascadingAuthenticationState>(x => x.AddChildContent<ManageTeam>());
+
+            var firstMemberNameEmail = component.Find(".available-user-name-email").InnerHtml;
+            component.Find(".btn-select").Click();                                                          // Move the first user to selected
+
+            const int expectedNumberOfSelectedUsers = 1;
+            var actualNumberOfSelectedUsers = component.FindAll(".selected-member").Count;
+            Assert.AreEqual(expectedNumberOfSelectedUsers, actualNumberOfSelectedUsers);
+
+            var selectedMemberNameEmail = component.Find(".selected-member-name-email").InnerHtml;
+            Assert.AreEqual(firstMemberNameEmail, selectedMemberNameEmail);
+
+            const int expectedNumberOfLeaderOptions = 4;
+            var actualNumberOfLeaderOptions = component.FindAll(".leader-option").Count;
+            Assert.AreEqual(expectedNumberOfLeaderOptions, actualNumberOfLeaderOptions);
+        }
+
+        [TestMethod]
+        public void RemoveMemberFromSelected()
+        {
+            AddScopedServices(isAdmin: true, isLeader: false);
+            mockApi.Setup(x => x.GetUsersEligibleForMembers()).Returns(GetFiveAvailableMembers(htmlEncoded: false));
+            var component = testContext.RenderComponent<CascadingAuthenticationState>(x => x.AddChildContent<ManageTeam>());
+
+            var firstMemberBeforeMove = component.Find(".available-user-name-email").InnerHtml;
+            component.Find(".btn-select").Click();                                                          // Move the first user to selected
+
+            component.Find(".btn-deselect").Click();
+
+            const int expectedNumberOfSelectedUsers = 0;
+            var actualNumberOfSelectedUsers = component.FindAll(".selected-member").Count;
+            Assert.AreEqual(expectedNumberOfSelectedUsers, actualNumberOfSelectedUsers);
+
+            var allAvailableUsers = component.FindAll(".available-user-name-email");
+            var lastAvailableUser = allAvailableUsers[allAvailableUsers.Count - 1].InnerHtml;
+            Assert.AreEqual(firstMemberBeforeMove, lastAvailableUser);
+
+            const int expectedNumberOfLeaderOptions = 5;
+            var actualNumberOfLeaderOptions = component.FindAll(".leader-option").Count;
+            Assert.AreEqual(expectedNumberOfLeaderOptions, actualNumberOfLeaderOptions);
+        }
+
+        [TestMethod]
+        public void FilterAvailableUsersByName()
+        {
+            AddScopedServices(isAdmin: true, isLeader: false);
+            mockApi.Setup(x => x.GetUsersEligibleForMembers()).Returns(GetFiveAvailableMembers(htmlEncoded: false));
+            var component = testContext.RenderComponent<CascadingAuthenticationState>(x => x.AddChildContent<ManageTeam>());
+
+            var filterUsersInput = component.Find("#filter-users");
+            filterUsersInput.Input("member 1");
+
+            const int expectedNumberOfUsers = 1;
+            var actualNumberOfUsers = component.FindAll(".available-user").Count;
+
+            Assert.AreEqual(expectedNumberOfUsers, actualNumberOfUsers);
+        }
+
+        [TestMethod]
+        public void FilterAvailableUsersByEmail()
+        {
+            AddScopedServices(isAdmin: true, isLeader: false);
+            mockApi.Setup(x => x.GetUsersEligibleForMembers()).Returns(GetFiveAvailableMembers(htmlEncoded: false));
+            var component = testContext.RenderComponent<CascadingAuthenticationState>(x => x.AddChildContent<ManageTeam>());
+
+            var filterUsersInput = component.Find("#filter-users");
+            filterUsersInput.Input("member.one");
+
+            const int expectedNumberOfUsers = 1;
+            var actualNumberOfUsers = component.FindAll(".available-user").Count;
+
+            Assert.AreEqual(expectedNumberOfUsers, actualNumberOfUsers);
+        }
+
+
+        private static Task<IEnumerable<string>> GetFiveAvailableMembers(bool htmlEncoded)
         {
             string leftBracket = htmlEncoded ? "&lt;" : "<";
             string rightBracket = htmlEncoded ? "&gt;" : ">";
-            List<string> members = new()
+            IEnumerable<string> members = new List<string>()
             {
                 $"Member 1 {leftBracket}member.one@ect.ie{rightBracket}",
                 $"Member 2 {leftBracket}member.two@ect.ie{rightBracket}",
@@ -79,7 +170,7 @@ namespace EctBlazorApp.ClientTests
                 $"Member 5 {leftBracket}member.five@ect.ie{rightBracket}",
             };
 
-            return members;
+            return Task.FromResult(members);
         }
     }
 }

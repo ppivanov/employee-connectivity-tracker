@@ -302,8 +302,10 @@ namespace EctBlazorApp.Client.Pages
             await JsInterop("setPageTitle", "Manage Team");
             TeamDetails = await ApiConn.IsProcessingUserLeaderForTeam(HashedTeamId);
 
-            if (TeamDetails == null) HasAccess = false;
-            else HasAccess = true;
+            if (TeamDetails == null) 
+                HasAccess = false;
+            else 
+                HasAccess = true;
 
             if (HasAccess)
             {
