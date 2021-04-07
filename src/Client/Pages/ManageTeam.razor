@@ -151,9 +151,9 @@
                 </thead>
                 
                 <tbody>
-                    @foreach (var availableMember in AvailableMembers.Where(al => al.ToLower().Contains(FilterUsersInput.ToLower())))
+                    @foreach (var availableMember in AvailableUsers.Where(al => al.ToLower().Contains(FilterUsersInput.ToLower())))
                     {
-                        <tr class="available-user">
+                        <tr class="available-user @GetUserRemovedFromMembersClass(availableMember)">
                             <td>
                                 <button type="button" class="btn-select float-left" @onclick="() => AddSelectedMember(availableMember)" title="Add as member">
                                     <i class="fas fa-angle-double-left"></i></button>

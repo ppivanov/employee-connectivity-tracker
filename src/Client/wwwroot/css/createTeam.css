@@ -129,13 +129,14 @@
 .create-team .available-users > tbody {
 	display: block;
 	width: 100%;
+	padding-bottom: 0.6em;
 	overflow-x: hidden;
 }
 .create-team .selected-members > tbody {
 	max-height: 39em;
 }
 .create-team .available-users > tbody {
-	max-height: 35em;
+	max-height: 34em;
 }
 
 .create-team .selected-members > tbody > tr,
@@ -144,6 +145,13 @@
 	border-radius: 5px 5px 0 0;
 	border-bottom: 1px solid lightgray;
 }
+.create-team .available-users > tbody > .removed-member {
+	background-color: rgb(190, 225, 253);
+}
+.create-team .available-users > tbody > .removed-member:hover {
+	background-color: rgb(133, 199, 253);
+}
+
 .create-team .selected-members > tbody > tr:hover,
 .create-team .available-users > tbody > tr:hover {
 	background-color: lightgray;
@@ -151,7 +159,7 @@
 
 .create-team .selected-members td > button,
 .create-team .available-users td > button {
-	margin-top: -0.5em;
+	margin-top: -0.2em;
 	width: 5em;
 }
 .create-team .available-users td > button {
@@ -181,7 +189,7 @@
 .create-team .selected-members thead,
 .create-team .available-users thead {
 	display: block;
-	width: 80%;
+	width: 100%;
 	text-align: center;
 }
 

@@ -49,15 +49,21 @@ namespace EctBlazorApp.Client.Pages
         {
             get => AddNotifyUserInputError ? "border: 1px solid red" : string.Empty; 
         }
-        protected List<string> GetAvailableLeaders() => allAvailableLeaders.ToList();
-        protected List<string> AvailableMembers
+        protected List<string> AvailableUsers
         {
             get
             {
-                var selectableMembers = allAvailableLeaders.ToList();                                   // Copy the available set of members
-                selectableMembers.Remove(TeamDetails.LeaderNameAndEmail);                                      // Remove the selected leader
-                return selectableMembers;
+                var selectableUsers = allAvailableLeaders.ToList();                                   // Copy the available set of members
+                selectableUsers.Remove(TeamDetails.LeaderNameAndEmail);                                      // Remove the selected leader
+                return selectableUsers;
             }
+        }
+        protected string GetUserRemovedFromMembersClass(string user)
+        {
+            if (originalMembers != null && originalMembers.Contains(user)) 
+                return "removed-member";
+            else
+                return "";
         }
         protected string FilterUsersInput {get; private set;} = string.Empty;
         protected bool HasAccess { get; private set; } = false;
@@ -136,6 +142,8 @@ namespace EctBlazorApp.Client.Pages
 
             await InvokeAsync(StateHasChanged);
         }
+
+        protected List<string> GetAvailableLeaders() => allAvailableLeaders.ToList();
 
         protected async Task GetEligibleUsers()
         {
