@@ -25,7 +25,7 @@
             <div class="left-half float-left">
                 <div class="create-team-input-pair">
                     <label>Team name</label>
-                    <InputText @bind-Value=TeamDetails.Name class="form-control" id="Name" disabled="@HasTeamId" />
+                    <InputText @bind-Value=TeamDetails.Name class="form-control" id="name" disabled="@HasTeamId" />
 
                 </div>
                 <div class="create-team-input-pair">
@@ -87,12 +87,12 @@
                             }
                         </datalist>
 
-                        <button type="button" @onclick="async () => await AddUserToNotify()">Add user</button>
+                        <button type="button" id="add-user-to-notify" @onclick="async () => await AddUserToNotify()">Add user</button>
                     </p>
                     <table class="users-to-notify">
                         @foreach (var nameAndEmail in NewNotificationOptions.UsersToNotify)
                         {
-                            <tr>
+                            <tr class="user-to-notify-row">
                                 <td class="user">
                                     <p>@nameAndEmail</p>
                                 </td>

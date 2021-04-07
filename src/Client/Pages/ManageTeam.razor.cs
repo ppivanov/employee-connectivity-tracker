@@ -28,7 +28,7 @@ namespace EctBlazorApp.Client.Pages
         {
             TeamDetails = teamDetails;
         }
-        
+
         // public properties for unit tests
         public bool AddNotifyUserInputError { get; private set; } = false;
         public NotificationOptionsResponse NewNotificationOptions => TeamDetails.NewNotificationOptions;
@@ -45,9 +45,9 @@ namespace EctBlazorApp.Client.Pages
         private List<string> originalAvailableLeaders;
         private bool pointsInputError = false;
 
-        protected string AddNotifyUserInputStyle 
+        protected string AddNotifyUserInputStyle
         {
-            get => AddNotifyUserInputError ? "border: 1px solid red" : string.Empty; 
+            get => AddNotifyUserInputError ? "border: 1px solid red" : string.Empty;
         }
         protected List<string> AvailableUsers
         {
@@ -60,20 +60,20 @@ namespace EctBlazorApp.Client.Pages
         }
         protected string GetUserRemovedFromMembersClass(string user)
         {
-            if (originalMembers != null && originalMembers.Contains(user)) 
+            if (originalMembers != null && originalMembers.Contains(user))
                 return "removed-member";
             else
                 return "";
         }
-        protected string FilterUsersInput {get; private set;} = string.Empty;
+        protected string FilterUsersInput { get; private set; } = string.Empty;
         protected bool HasAccess { get; private set; } = false;
         protected bool HasTeamId => string.IsNullOrEmpty(HashedTeamId) == false;
         protected bool Initialized { get; private set; } = false;
         protected bool IsSubmitting { get; private set; } = false;
-        protected string LeaderInputStyle => leaderInputError ? "border: 1px solid red" : string.Empty;     
+        protected string LeaderInputStyle => leaderInputError ? "border: 1px solid red" : string.Empty;
         protected string MarginInputStyle => marginInputError ? "border: 1px solid red" : string.Empty;
         protected string PointsInputStyle => pointsInputError ? "border: 1px solid red" : string.Empty;
-        protected IEnumerable<string> PromptUsersForNotification => 
+        protected IEnumerable<string> PromptUsersForNotification =>
             TeamDetails.MemberNamesAndEmails.Where(
                     member => NewNotificationOptions.UsersToNotify.Contains(member) == false);
 
@@ -81,7 +81,7 @@ namespace EctBlazorApp.Client.Pages
         {
             if (UserToNotifyFieldsAreEmpty() || UserToNotifyAlreadyInList())
                 return;
-            
+
             string nameAndEmail = FormatFullNameAndEmail(UserToNotify_Name, UserToNotify_Email);
             TeamDetails.NewNotificationOptions.UsersToNotify.Add(nameAndEmail);
             UserToNotify_Name = string.Empty;
@@ -89,17 +89,17 @@ namespace EctBlazorApp.Client.Pages
             await JsInterop("resetUserToNotifyEmail");
             await JsInterop("resetUserToNotifyName");
         }
-        
+
         public virtual async Task JsInterop(string function, string parameter = "")
         {
             await JsRuntime.InvokeVoidAsync(function, parameter);
         }               // Used to mock JavaScript function calls
-        
+
         public void RemoveUserToNotify(string toRemove)
         {
             TeamDetails.NewNotificationOptions.UsersToNotify.Remove(toRemove);
         }
-        
+
         public void SetLeaderNameEmail(ChangeEventArgs args)
         {
             ResetErrorMessage();
@@ -109,7 +109,7 @@ namespace EctBlazorApp.Client.Pages
         public async Task SetUserToNotifyEmail(ChangeEventArgs args)
         {
             UserToNotify_Email = args.Value.ToString();
-            var matchingMember = PromptUsersForNotification.FirstOrDefault(m => 
+            var matchingMember = PromptUsersForNotification.FirstOrDefault(m =>
                 GetEmailFromFormattedString(m).Equals(UserToNotify_Email));
             if (matchingMember != null)
             {
@@ -123,7 +123,7 @@ namespace EctBlazorApp.Client.Pages
         public async Task SetUserToNotifyName(ChangeEventArgs args)
         {
             UserToNotify_Name = args.Value.ToString();
-            var matchingMember = PromptUsersForNotification.FirstOrDefault(m => 
+            var matchingMember = PromptUsersForNotification.FirstOrDefault(m =>
                 GetFullNameFromFormattedString(m).Equals(UserToNotify_Name));
             if (matchingMember != null)
             {
@@ -133,7 +133,7 @@ namespace EctBlazorApp.Client.Pages
             else
                 await JsInterop("resetUserToNotifyEmail");
         }
-        
+
 
         protected async Task AddSelectedMember(string memberToAdd)
         {
@@ -150,11 +150,6 @@ namespace EctBlazorApp.Client.Pages
             var response = await ApiConn.GetUsersEligibleForMembers();
             allAvailableLeaders = response.ToList();
             originalAvailableLeaders = allAvailableLeaders.ToList();
-        }
-
-        protected override async Task OnInitializedAsync()
-        {
-            await Initialize();
         }
 
         protected override async Task OnParametersSetAsync()
@@ -180,12 +175,12 @@ namespace EctBlazorApp.Client.Pages
         protected async Task SendTeamData()
         {
             ResetErrorMessage();
-            if (IsSubmitting || 
-                AreTeamDetailsValid() == false || 
-                string.IsNullOrWhiteSpace(TeamDetails.LeaderNameAndEmail) || 
-                IsLeaderAlreadySelectedAsMember() || 
-                IsCurrentLeaderSelectionBadlyFormatted() || 
-                IsCurrentLeaderSelectionIneligible() || 
+            if (IsSubmitting ||
+                AreTeamDetailsValid() == false ||
+                string.IsNullOrWhiteSpace(TeamDetails.LeaderNameAndEmail) ||
+                IsLeaderAlreadySelectedAsMember() ||
+                IsCurrentLeaderSelectionBadlyFormatted() ||
+                IsCurrentLeaderSelectionIneligible() ||
                 AreNotificationOptionsValid() == false
                 )
                 return;
@@ -203,8 +198,8 @@ namespace EctBlazorApp.Client.Pages
             {
                 allAvailableLeaders.Remove(TeamDetails.LeaderNameAndEmail);
                 await ResetInputFields();
-            } 
-            else 
+            }
+            else
             {
                 originalAvailableLeaders = allAvailableLeaders.ToList();
                 originalMembers = TeamDetails.MemberNamesAndEmails.ToList();
@@ -220,8 +215,8 @@ namespace EctBlazorApp.Client.Pages
 
 
         private bool AreNotificationOptionsValid()
-        {   
-            if(HasTeamId == false) return true;
+        {
+            if (HasTeamId == false) return true;
 
             int newPoints = NewNotificationOptions.PointsThreshold;
             int minPoints = NotificationOptionsResponse.MinPoints;
@@ -231,14 +226,16 @@ namespace EctBlazorApp.Client.Pages
             int minMargin = NotificationOptionsResponse.MinMargin;
             int maxMargin = NotificationOptionsResponse.MaxMargin;
 
-            if(newPoints < minPoints || newPoints > maxPoints){
+            if (newPoints < minPoints || newPoints > maxPoints)
+            {
                 ServerMessageIsError = true;
                 ServerMessage = NotificationOptionsResponse.PointsErrorMessage;
                 pointsInputError = true;
                 return false;
             }
 
-            if(newMargin < minMargin || newMargin > maxMargin){
+            if (newMargin < minMargin || newMargin > maxMargin)
+            {
                 ServerMessageIsError = true;
                 ServerMessage = NotificationOptionsResponse.MarginErrorMessage;
                 marginInputError = true;
@@ -267,7 +264,7 @@ namespace EctBlazorApp.Client.Pages
         }
         private async Task ResetInputFields()
         {
-            if(TeamDetails != null)
+            if (TeamDetails != null)
             {
                 TeamDetails.Name = string.Empty;
                 TeamDetails.LeaderNameAndEmail = string.Empty;
@@ -288,8 +285,6 @@ namespace EctBlazorApp.Client.Pages
                 await InitializeManageTeam();
             else
                 await InitializeCreateTeam();
-
-            await InvokeAsync(StateHasChanged);
         }
         private async Task InitializeCreateTeam()
         {
@@ -310,9 +305,9 @@ namespace EctBlazorApp.Client.Pages
             await JsInterop("setPageTitle", "Manage Team");
             TeamDetails = await ApiConn.IsProcessingUserLeaderForTeam(HashedTeamId);
 
-            if (TeamDetails == null) 
+            if (TeamDetails == null)
                 HasAccess = false;
-            else 
+            else
                 HasAccess = true;
 
             if (HasAccess)
@@ -384,7 +379,7 @@ namespace EctBlazorApp.Client.Pages
         }
         private bool UserToNotifyFieldsAreEmpty()
         {
-            if (string.IsNullOrWhiteSpace(UserToNotify_Name) || 
+            if (string.IsNullOrWhiteSpace(UserToNotify_Name) ||
                 string.IsNullOrWhiteSpace(UserToNotify_Email))
             {
                 SetNotifyUserInputErrorMessage("You must provide values for both Name and Email fields.");
