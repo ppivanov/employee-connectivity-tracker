@@ -235,11 +235,10 @@ namespace EctBlazorApp.Server.Extensions
             int currentWeekPoints = memberData.CurrentTotal > 0 ? memberData.CurrentTotal : 1;                                                                              // If there are no points set as 1 to avoid division by 0.
             int previousWeekPoints = memberData.PastTotal > 0 ? memberData.PastTotal : 1;
 
-            double percentDifferenceInPoints = currentWeekPoints * 100 / previousWeekPoints - 100;
-            double realPercentDifference = percentDifferenceInPoints * -1;
+            double percentDifferenceInPoints = (currentWeekPoints / previousWeekPoints - 100);
 
-            if (currentWeekPoints <= team.PointsThreshold || 
-                    (percentDifferenceInPoints < 0 && realPercentDifference >= team.MarginForNotification))
+            if (currentWeekPoints <= team.PointsThreshold 
+                || (currentWeekPoints < previousWeekPoints && percentDifferenceInPoints >= team.MarginForNotification))
                 return true;
 
             return false;
