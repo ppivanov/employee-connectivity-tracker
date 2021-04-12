@@ -29,7 +29,17 @@ stages:
       inputs:
         command: 'restore'
         projects: '**/EctBlazorApp.Server.csproj'
-        feedsToUse: 'select'
+        #feedsToUse: 'select'
+    - task: DotNetCoreCLI@2
+      displayName: Restore ServerTests project
+      inputs:
+        command: 'restore'
+        projects: '**/EctBlazorApp.ServerTests.csproj'
+    - task: DotNetCoreCLI@2
+      displayName: Restore ClientTests project
+      inputs:
+        command: 'restore'
+        projects: '**/EctBlazorApp.ClientTests.csproj'
     - task: DotNetCoreCLI@2
       displayName: Build Server
       inputs:
