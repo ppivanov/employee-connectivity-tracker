@@ -133,6 +133,8 @@ namespace EctBlazorApp.ClientTests
             Assert.IsTrue(userToNotify.InnerHtml.Contains(expectedNameEmail));
         }
 
+
+
         private IRenderedComponent<CascadingAuthenticationState> RenderComponent()
         {
             return testContext.RenderComponent<CascadingAuthenticationState>(parameters =>
@@ -182,13 +184,13 @@ namespace EctBlazorApp.ClientTests
             return members;
         }
 
-        private string FormatAndEncodeNameAndEmail(string name, string email)
+        private static string FormatAndEncodeNameAndEmail(string name, string email)
         {
             var formattedString = FormatFullNameAndEmail(name, email);
             return EncodeFormattedString(formattedString);
         }
 
-        private string EncodeFormattedString(string toFormat)
+        private static string EncodeFormattedString(string toFormat)
         {
             var formatted = toFormat.Replace("<", "&lt;");
             formatted = formatted.Replace(">", "&gt;");
