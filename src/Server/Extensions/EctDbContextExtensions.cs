@@ -232,13 +232,14 @@ namespace EctBlazorApp.Server.Extensions
         
         public static bool IsMemberPotentiallyIsolated(EctTeam team, NotificationMemberData memberData)
         {
-            int currentWeekPoints = memberData.CurrentTotal > 0 ? memberData.CurrentTotal : 1;                                                                              // If there are no points set as 1 to avoid division by 0.
+            int currentWeekPoints = memberData.CurrentTotal > 0 ? memberData.CurrentTotal : 1;                                              // If there are no points set as 1 to avoid division by 0.
             int previousWeekPoints = memberData.PastTotal > 0 ? memberData.PastTotal : 1;
 
-            double percentDifferenceInPoints = (currentWeekPoints / previousWeekPoints - 100);
+            double pointDifference = (double)currentWeekPoints / previousWeekPoints;
+            double positivePercentDifference = (pointDifference - 1) * (-100);                                       // Get the positive % difference
 
             if (currentWeekPoints <= team.PointsThreshold 
-                || (currentWeekPoints < previousWeekPoints && percentDifferenceInPoints >= team.MarginForNotification))
+                || (currentWeekPoints < previousWeekPoints && positivePercentDifference >= team.MarginForNotification))
                 return true;
 
             return false;

@@ -275,10 +275,10 @@ namespace EctBlazorApp.ServerTests
         public void IsMemberPotentiallyIsolated_Current8_PercentDifference20_TeamDefaults_ReturnsFalse()
         {
             EctTeam team = new() { PointsThreshold = 0, MarginForNotification = 100 };
-            NotificationMemberData memberData = new() 
-            { 
-                CurrentPoints = new() { 2, 2, 2, 2, 0, 0, 0 }, 
-                PastPoints = new() { 2, 2, 0, 2, 0, 4, 0 } 
+            NotificationMemberData memberData = new()
+            {
+                CurrentPoints = new() { 2, 2, 2, 2, 0, 0, 0 },              // 8
+                PastPoints = new() { 2, 2, 0, 2, 0, 4, 0 }                  // 10
             };
             bool expectedResult = false;
 
@@ -293,8 +293,8 @@ namespace EctBlazorApp.ServerTests
             EctTeam team = new() { PointsThreshold = 10, MarginForNotification = 100 };
             NotificationMemberData memberData = new()
             {
-                CurrentPoints = new() { 2, 2, 2, 2, 0, 0, 0 },
-                PastPoints = new() { 2, 2, 0, 2, 0, 4, 0 }
+                CurrentPoints = new() { 2, 2, 2, 2, 0, 0, 0 },              // 8
+                PastPoints = new() { 2, 2, 0, 2, 0, 4, 0 }                  // 10
             };
             bool expectedResult = true;
 
@@ -309,8 +309,40 @@ namespace EctBlazorApp.ServerTests
             EctTeam team = new() { PointsThreshold = 0, MarginForNotification = 10 };
             NotificationMemberData memberData = new()
             {
-                CurrentPoints = new() { 2, 2, 2, 2, 0, 0, 0 },
-                PastPoints = new() { 2, 2, 0, 2, 0, 4, 0 }
+                CurrentPoints = new() { 2, 2, 2, 2, 0, 0, 0 },              // 8
+                PastPoints = new() { 2, 2, 0, 2, 0, 4, 0 }                  // 10
+            };
+            bool expectedResult = true;
+
+            bool actualResult = EctDbContextExtensions.IsMemberPotentiallyIsolated(team, memberData);
+
+            Assert.AreEqual(expectedResult, actualResult);
+        }
+
+        [TestMethod]
+        public void IsMemberPotentiallyIsolated_Current2_PercentDifference33_OverMaxMargin_ReturnsTrue()
+        {
+            EctTeam team = new() { PointsThreshold = 0, MarginForNotification = 10 };
+            NotificationMemberData memberData = new()
+            {
+                CurrentPoints = new() { 1, 0, 0, 0, 0, 1, 0 },              // 2
+                PastPoints = new() { 2, 2, 0, 2, 0, 0, 0 }                  // 6
+            };
+            bool expectedResult = true;
+
+            bool actualResult = EctDbContextExtensions.IsMemberPotentiallyIsolated(team, memberData);
+
+            Assert.AreEqual(expectedResult, actualResult);
+        }
+
+        [TestMethod]
+        public void IsMemberPotentiallyIsolated_Current90_PercentDifference25_OverMaxMargin_ReturnsTrue()
+        {
+            EctTeam team = new() { PointsThreshold = 0, MarginForNotification = 10 };
+            NotificationMemberData memberData = new()
+            {
+                CurrentPoints = new() { 20, 20, 20, 15, 15, 0, 0 },         // 90
+                PastPoints = new() { 90, 90, 90, 45, 45, 0, 0 }             // 360
             };
             bool expectedResult = true;
 
