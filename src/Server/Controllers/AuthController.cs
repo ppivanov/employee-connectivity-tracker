@@ -51,6 +51,7 @@ namespace EctBlazorApp.Server.Controllers
         }
 
         [Route("is-leader-for-team")]
+        [HttpGet]
         [AuthorizeLeader]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
