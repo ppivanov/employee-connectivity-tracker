@@ -1,5 +1,11 @@
+@inject IControllerConnection ApiConn
+
 <div class="view-notification-options">
     <h3>Notification options</h3>
+    @if(Email != null && Meeting != null)
+    {
+        <p><i>@Email.Medium (@Email.Points pts), @Meeting.Medium (@Meeting.Points pts)</i></p>
+    }
 
     <p>Points threshold: @Options.PointsThreshold</p>
     <p>Margin for notifications: @(Options.MarginForNotification)%</p>
@@ -19,4 +25,14 @@
 @code{
     [Parameter]
     public NotificationOptionsResponse Options { get; set; }
+
+    private CommunicationPoint Email;
+    private CommunicationPoint Meeting;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var response = await ApiConn.FetchCommunicationPoints();
+        Email = response.Item1;
+        Meeting = response.Item2;
+    }
 }
