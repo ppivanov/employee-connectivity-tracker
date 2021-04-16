@@ -127,11 +127,6 @@ namespace EctBlazorApp.Client.Graph
             return HttpPut("api/team/move-members", teams);
         }
 
-        public Task<(bool, string)> SubmitNotificationOptions(NotificationOptionsResponse notificationOptions)
-        {
-            return HttpPut("api/team/notification-options", notificationOptions);
-        }
-
         public Task<(bool, string)> SubmitPoints(IEnumerable<CommunicationPoint> communicationPoints)
         {
             return HttpPut("api/communication/points", communicationPoints);

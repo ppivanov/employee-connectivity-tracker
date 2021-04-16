@@ -237,30 +237,6 @@ namespace EctBlazorApp.Server.Controllers
             return Ok(notificationOptions);
         }
 
-        [Route("notification-options")]
-        [HttpPut]
-        [AuthorizeLeader]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<string>> SetNotificationOptions([FromBody] NotificationOptionsResponse notificationOptions)
-        {
-            string userEmail = await HttpContext.GetPreferredUsername();
-            EctUser user = _dbContext.Users.FirstOrDefault(u => u.Email == userEmail);
-            EctTeam assignedTeam = user.LeaderOf.FirstOrDefault();
-
-            assignedTeam.SetNotificationOptions(notificationOptions);
-            try
-            {
-                await _dbContext.SaveChangesAsync();
-                return Ok("Notification options saved.");
-            }
-            catch (Exception)
-            {
-                return StatusCode(500, "Internal server error. Please, try again later.");
-            }
-        }
-
         private static TeamDashboardResponse GenerateTeamDashboardResponse(EctTeam forTeam, string fromDate, string toDate)
         {
             TeamDashboardResponse response = new()

@@ -35,8 +35,6 @@ namespace EctBlazorApp.Client.Graph
 
         Task<(bool, string)> SubmitMoveMemberTeams(IEnumerable<EctTeamRequestDetails> teams);
 
-        Task<(bool, string)> SubmitNotificationOptions(NotificationOptionsResponse notificationOptions);
-
         Task<(bool, string)> SubmitPoints(IEnumerable<CommunicationPoint> communicationPoints);
 
         Task<(bool, string)> SubmitTeamData(bool isNewTeam, EctTeamRequestDetails teamDetails);
