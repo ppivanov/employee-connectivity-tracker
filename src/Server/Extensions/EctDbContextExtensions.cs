@@ -236,7 +236,7 @@ namespace EctBlazorApp.Server.Extensions
             int previousWeekPoints = memberData.PastTotal > 0 ? memberData.PastTotal : 1;
 
             double pointDifference = (double)currentWeekPoints / previousWeekPoints;
-            double positivePercentDifference = (pointDifference - 1) * (-100);                                       // Get the positive % difference
+            double positivePercentDifference = (pointDifference - 1) * (-100);                                                              // Get the positive % difference
 
             if (currentWeekPoints <= team.PointsThreshold 
                 || (currentWeekPoints < previousWeekPoints && positivePercentDifference >= team.MarginForNotification))
