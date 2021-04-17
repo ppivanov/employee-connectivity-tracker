@@ -76,7 +76,6 @@ namespace EctBlazorApp.Server.Controllers
                     CalendarEvents = new List<CalendarEvent>(),
                     ReceivedMail = new List<ReceivedMail>(),
                     SentMail = new List<SentMail>(),
-                    SecondsInMeeting = 0,
                     UserFullName = string.Empty,
                     UserEmail = string.Empty,
                 });
@@ -84,7 +83,6 @@ namespace EctBlazorApp.Server.Controllers
             user.OutputCommunicationRecordsInRange(fromDate, toDate, 
                 out List<ReceivedMail> receivedMail, out List<SentMail> sentMail, out List<CalendarEvent> calendarEvents);          // output
 
-            double secondsInMeeting = CalendarEvent.GetTotalSecondsForEvents(calendarEvents);
             string userFullName = string.IsNullOrEmpty(UID) ? string.Empty : user.FullName;
             string userEmailAddress = string.IsNullOrEmpty(UID) ? string.Empty : user.Email;
             return Ok(new DashboardResponse
@@ -92,7 +90,6 @@ namespace EctBlazorApp.Server.Controllers
                     CalendarEvents = calendarEvents,
                     ReceivedMail = receivedMail,
                     SentMail = sentMail,
-                    SecondsInMeeting = secondsInMeeting,
                     UserFullName = userFullName,
                     UserEmail = userEmailAddress
                 });

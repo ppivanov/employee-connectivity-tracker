@@ -5,10 +5,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.JSInterop;
 using Moq;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace EctBlazorApp.ClientTests
 {
+    [ExcludeFromCodeCoverage]
     public abstract class ComponentTests : IDisposable
     {
         protected readonly Bunit.TestContext testContext;

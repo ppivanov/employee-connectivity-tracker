@@ -126,7 +126,6 @@ namespace EctBlazorApp.Client.Pages.Dashboards
             sentMail = response.SentMail;
             receivedMail = response.ReceivedMail;
             calendarEvents = response.CalendarEvents;
-            // SecondsInMeeting = response.SecondsInMeeting;
             NumberOfMeetings = calendarEvents != null ? calendarEvents.Count : 0;
             userEmailAddress = response.UserEmail;
 
