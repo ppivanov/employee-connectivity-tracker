@@ -265,4 +265,17 @@
 	#delete-confirm-modal {
 		margin: 24em 29.15vw;
 	}
+
+	.view-teams .teams-list {
+		float: left;
+		width: 30%;
+	}
+
+	.view-teams .selected-team {
+		width: 70%;
+	}
+	
+	.view-teams .selected-team > .right-half > table {
+		width: 95%;
+	}
 }

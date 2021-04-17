@@ -56,38 +56,24 @@ stages:
         command: 'test'
         projects: '**/EctBlazorApp.ClientTests.csproj'
 
-- stage: Release  
-  displayName: Release stage
-
-  jobs:
-  - job: Release
-    displayName: Release to Azure
-
-    pool:
-        vmImage: $(vmImageName)
-    steps:
-    - task: UseDotNet@2
-      displayName: Force .NET 5
+    - task: CopyFiles@2
+      displayName: Copy Files
       inputs:
-        packageType: 'sdk'
-        version: '5.x'
+        Contents: |
+          **\*.dll
+          **\*.runsettings
+          **\*.csproj
+        TargetFolder: '$(build.ArtifactStagingDirectory)'
     - task: DotNetCoreCLI@2
-      displayName: Restore project
-      inputs:
-        command: 'restore'
-        projects: '**/EctBlazorApp.Server.csproj'
-        feedsToUse: 'select'
-    - task: DotNetCoreCLI@2
-      displayName: Publish project
+      displayName: Publish solution
       inputs:
         command: 'publish'
-        publishWebProjects: false
-        projects: '**/EctBlazorApp.Server.csproj'
-    - task: AzureRmWebAppDeployment@4
-      displayName: Deploy to Azure
+        publishWebProjects: true
+        arguments: '--configuration $(buildConfiguration) --output $(build.ArtifactStagingDirectory)'
+
+    - task: PublishBuildArtifacts@1
+      displayName: Publish artifact
       inputs:
-        ConnectionType: 'AzureRM'
-        azureSubscription: 'Azure for Students(3c7c2ff0-247b-475b-b3ec-932545c61100)'
-        appType: 'webApp'
-        WebAppName: 'ect'
-        packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
+        PathtoPublish: '$(build.ArtifactStagingDirectory)'
+        ArtifactName: 'drop'
+        publishLocation: 'Container'
