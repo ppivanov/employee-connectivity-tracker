@@ -159,7 +159,7 @@ namespace EctBlazorApp.Server.Extensions
         // this method should be triggered every Sunday at noon ----- See Startup.cs to configure the cron expression
         public static void ProcessNotifications(this EctDbContext dbContext, EctMailKit mailKit)
         {                                                                                       //                              Examples:
-            DateTime currentWeekEnd = DateTime.Now.AddDays(1);                                  // Following Monday             March 1st
+            DateTime currentWeekEnd = DateTime.Now.AddDays(1).Date;                                  // Following Monday             March 1st
             DateTime currentWeekStart = currentWeekEnd.AddDays(-7);                             // Last week's Monday           Feb  22th
 
             DateTime pastWeekEnd = currentWeekStart;                                        // Last week's Monday           Feb  22th
@@ -182,7 +182,7 @@ namespace EctBlazorApp.Server.Extensions
                         Name = member.FullName,
                         CurrentPoints = dbContext.GetCommunicationPointsForUser(member, currentWeekStart, currentWeekEnd),
                         PastPoints = dbContext.GetCommunicationPointsForUser(member, pastWeekStart, pastWeekEnd),
-                        CurrentWeek = $"{currentWeekStart:dd, MMM, yyyy} - {currentWeekEnd:dd, MMM, yyyy}",
+                        CurrentWeek = $"{currentWeekStart:dd MMM, yyyy} - {currentWeekEnd:dd MMM, yyyy}",
                         PastWeek = $"{pastWeekStart:dd MMM, yyyy} - {pastWeekEnd:dd MMM, yyyy}"
                     };
 
