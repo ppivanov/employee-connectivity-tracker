@@ -212,10 +212,6 @@ namespace EctBlazorApp.ClientTests
                 // It's ok. There are no more members.
             }
 
-            //var leftMoveButtons = component.FindAll(".lt-move-member");                                                   // Initial attempt to move all members - only first button is clicked
-            //foreach (var moveButton in leftMoveButtons)
-            //    moveButton.Click();
-
             var result = component.FindAll(".lt-member-name-email");
             Assert.AreEqual(0, result.Count);                                                                               // there shouldn't be any members left in 'Test team'
 
