@@ -132,7 +132,44 @@ namespace EctBlazorApp.ClientTests
             var userToNotify = usersToNotify_afterClick[1];
             Assert.IsTrue(userToNotify.InnerHtml.Contains(expectedNameEmail));
         }
+        
+        [TestMethod]
+        public void RemoveMember_FirstMember_RemovedAndHighlighted()
+        {
+            AddScopedServices(isAdmin: false, isLeader: true);
+            mockApi.Setup(ma => ma.IsProcessingUserLeaderForTeam(It.IsAny<string>())).Returns(GetMockTeamRequestDetails());
+            var component = RenderComponent();
+            var expectedUserCount = 4;
 
+            component.Find(".btn-deselect-member").Click();                                                // deselect the first mem
+
+            var remainingMembers = component.FindAll(".selected-member");
+            Assert.AreEqual(expectedUserCount, remainingMembers.Count);
+
+            var availableUsers = component.FindAll(".available-user");
+            var lastAvailableUser = availableUsers[availableUsers.Count - 1];
+            Assert.IsTrue(lastAvailableUser.ClassList.Any(cl => cl.Equals("removed-member")));
+        }
+
+        [TestMethod]
+        public void SelectMember_FirstAvaiableUser()
+        {
+            AddScopedServices(isAdmin: false, isLeader: true);
+            mockApi.Setup(ma => ma.IsProcessingUserLeaderForTeam(It.IsAny<string>())).Returns(GetMockTeamRequestDetails());
+            mockApi.Setup(ma => ma.GetUsersEligibleForMembers())
+                .Returns(Task.FromResult(new List<string> { "R R <r@ect.ie>" }.AsEnumerable()));            // mock API response
+            var component = RenderComponent();
+
+            component.Find(".btn-select").Click();                                                          // Move the first user to selected
+
+            const int expectedNumberOfSelectedUsers = 6;
+            var actualNumberOfSelectedUsers = component.FindAll(".selected-member").Count;
+            Assert.AreEqual(expectedNumberOfSelectedUsers, actualNumberOfSelectedUsers);                    // assert the number of members
+
+            const int expectedNumberOfLeaderOptions = 0;
+            var actualNumberOfLeaderOptions = component.FindAll(".leader-option").Count;
+            Assert.AreEqual(expectedNumberOfLeaderOptions, actualNumberOfLeaderOptions);                    // assert the number of avaiable users
+        }
 
 
         private IRenderedComponent<CascadingAuthenticationState> RenderComponent()

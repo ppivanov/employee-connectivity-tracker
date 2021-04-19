@@ -157,7 +157,7 @@ namespace EctBlazorApp.Client.Graph
         {
             var tokenRequest = await _accessTokenProvider.RequestAccessToken(new AccessTokenRequestOptions
             {
-                Scopes = new[]
+                Scopes = new[]                                                                                          // Request the necessary scopes to read out from MS Graph API
                 {
                     "https://graph.microsoft.com/User.Read",
                     "https://graph.microsoft.com/Calendars.Read",
@@ -170,7 +170,7 @@ namespace EctBlazorApp.Client.Graph
             
             return null;
         }
-        private async Task<bool> HttpDelete(string endpoint)
+        private async Task<bool> HttpDelete(string endpoint)                                                            // Template method to create an HTTP DELETE request
         {
             var token = await GetAPITokenAsync();
             if (token == null) return false;
@@ -193,7 +193,7 @@ namespace EctBlazorApp.Client.Graph
                 return false;
             }
         }
-        private async Task<T> HttpGet<T>(string endpoint, T defaultResponse)
+        private async Task<T> HttpGet<T>(string endpoint, T defaultResponse)                                            // Template method to create an HTTP GET request
         {
             var token = await GetAPITokenAsync();
             if (token != null)
@@ -215,12 +215,12 @@ namespace EctBlazorApp.Client.Graph
             }
             return defaultResponse;
         }
-        private async Task<(bool, string)> HttpPost<T>(string endpoint, T data)
+        private async Task<(bool, string)> HttpPost<T>(string endpoint, T data)                                         // Template method to create an HTTP POST request
         {
             var token = await GetAPITokenAsync();
             return await HttpSendData(endpoint, data, token, _httpClient.PostAsJsonAsync);
         }
-        private async Task<(bool, string)> HttpPut<T>(string endpoint, T data)
+        private async Task<(bool, string)> HttpPut<T>(string endpoint, T data)                                          // Template method to create an HTTP PUT request
         {
             var token = await GetAPITokenAsync();
             return await HttpPut(endpoint, data, token);
@@ -229,6 +229,7 @@ namespace EctBlazorApp.Client.Graph
         {
             return await HttpSendData(endpoint, data, accessToken, _httpClient.PutAsJsonAsync);
         }
+
         private delegate Task<HttpResponseMessage> HttpSendMethod<T>(string endpoint, T data, JsonSerializerOptions options = null, CancellationToken cancellationToken = default);
         private async Task<(bool, string)> HttpSendData<T>(string endpoint, T data, string accessToken, HttpSendMethod<T> method)
         {

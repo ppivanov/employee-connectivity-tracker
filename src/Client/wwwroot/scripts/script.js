@@ -1,14 +1,14 @@
 ﻿window.setPageTitle = (titleIn) => {
 	document.getElementById('page-title').innerHTML = ' - ' + titleIn
 }
-window.setUserToNotifyEmail = (name) => {
+window.setUserToNotifyEmail = (email) => {										// populates the Email field if the full name matches a member
 	let inputField = document.getElementById('userToNotify_email')
-	inputField.value = name
+	inputField.value = email
 	inputField.disabled = true
 }
-window.setUserToNotifyName = (email) => {
+window.setUserToNotifyName = (name) => {										// populates the Name field if the email matches a member
 	let inputField = document.getElementById('userToNotify_name')
-	inputField.value = email
+	inputField.value = name
 	inputField.disabled = true
 }
 

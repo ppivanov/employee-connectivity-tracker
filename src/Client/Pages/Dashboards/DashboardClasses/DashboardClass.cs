@@ -25,7 +25,17 @@ namespace EctBlazorApp.Client.Pages.Dashboards
         {
             get
             {
-                /* Adapted from: https://stackoverflow.com/a/298 */
+                /***************************************************************************************
+	            *    Usage: Used
+	            *    Title: How do you sort a dictionary by value?
+	            *    Author: Leon Bambrick [StackOverflow] (edited by Peter Mortensen [StackOverflow])
+	            *	 Date posted: 2 August 2008
+	            *	 Type: Source code
+	            *    Availability: https://stackoverflow.com/a/298
+	            *    Accessed on: 20 April 2021
+	            *
+	            ***************************************************************************************/
+
                 List<KeyValuePair<string, double>> list = new List<KeyValuePair<string, double>>();
                 foreach (var key in CollaboratorsDict.Keys)
                 {
@@ -34,13 +44,11 @@ namespace EctBlazorApp.Client.Pages.Dashboards
                     list.Add(new KeyValuePair<string, double>(key, percentageToAdd));
                 }
 
-                list.Sort(
-                    (KeyValuePair<string, double> pair1, KeyValuePair<string, double> pair2) =>
-                    {
-                        return pair2.Value.CompareTo(pair1.Value);                              // descending order
-                    }
+                list.Sort(                                                                                              // sort the dictionaly in descending order
+                    (KeyValuePair<string, double> pair1, KeyValuePair<string, double> pair2) => 
+                        pair2.Value.CompareTo(pair1.Value)                              
                 );
-                return list.Take(10);
+                return list.Take(10);                                                                                   // return only the first 10 entries
             }
         }
         protected CommunicationPoint EmailCommPoints { get; set; }
@@ -89,9 +97,9 @@ namespace EctBlazorApp.Client.Pages.Dashboards
         {
             FromDate = DateTimeOffset.Now;
             ToDate = DateTimeOffset.Now.AddDays(1);
-            // Close the picker
-            await picker.Close();
-            // Fire OnRangeSelectEvent
+            
+            await picker.Close();                                                                                       // Close the picker
+
             await picker.OnRangeSelect.InvokeAsync(new DateRange());
 
             await UpdateDashboard();

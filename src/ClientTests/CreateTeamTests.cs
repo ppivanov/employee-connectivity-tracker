@@ -19,7 +19,7 @@ namespace EctBlazorApp.ClientTests
         public void NormalUser_NoAccess()
         {
             AddScopedServices(isAdmin: false, isLeader: false);
-            var component = testContext.RenderComponent<CascadingAuthenticationState>(parameters => parameters.AddChildContent<ManageTeam>());
+            var component = RenderComponent();
 
             var actualNestedComponent = component.FindComponent<NoAccess>();
 
@@ -30,7 +30,7 @@ namespace EctBlazorApp.ClientTests
         public void TeamLead_NoAccess()
         {
             AddScopedServices(isAdmin: false, isLeader: true);
-            var component = testContext.RenderComponent<CascadingAuthenticationState>(parameters => parameters.AddChildContent<ManageTeam>());
+            var component = RenderComponent();
 
             var actualNestedComponent = component.FindComponent<NoAccess>();
 
@@ -41,7 +41,7 @@ namespace EctBlazorApp.ClientTests
         public void Admin_HasAccess()
         {
             AddScopedServices(isAdmin: true, isLeader: false);
-            var component = testContext.RenderComponent<CascadingAuthenticationState>(parameters => parameters.AddChildContent<ManageTeam>());
+            var component = RenderComponent();
             const int expectedNumberOfInputFields = 3;                                                                                // Team name / Team lead / Filter available users
 
             var actualNumberOfInputFields = component.FindAll("input").Count;
@@ -59,7 +59,7 @@ namespace EctBlazorApp.ClientTests
         {
             AddScopedServices(isAdmin: true, isLeader: false);
             mockApi.Setup(ma => ma.GetUsersEligibleForMembers()).Returns(GetFiveAvailableMembers(htmlEncoded: false));
-            var component = testContext.RenderComponent<CascadingAuthenticationState>(parameters => parameters.AddChildContent<ManageTeam>());
+            var component = RenderComponent();
             const int expectedNumberOfUsers = 5;
 
             var actualNumberOfUsers = component.FindAll(".available-user").Count;
@@ -74,7 +74,7 @@ namespace EctBlazorApp.ClientTests
         {
             AddScopedServices(isAdmin: true, isLeader: false);
             mockApi.Setup(ma => ma.GetUsersEligibleForMembers()).Returns(GetFiveAvailableMembers(htmlEncoded: false));
-            var component = testContext.RenderComponent<CascadingAuthenticationState>(parameters => parameters.AddChildContent<ManageTeam>());
+            var component = RenderComponent();
 
             var firstMemberNameEmail = component.Find(".available-user-name-email").InnerHtml;
             component.Find(".btn-select").Click();                                                          // Move the first user to selected
@@ -96,7 +96,7 @@ namespace EctBlazorApp.ClientTests
         {
             AddScopedServices(isAdmin: true, isLeader: false);
             mockApi.Setup(ma => ma.GetUsersEligibleForMembers()).Returns(GetFiveAvailableMembers(htmlEncoded: false));
-            var component = testContext.RenderComponent<CascadingAuthenticationState>(parameters => parameters.AddChildContent<ManageTeam>());
+            var component = RenderComponent();
 
             var firstMemberBeforeMove = component.Find(".available-user-name-email").InnerHtml;
             component.Find(".btn-select").Click();                                                          // Move the first user to selected
@@ -121,7 +121,7 @@ namespace EctBlazorApp.ClientTests
         {
             AddScopedServices(isAdmin: true, isLeader: false);
             mockApi.Setup(ma => ma.GetUsersEligibleForMembers()).Returns(GetFiveAvailableMembers(htmlEncoded: false));
-            var component = testContext.RenderComponent<CascadingAuthenticationState>(parameters => parameters.AddChildContent<ManageTeam>());
+            var component = RenderComponent();
 
             var filterUsersInput = component.Find("#filter-users");
             filterUsersInput.Input("member 1");
@@ -137,7 +137,7 @@ namespace EctBlazorApp.ClientTests
         {
             AddScopedServices(isAdmin: true, isLeader: false);
             mockApi.Setup(ma => ma.GetUsersEligibleForMembers()).Returns(GetFiveAvailableMembers(htmlEncoded: false));
-            var component = testContext.RenderComponent<CascadingAuthenticationState>(parameters => parameters.AddChildContent<ManageTeam>());
+            var component = RenderComponent();
 
             var filterUsersInput = component.Find("#filter-users");
             filterUsersInput.Input("member.one");
@@ -148,6 +148,11 @@ namespace EctBlazorApp.ClientTests
             Assert.AreEqual(expectedNumberOfUsers, actualNumberOfUsers);
         }
 
+
+        private IRenderedComponent<CascadingAuthenticationState> RenderComponent()
+        {
+            return testContext.RenderComponent<CascadingAuthenticationState>(parameters => parameters.AddChildContent<ManageTeam>()); ;
+        }
 
         private static Task<IEnumerable<string>> GetFiveAvailableMembers(bool htmlEncoded)
         {

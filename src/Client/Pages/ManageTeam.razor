@@ -130,8 +130,10 @@
                         <tr class="selected-member">
                             <td>
                                 <span class="selected-member-name-email">@selectedMember</span>
-                                <button type="button" class="btn-deselect float-right" @onclick="() => RemoveFromSelected(selectedMember)" title="Remove">
-                                    <i class="fas fa-user-times"></i></button>
+                                <button type="button" class="btn-deselect btn-deselect-member float-right" 
+                                    @onclick="() => RemoveFromSelected(selectedMember)" title="Remove">
+                                        <i class="fas fa-user-times"></i>
+                                </button>
                             </td>
                         </tr>
                     }
