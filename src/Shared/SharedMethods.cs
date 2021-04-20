@@ -9,7 +9,7 @@ namespace EctBlazorApp.Shared
 {
     public static class SharedMethods
     {
-        public static DateTime NewDateTimeFromString(string dateString)                             // Expects the string to be in yyyy-MM-dd format
+        public static DateTime NewDateTimeFromString(string dateString)                                                 // Expects the string to be in yyyy-MM-dd format
         {
             var dateArray = dateString.Split("-");
 
@@ -26,13 +26,13 @@ namespace EctBlazorApp.Shared
             return $"{fullName} <{email}>";
         }
 
-        public static string GetFullNameFromFormattedString(string formattedString)                 // Expects format: Full Name <email@email.com>
+        public static string GetFullNameFromFormattedString(string formattedString)                                     // Expects format: Full Name <email@email.com>
         {
             string fullName = formattedString.Split("<")[0].Trim();
             return fullName;
         }
 
-        public static string GetEmailFromFormattedString(string formattedString)                 // Expects format: Full Name <email@email.com>
+        public static string GetEmailFromFormattedString(string formattedString)                                        // Expects format: Full Name <email@email.com>
         {
             string fullName = formattedString.Split("<")[1].Split(">")[0].Trim();
             return fullName;
@@ -76,7 +76,16 @@ namespace EctBlazorApp.Shared
             return (int)timeSpan.TotalSeconds;
         }
 
-        // Source: https://docs.microsoft.com/en-us/dotnet/standard/base-types/how-to-verify-that-strings-are-in-valid-email-format#example
+        /***************************************************************************************
+	    *    Usage: Used
+	    *    Title: How to verify that strings are in valid email format
+	    *    Author: adegeo et al. [Microsoft Docs]
+	    *	 Date posted: 30 June 2020
+	    *	 Type: Source code
+	    *    Availability: https://docs.microsoft.com/en-us/dotnet/standard/base-types/how-to-verify-that-strings-are-in-valid-email-format
+	    *    Accessed on: 20 April 2021
+	    *
+	    ***************************************************************************************/
         public static bool IsValidEmail(this string email)
         {
             if (string.IsNullOrWhiteSpace(email))
@@ -84,25 +93,16 @@ namespace EctBlazorApp.Shared
 
             try
             {
-                // Normalize the domain
-                email = Regex.Replace(email, @"(@)(.+)$", DomainMapper,
-                                      RegexOptions.None, TimeSpan.FromMilliseconds(200));
-
-                // Examines the domain part of the email and normalizes it.
-                string DomainMapper(Match match)
+                email = Regex.Replace(email, @"(@)(.+)$", DomainMapper, RegexOptions.None, TimeSpan.FromMilliseconds(200));                     // Normalize the domain
+                string DomainMapper(Match match)                                                                                                // Examines the domain part of the email and normalizes it.
                 {
-                    // Use IdnMapping class to convert Unicode domain names.
-                    var idn = new IdnMapping();
-
-                    // Pull out and process domain name (throws ArgumentException on invalid)
-                    string domainName = idn.GetAscii(match.Groups[2].Value);
+                    var idn = new IdnMapping();                                                                                                 // Use IdnMapping class to convert Unicode domain names.
+                    string domainName = idn.GetAscii(match.Groups[2].Value);                                                                    // Pull out and process domain name (throws ArgumentException on invalid)
 
                     return match.Groups[1].Value + domainName;
                 }
 
-                return Regex.IsMatch(email,
-                    @"^[^@\s]+@[^@\s]+\.[^@\s]+$",
-                    RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250));
+                return Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$", RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250));
             }
             catch (Exception)
             {
@@ -125,17 +125,23 @@ namespace EctBlazorApp.Shared
             return dateTimeChunks;
         }
 
-        // Source: https://www.c-sharpcorner.com/article/compute-sha256-hash-in-c-sharp/
-        // Accessed on: 26 Feb 2021
+        /***************************************************************************************
+	    *    Usage: Used
+	    *    Title: Compute SHA256 Hash In C#
+	    *    Author: Mahesh Chand / @mcbeniwal [C# Corner]
+	    *	 Date posted: 16 April 2020
+	    *	 Type: Source code
+	    *    Availability: https://www.c-sharpcorner.com/article/compute-sha256-hash-in-c-sharp/
+	    *    Accessed on: 26 Feb 2021
+	    *
+	    ***************************************************************************************/
         public static string ComputeSha256Hash(string rawData)
         {
-            // Create a SHA256   
-            using SHA256 sha256Hash = SHA256.Create();
-            // ComputeHash - returns byte array  
-            byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(rawData));
+            using SHA256 sha256Hash = SHA256.Create();                                                                  // Create a SHA256   
+            
+            byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(rawData));                                     // ComputeHash - returns byte array  
 
-            // Convert byte array to a string   
-            StringBuilder builder = new StringBuilder();
+            StringBuilder builder = new StringBuilder();                                                                // Convert byte array to a string
             for (int i = 0; i < bytes.Length; i++)
                 builder.Append(bytes[i].ToString("x2"));
             
