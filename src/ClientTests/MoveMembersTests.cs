@@ -65,12 +65,12 @@ namespace EctBlazorApp.ClientTests
             mockApi.Setup(ma => ma.FetchAllTeams()).Returns(MockAllTeamsResponseFromApi());
             var component = RenderComponent();
 
-            var leftTeamInputField = component.Find("#rt-selection");                                                       // get the right team selection input field
+            var leftTeamInputField = component.Find("#rt-selection");                                                   // get the right team selection input field
 
             const string testTeam = "test ";
-            leftTeamInputField.Input(testTeam);                                                                             // enter 'test '
+            leftTeamInputField.Input(testTeam);                                                                         // enter 'test '
 
-            component.Find("#rt-leader-name-email");                                                                        // find the table cell with the leader's name and email
+            component.Find("#rt-leader-name-email");                                                                    // find the table cell with the leader's name and email
         }
 
         [TestMethod]
@@ -80,13 +80,13 @@ namespace EctBlazorApp.ClientTests
             mockApi.Setup(ma => ma.FetchAllTeams()).Returns(MockAllTeamsResponseFromApi());
             var component = RenderComponent();
 
-            var leftTeamInputField = component.Find("#lt-selection");                                                       // get the left team selection input field
+            var leftTeamInputField = component.Find("#lt-selection");                                                   // get the left team selection input field
 
             const string testTeam = "test team";
-            leftTeamInputField.Input(testTeam);                                                                             // enter 'test team'
+            leftTeamInputField.Input(testTeam);                                                                         // enter 'test team'
 
             var testTeamLeader = "TT Leader &lt;tt.leader@ect.ie&gt;";
-            var leader = component.Find("#lt-leader-name-email");                                                           // find the table cell with the leader's name and email
+            var leader = component.Find("#lt-leader-name-email");                                                       // find the table cell with the leader's name and email
 
             var expectedListOfMembers = GetFiveMembersForTeam(testTeam, htmlEncoded: true);
             var actualListOfMembers = component.FindAll(".lt-member-name-email");
@@ -107,12 +107,12 @@ namespace EctBlazorApp.ClientTests
             mockApi.Setup(ma => ma.FetchAllTeams()).Returns(MockAllTeamsResponseFromApi());
             var component = RenderComponent();
 
-            var leftTeamInputField = component.Find("#lt-selection");                                                       // get the left team selection input field
+            var leftTeamInputField = component.Find("#lt-selection");                                                   // get the left team selection input field
 
             const string testTeam = "test team";
             leftTeamInputField.Input(testTeam);
 
-            var moveButton = component.Find(".lt-move-member");                                                             // get the move button for the first member in the list
+            var moveButton = component.Find(".lt-move-member");                                                         // get the move button for the first member in the list
             moveButton.Click();
 
             var messageComponent = component.FindComponent<OperationResultMessage>();
@@ -128,14 +128,14 @@ namespace EctBlazorApp.ClientTests
             var component = RenderComponent();
 
             const string testTeam = "test team";
-            component.Find("#lt-selection").Input(testTeam);                                                       // select 'test team' on the left side
+            component.Find("#lt-selection").Input(testTeam);                                                            // select 'test team' on the left side
 
             const string legends = "legends";
-            component.Find("#rt-selection").Input(legends);                                                      // select 'legends' on the right side
+            component.Find("#rt-selection").Input(legends);                                                             // select 'legends' on the right side
 
-            var memberNameEmailElement = component.Find(".lt-member-name-email");                                           // extract the name and email of the first member
+            var memberNameEmailElement = component.Find(".lt-member-name-email");                                       // extract the name and email of the first member
             var memberNameAndEmail = memberNameEmailElement.InnerHtml;
-            component.Find(".lt-move-member").Click();                                                                      // click the move button for the first member
+            component.Find(".lt-move-member").Click();                                                                  // click the move button for the first member
 
             var rightTeamMembers = component.FindAll(".rt-member-name-email");
 
@@ -160,14 +160,14 @@ namespace EctBlazorApp.ClientTests
             var component = RenderComponent();
 
             const string testTeam = "test team";
-            component.Find("#lt-selection").Input(testTeam);                                                                // select 'test team' on the left side
+            component.Find("#lt-selection").Input(testTeam);                                                            // select 'test team' on the left side
 
             const string legends = "legends";
-            component.Find("#rt-selection").Input(legends);                                                                 // select 'legends' on the right side
+            component.Find("#rt-selection").Input(legends);                                                             // select 'legends' on the right side
 
-            component.Find(".lt-move-member").Click();                                                                      // click the move button for the first member
+            component.Find(".lt-move-member").Click();                                                                  // click the move button for the first member
 
-            component.Find(".btn-submit-form").Click();                                                                     // click the submit button
+            component.Find(".btn-submit-form").Click();                                                                 // click the submit button
 
             var messageComponent = component.FindComponent<OperationResultMessage>();
             var messageElement = messageComponent.Find("p");
@@ -179,7 +179,7 @@ namespace EctBlazorApp.ClientTests
         {
             AddScopedServices(isAdmin: true, isLeader: false);
             var component = RenderComponent();
-            component.Find(".btn-submit-form").Click();                                                                     // click the submit button
+            component.Find(".btn-submit-form").Click();                                                                 // click the submit button
 
             var messageComponent = component.FindComponent<OperationResultMessage>();
             var messageElement = messageComponent.Find("p");
@@ -197,12 +197,12 @@ namespace EctBlazorApp.ClientTests
             var component = RenderComponent();
 
             const string testTeam = "test team";
-            component.Find("#lt-selection").Input(testTeam);                                                                // select 'test team' on the left side
+            component.Find("#lt-selection").Input(testTeam);                                                            // select 'test team' on the left side
 
             const string legends = "legends";
-            component.Find("#rt-selection").Input(legends);                                                                 // select 'legends' on the right side
+            component.Find("#rt-selection").Input(legends);                                                             // select 'legends' on the right side
 
-            try                                                                                                             // Move all members from 'Test team' to Legends
+            try                                                                                                         // Move all members from 'Test team' to Legends
             {
                 while (component.Find(".lt-move-member") != null)
                     component.Find(".lt-move-member").Click();
@@ -213,9 +213,9 @@ namespace EctBlazorApp.ClientTests
             }
 
             var result = component.FindAll(".lt-member-name-email");
-            Assert.AreEqual(0, result.Count);                                                                               // there shouldn't be any members left in 'Test team'
+            Assert.AreEqual(0, result.Count);                                                                           // there shouldn't be any members left in 'Test team'
 
-            component.Find(".btn-reset-form").Click();                                                                     // click the reset button
+            component.Find(".btn-reset-form").Click();                                                                  // click the reset button
 
             var leftMembers = component.FindAll(".lt-member-name-email");
             var expectedMemberName = GetMemberFirstNameFromTeamName(testTeam).ToUpper();
@@ -270,6 +270,5 @@ namespace EctBlazorApp.ClientTests
 
             return members;
         }
-
     }
 }

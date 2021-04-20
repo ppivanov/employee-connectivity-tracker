@@ -76,19 +76,19 @@ namespace EctBlazorApp.ClientTests
             mockApi.Setup(ma => ma.GetUsersEligibleForMembers()).Returns(GetFiveAvailableMembers(htmlEncoded: false));
             var component = RenderComponent();
 
-            var firstMemberNameEmail = component.Find(".available-user-name-email").InnerHtml;
-            component.Find(".btn-select").Click();                                                          // Move the first user to selected
+            var firstMemberNameEmail = component.Find(".available-user-name-email").InnerHtml;                          // get the name-email of the first user
+            component.Find(".btn-select").Click();                                                                      // move the first user to selected
 
             const int expectedNumberOfSelectedUsers = 1;
             var actualNumberOfSelectedUsers = component.FindAll(".selected-member").Count;
-            Assert.AreEqual(expectedNumberOfSelectedUsers, actualNumberOfSelectedUsers);
+            Assert.AreEqual(expectedNumberOfSelectedUsers, actualNumberOfSelectedUsers);                                // verify there is only 1 member on the list
 
             var selectedMemberNameEmail = component.Find(".selected-member-name-email").InnerHtml;
-            Assert.AreEqual(firstMemberNameEmail, selectedMemberNameEmail);
+            Assert.AreEqual(firstMemberNameEmail, selectedMemberNameEmail);                                             // verify the member is the one it was clicked on
 
             const int expectedNumberOfLeaderOptions = 4;
             var actualNumberOfLeaderOptions = component.FindAll(".leader-option").Count;
-            Assert.AreEqual(expectedNumberOfLeaderOptions, actualNumberOfLeaderOptions);
+            Assert.AreEqual(expectedNumberOfLeaderOptions, actualNumberOfLeaderOptions);                                // verify that the rest of the members can still eligible for leaders
         }
 
         [TestMethod]
@@ -98,22 +98,22 @@ namespace EctBlazorApp.ClientTests
             mockApi.Setup(ma => ma.GetUsersEligibleForMembers()).Returns(GetFiveAvailableMembers(htmlEncoded: false));
             var component = RenderComponent();
 
-            var firstMemberBeforeMove = component.Find(".available-user-name-email").InnerHtml;
-            component.Find(".btn-select").Click();                                                          // Move the first user to selected
+            var firstMemberBeforeMove = component.Find(".available-user-name-email").InnerHtml;                         // get the name-email of the first user
+            component.Find(".btn-select").Click();                                                                      // move the first user to selected
 
-            component.Find(".btn-deselect").Click();
+            component.Find(".btn-deselect").Click();                                                                    // deselect the member
 
             const int expectedNumberOfSelectedUsers = 0;
             var actualNumberOfSelectedUsers = component.FindAll(".selected-member").Count;
-            Assert.AreEqual(expectedNumberOfSelectedUsers, actualNumberOfSelectedUsers);
+            Assert.AreEqual(expectedNumberOfSelectedUsers, actualNumberOfSelectedUsers);                                // verify there are no members
 
             var allAvailableUsers = component.FindAll(".available-user-name-email");
             var lastAvailableUser = allAvailableUsers[allAvailableUsers.Count - 1].InnerHtml;
-            Assert.AreEqual(firstMemberBeforeMove, lastAvailableUser);
+            Assert.AreEqual(firstMemberBeforeMove, lastAvailableUser);                                                  // verify the user is put at the bottom of the available users list
 
             const int expectedNumberOfLeaderOptions = 5;
             var actualNumberOfLeaderOptions = component.FindAll(".leader-option").Count;
-            Assert.AreEqual(expectedNumberOfLeaderOptions, actualNumberOfLeaderOptions);
+            Assert.AreEqual(expectedNumberOfLeaderOptions, actualNumberOfLeaderOptions);                                // verify there are 5 available users
         }
 
         [TestMethod]

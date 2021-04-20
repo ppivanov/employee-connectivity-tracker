@@ -94,18 +94,28 @@ namespace EctBlazorApp.ClientTests
             mockApi.Setup(ma => ma.IsProcessingUserLeaderForTeam(It.IsAny<string>())).Returns(GetMockTeamRequestDetails());
             var component = RenderComponent();
             var expectedUser = EncodeFormattedString(LEADER_NAME_EMAIL);
-            var expectedUserCount = 1;
 
+            var expectedUserCount = 1;
             var usersToNotify_beforeClick = component.FindAll(".user-to-notify-row");
-            Assert.AreEqual(expectedUserCount, usersToNotify_beforeClick.Count);
+            Assert.AreEqual(expectedUserCount, usersToNotify_beforeClick.Count);                                        // verify there is a single recipient in the notification options
 
             var userToNotify = usersToNotify_beforeClick[0];
             Assert.IsTrue(userToNotify.InnerHtml.Contains(expectedUser));
 
-            component.Find(".edit-notification-options-leader");
+            var leaderButton = component.Find(".edit-notification-options-leader");
+
+            try
+            {
+                leaderButton.Click();
+                Assert.Fail();
+            }
+            catch (MissingEventHandlerException)
+            {
+                // it's ok it - no onclick handler
+            }
 
             var usersToNotify_afterClick = component.FindAll(".user-to-notify-row");
-            Assert.AreEqual(expectedUserCount, usersToNotify_afterClick.Count);
+            Assert.AreEqual(expectedUserCount, usersToNotify_afterClick.Count);                                         // verify the number of recipients is still one
         }
 
         [TestMethod]
@@ -127,10 +137,10 @@ namespace EctBlazorApp.ClientTests
             component.Find("#add-user-to-notify").Click();
 
             var usersToNotify_afterClick = component.FindAll(".user-to-notify-row");
-            Assert.AreEqual(expectedUserCount, usersToNotify_afterClick.Count);
+            Assert.AreEqual(expectedUserCount, usersToNotify_afterClick.Count);                                         // verify there are two recipients on the list
 
             var userToNotify = usersToNotify_afterClick[1];
-            Assert.IsTrue(userToNotify.InnerHtml.Contains(expectedNameEmail));
+            Assert.IsTrue(userToNotify.InnerHtml.Contains(expectedNameEmail));                                          // verify the second one is the one that was just added
         }
         
         [TestMethod]
@@ -141,14 +151,14 @@ namespace EctBlazorApp.ClientTests
             var component = RenderComponent();
             var expectedUserCount = 4;
 
-            component.Find(".btn-deselect-member").Click();                                                // deselect the first mem
+            component.Find(".btn-deselect-member").Click();                                                 // deselect the first mem
 
             var remainingMembers = component.FindAll(".selected-member");
-            Assert.AreEqual(expectedUserCount, remainingMembers.Count);
+            Assert.AreEqual(expectedUserCount, remainingMembers.Count);                                     // verify the number of members in the list is four (one less than the mock data)
 
             var availableUsers = component.FindAll(".available-user");
             var lastAvailableUser = availableUsers[availableUsers.Count - 1];
-            Assert.IsTrue(lastAvailableUser.ClassList.Any(cl => cl.Equals("removed-member")));
+            Assert.IsTrue(lastAvailableUser.ClassList.Any(cl => cl.Equals("removed-member")));              // verify the removed member has the CSS class 'removed-member'
         }
 
         [TestMethod]
