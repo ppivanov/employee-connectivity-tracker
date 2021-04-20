@@ -21,7 +21,7 @@ namespace EctBlazorApp.Server.Extensions
 
         public static List<EctUser> GetMembersFromStringListAndLeader(this EctDbContext dbContext, List<string> memberNamesAndEmails, string leaderNameAndEmail)
         {
-            return dbContext.Users.AsEnumerable()                                                                                           // Return all the users that match completely with either of the input variables
+            return dbContext.Users.AsEnumerable()                                                                       // Return all the users that match completely with either of the input variables
                 .Where(u => {
                     var currentUser = FormatFullNameAndEmail(u.FullName, u.Email);
 
@@ -32,7 +32,7 @@ namespace EctBlazorApp.Server.Extensions
         }
 
         /******************** Communication data for dates ********************/
-        /****************** It may be safe to remove these ?? ******************/                                   // It is safe to remove these but refactoring the unit tests will make them more complicated than they should be
+        /****************** It may be safe to remove these ?? ******************/                                       // It is safe to remove these but refactoring the unit tests will make them more complicated than they should be
 
         public static List<CalendarEvent> GetCalendarEventsInDateRangeForUserId(this EctDbContext dbContext, int userId, DateTime fromDate, DateTime toDate)
         {
@@ -119,17 +119,17 @@ namespace EctBlazorApp.Server.Extensions
             return user;
         }
 
-        public static EctUser GetUserIfEmailIsTeamLead(this EctDbContext dbContext, string email, string hashedUserId)                      // return a user if the email parameter is their team lead
+        public static EctUser GetUserIfEmailIsTeamLead(this EctDbContext dbContext, string email, string hashedUserId)                          // return a user if the email parameter is their team lead
         {
 
             EctUser teamLead = dbContext.Users.FirstOrDefault(u => u.Email.Equals(email));
             EctUser userForHashedId = null;
-            foreach (var team in teamLead.LeaderOf)                                                                                         // As of now leaders are assigned a single team and this loop runs only once
+            foreach (var team in teamLead.LeaderOf)                                                                                             // As of now leaders are assigned a single team and this loop runs only once
             {
                 try
                 {
-                    var members = dbContext.Users.Where(member => member.MemberOfId == team.Id).AsEnumerable();                                       // Get all the users for that team.
-                    userForHashedId = members.FirstOrDefault(member => hashedUserId.Equals(ComputeSha256Hash(member.Id.ToString())));                 // Check if any of the members' Id matches {hashedUserId} and return the user.
+                    var members = dbContext.Users.Where(member => member.MemberOfId == team.Id).AsEnumerable();                                 // Get all the users for that team.
+                    userForHashedId = members.FirstOrDefault(member => hashedUserId.Equals(ComputeSha256Hash(member.Id.ToString())));           // Check if any of the members' Id matches {hashedUserId} and return the user.
                     if (userForHashedId != null)
                         return userForHashedId;
                 }
@@ -141,16 +141,16 @@ namespace EctBlazorApp.Server.Extensions
             return null;
 
 
-            //EctUser member = dbContext.Users.ToList().FirstOrDefault(user =>                                                                // Same query but utilizing the lazy loading proxy
+            //EctUser member = dbContext.Users.ToList().FirstOrDefault(user =>                                                                  // Same query but utilizing the lazy loading proxy
             //    user.MemberOf.Leader.Email.Equals(email) &&
             //            ComputeSha256Hash(user.Id.ToString()).Equals(hashedUserId));
 
             //return member;
 
 
-            //bool isTeamLeadForUserWithId = dbContext.Users.Include(u => u.MemberOf)                                                       // This query may be slow as it hashes every user's Id until it finds a match. T(n) = n * [ComputeSha256Hash() + ...]
-            //    .Any(u => hashedUserId.Equals(ComputeSha256Hash(u.Id.ToString()))                                                         // Does the user's Id match the requested {userId}?
-            //        && u.MemberOf.LeaderId == teamLead.Id);                                                                               // Are they a member of a team led by {email}?
+            //bool isTeamLeadForUserWithId = dbContext.Users.Include(u => u.MemberOf)                                                           // This query may be slow as it hashes every user's Id until it finds a match. T(n) = n * [ComputeSha256Hash() + ...]
+            //    .Any(u => hashedUserId.Equals(ComputeSha256Hash(u.Id.ToString()))                                                             // Does the user's Id match the requested {userId}?
+            //        && u.MemberOf.LeaderId == teamLead.Id);                                                                                   // Are they a member of a team led by {email}?
         }
 
 
@@ -158,17 +158,17 @@ namespace EctBlazorApp.Server.Extensions
 
         // this method should be triggered every Sunday at noon ----- See Startup.cs to configure the cron expression
         public static void ProcessNotifications(this EctDbContext dbContext, EctMailKit mailKit)
-        {                                                                                       //                              Examples:
-            DateTime currentWeekEnd = DateTime.Now.AddDays(1).Date;                                  // Following Monday             March 1st
-            DateTime currentWeekStart = currentWeekEnd.AddDays(-7);                             // Last week's Monday           Feb  22th
+        {                                                                                           //                              Examples:
+            DateTime currentWeekEnd = DateTime.Now.AddDays(1).Date;                                 // Following Monday             March 1st
+            DateTime currentWeekStart = currentWeekEnd.AddDays(-7);                                 // Last week's Monday           Feb  22th
 
-            DateTime pastWeekEnd = currentWeekStart;                                        // Last week's Monday           Feb  22th
-            DateTime pastWeekStart = currentWeekStart.AddDays(-7);                          // The Monday before that       Feb  15th
+            DateTime pastWeekEnd = currentWeekStart;                                                // Last week's Monday           Feb  22th
+            DateTime pastWeekStart = currentWeekStart.AddDays(-7);                                  // The Monday before that       Feb  15th
 
             var teams = dbContext.Teams.ToList();
-            foreach (var team in teams)
+            foreach (var team in teams)                                                             // loop on all teams
             {
-                EmailContents emailContents = new(){
+                EmailContents emailContents = new() {                                               // construct a new EmailContents object for each
                     TeamName = team.Name,
                     PointsThreshold = team.PointsThreshold,
                     MarginDifference = team.MarginForNotification,
@@ -176,7 +176,7 @@ namespace EctBlazorApp.Server.Extensions
                 };
 
                 var members = team.Members.ToList();
-                foreach (var member in members)
+                foreach (var member in members)                                                     // process every member of the team
                 {
                     NotificationMemberData memberData = new() {
                         Name = member.FullName,
@@ -186,7 +186,7 @@ namespace EctBlazorApp.Server.Extensions
                         PastWeek = $"{pastWeekStart:dd MMM, yyyy} - {pastWeekEnd:dd MMM, yyyy}"
                     };
 
-                    if (IsMemberPotentiallyIsolated(team, memberData))
+                    if (IsMemberPotentiallyIsolated(team, memberData))                              // if the member's data is either below the threshold or above the max margin, then add to report
                         emailContents.Members.Add(memberData);
                 }
 
@@ -202,14 +202,15 @@ namespace EctBlazorApp.Server.Extensions
 
             List<int> pointsPerDay = new();
 
-            while(fromDate < toDate)
+            while(fromDate < toDate)                                                                                                            // emails and meetings fetched for the whole range, then looped on to reduce number of requests
             {
                 int receivedMailOnDate = receivedMail.Where(rm => rm.ReceivedAt.Date == fromDate.Date).ToList().Count;
                 int sentMailOnDate = sentMail.Where(sm => sm.SentAt.Date == fromDate.Date).ToList().Count;
-                List<CalendarEvent> eventsOnDate = calendarEvents.Where(ce => ce.Start.Date == fromDate.Date).ToList();
-
-                int eventMinutesOnDate = CalendarEvent.GetTotalMinutesFromEvents(eventsOnDate);
                 int mailCount = receivedMailOnDate + sentMailOnDate;
+
+                List<CalendarEvent> eventsOnDate = calendarEvents.Where(ce => ce.Start.Date == fromDate.Date).ToList();
+                int eventMinutesOnDate = CalendarEvent.GetTotalMinutesFromEvents(eventsOnDate);
+
                 int totalPointsOnDate = dbContext.CalculateTotalCommunicationPoints(mailCount, eventMinutesOnDate);
 
                 pointsPerDay.Add(totalPointsOnDate);
@@ -232,11 +233,11 @@ namespace EctBlazorApp.Server.Extensions
         
         public static bool IsMemberPotentiallyIsolated(EctTeam team, NotificationMemberData memberData)
         {
-            int currentWeekPoints = memberData.CurrentTotal > 0 ? memberData.CurrentTotal : 1;                                              // If there are no points set as 1 to avoid division by 0.
+            int currentWeekPoints = memberData.CurrentTotal > 0 ? memberData.CurrentTotal : 1;                                                  // If there are no points set as 1 to avoid division by 0.
             int previousWeekPoints = memberData.PastTotal > 0 ? memberData.PastTotal : 1;
 
             double pointDifference = (double)currentWeekPoints / previousWeekPoints;
-            double positivePercentDifference = (pointDifference - 1) * (-100);                                                              // Get the positive % difference
+            double positivePercentDifference = (pointDifference - 1) * (-100);                                                                  // Get the positive % difference
 
             if (currentWeekPoints <= team.PointsThreshold 
                 || (currentWeekPoints < previousWeekPoints && positivePercentDifference >= team.MarginForNotification))
@@ -245,7 +246,7 @@ namespace EctBlazorApp.Server.Extensions
             return false;
         }
         
-        private static void SendNotificationEmail(string messageContent, EctTeam team, EctMailKit mailKit)                                  // Not a DbContext extension method. Move to a more suitable place.
+        private static void SendNotificationEmail(string messageContent, EctTeam team, EctMailKit mailKit)                                      // Not a DbContext extension method. Move to a more suitable place.
         {
             foreach (var recipient in team.AdditionalUsersToNotify)
             {
