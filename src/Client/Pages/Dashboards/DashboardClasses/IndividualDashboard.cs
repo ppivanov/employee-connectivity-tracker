@@ -45,8 +45,7 @@ namespace EctBlazorApp.Client.Pages.Dashboards
         {
             Dictionary<string, double> subjectAndCount = new Dictionary<string, double>();
 
-            // loop and count using the dict
-            foreach (var calendarEvent in calendarEvents)
+            foreach (var calendarEvent in calendarEvents)                                                               // loop and count using the dict
             {
                 double eventDurationSeconds = CalendarEvent.GetTotalSecondsForSingleEvent(calendarEvent);
                 double eventDurationMinutes = GetMinutesFromSeconds(eventDurationSeconds);
@@ -71,7 +70,7 @@ namespace EctBlazorApp.Client.Pages.Dashboards
             var dates = SplitDateRangeToChunks(FromDate.Value, ToDate.Value);
             object[][] newList = new object[dates.Count][];
 
-            for (int i = 0; i < dates.Count; i++)
+            for (int i = 0; i < dates.Count; i++)                                                                       // for every day in the range - count the sent and received emails
             {
                 DateTime date = dates[i];
                 int countOfSentMail = sentMail.Count(sm => sm.SentAt.Date == date);
@@ -86,7 +85,7 @@ namespace EctBlazorApp.Client.Pages.Dashboards
         protected override async Task OnInitializedAsync()
         {
             await JsRuntime.InvokeVoidAsync("setPageTitle", "Dashboard");
-            await CustomAuthState.GetUserPermissions(AuthState, ApiConn);
+            await CustomAuthState.GetUserPermissions(AuthState, ApiConn);                                               // method fetches the user permissions only if needed
             await FetchCommunicationPoints();
         }
 
@@ -101,7 +100,7 @@ namespace EctBlazorApp.Client.Pages.Dashboards
             SecondsInMeeting = 0;
             string queryString = GetDateRangeQueryString(FromDate.Value, ToDate.Value);
             string userIdQueryString = string.Empty;
-            if(string.IsNullOrEmpty(HashedUserId) == false)
+            if(string.IsNullOrEmpty(HashedUserId) == false)                                                             // if a team lead is requesting to view the data for a member
             {
                 DashboardState.SetIsDrillDown(true);
                 userIdQueryString = $"&UID={HashedUserId}";
@@ -115,7 +114,7 @@ namespace EctBlazorApp.Client.Pages.Dashboards
                 return;
             }
             await ExtractDataFromResponse(response);
-            await FindCollaborators();
+            await FindCollaborators();                                                                                  // Populate the dictionary for top collaborators 
 
             await JsRuntime.InvokeVoidAsync("loadDashboardGraph", (object)GetEmailData(), (object)GetCalendarEventsData());
         }
@@ -129,7 +128,7 @@ namespace EctBlazorApp.Client.Pages.Dashboards
             NumberOfMeetings = calendarEvents != null ? calendarEvents.Count : 0;
             userEmailAddress = response.UserEmail;
 
-            if (string.IsNullOrEmpty(response.UserFullName) == false)
+            if (string.IsNullOrEmpty(response.UserFullName) == false)                                                   // if the API has populated this property then display it
                 await JsRuntime.InvokeVoidAsync("setPageTitle", response.UserFullName);
         }
         private void FindEmailCollaborators()
@@ -147,11 +146,10 @@ namespace EctBlazorApp.Client.Pages.Dashboards
         }
         private async Task FindAttendeesFromCalendarEvents()
         {
-            string emailToFilterOut =
-                string.IsNullOrEmpty(userEmailAddress) ? await GetEmailForProcessingUser() : userEmailAddress;
+            string emailToFilterOut = string.IsNullOrEmpty(userEmailAddress) ? await GetEmailForProcessingUser() : userEmailAddress;        // if the view is a drilldown then the attribute will be populated
             foreach (var meeting in calendarEvents)
             {
-                List<string> attendees = meeting.GetAttendeesExcludingUser(emailToFilterOut);
+                List<string> attendees = meeting.GetAttendeesExcludingUser(emailToFilterOut);                           // get all the attendees from the meeting except the user passed in as a parm
                 foreach (var attendee in attendees)
                 {
                     string fullName = GetFullNameFromFormattedString(attendee);
@@ -174,7 +172,7 @@ namespace EctBlazorApp.Client.Pages.Dashboards
         {
             var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
             var user = authState.User;
-            return user.GetUserEmail();
+            return user.GetUserEmail();                                                                                 // custom extension method in GraphClaimsPrincipalExtensions
         }
     }
 }

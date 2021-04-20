@@ -93,7 +93,7 @@ namespace EctBlazorApp.Client.Pages
         public virtual async Task JsInterop(string function, string parameter = "")
         {
             await JsRuntime.InvokeVoidAsync(function, parameter);
-        }               // Used to mock JavaScript function calls
+        }                                  // Used to mock JavaScript function calls in unit tests
 
         public void RemoveUserToNotify(string toRemove)
         {
@@ -109,15 +109,14 @@ namespace EctBlazorApp.Client.Pages
         public async Task SetUserToNotifyEmail(ChangeEventArgs args)
         {
             UserToNotify_Email = args.Value.ToString();
-            var matchingMember = PromptUsersForNotification.FirstOrDefault(m =>
-                GetEmailFromFormattedString(m).Equals(UserToNotify_Email));
+            var matchingMember = PromptUsersForNotification.FirstOrDefault(m => GetEmailFromFormattedString(m).Equals(UserToNotify_Email));
             if (matchingMember != null)
             {
                 UserToNotify_Name = GetFullNameFromFormattedString(matchingMember);
                 await JsInterop("setUserToNotifyName", UserToNotify_Name);
             }
             else
-                await JsInterop("resetUserToNotifyName");
+                await JsInterop("resetUserToNotifyName");                                                               // if a user has entered the Email of a member, and then changes it, clear the FullName field
         }
 
         public async Task SetUserToNotifyName(ChangeEventArgs args)
@@ -131,14 +130,14 @@ namespace EctBlazorApp.Client.Pages
                 await JsInterop("setUserToNotifyEmail", UserToNotify_Email);
             }
             else
-                await JsInterop("resetUserToNotifyEmail");
+                await JsInterop("resetUserToNotifyEmail");                                                              // if a user has entered the FullName of a member, and then changes it, clear the Email field
         }
 
 
         protected async Task AddSelectedMember(string memberToAdd)
         {
             TeamDetails.MemberNamesAndEmails.Add(memberToAdd);
-            allAvailableLeaders = allAvailableLeaders.Where(a => a.Contains(memberToAdd) == false).ToList();
+            allAvailableLeaders = allAvailableLeaders.Where(a => a.Contains(memberToAdd) == false).ToList();            // this user can no longer be selected as leader
 
             await InvokeAsync(StateHasChanged);
         }
@@ -160,7 +159,7 @@ namespace EctBlazorApp.Client.Pages
         protected async Task RemoveFromSelected(string member)
         {
             TeamDetails.MemberNamesAndEmails.Remove(member);
-            allAvailableLeaders.Add(member);
+            allAvailableLeaders.Add(member);                                                                            // this user can now be selected as leader
             await InvokeAsync(StateHasChanged);
         }
 

@@ -21,7 +21,7 @@ namespace EctBlazorApp.Client.Pages
         private bool serverMessageIsError = false;
 
         public static int MaxPointsPerMedium => 100;
-        public Dictionary<CommunicationPoint, bool> PointsAndToggles { get; set; }          // holds true if user selected for edit
+        public Dictionary<CommunicationPoint, bool> PointsAndToggles { get; set; }                                      // holds true if user selected for edit
 
         protected bool Initialized { get; set; } = false;
         protected bool InputError { get; set; } = false;
@@ -50,11 +50,11 @@ namespace EctBlazorApp.Client.Pages
             var toggledMedium = GetToggledMedium();
             if (toggledMedium != null)
             {
-                if (SavePoints(toggledMedium))                          // If input value is less than % left only then toggle the other medium
+                if (SavePoints(toggledMedium))                                                                          // If input value is less than % left only then toggle the other medium
                     PointsAndToggles[selectedMedium] = true;
             }
             else
-                PointsAndToggles[selectedMedium] = true;                          // If no previous medium is toggled
+                PointsAndToggles[selectedMedium] = true;                                                                // If no previous medium is toggled
         }
 
         protected override async Task OnInitializedAsync()
@@ -62,7 +62,7 @@ namespace EctBlazorApp.Client.Pages
             await JsRuntime.InvokeVoidAsync("setPageTitle", "Communication Points");
             await CustomAuthState.GetUserPermissions(AuthState, ApiConn);
             
-            if (HasAccess)
+            if (HasAccess)                                                                                              // only make the HTTP request if the user has access
                 await FetchCommunicationPoints();
 
             Initialized = true;
@@ -117,7 +117,9 @@ namespace EctBlazorApp.Client.Pages
             serverMessageIsError = false;
 
             var toggledMedium = GetToggledMedium();
-            if (toggledMedium != null) PointsAndToggles[toggledMedium] = false;
+            if (toggledMedium != null) 
+                PointsAndToggles[toggledMedium] = false;
+
             var response = await ApiConn.SubmitPoints(PointsAndToggles.Keys.ToList());
             serverMessageIsError = response.Item1 == false;
             ServerMessage = response.Item2;
@@ -130,9 +132,7 @@ namespace EctBlazorApp.Client.Pages
         {
             PointsAndToggles = new Dictionary<CommunicationPoint, bool>();
             foreach (var medium in commPoints)
-            {
                 PointsAndToggles.Add(medium, false);
-            }
         }
         private CommunicationPoint GetToggledMedium()
         {

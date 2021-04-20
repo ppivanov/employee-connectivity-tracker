@@ -28,17 +28,15 @@ namespace EctBlazorApp.Client.Pages.Dashboards
         protected string LeaderNameAndEmail { get; set; } = string.Empty;
         protected override int TotalEmailsCount => EmailsSent + EmailsReceived;
 
-        public virtual async Task JsInterop(string function, string parameter = "")
+        public virtual async Task JsInterop(string function, string parameter = "")                                     // Used to mock JavaScript function calls in unit tests
         {
             await JsRuntime.InvokeVoidAsync(function, parameter);
-        }               // Used to mock JavaScript function calls
+        }               
 
 
         protected override Task FindCollaborators()
         {
-            // Meeting collaborators added to dictionary in GetCalendarEventData to avoid looping over the user list again
-
-            foreach (var member in TeamMembers)
+            foreach (var member in TeamMembers)                                                                         // Meeting collaborators added to dictionary in GetCalendarEventData() to avoid looping over the user list again
             {
                 int totalEmails = member.SentEmails.Count + member.ReceivedEmails.Count;
                 double pointsToAdd = totalEmails * EmailCommPoints.Points;
@@ -50,9 +48,9 @@ namespace EctBlazorApp.Client.Pages.Dashboards
 
         protected override object[][] GetCalendarEventsData()
         {
-            Dictionary<string, HashSet<(DateTime, DateTime)>> eventsBySubject = new Dictionary<string, HashSet<(DateTime, DateTime)>>();
+            Dictionary<string, HashSet<(DateTime, DateTime)>> eventsBySubject = new Dictionary<string, HashSet<(DateTime, DateTime)>>();        // using a the meeting subject as key and a hashset to get all unique start-end dates
             
-            foreach (var member in TeamMembers)
+            foreach (var member in TeamMembers)                                                                         // looping on all the members and all of their meetings
             {
                 int numberOfMeetingsBefore = NumberOfMeetings;
                 foreach (var calendarEvent in member.CalendarEvents)
@@ -60,7 +58,7 @@ namespace EctBlazorApp.Client.Pages.Dashboards
                     (DateTime, DateTime) eventDateTimeRange = (calendarEvent.Start, calendarEvent.End);
                     if (eventsBySubject.ContainsKey(calendarEvent.Subject))
                     {
-                        if (eventsBySubject[calendarEvent.Subject].Contains(eventDateTimeRange) == false)                                               // only add if the specific meeting at the specific time has not been added
+                        if (eventsBySubject[calendarEvent.Subject].Contains(eventDateTimeRange) == false)               // only add if the specific meeting at the specific time has not been added
                         {
                             eventsBySubject[calendarEvent.Subject].Add(eventDateTimeRange);
                             NumberOfMeetings++;
@@ -68,18 +66,17 @@ namespace EctBlazorApp.Client.Pages.Dashboards
                     }
                     else
                     {
-                        eventsBySubject.Add(calendarEvent.Subject, new HashSet<(DateTime, DateTime)>() { { eventDateTimeRange } });                                   // if none of the meetings so far have had the subject, add a new one and initialize a set for the times
+                        eventsBySubject.Add(calendarEvent.Subject, new HashSet<(DateTime, DateTime)>() { { eventDateTimeRange } });             // if none of the meetings so far have had the subject, add a new one and initialize a set for the times
                         NumberOfMeetings++;
                     }
                 }
                 double pointsToAdd = (NumberOfMeetings - numberOfMeetingsBefore) * MeetingCommPoints.Points;
                 AddPointsToCollaborators(member.FullName, pointsToAdd);
             }
-
-            // loop over the dictionary and count the number of elements in the set
+            
             object[][] newList = new object[eventsBySubject.Count][];
             int i = 0;
-            foreach (KeyValuePair<string, HashSet<(DateTime, DateTime)>> dictionaryEntry in eventsBySubject)
+            foreach (KeyValuePair<string, HashSet<(DateTime, DateTime)>> dictionaryEntry in eventsBySubject)            // loop over the dictionary and count the number of elements in the set
             {
                 int totalDurationSeconds = 0;
                 int totalDurationMinutes = 0;
@@ -112,7 +109,7 @@ namespace EctBlazorApp.Client.Pages.Dashboards
                 foreach (var member in TeamMembers)
                 {
                     string memberFirstName = member.FullName.Split(" ")[0];
-                    int countOfSentMail = member.SentEmails.Count(sm => sm.SentAt.Date == date);
+                    int countOfSentMail = member.SentEmails.Count(sm => sm.SentAt.Date == date);                        // the number of emails for that member on that specific date
                     int countOfReceivedMail = member.ReceivedEmails.Count(sm => sm.ReceivedAt.Date == date);
 
                     sentMailTooltipText.Append($"{memberFirstName}: {countOfSentMail}\n");
@@ -122,8 +119,7 @@ namespace EctBlazorApp.Client.Pages.Dashboards
                     totalReceivedOnDate += countOfReceivedMail;
                 }
 
-                newList[i] = new object[] { tooltipDate, totalSentOnDate,
-                    sentMailTooltipText.ToString(), totalReceivedOnDate, receivedMailTooltipText.ToString() };
+                newList[i] = new object[] { tooltipDate, totalSentOnDate, sentMailTooltipText.ToString(), totalReceivedOnDate, receivedMailTooltipText.ToString() };
                 EmailsReceived += totalReceivedOnDate;
                 EmailsSent += totalSentOnDate;
             }
@@ -133,9 +129,9 @@ namespace EctBlazorApp.Client.Pages.Dashboards
         protected override async Task OnInitializedAsync()
         {
             await JsInterop("setPageTitle", "My Team");
-            await CustomAuthState.GetUserPermissions(AuthState, ApiConn);
+            await CustomAuthState.GetUserPermissions(AuthState, ApiConn);                                               // only executed when needed
             
-            if (IsLeader)
+            if (IsLeader)                                                                                               // if the user is a leader only then attempt to load in the data
             {
                 CurrentNotificationOptions = await ApiConn.FetchCurrentNotificationOptions();
                 await FetchCommunicationPoints();
@@ -149,7 +145,7 @@ namespace EctBlazorApp.Client.Pages.Dashboards
         {
             int userId = TeamMembers.FirstOrDefault(u => u.FullName.Equals(userFullName)).Id;
             string hasedUserId = ComputeSha256Hash(userId.ToString());
-            await JsRuntime.InvokeVoidAsync("open", $"/dashboard/{hasedUserId}", "_blank");
+            await JsRuntime.InvokeVoidAsync("open", $"/dashboard/{hasedUserId}", "_blank");                             // open a new browser tab for viewing that member
         }
 
         protected override async Task UpdateDashboard()
@@ -163,9 +159,9 @@ namespace EctBlazorApp.Client.Pages.Dashboards
 
             await FindCollaborators();
             Initialized = true;
-            await InvokeAsync(StateHasChanged);                                                                                                                                     // Force a refresh of the component before trying to load the js graphs
+            await InvokeAsync(StateHasChanged);                                                                                                 // Force a refresh of the component before trying to load the js graphs
             await JsInterop("setPageTitle", response.TeamName);
-            await JsRuntime.InvokeVoidAsync("loadMyTeamDashboardGraph", (object)GetEmailData(), (object)GetCalendarEventsData());                                                   // GetCalendarEventsData is adding only some of the collaborators to the dictionary
+            await JsRuntime.InvokeVoidAsync("loadMyTeamDashboardGraph", (object)GetEmailData(), (object)GetCalendarEventsData());               // GetCalendarEventsData is adding only some of the collaborators to the dictionary
         }
 
 

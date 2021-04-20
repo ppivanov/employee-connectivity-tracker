@@ -104,7 +104,7 @@ namespace EctBlazorApp.Client.Pages
         protected void ResetTeams()
         {
             if(LeftTeam !=null)
-                LeftTeam.MemberNamesAndEmails = InitialLeftTeamRoster.ToList();                                                          // Copying the list as the MoveMember method will modify the 'snapshot' of the original roster state
+                LeftTeam.MemberNamesAndEmails = InitialLeftTeamRoster.ToList();
 
             if (RightTeam != null)
                 RightTeam.MemberNamesAndEmails = InitialRightTeamRoster.ToList();
@@ -134,7 +134,7 @@ namespace EctBlazorApp.Client.Pages
             LeftTeamSelection = args.Value.ToString();
 
             ResetServerMessage();
-            if (InAppTeams == null || SameTeamSelection)                                                                                     // if there are no in-app teams, no text input, or the team has already been selected, return null
+            if (InAppTeams == null || SameTeamSelection)                                                                // if there are no teams, no text input, or the team has already been selected, return null
                 return;
 
             LeftTeam = InAppTeams.FirstOrDefault(t => t.Name.ToLower().Equals(LeftTeamSelection.ToLower()));
@@ -147,7 +147,7 @@ namespace EctBlazorApp.Client.Pages
             RightTeamSelection = args.Value.ToString();
 
             ResetServerMessage();
-            if (InAppTeams == null || SameTeamSelection)
+            if (InAppTeams == null || SameTeamSelection)                                                                // if there are no teams, no text input, or the team has already been selected, return null
                 return;
 
             RightTeam = InAppTeams.FirstOrDefault(t => t.Name.ToLower().Equals(RightTeamSelection.ToLower()));
