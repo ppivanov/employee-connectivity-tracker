@@ -44,6 +44,7 @@ namespace EctBlazorApp.Client.Pages
         private List<string> originalMembers;
         private List<string> originalAvailableLeaders;
         private bool pointsInputError = false;
+        private bool isUserToNotifyMember = false;
 
         protected string AddNotifyUserInputStyle
         {
@@ -79,7 +80,7 @@ namespace EctBlazorApp.Client.Pages
 
         public async Task AddUserToNotify()
         {
-            if (UserToNotifyFieldsAreEmpty() || UserToNotifyAlreadyInList())
+            if (UserToNotifyFieldsAreEmpty() || UserToNotifyAlreadyInList() || UserToNotifyValidEmail())
                 return;
 
             string nameAndEmail = FormatFullNameAndEmail(UserToNotify_Name, UserToNotify_Email);
@@ -108,29 +109,40 @@ namespace EctBlazorApp.Client.Pages
 
         public async Task SetUserToNotifyEmail(ChangeEventArgs args)
         {
+            ResetErrorMessage();
             UserToNotify_Email = args.Value.ToString();
             var matchingMember = PromptUsersForNotification.FirstOrDefault(m => GetEmailFromFormattedString(m).Equals(UserToNotify_Email));
             if (matchingMember != null)
             {
+                isUserToNotifyMember = true;
                 UserToNotify_Name = GetFullNameFromFormattedString(matchingMember);
                 await JsInterop("setUserToNotifyName", UserToNotify_Name);
             }
-            else
+            else if(isUserToNotifyMember)
+            {
+                isUserToNotifyMember = false;
+                UserToNotify_Name = string.Empty;
                 await JsInterop("resetUserToNotifyName");                                                               // if a user has entered the Email of a member, and then changes it, clear the FullName field
+            }
         }
 
         public async Task SetUserToNotifyName(ChangeEventArgs args)
         {
+            ResetErrorMessage();
             UserToNotify_Name = args.Value.ToString();
-            var matchingMember = PromptUsersForNotification.FirstOrDefault(m =>
-                GetFullNameFromFormattedString(m).Equals(UserToNotify_Name));
+            var matchingMember = PromptUsersForNotification.FirstOrDefault(m => GetFullNameFromFormattedString(m).Equals(UserToNotify_Name));
             if (matchingMember != null)
             {
+                isUserToNotifyMember = true;
                 UserToNotify_Email = GetEmailFromFormattedString(matchingMember);
                 await JsInterop("setUserToNotifyEmail", UserToNotify_Email);
             }
-            else
+            else if (isUserToNotifyMember)
+            {
+                isUserToNotifyMember = false;
+                UserToNotify_Email = string.Empty;
                 await JsInterop("resetUserToNotifyEmail");                                                              // if a user has entered the FullName of a member, and then changes it, clear the Email field
+            }
         }
 
 
@@ -391,6 +403,15 @@ namespace EctBlazorApp.Client.Pages
             if (TeamDetails.NewNotificationOptions.UsersToNotify.Any(utn => utn.Contains($"<{UserToNotify_Email}>")))
             {
                 SetNotifyUserInputErrorMessage("The entered email is already in the list.");
+                return true;
+            }
+            return false;
+        }
+        private bool UserToNotifyValidEmail()
+        {
+            if (UserToNotify_Email.IsValidEmail() == false)
+            {
+                SetNotifyUserInputErrorMessage("Please, enter a valid email.");
                 return true;
             }
             return false;
