@@ -81,7 +81,7 @@ namespace EctBlazorApp.Server.Controllers
                 });
 
             user.OutputCommunicationRecordsInRange(fromDate, toDate, 
-                out List<ReceivedMail> receivedMail, out List<SentMail> sentMail, out List<CalendarEvent> calendarEvents);          // output
+                out List<ReceivedMail> receivedMail, out List<SentMail> sentMail, out List<CalendarEvent> calendarEvents);          // output variables
 
             string userFullName = string.IsNullOrEmpty(UID) ? string.Empty : user.FullName;
             string userEmailAddress = string.IsNullOrEmpty(UID) ? string.Empty : user.Email;

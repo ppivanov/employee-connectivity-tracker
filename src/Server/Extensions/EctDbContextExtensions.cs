@@ -159,11 +159,11 @@ namespace EctBlazorApp.Server.Extensions
         // this method should be triggered every Sunday at noon ----- See Startup.cs to configure the cron expression
         public static void ProcessNotifications(this EctDbContext dbContext, EctMailKit mailKit)
         {                                                                                           //                              Examples:
-            DateTime currentWeekEnd = DateTime.Now.AddDays(1).Date;                                 // Following Monday             March 1st
-            DateTime currentWeekStart = currentWeekEnd.AddDays(-7);                                 // Last week's Monday           Feb  22th
+            DateTime currentWeekEnd = DateTime.Now.Date;                                            // Current day Sunday           April 25
+            DateTime currentWeekStart = currentWeekEnd.AddDays(-6);                                 // Monday                       April 19
 
-            DateTime pastWeekEnd = currentWeekStart;                                                // Last week's Monday           Feb  22th
-            DateTime pastWeekStart = currentWeekStart.AddDays(-7);                                  // The Monday before that       Feb  15th
+            DateTime lastWeekEnd = currentWeekStart.AddDays(-1);                                    // Last week's Sunday           April 18
+            DateTime lastWeekStart = lastWeekEnd.AddDays(-6);                                       // Last week's Monday           April 12
 
             var teams = dbContext.Teams.ToList();
             foreach (var team in teams)                                                             // loop on all teams
@@ -181,9 +181,9 @@ namespace EctBlazorApp.Server.Extensions
                     NotificationMemberData memberData = new() {
                         Name = member.FullName,
                         CurrentPoints = dbContext.GetCommunicationPointsForUser(member, currentWeekStart, currentWeekEnd),
-                        PastPoints = dbContext.GetCommunicationPointsForUser(member, pastWeekStart, pastWeekEnd),
+                        PastPoints = dbContext.GetCommunicationPointsForUser(member, lastWeekStart, lastWeekEnd),
                         CurrentWeek = $"{currentWeekStart:dd MMM, yyyy} - {currentWeekEnd:dd MMM, yyyy}",
-                        PastWeek = $"{pastWeekStart:dd MMM, yyyy} - {pastWeekEnd:dd MMM, yyyy}"
+                        PastWeek = $"{lastWeekStart:dd MMM, yyyy} - {lastWeekEnd:dd MMM, yyyy}"
                     };
 
                     if (IsMemberPotentiallyIsolated(team, memberData))                              // if the member's data is either below the threshold or above the max margin, then add to report

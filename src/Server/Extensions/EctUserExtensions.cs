@@ -26,22 +26,22 @@ namespace EctBlazorApp.Server.Extensions
         public static List<SentMail> GetSentMailInDateRange(this EctUser user, DateTime fromDate, DateTime toDate)
         {
             return user.SentEmails.Where(mail =>
-                mail.SentAt >= fromDate
-                    && mail.SentAt < toDate).ToList();
+                mail.SentAt.Date >= fromDate && 
+                    mail.SentAt.Date <= toDate).ToList();
         }
 
         public static List<ReceivedMail> GetReceivedMailInDateRange(this EctUser user, DateTime fromDate, DateTime toDate)
         {
             return user.ReceivedEmails.Where(mail =>
-                mail.ReceivedAt >= fromDate &&
-                    mail.ReceivedAt < toDate).ToList();
+                mail.ReceivedAt.Date >= fromDate &&
+                    mail.ReceivedAt.Date <= toDate).ToList();
         }
 
         public static List<CalendarEvent> GetCalendarEventsInDateRange(this EctUser user, DateTime fromDate, DateTime toDate)
         {
             return user.CalendarEvents.Where(c =>
-                c.Start >= fromDate &&
-                    c.End < toDate).ToList();
+                c.Start.Date >= fromDate &&
+                    c.End.Date <= toDate).ToList();
         }
 
         public static async Task<bool> UpdateCalendarEventRecordsAsync(this EctUser user, HttpClient client, EctDbContext dbContext)
